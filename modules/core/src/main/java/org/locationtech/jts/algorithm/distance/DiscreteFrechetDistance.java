@@ -17,10 +17,9 @@ import org.locationtech.jts.util.Assert;
 
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Locale;
 
 /**
- * The Fréchet distance is a measure of similarity between curves. Thus it can
+ * The Fréchet distance is a measure of similarity between curves. Thus, it can
  * be used like the Hausdorff distance.
  * <p/>
  * An analogy for the Fréchet distance taken from
@@ -109,8 +108,6 @@ public class DiscreteFrechetDistance {
 
     int max = Math.max(rows, cols);
     // NOTE: these constraints need to be verified
-    if (max < 64)
-      return new HashMapMatrix(rows, cols, Double.POSITIVE_INFINITY);
     if (max < 1024)
       return new RectMatrix(rows, cols, Double.POSITIVE_INFINITY);
 
@@ -328,34 +325,10 @@ public class DiscreteFrechetDistance {
     return pairs;
   }
 
-  /*
-  // For debugging purposes only!
-  private static String toString(int numRows, int numCols,
-                                 Map<Long, Double> sparse) {
-
-    StringBuilder sb = new StringBuilder("[");
-    for (int i = 0; i < numRows; i++)
-    {
-      sb.append('[');
-      for(int j = 0; j < numCols; j++)
-      {
-        if (j > 0)
-          sb.append(", ");
-        sb.append(String.format("%8.4f", getDistance(sparse, i, j)));
-      }
-      sb.append(']');
-      if (i < numRows - 1) sb.append(",\n");
-    }
-    sb.append(']');
-    return sb.toString();
-
-  }
-   */
-
   /**
    * Abstract base class for storing 2d matrix data
    */
-  private abstract static class MatrixStorage {
+  abstract static class MatrixStorage {
 
     protected final int numRows;
     protected final int numCols;
@@ -372,7 +345,6 @@ public class DiscreteFrechetDistance {
       this.numRows = numRows;
       this.numCols = numCols;
       this.defaultValue = defaultValue;
-
     }
 
     /**
@@ -400,6 +372,7 @@ public class DiscreteFrechetDistance {
      */
     public abstract boolean isValueSet(int i, int j);
 
+    /* For debugging purposes only
     @Override
     public String toString() {
       StringBuilder sb = new StringBuilder("[");
@@ -410,7 +383,7 @@ public class DiscreteFrechetDistance {
         {
           if (j > 0)
             sb.append(", ");
-          sb.append(String.format(Locale.ROOT, "%8.4f", get(i, j)));
+          sb.append(String.format(java.util.Locale.ROOT, "%8.4f", get(i, j)));
         }
         sb.append(']');
         if (i < this.numRows - 1) sb.append(",\n");
@@ -418,12 +391,13 @@ public class DiscreteFrechetDistance {
       sb.append(']');
       return sb.toString();
     }
+     */
   }
 
   /**
    * Straight forward implementation of a rectangular matrix
    */
-  private static class RectMatrix extends MatrixStorage {
+  final static class RectMatrix extends MatrixStorage {
 
     private final double[] matrix;
 
@@ -459,7 +433,7 @@ public class DiscreteFrechetDistance {
    *   Compressed sparse row format</a>.<br/>
    * Note: Unfortunately not as fast as expected.
    */
-  private static class CsrMatrix extends MatrixStorage {
+  final static class CsrMatrix extends MatrixStorage {
 
     private double[] v;
     private final int[] ri;
@@ -562,7 +536,7 @@ public class DiscreteFrechetDistance {
   /**
    * A sparse matrix based on java's {@link HashMap}.
    */
-  private static class HashMapMatrix extends MatrixStorage {
+  final static class HashMapMatrix extends MatrixStorage {
 
     private final HashMap<Long, Double> matrix;
 
@@ -576,7 +550,6 @@ public class DiscreteFrechetDistance {
       super(numRows, numCols, defaultValue);
       this.matrix = new HashMap<>();
     }
-
 
     public double get(int i, int j) {
       long key = (long)i << 32 | j;
