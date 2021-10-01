@@ -11,9 +11,6 @@
  */
 package org.locationtech.jts.hull;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.locationtech.jts.algorithm.Angle;
 import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.geom.Coordinate;
@@ -24,7 +21,6 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.Triangle;
 import org.locationtech.jts.triangulate.polygon.VertexSequencePackedRtree;
-import org.locationtech.jts.triangulate.tri.Tri;
 
 /**
  * 
@@ -35,24 +31,12 @@ public class PolygonConcaveHull {
   
   private static final int NO_VERTEX_INDEX = -1;
 
-  public static Geometry hull(Geometry geom, double vertexSizeFraction) {
-    Coordinate[] pts = geom.getCoordinates();
-    PolygonConcaveHull hull = new PolygonConcaveHull(pts, vertexSizeFraction);
+  public static Geometry hull(Geometry geom, double vertexCountFraction) {
+    Geometry geomNorm = geom.norm();
+    Coordinate[] pts = geomNorm.getCoordinates();
+    PolygonConcaveHull hull = new PolygonConcaveHull(pts, vertexCountFraction);
     return hull.getResult();
   }
-  
-  /**
-   * Triangulates a polygon via ear-clipping.
-   * 
-   * @param polyShell the vertices of the polygon
-   * @return a list of the Tris
-   */
-  /*
-  private static List<Tri> hull(Coordinate[] polyShell) {
-    PolygonConcaveHull clipper = new PolygonConcaveHull(polyShell);
-    return clipper.compute();
-  }
-  */
   
   /**
    * The polygon vertices are provided in CW orientation. 
@@ -75,10 +59,10 @@ public class PolygonConcaveHull {
    */
   private VertexSequencePackedRtree vertexCoordIndex;
 
-  private int goalVertexSize;
+  private int targetVertexCount;
 
   /**
-   * Creates a new ear-clipper instance.
+   * Creates a new PolygonConcaveHull instance.
    * 
    * @param polyShell the polygon vertices to process
    */
@@ -92,7 +76,7 @@ public class PolygonConcaveHull {
     
     vertexCoordIndex = new VertexSequencePackedRtree(vertex);
     
-    goalVertexSize = (int) (vertexSize * vertexSizeFraction);
+    targetVertexCount = (int) (vertexSize * vertexSizeFraction);
   }
 
   public Geometry getResult() {
@@ -109,15 +93,8 @@ public class PolygonConcaveHull {
     return next;
   }
   
-  public void compute() {
-    List<Tri> triList = new ArrayList<Tri>();
-
-    /**
-     * Count scanned corners, to catch infinite loops
-     * (which indicate an algorithm bug)
-     */
-    int cornerScanCount = 0;
-    
+  public void compute() {    
+   
     initCornerIndex();
     Coordinate[] corner = new Coordinate[3];
     fetchCorner(corner);
@@ -126,33 +103,19 @@ public class PolygonConcaveHull {
      * Scan continuously around vertex ring, 
      * until all ears have been found.
      */
-    while (true) {
+    while (vertexSize > targetVertexCount) {
       /**
        * Non-convex corner- remove if flat, or skip
        * (a concave corner will turn into a convex corner
        * after enough ears are removed)
        */
       if (! isConcave(corner)) {
-        /*
-        // remove the corner if it is flat or a repeated point        
-        boolean isCornerRemoved = hasRepeatedPoint(corner)
-            || (isFlatCornersSkipped && isFlat(corner));
-        if (isCornerRemoved) {
-          removeCorner();
-        }
-        */
-        cornerScanCount++;
       }
       /**
        * Concave corner - check if it is a valid ear
        */
       else if ( isConcave(corner) && isValidEar(cornerIndex[1], corner) ) {
-        //triList.add(Tri.create(corner));
         removeCorner();
-        cornerScanCount = 0;
-      }
-      if ( vertexSize <= goalVertexSize ) {
-        return;
       }
       
       /**
