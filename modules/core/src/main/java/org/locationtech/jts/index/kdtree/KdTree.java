@@ -16,35 +16,39 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Stack;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateList;
 import org.locationtech.jts.geom.Envelope;
 
-
 /**
- * An implementation of a 2-D KD-Tree. KD-trees provide fast range searching 
- * and fast lookup for point data.
+ * An implementation of a 
+ * <a href='https://en.wikipedia.org/wiki/K-d_tree'>KD-Tree</a> 
+ * over two dimensions (X and Y). 
+ * KD-trees provide fast range searching and fast lookup for point data.
+ * The tree is built dynamically by inserting points.
+ * The tree supports queries by range and for point equality.
+ * For querying an internal stack is used instead of recursion to avoid overflow. 
  * <p>
  * This implementation supports detecting and snapping points which are closer
  * than a given distance tolerance. 
  * If the same point (up to tolerance) is inserted
  * more than once, it is snapped to the existing node.
- * In other words, if a point is inserted which lies within the tolerance of a node already in the index,
+ * In other words, if a point is inserted which lies 
+ * within the tolerance of a node already in the index,
  * it is snapped to that node. 
- * When a point is snapped to a node then a new node is not created but the count of the existing node
- * is incremented.  
+ * When an inserted point is snapped to a node then a new node is not created 
+ * but the count of the existing node is incremented.  
  * If more than one node in the tree is within tolerance of an inserted point, 
  * the closest and then lowest node is snapped to.
  * <p>
- * Note that the structure of a KD-Tree depends on the order of insertion of the points.
- * A tree may become imbalanced if the inserted points are coherent 
+ * The structure of a KD-Tree depends on the order of insertion of the points.
+ * A tree may become unbalanced if the inserted points are coherent 
  * (e.g. monotonic in one or both dimensions).
  * A perfectly balanced tree has depth of only log2(N), 
- * but an imbalanced tree may be much deeper.
+ * but an unbalanced tree may be much deeper.
  * This has a serious impact on query efficiency.  
- * Even worse, since recursion is used for querying the tree
- * an extremely deep tree may cause a {@link StackOverflowError}.
  * One solution to this is to randomize the order of points before insertion
  * (e.g. by using <a href="https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle">Fisher-Yates shuffling</a>).
  * 
@@ -237,7 +241,7 @@ public class KdTree {
   private KdNode insertExact(Coordinate p, Object data) {
     KdNode currentNode = root;
     KdNode leafNode = root;
-    boolean isOddLevel = true;
+    boolean isXLevel = true;
     boolean isLessThan = true;
 
     /**
@@ -254,10 +258,11 @@ public class KdTree {
         return currentNode;
       }
 
-      if (isOddLevel) {
-        isLessThan = p.x < currentNode.getX();
+      double splitValue = currentNode.splitValue(isXLevel);
+      if (isXLevel) {
+        isLessThan = p.x < splitValue;
       } else {
-        isLessThan = p.y < currentNode.getY();
+        isLessThan = p.y < splitValue;
       }
       leafNode = currentNode;
       if (isLessThan) {
@@ -268,7 +273,7 @@ public class KdTree {
         currentNode = currentNode.getRight();
       }
 
-      isOddLevel = ! isOddLevel;
+      isXLevel = ! isXLevel;
     }
     //System.out.println("<<");
     // no node found, add new leaf node to tree
@@ -282,81 +287,67 @@ public class KdTree {
     return node;
   }
 
-  private void queryNode(KdNode currentNode,
-      Envelope queryEnv, boolean odd, KdNodeVisitor visitor) {
-    if (currentNode == null)
-      return;
-
-    double min;
-    double max;
-    double discriminant;
-    if (odd) {
-      min = queryEnv.getMinX();
-      max = queryEnv.getMaxX();
-      discriminant = currentNode.getX();
-    } else {
-      min = queryEnv.getMinY();
-      max = queryEnv.getMaxY();
-      discriminant = currentNode.getY();
-    }
-    boolean searchLeft = min < discriminant;
-    boolean searchRight = discriminant <= max;
-
-    // search is computed via in-order traversal
-    if (searchLeft) {
-      queryNode(currentNode.getLeft(), queryEnv, !odd, visitor);
-    }
-    if (queryEnv.contains(currentNode.getCoordinate())) {
-      visitor.visit(currentNode);
-    }
-    if (searchRight) {
-      queryNode(currentNode.getRight(), queryEnv, !odd, visitor);
-    }
-
-  }
-
-  private KdNode queryNodePoint(KdNode currentNode,
-      Coordinate queryPt, boolean odd) {
-    if (currentNode == null)
-      return null;
-    if (currentNode.getCoordinate().equals2D(queryPt))
-      return currentNode;
-    
-    double ord;
-    double discriminant;
-    if (odd) {
-      ord = queryPt.getX();
-      discriminant = currentNode.getX();
-    } else {
-      ord = queryPt.getY();
-      discriminant = currentNode.getY();
-    }
-    boolean searchLeft = ord < discriminant;
-
-    if (searchLeft) {
-      return queryNodePoint(currentNode.getLeft(), queryPt, !odd);
-    }
-    else {
-      return queryNodePoint(currentNode.getRight(), queryPt, !odd);
-    }
-  }
-
   /**
    * Performs a range search of the points in the index and visits all nodes found.
    * 
-   * @param queryEnv
-   *          the range rectangle to query
+   * @param queryEnv the range rectangle to query
    * @param visitor a visitor to visit all nodes found by the search
    */
   public void query(Envelope queryEnv, KdNodeVisitor visitor) {
-    queryNode(root, queryEnv, true, visitor);
+
+    Stack<QueryStackFrame> queryStack = new Stack<QueryStackFrame>();
+    KdNode currentNode = root;
+    boolean isXLevel = true;
+
+    // search is computed via in-order traversal
+    while (true) {
+      if ( currentNode != null ) {
+        queryStack.push(new QueryStackFrame(currentNode, isXLevel));
+
+        boolean searchLeft = currentNode.isRangeOverLeft(isXLevel, queryEnv);
+        if ( searchLeft ) {
+          currentNode = currentNode.getLeft();
+          if ( currentNode != null ) {
+            isXLevel = ! isXLevel;
+          }
+        } 
+        else {
+          currentNode = null;
+        }
+      } 
+      else if ( ! queryStack.isEmpty() ) {
+        // currentNode is empty, so pop stack
+        QueryStackFrame frame = queryStack.pop();
+        currentNode = frame.getNode();
+        isXLevel = frame.isXLevel();
+
+        //-- check if search matches current node
+        if ( queryEnv.contains(currentNode.getCoordinate()) ) {
+          visitor.visit(currentNode);
+        }
+
+        boolean searchRight = currentNode.isRangeOverRight(isXLevel, queryEnv);
+        if ( searchRight ) {
+          currentNode = currentNode.getRight();
+          if ( currentNode != null ) {
+            isXLevel = ! isXLevel;
+          }
+        } 
+        else {
+          currentNode = null;
+        }
+      } else {
+        //-- stack is empty and no current node
+        return;
+      }
+    }
+
   }
-  
+
   /**
    * Performs a range search of the points in the index.
    * 
-   * @param queryEnv
-   *          the range rectangle to query
+   * @param queryEnv the range rectangle to query
    * @return a list of the KdNodes found
    */
   public List query(Envelope queryEnv) {
@@ -374,7 +365,7 @@ public class KdTree {
    *          a list to accumulate the result nodes into
    */
   public void query(Envelope queryEnv, final List result) {
-    queryNode(root, queryEnv, true, new KdNodeVisitor() {
+    query(queryEnv, new KdNodeVisitor() {
 
       public void visit(KdNode node) {
         result.add(node);
@@ -390,7 +381,23 @@ public class KdTree {
    * @return the point node, if it is found in the index, or null if not
    */
   public KdNode query(Coordinate queryPt) {
-    return queryNodePoint(root, queryPt, true);
+    KdNode currentNode = root;
+    boolean isXLevel = true;
+    
+    while (currentNode != null) {
+      if ( currentNode.getCoordinate().equals2D(queryPt) )
+        return currentNode;
+
+      boolean searchLeft = currentNode.isPointOnLeft(isXLevel, queryPt);
+      if ( searchLeft ) {
+        currentNode = currentNode.getLeft();
+      } else {
+        currentNode = currentNode.getRight();
+      }
+      isXLevel = ! isXLevel;
+    }
+    //-- point not found
+    return null;           
   }
 
   /**
@@ -427,5 +434,24 @@ public class KdTree {
     int sizeL = sizeNode(currentNode.getLeft());
     int sizeR = sizeNode(currentNode.getRight());
     return 1 + sizeL + sizeR;
+  }
+  
+  static class QueryStackFrame {
+    private KdNode node;
+    private boolean isXLevel = false;
+    
+    public QueryStackFrame(KdNode node, boolean isXLevel) {
+      this.node = node;
+      this.isXLevel = isXLevel;
+    }
+    
+    public KdNode getNode() {
+      return node;
+    }
+    
+    public boolean isXLevel() {
+      return isXLevel;
+    }
+    
   }
 }
