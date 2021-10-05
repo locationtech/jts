@@ -437,7 +437,7 @@ public class KdTree {
     return 1 + sizeL + sizeR;
   }
   
-  static class QueryStackFrame {
+  private static class QueryStackFrame {
     private KdNode node;
     private boolean isXLevel = false;
     
