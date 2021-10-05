@@ -12,11 +12,12 @@
 
 package org.locationtech.jts.index.kdtree;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Deque;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Stack;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateList;
@@ -294,8 +295,8 @@ public class KdTree {
    * @param visitor a visitor to visit all nodes found by the search
    */
   public void query(Envelope queryEnv, KdNodeVisitor visitor) {
-
-    Stack<QueryStackFrame> queryStack = new Stack<QueryStackFrame>();
+    //-- Deque is faster than Stack
+    Deque<QueryStackFrame> queryStack = new ArrayDeque<QueryStackFrame>();
     KdNode currentNode = root;
     boolean isXLevel = true;
 
