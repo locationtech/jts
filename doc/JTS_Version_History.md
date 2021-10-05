@@ -27,6 +27,7 @@ Distributions for older JTS versions can be obtained at the
 * Add `ConstrainedDelaunayTriangulator` and `PolygonTriangulator` (#775)
 * Add `Tri` data structure for representing triangulations (#775)
 * Simplify and fix logic of `BufferParameters.setQuadSegs` (#778)
+* Improve `KdTree` query code to avoid recursion (#779)
 
 # Version 1.18.2
 
