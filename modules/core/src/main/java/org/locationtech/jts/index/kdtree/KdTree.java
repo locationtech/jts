@@ -342,9 +342,26 @@ public class KdTree {
         return;
       }
     }
-
   }
 
+  private static class QueryStackFrame {
+    private KdNode node;
+    private boolean isXLevel = false;
+    
+    public QueryStackFrame(KdNode node, boolean isXLevel) {
+      this.node = node;
+      this.isXLevel = isXLevel;
+    }
+    
+    public KdNode getNode() {
+      return node;
+    }
+    
+    public boolean isXLevel() {
+      return isXLevel;
+    }
+  }
+  
   /**
    * Performs a range search of the points in the index.
    * 
@@ -435,24 +452,5 @@ public class KdTree {
     int sizeL = sizeNode(currentNode.getLeft());
     int sizeR = sizeNode(currentNode.getRight());
     return 1 + sizeL + sizeR;
-  }
-  
-  private static class QueryStackFrame {
-    private KdNode node;
-    private boolean isXLevel = false;
-    
-    public QueryStackFrame(KdNode node, boolean isXLevel) {
-      this.node = node;
-      this.isXLevel = isXLevel;
-    }
-    
-    public KdNode getNode() {
-      return node;
-    }
-    
-    public boolean isXLevel() {
-      return isXLevel;
-    }
-    
   }
 }
