@@ -147,4 +147,29 @@ public class MathUtil
     if (v4 < min) min = v4;
     return min;
   }
+  
+  /**
+   * The inverse of the Golden Ratio phi.
+   */
+  public static final double PHI_INV = (Math.sqrt(5) - 1.0) / 2.0;
+
+  /**
+   * Generates a quasi-random sequence of numbers in the range [0,1].
+   * It uses an additive recurrence with 1/Phi as the constant.
+   * This produces a low-discrepancy sequence which is more evenly
+   * distribute than random numbers.
+   * <p>
+   * See https://en.wikipedia.org/wiki/Low-discrepancy_sequence#Additive_recurrence
+   * <p>
+   * The sequence is initialized by calling it 
+   * with any positive fractional number; 0 works well for most uses.
+   * 
+   * @param curr the current number in the sequence
+   * @return the next value in the sequence
+   */
+  public static double quasirandom( double curr) {
+    double next = curr + PHI_INV;
+    if (next < 1) return next;
+    return next - Math.floor(next);
+  }
 }

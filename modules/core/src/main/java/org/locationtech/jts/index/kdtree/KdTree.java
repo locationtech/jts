@@ -117,6 +117,15 @@ public class KdTree {
   }
 
   /**
+   * Gets the root node of this tree.
+   * 
+   * @return the root node of the tree
+   */
+  public KdNode getRoot() {
+    return root;
+  }
+  
+  /**
    * Tests whether the index contains any items.
    * 
    * @return true if the index does not contain any items
@@ -453,4 +462,5 @@ public class KdTree {
     int sizeR = sizeNode(currentNode.getRight());
     return 1 + sizeL + sizeR;
   }
+  
 }

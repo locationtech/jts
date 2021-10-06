@@ -59,8 +59,22 @@ public class SnappingPointIndex {
     return node.getCoordinate();
   }
 
+  /**
+   * Gets the snapping tolerance value for the index.
+   * 
+   * @return the snapping tolerance value
+   */
   public double getTolerance() {
     return snapTolerance;
+  }
+
+  /**
+   * Computes the depth of the index tree.
+   * 
+   * @return the depth of the index tree
+   */
+  public int depth() {
+    return snapPointIndex.depth();
   }
 
 }
