@@ -173,6 +173,52 @@ public class CreateRandomShapeFunctions {
     return result;
   }
   
+  static final double PHI2 = 1.32471795724474602596;
+  
+  /**
+   * Creates a set of quasi-random 2D points using the Roberts recurrences.
+   * <a href='http://extremelearning.com.au/unreasonable-effectiveness-of-quasirandom-sequences'>Roberts recurrences</a> 
+   * are based on the generalized Golden Ratio (for the 2D case, Phi2).
+   * They have excellent low-discrepancy characteristics.
+   * This mean they are non-periodic and have less clustering
+   * than random points or Halton points.
+   * 
+   * @param geom
+   * @param nPts
+   * @return
+   */
+  @Metadata(description="Create Roberts quasi-random points")
+  public static Geometry robertsPoints(Geometry geom, int nPts)
+  {
+    Envelope env = FunctionsUtil.getEnvelopeOrDefault(geom);
+    Coordinate[] pts = new Coordinate[nPts];
+    double baseX = env.getMinX();
+    double baseY = env.getMinY();
+    
+    final double A1 = 1.0 / PHI2;
+    final double A2 = 1.0/(PHI2 * PHI2);
+    double r1 = 0.5;
+    double r2 = 0.5;
+    int i = 0;
+    while (i < nPts) {
+      r1 = quasirandom(r1, A1);
+      r2 = quasirandom(r2, A2);
+      double x = baseX + env.getWidth() * r1;
+      double y = baseY + env.getHeight() * r2;
+      Coordinate p = new Coordinate(x, y);
+      if (! env.contains(p))
+        continue;
+      pts[i++] = p;
+    }
+    return FunctionsUtil.getFactoryOrDefault(geom).createMultiPoint(pts);
+  }
+
+  private static double quasirandom(double curr, double alpha) {
+    double next = curr + alpha;
+    if (next < 1) return next;
+    return next - Math.floor(next);
+  }
+  
   public static Geometry randomSegments(Geometry g, int nPts) {
     Envelope env = FunctionsUtil.getEnvelopeOrDefault(g);
     GeometryFactory geomFact = FunctionsUtil.getFactoryOrDefault(g);
