@@ -155,11 +155,11 @@ public class MathUtil
 
   /**
    * Generates a quasi-random sequence of numbers in the range [0,1].
-   * It uses an additive recurrence with 1/Phi as the constant.
+   * It uses an additive recurrence with 1/&phi; as the constant.
    * This produces a low-discrepancy sequence which is more evenly
    * distribute than random numbers.
    * <p>
-   * See https://en.wikipedia.org/wiki/Low-discrepancy_sequence#Additive_recurrence
+   * See <a href='https://en.wikipedia.org/wiki/Low-discrepancy_sequence#Additive_recurrence'>Wikipedia: Low-discrepancy Sequences - Additive Recurrence</a>.
    * <p>
    * The sequence is initialized by calling it 
    * with any positive fractional number; 0 works well for most uses.
@@ -168,7 +168,26 @@ public class MathUtil
    * @return the next value in the sequence
    */
   public static double quasirandom( double curr) {
-    double next = curr + PHI_INV;
+    return quasirandom(curr, PHI_INV);
+  }
+  
+  /**
+   * Generates a quasi-random sequence of numbers in the range [0,1].
+   * It uses an additive recurrence with constant &alpha;.
+   * If alpha is irrational this produces a low-discrepancy sequence which is more evenly
+   * distribute than random numbers.
+   * <p>
+   * See https://en.wikipedia.org/wiki/Low-discrepancy_sequence#Additive_recurrence
+   * <p>
+   * The sequence is initialized by calling it 
+   * with any positive fractional number; 0 works well for most uses.
+   * 
+   * @param curr the current number in the sequence
+   * @param alpha the sequence additive constant
+   * @return the next value in the sequence
+   */
+  public static double quasirandom( double curr, double alpha) {
+    double next = curr + alpha;
     if (next < 1) return next;
     return next - Math.floor(next);
   }
