@@ -147,4 +147,51 @@ public class MathUtil
     if (v4 < min) min = v4;
     return min;
   }
+  
+  /**
+   * The inverse of the Golden Ratio phi.
+   */
+  public static final double PHI_INV = (Math.sqrt(5) - 1.0) / 2.0;
+
+  /**
+   * Generates a quasi-random sequence of numbers in the range [0,1].
+   * They are produced by an additive recurrence with 1/&phi; as the constant.
+   * This produces a low-discrepancy sequence which is more evenly
+   * distribute than random numbers.
+   * <p>
+   * See <a href='https://en.wikipedia.org/wiki/Low-discrepancy_sequence#Additive_recurrence'>Wikipedia: Low-discrepancy Sequences - Additive Recurrence</a>.
+   * <p>
+   * The sequence is initialized by calling it 
+   * with any positive fractional number; 0 works well for most uses.
+   * 
+   * @param curr the current number in the sequence
+   * @return the next value in the sequence
+   */
+  public static double quasirandom( double curr) {
+    return quasirandom(curr, PHI_INV);
+  }
+  
+  /**
+   * Generates a quasi-random sequence of numbers in the range [0,1].
+   * They are produced by an additive recurrence with constant &alpha;.
+   * <pre>
+   *     R(&alpha;) :  t<sub>n</sub> = { t<sub>0</sub> + n&alpha; },  n = 1,2,3,...   
+   * </pre>
+   * When &alpha; is irrational this produces a 
+   * <a href='https://en.wikipedia.org/wiki/Low-discrepancy_sequence#Additive_recurrence'>Low discrepancy sequence</a>
+   *  which is more evenly
+   * distributed than random numbers.
+   * <p>
+   * The sequence is initialized by calling it 
+   * with any positive fractional number. 0 works well for most uses.
+   * 
+   * @param curr the current number in the sequence
+   * @param alpha the sequence additive constant
+   * @return the next value in the sequence
+   */
+  public static double quasirandom( double curr, double alpha) {
+    double next = curr + alpha;
+    if (next < 1) return next;
+    return next - Math.floor(next);
+  }
 }

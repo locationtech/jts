@@ -17,6 +17,7 @@ import java.util.List;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateList;
+import org.locationtech.jts.math.MathUtil;
 import org.locationtech.jts.noding.MCIndexNoder;
 import org.locationtech.jts.noding.NodedSegmentString;
 import org.locationtech.jts.noding.Noder;
@@ -64,8 +65,9 @@ public class SnappingNoder
   }
 
   /**
+   * Gets the noded result.
+   * 
 	 * @return a Collection of NodedSegmentStrings representing the substrings
-	 * 
 	 */
   public Collection getNodedSubstrings()
   {
@@ -73,6 +75,8 @@ public class SnappingNoder
   }
 
   /**
+   * Computes the noding of a set of {@link SegmentString}s.
+   * 
    * @param inputSegStrings a Collection of SegmentStrings
    */
   public void computeNodes(Collection inputSegStrings)
@@ -82,13 +86,41 @@ public class SnappingNoder
   }
 
   private List<NodedSegmentString> snapVertices(Collection<SegmentString> segStrings) {
+    //Stopwatch sw = new Stopwatch(); sw.start();
+    seedSnapIndex(segStrings);
+    
     List<NodedSegmentString> nodedStrings = new ArrayList<NodedSegmentString>();
     for (SegmentString ss : segStrings) {
       nodedStrings.add( snapVertices(ss) );
     }
+    //System.out.format("Index depth = %d   Time: %s\n", snapIndex.depth(), sw.getTimeString());
     return nodedStrings;
   }
 
+  /**
+   * Seeds the snap index with a small set of vertices 
+   * chosen quasi-randomly using a low-discrepancy sequence.
+   * Seeding the snap index KdTree induces a more balanced tree. 
+   * This prevents monotonic runs of vertices
+   * unbalancing the tree and causing poor query performance.
+   *  
+   * @param segStrings the segStrings to be noded
+   */
+  private void seedSnapIndex(Collection<SegmentString> segStrings) {
+    final int SEED_SIZE_FACTOR = 100;
+      
+    for (SegmentString ss : segStrings) {
+      Coordinate[] pts = ss.getCoordinates();
+      int numPtsToLoad = pts.length / SEED_SIZE_FACTOR;
+      double rand = 0.0;
+      for (int i = 0; i < numPtsToLoad; i++) {
+        rand = MathUtil.quasirandom(rand);
+        int index = (int) (pts.length * rand);
+        snapIndex.snap(pts[index]);
+      }
+    }
+  }
+  
   private NodedSegmentString snapVertices(SegmentString ss) {
     Coordinate[] snapCoords = snap(ss.getCoordinates());
     return new NodedSegmentString(snapCoords, ss.getData());

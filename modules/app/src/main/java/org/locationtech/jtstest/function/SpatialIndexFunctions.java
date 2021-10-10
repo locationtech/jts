@@ -29,6 +29,7 @@ import org.locationtech.jts.index.SpatialIndex;
 import org.locationtech.jts.index.chain.MonotoneChain;
 import org.locationtech.jts.index.chain.MonotoneChainBuilder;
 import org.locationtech.jts.index.hprtree.HPRtree;
+import org.locationtech.jts.index.kdtree.KdNode;
 import org.locationtech.jts.index.kdtree.KdTree;
 import org.locationtech.jts.index.quadtree.Quadtree;
 import org.locationtech.jts.index.strtree.AbstractNode;
@@ -36,6 +37,7 @@ import org.locationtech.jts.index.strtree.Boundable;
 import org.locationtech.jts.index.strtree.GeometryItemDistance;
 import org.locationtech.jts.index.strtree.STRtree;
 //import org.locationtech.jts.triangulatepoly.VertexSequencePackedRtree;
+import org.locationtech.jts.math.MathUtil;
 
 
 public class SpatialIndexFunctions
@@ -76,6 +78,117 @@ public class SpatialIndexFunctions
     return pts.getFactory().createMultiPoint(resultCoords);
   }
 
+  public static Geometry kdTreeGraphSeed(Geometry geom) {
+    return kdTreeGraph(geom, buildKdTreeSeed(geom, 0));
+  }
+
+  public static Geometry kdTreeGraph(Geometry geom) {
+    return kdTreeGraph(geom, buildKdTree(geom, 0));
+  }
+  
+  private static Geometry kdTreeGraph(Geometry geom, KdTree index) {
+    KdNode root = index.getRoot();
+    List<Geometry> edges = new ArrayList<Geometry>();
+    
+    double x = geom.getEnvelopeInternal().centre().getX();
+    double xInc = geom.getEnvelopeInternal().getWidth() / 2;
+    addGraphEdges(root, true, 0, x, xInc, edges, geom.getFactory());
+    return geom.getFactory().buildGeometry(edges);
+  }
+  
+  private static void addGraphEdges(KdNode node, 
+      boolean isXLevel, int depth, double x, double xInc,
+      List<Geometry> edges, GeometryFactory factory) {
+    double xInc2 = xInc / 2;
+    KdNode left = node.getLeft();
+    if (left != null) {
+      double xLeft = x - xInc2;
+      Geometry edgeLeft = factory.createLineString(new Coordinate[] {
+          new Coordinate(x, -depth), new Coordinate(xLeft, -depth-1)
+      });
+      edges.add(edgeLeft);
+      addGraphEdges(left, ! isXLevel, depth+1, xLeft, xInc2, edges, factory);
+    }
+    KdNode right = node.getRight();
+    if (right != null) {
+      double xRight = x + xInc2;
+      Geometry edgeRight = factory.createLineString(new Coordinate[] {
+          new Coordinate(x, -depth), new Coordinate(xRight, -depth-1)
+      });
+      edges.add(edgeRight);
+      addGraphEdges(right, ! isXLevel, depth+1, xRight, xInc2, edges, factory);
+    }
+  }
+
+  public static Geometry kdTreeSplits(Geometry geom) {
+    return kdTreeSplits(geom, buildKdTree(geom, 0));
+  }
+  
+  public static Geometry kdTreeSplitsSeed(Geometry geom) {
+    return kdTreeSplits(geom, buildKdTreeSeed(geom, 0));
+  }
+
+  private static Geometry kdTreeSplits(Geometry geom, KdTree index) {
+    Envelope extent = geom.getEnvelopeInternal();
+    KdNode root = index.getRoot();
+    List<Geometry> splits = new ArrayList<Geometry>();
+    
+    addSplits(root, true, extent, splits, geom.getFactory());
+    return geom.getFactory().buildGeometry(splits);
+  }
+  
+  private static void addSplits(KdNode node, boolean isXLevel, Envelope extent, List<Geometry> splits,
+      GeometryFactory factory) {
+    double splitVal = node.splitValue(isXLevel);
+    Geometry splitLine = createSplitLine(extent, splitVal, isXLevel, factory);
+    splits.add(splitLine);
+    
+    KdNode left = node.getLeft();
+    if (left != null) {
+      addSplits(left, ! isXLevel, splitExtent(extent, splitVal, isXLevel, true), splits, factory);
+    }
+    KdNode right = node.getRight();
+    if (right != null) {
+      addSplits(right, ! isXLevel, splitExtent(extent, splitVal, isXLevel, false), splits, factory);
+    }
+  }
+
+  private static Envelope splitExtent(Envelope extent, double splitVal, boolean isXLevel, boolean isLeft) {
+    double xMin = extent.getMinX();
+    double yMin = extent.getMinY();
+    double xMax = extent.getMaxX();
+    double yMax = extent.getMaxY();
+    if (isXLevel) {
+      if (isLeft) {
+        xMax = splitVal;
+      }
+      else {
+        xMin = splitVal;
+      }
+    }
+    else {
+      if (isLeft) {
+        yMax = splitVal;
+      }
+      else {
+        yMin = splitVal;
+      }
+    }
+    return new Envelope(xMin, xMax, yMin, yMax);
+  }
+
+  private static Geometry createSplitLine(Envelope extent, double splitVal, 
+      boolean isXLevel, GeometryFactory factory) {
+    
+    double x1 = isXLevel ? splitVal : extent.getMinX();
+    double y1 = isXLevel ? extent.getMinY() : splitVal;
+    double x2 = isXLevel ? splitVal : extent.getMaxX();
+    double y2 = isXLevel ? extent.getMaxY() : splitVal;
+    
+    Coordinate[] pts = { new Coordinate(x1, y1), new Coordinate(x2, y2) };
+    return factory.createLineString(pts);
+  }
+
   private static KdTree buildKdTree(Geometry geom, double tolerance) {
     final KdTree index = new KdTree(tolerance);
     Coordinate[] pt = geom.getCoordinates();
@@ -83,6 +196,25 @@ public class SpatialIndexFunctions
       index.insert(pt[i]);
     }
     return index;
+  }
+  
+  private static KdTree buildKdTreeSeed(Geometry geom, double tolerance) {
+    final KdTree tree = new KdTree(tolerance);
+    Coordinate[] pt = geom.getCoordinates();
+    
+    //-- seed the tree with some randomly selected points
+    int numSeed = pt.length / 100;
+    double rand = 0;
+    for (int i = 0; i < numSeed; i++) {
+      rand = MathUtil.quasirandom(rand);
+      int index = (int) (pt.length * rand);
+      tree.insert(pt[index]);
+    }
+    //-- insert all the points
+    for (int i = 0; i < pt.length; i++) {
+      tree.insert(pt[i]);
+    }
+    return tree;
   }
   
   public static Geometry strTreeBounds(Geometry geoms)
