@@ -155,7 +155,7 @@ public class MathUtil
 
   /**
    * Generates a quasi-random sequence of numbers in the range [0,1].
-   * It uses an additive recurrence with 1/&phi; as the constant.
+   * They are produced by an additive recurrence with 1/&phi; as the constant.
    * This produces a low-discrepancy sequence which is more evenly
    * distribute than random numbers.
    * <p>
@@ -173,14 +173,17 @@ public class MathUtil
   
   /**
    * Generates a quasi-random sequence of numbers in the range [0,1].
-   * It uses an additive recurrence with constant &alpha;.
-   * If alpha is irrational this produces a low-discrepancy sequence which is more evenly
-   * distribute than random numbers.
-   * <p>
-   * See https://en.wikipedia.org/wiki/Low-discrepancy_sequence#Additive_recurrence
+   * They are produced by an additive recurrence with constant &alpha;.
+   * <pre>
+   *     R(&alpha;) :  t<sub>n</sub> = { t<sub>0</sub> + n&alpha; },  n = 1,2,3,...   
+   * </pre>
+   * When &alpha; is irrational this produces a 
+   * <a href='https://en.wikipedia.org/wiki/Low-discrepancy_sequence#Additive_recurrence'>Low discrepancy sequence</a>
+   *  which is more evenly
+   * distributed than random numbers.
    * <p>
    * The sequence is initialized by calling it 
-   * with any positive fractional number; 0 works well for most uses.
+   * with any positive fractional number. 0 works well for most uses.
    * 
    * @param curr the current number in the sequence
    * @param alpha the sequence additive constant

@@ -87,7 +87,7 @@ public class SnappingNoder
 
   private List<NodedSegmentString> snapVertices(Collection<SegmentString> segStrings) {
     //Stopwatch sw = new Stopwatch(); sw.start();
-    initSnapIndex(segStrings);
+    seedSnapIndex(segStrings);
     
     List<NodedSegmentString> nodedStrings = new ArrayList<NodedSegmentString>();
     for (SegmentString ss : segStrings) {
@@ -98,7 +98,7 @@ public class SnappingNoder
   }
 
   /**
-   * Initializes the snap index with a small set of vertices 
+   * Seeds the snap index with a small set of vertices 
    * chosen quasi-randomly using a low-discrepancy sequence.
    * Seeding the snap index KdTree induces a more balanced tree. 
    * This prevents monotonic runs of vertices
@@ -106,7 +106,7 @@ public class SnappingNoder
    *  
    * @param segStrings the segStrings to be noded
    */
-  private void initSnapIndex(Collection<SegmentString> segStrings) {
+  private void seedSnapIndex(Collection<SegmentString> segStrings) {
     final int SEED_SIZE_FACTOR = 100;
       
     for (SegmentString ss : segStrings) {
