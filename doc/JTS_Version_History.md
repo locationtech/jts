@@ -28,6 +28,7 @@ Distributions for older JTS versions can be obtained at the
 * Add `Tri` data structure for representing triangulations (#775)
 * Simplify and fix logic of `BufferParameters.setQuadSegs` (#778)
 * Improve `KdTree` query code to avoid recursion (#779)
+* Add `KdTree` seeding to`SnappingNoder` (#780)
 
 # Version 1.18.2
 
