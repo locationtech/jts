@@ -4,6 +4,7 @@
     Union of LineStrings fails using simple noding.
   </desc>
   <precisionModel type="FLOATING" />
+  <tolerance>1E-12</tolerance>
 
 <case>
   <desc>

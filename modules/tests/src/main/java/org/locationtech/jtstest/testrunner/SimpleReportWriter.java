@@ -91,7 +91,7 @@ private boolean verbose;
           reportBuf.write("  Expected: " + test.getExpectedResult().toFormattedString() + "\n");
         }
         try {
-          reportBuf.write("  Actual: " + test.getActualResult().toFormattedString() + "\n");
+          reportBuf.write("    Actual: " + test.getActualResult().toFormattedString() + "\n");
         }
         catch (Exception e) {
           Assert.shouldNeverReachHere(e.toString());
