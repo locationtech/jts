@@ -22,31 +22,38 @@ import org.locationtech.jts.io.WKTWriter;
  */
 public class PointPairDistance {
 
-  private Coordinate[] pt = { new Coordinate(), new Coordinate() };
+  private final Coordinate[] pt = { new Coordinate(), new Coordinate() };
   private double distance = Double.NaN;
   private boolean isNull = true;
 
+  /**
+   * Creates an instance of this class
+   */
   public PointPairDistance()
   {
   }
 
+  /**
+   * Initializes this instance.
+   */
   public void initialize() { isNull = true; }
 
-  public void initialize(Coordinate p0, Coordinate p1)
-  {
-    pt[0].setCoordinate(p0);
-    pt[1].setCoordinate(p1);
-    distance = p0.distance(p1);
-    isNull = false;
+  /**
+   * Initializes the points, computing the distance between them.
+   * @param p0 the 1st point
+   * @param p1 the 2nd point
+   */
+  public void initialize(Coordinate p0, Coordinate p1)  {
+    initialize(p0, p1, p0.distance(p1));
   }
 
   /**
    * Initializes the points, avoiding recomputing the distance.
-   * @param p0
-   * @param p1
+   * @param p0 the 1st point
+   * @param p1 the 2nd point
    * @param distance the distance between p0 and p1
    */
-  private void initialize(Coordinate p0, Coordinate p1, double distance)
+  void initialize(Coordinate p0, Coordinate p1, double distance)
   {
     pt[0].setCoordinate(p0);
     pt[1].setCoordinate(p1);
@@ -54,10 +61,23 @@ public class PointPairDistance {
     isNull = false;
   }
 
+  /**
+   * Gets the distance between the paired points
+   * @return the distance between the paired points
+   */
   public double getDistance() { return distance; }
 
+  /**
+   * Gets the paired points
+   * @return the paired points
+   */
   public Coordinate[] getCoordinates() { return pt; }
 
+  /**
+   * Gets one of the paired points
+   * @param i the index of the paired point (0 or 1)
+   * @return A point
+   */
   public Coordinate getCoordinate(int i) { return pt[i]; }
 
   public void setMaximum(PointPairDistance ptDist)
@@ -91,7 +111,7 @@ public class PointPairDistance {
     if (dist < distance)
       initialize(p0, p1, dist);
   }
-  
+
   public String toString()
   {
   	return WKTWriter.toLineString(pt[0], pt[1]);
