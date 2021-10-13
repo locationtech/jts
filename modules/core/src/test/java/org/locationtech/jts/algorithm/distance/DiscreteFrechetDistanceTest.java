@@ -62,6 +62,12 @@ public class DiscreteFrechetDistanceTest extends GeometryTestCase {
     runTest("LINESTRING (1 1, 2 2)",
       "LINESTRING (1 4, 2 3)", 3d);
   }
+  
+  public void testAHasMoreThanTwiceVerticesOfB() {
+    runTest("LINESTRING (80 260, 170 180, 190 290, 310 350, 330 270, 360 280)",
+      "LINESTRING (120 90, 380 130)", 230.8679276123039);
+  }
+  
   private static final double TOLERANCE = 0.00001;
 
   private void runTest(String wkt1, String wkt2, double expectedDistance) {

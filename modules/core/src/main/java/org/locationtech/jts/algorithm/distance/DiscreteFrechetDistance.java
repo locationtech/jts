@@ -89,7 +89,7 @@ public class DiscreteFrechetDistance {
     Coordinate[] coords1 = g1.getCoordinates();
 
     MatrixStorage distances = createMatrixStorage(coords0.length, coords1.length);
-    int[] diagonal = bresenhamLine(coords0.length, coords1.length);
+    int[] diagonal = bresenhamDiagonal(coords0.length, coords1.length);
 
     HashMap<Double, int[]> distanceToPair = new HashMap<>();
     computeCoordinateDistances(coords0, coords1, diagonal, distances, distanceToPair);
@@ -285,44 +285,42 @@ public class DiscreteFrechetDistance {
    *
    * @param numCols the number of columns
    * @param numRows the number of rows
-   * @return an array of column and row indices bitwise-or combined.
+   * @return a packed array of column and row indices
    */
-  private static int[] bresenhamLine(int numCols, int numRows) {
+  private static int[] bresenhamDiagonal(int numCols, int numRows) {
     int dim = Math.max(numCols, numRows);
-    int[] pairs = new int[2 * dim];
+    int[] diagXY = new int[2 * dim];
 
-    int sx = 0 > numCols ? -1 : 1;
-    int sy = 0 > numRows ? -1 : 1;
-    int x = 0;
-    int y = 0;
-
+    int dx = numCols - 1;
+    int dy = numRows - 1;
     int err;
+    int i = 0;
     if (numCols > numRows) {
-      err = numCols / 2;
-      for (int i = 0, j = 0; i < numCols; i++) {
-        pairs[j++] = x;
-        pairs[j++] = y;
-        err -= numRows;
-        if (err < 0) {
-          y += sy;
-          err += numCols;
+      int y = 0;
+      err = 2 * dy - dx;
+      for (int x = 0; x < numCols; x++) {
+        diagXY[i++] = x;
+        diagXY[i++] = y;
+        if (err > 0) {
+          y += 1;
+          err -= 2 * dx;
         }
-        x += sx;
+        err += 2 * dy;
       }
     } else {
-      err = numRows / 2;
-      for (int i = 0, j = 0; i < numRows; i++) {
-        pairs[j++] = x;
-        pairs[j++] = y;
-        err -= numCols;
-        if (err < 0) {
-          x += sx;
-          err += numRows;
+      int x = 0;
+      err = 2 * dx - dy;
+      for (int y = 0; y < numRows; y++) {
+        diagXY[i++] = x;
+        diagXY[i++] = y;
+        if (err > 0) {
+          x += 1;
+          err -= 2 * dy;
         }
-        y += sy;
+        err += 2 * dx;
       }
     }
-    return pairs;
+    return diagXY;
   }
 
   /**
