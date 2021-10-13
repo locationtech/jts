@@ -74,7 +74,7 @@ public class DiscreteFrechetDistance {
    * @param g0 a geometry
    * @param g1 a geometry
    */
-  private DiscreteFrechetDistance(Geometry g0, Geometry g1) {
+  public DiscreteFrechetDistance(Geometry g0, Geometry g1) {
     this.g0 = g0;
     this.g1 = g1;
   }
