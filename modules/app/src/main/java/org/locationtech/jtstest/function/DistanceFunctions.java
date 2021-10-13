@@ -29,12 +29,23 @@ public class DistanceFunctions {
     return a.getFactory().createLineString(pts);
   }
 
-	public static Geometry discreteHausdorffDistanceLine(Geometry a, Geometry b)	
-	{		
+  public static double discreteFrechetfDistance(Geometry a, Geometry b)  
+  {   
+    return DiscreteFrechetDistance.distance(a, b);
+  }
+
+  public static Geometry discreteFrechetfDistanceLine(Geometry a, Geometry b)  
+  {   
+    DiscreteFrechetDistance dist = new DiscreteFrechetDistance(a, b);
+    return a.getFactory().createLineString(dist.getCoordinates());
+  }
+
+  public static Geometry discreteHausdorffDistanceLine(Geometry a, Geometry b)  
+  {   
     DiscreteHausdorffDistance dist = new DiscreteHausdorffDistance(a, b);
     dist.distance();
     return a.getFactory().createLineString(dist.getCoordinates());
-	}
+  }
 
 	public static Geometry densifiedDiscreteHausdorffDistanceLine(Geometry a, Geometry b, double frac)	
 	{		
