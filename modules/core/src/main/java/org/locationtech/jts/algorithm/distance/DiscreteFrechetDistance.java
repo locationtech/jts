@@ -280,14 +280,15 @@ public class DiscreteFrechetDistance {
   }
 
   /**
-   * Implementation of the <a href=https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm>
-   *   Bresenham's line algorithm</a> for the diagonal of a {@code numCols x numRows} grid.
+   * Computes the indices for the diagonal of a {@code numCols x numRows} grid
+   * using <a href=https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm>
+   *   Bresenham's line algorithm</a>.
    *
    * @param numCols the number of columns
    * @param numRows the number of rows
    * @return a packed array of column and row indices
    */
-  private static int[] bresenhamDiagonal(int numCols, int numRows) {
+  static int[] bresenhamDiagonal(int numCols, int numRows) {
     int dim = Math.max(numCols, numRows);
     int[] diagXY = new int[2 * dim];
 

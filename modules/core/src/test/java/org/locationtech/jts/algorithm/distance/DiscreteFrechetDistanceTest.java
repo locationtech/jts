@@ -68,6 +68,11 @@ public class DiscreteFrechetDistanceTest extends GeometryTestCase {
       "LINESTRING (120 90, 380 130)", 230.8679276123039);
   }
   
+  public void testA_11_B_3() {
+    runTest("LINESTRING (0 0, 100 10, 0 20, 100 30, 0 40, 100 50, 0 60, 100 70, 0 80, 100 90, 0 100)",
+      "LINESTRING (0 0, 50 100, 100 0)", 141.4213562373095);
+  }
+  
   private static final double TOLERANCE = 0.00001;
 
   private void runTest(String wkt1, String wkt2, double expectedDistance) {
