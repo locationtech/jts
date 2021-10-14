@@ -1,12 +1,13 @@
-package org.locationtech.jts.algorithm.distance;
+package test.jts.perf.algorithm.distance;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 
 /**
- * Linear Discrete Fréchet Distance computation
+ * Discrete Fréchet Distance computation
+ * using a simple O(n^2) algorithm.
  */
-public class DiscreteFrechetDistanceLinear {
+public class DiscreteFrechetDistanceSimple {
 
   /**
    * Computes the Discrete Fréchet Distance between two {@link Geometry}s
@@ -17,7 +18,7 @@ public class DiscreteFrechetDistanceLinear {
    * @return the cartesian distance between {#g0} and {#g1}
    */
   public static double distance(Geometry g0, Geometry g1) {
-    DiscreteFrechetDistanceLinear dist = new DiscreteFrechetDistanceLinear(g0, g1, false);
+    DiscreteFrechetDistanceSimple dist = new DiscreteFrechetDistanceSimple(g0, g1, false);
     return dist.distance();
   }
 
@@ -30,14 +31,14 @@ public class DiscreteFrechetDistanceLinear {
    * @return the cartesian distance between {#g0} and {#g1}
    */
   public static double distance(Geometry g0, Geometry g1, boolean getCoordinates) {
-    DiscreteFrechetDistanceLinear dist = new DiscreteFrechetDistanceLinear(g0, g1, getCoordinates);
+    DiscreteFrechetDistanceSimple dist = new DiscreteFrechetDistanceSimple(g0, g1, getCoordinates);
     return dist.distance();
   }
   private final Geometry g0;
   private final Geometry g1;
   private final boolean getCoordinates;
 
-  private DiscreteFrechetDistanceLinear(Geometry g0, Geometry g1, boolean getCoordinates) {
+  private DiscreteFrechetDistanceSimple(Geometry g0, Geometry g1, boolean getCoordinates) {
     this.g0 = g0;
     this.g1 = g1;
     this.getCoordinates = getCoordinates;

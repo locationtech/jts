@@ -11,12 +11,11 @@
  */
 package org.locationtech.jts.algorithm.distance;
 
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.util.Assert;
-
 import java.util.Arrays;
 import java.util.HashMap;
+
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
 
 /**
  * The Fréchet distance is a measure of similarity between curves. Thus, it can
@@ -31,8 +30,9 @@ import java.util.HashMap;
  * speed, but backtracking is not allowed.
  * </pre>
  * <p/>
- * Its metric is better than Hausdorff's because it takes the flow of the curves
- * into account. It is possible that two curves have a small Hausdorff but a large
+ * Its metric is better than the Hausdorff distance 
+ * because it takes the directions of the curves into account. 
+ * It is possible that two curves have a small Hausdorff but a large
  * Fréchet distance.
  * <p/>
  * This implementation is base on the following optimized Fréchet distance algorithm:
@@ -52,7 +52,7 @@ public class DiscreteFrechetDistance {
 
   /**
    * Computes the Discrete Fréchet Distance between two {@link Geometry}s
-   * using a {@code cartesian} distance computation function.
+   * using a {@code Cartesian} distance computation function.
    *
    * @param g0 the 1st geometry
    * @param g1 the 2nd geometry
@@ -80,7 +80,7 @@ public class DiscreteFrechetDistance {
   }
 
   /**
-   * Compute the {@code Discrete Fréchet Distance} between two geometries
+   * Computes the {@code Discrete Fréchet Distance} between the input geometries
    *
    * @return the Discrete Fréchet Distance
    */
@@ -89,7 +89,7 @@ public class DiscreteFrechetDistance {
     Coordinate[] coords1 = g1.getCoordinates();
 
     MatrixStorage distances = createMatrixStorage(coords0.length, coords1.length);
-    int[] diagonal = bresenhamLine(coords0.length, coords1.length);
+    int[] diagonal = bresenhamDiagonal(coords0.length, coords1.length);
 
     HashMap<Double, int[]> distanceToPair = new HashMap<>();
     computeCoordinateDistances(coords0, coords1, diagonal, distances, distanceToPair);
@@ -99,12 +99,13 @@ public class DiscreteFrechetDistance {
   }
 
   /**
-   * Creates a matrix storage
+   * Creates a matrix to store the computed distances.
+   * 
    * @param rows the number of rows
    * @param cols the number of columns
    * @return a matrix storage
    */
-  private MatrixStorage createMatrixStorage(int rows, int cols) {
+  private static MatrixStorage createMatrixStorage(int rows, int cols) {
 
     int max = Math.max(rows, cols);
     // NOTE: these constraints need to be verified
@@ -115,9 +116,9 @@ public class DiscreteFrechetDistance {
   }
 
   /**
-   * Gets the pair of <c>Coordinate</c>s that are {@link #distance()} apart.
+   * Gets the pair of {@link Coordinate}s at which the distance is obtained.
    *
-   * @return the pair of <c>Coordinate</c>s that are {@link #distance()} apart
+   * @return the pair of Coordinates at which the distance is obtained
    */
   public Coordinate[] getCoordinates() {
     if (ptDist == null)
@@ -127,13 +128,13 @@ public class DiscreteFrechetDistance {
   }
 
   /**
-   * Compute the Fréchet Distance for the given distance matrix.
+   * Computes the Fréchet Distance for the given distance matrix.
    *
    * @param coords0 an array of {@code Coordinate}s.
    * @param coords1 an array of {@code Coordinate}s.
-   * @param distances a sparse distance matrix
-   * @param distanceToPair a lookup for distance and a coordinate pair
-   * @param diagonal an array of alternating row/col index values for the diagonal of the distance matrix
+   * @param diagonal an array of alternating col/row index values for the diagonal of the distance matrix
+   * @param distances the distance matrix
+   * @param distanceToPair a lookup for coordinate pairs based on a distance
    *
    */
   private static PointPairDistance computeFrechet(Coordinate[] coords0, Coordinate[] coords1, int[] diagonal,
@@ -167,11 +168,10 @@ public class DiscreteFrechetDistance {
     PointPairDistance result = new PointPairDistance();
     double distance = distances.get(coords0.length-1, coords1.length - 1);
     int[] index = distanceToPair.get(distance);
-    if (index != null)
-      result.initialize(coords0[index[0]], coords1[index[1]], distance);
-    else
-      Assert.shouldNeverReachHere("Pair of points not recorded for computed distance");
-
+    if (index == null) {
+      throw new IllegalStateException("Pair of points not recorded for computed distance");
+    }
+    result.initialize(coords0[index[0]], coords1[index[1]], distance);
     return result;
   }
 
@@ -206,9 +206,9 @@ public class DiscreteFrechetDistance {
    *
    * @param coords0 an array of {@code Coordinate}s.
    * @param coords1 an array of {@code Coordinate}s.
-   * @param diagonal an array of encoded row/col index values for the diagonal of the distance matrix
-   * @param distances the sparse distance matrix
-   * @param distanceToPair a lookup for coordinate pairs based on a distance.
+   * @param diagonal an array of alternating col/row index values for the diagonal of the distance matrix
+   * @param distances the distance matrix
+   * @param distanceToPair a lookup for coordinate pairs based on a distance
    */
   private void computeCoordinateDistances(Coordinate[] coords0, Coordinate[] coords1, int[] diagonal,
                                           MatrixStorage distances, HashMap<Double, int[]> distanceToPair) {
@@ -280,49 +280,48 @@ public class DiscreteFrechetDistance {
   }
 
   /**
-   * Implementation of the <a href=https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm>
-   *   Bresenham's line algorithm</a> for the diagonal of a {@code numCols x numRows} grid.
+   * Computes the indices for the diagonal of a {@code numCols x numRows} grid
+   * using the <a href=https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm>
+   * Bresenham line algorithm</a>.
    *
    * @param numCols the number of columns
    * @param numRows the number of rows
-   * @return an array of column and row indices bitwise-or combined.
+   * @return a packed array of column and row indices
    */
-  private static int[] bresenhamLine(int numCols, int numRows) {
+  static int[] bresenhamDiagonal(int numCols, int numRows) {
     int dim = Math.max(numCols, numRows);
-    int[] pairs = new int[2 * dim];
+    int[] diagXY = new int[2 * dim];
 
-    int sx = 0 > numCols ? -1 : 1;
-    int sy = 0 > numRows ? -1 : 1;
-    int x = 0;
-    int y = 0;
-
+    int dx = numCols - 1;
+    int dy = numRows - 1;
     int err;
+    int i = 0;
     if (numCols > numRows) {
-      err = numCols / 2;
-      for (int i = 0, j = 0; i < numCols; i++) {
-        pairs[j++] = x;
-        pairs[j++] = y;
-        err -= numRows;
-        if (err < 0) {
-          y += sy;
-          err += numCols;
+      int y = 0;
+      err = 2 * dy - dx;
+      for (int x = 0; x < numCols; x++) {
+        diagXY[i++] = x;
+        diagXY[i++] = y;
+        if (err > 0) {
+          y += 1;
+          err -= 2 * dx;
         }
-        x += sx;
+        err += 2 * dy;
       }
     } else {
-      err = numRows / 2;
-      for (int i = 0, j = 0; i < numRows; i++) {
-        pairs[j++] = x;
-        pairs[j++] = y;
-        err -= numCols;
-        if (err < 0) {
-          x += sx;
-          err += numRows;
+      int x = 0;
+      err = 2 * dx - dy;
+      for (int y = 0; y < numRows; y++) {
+        diagXY[i++] = x;
+        diagXY[i++] = y;
+        if (err > 0) {
+          x += 1;
+          err -= 2 * dy;
         }
-        y += sy;
+        err += 2 * dx;
       }
     }
-    return pairs;
+    return diagXY;
   }
 
   /**

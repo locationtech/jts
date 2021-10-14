@@ -14,7 +14,7 @@ package org.locationtech.jts.algorithm.distance;
 
 import org.junit.Test;
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.util.Stopwatch;
+
 import test.jts.GeometryTestCase;
 
 public class DiscreteFrechetDistanceTest extends GeometryTestCase {
@@ -62,26 +62,25 @@ public class DiscreteFrechetDistanceTest extends GeometryTestCase {
     runTest("LINESTRING (1 1, 2 2)",
       "LINESTRING (1 4, 2 3)", 3d);
   }
+  
+  public void testAHasMoreThanTwiceVerticesOfB() {
+    runTest("LINESTRING (80 260, 170 180, 190 290, 310 350, 330 270, 360 280)",
+      "LINESTRING (120 90, 380 130)", 230.8679276123039);
+  }
+  
+  public void testA_11_B_3() {
+    runTest("LINESTRING (0 0, 100 10, 0 20, 100 30, 0 40, 100 50, 0 60, 100 70, 0 80, 100 90, 0 100)",
+      "LINESTRING (0 0, 50 100, 100 0)", 141.4213562373095);
+  }
+  
   private static final double TOLERANCE = 0.00001;
 
   private void runTest(String wkt1, String wkt2, double expectedDistance) {
     Geometry g1 = read(wkt1);
     Geometry g2 = read(wkt2);
 
-    DiscreteFrechetDistanceLinear.distance(g1, g2);
-    Stopwatch sw = new Stopwatch();
-    sw.start();
-    double distance0 = DiscreteFrechetDistanceLinear.distance(g1, g2);
-    sw.stop();
-    //System.out.println(String.format("DiscreteFrechetDistanceLinear %dms.%n", sw.getTime()));
-    assertEquals(expectedDistance, distance0, TOLERANCE);
-
     DiscreteFrechetDistance.distance(g1, g2);
-    sw.reset();
-    sw.start();
     double distance1 = DiscreteFrechetDistance.distance(g1, g2);
-    sw.stop();
-    //System.out.println(String.format("DiscreteFrechetDistance %dms.%n", sw.getTime()));
     assertEquals(expectedDistance, distance1, TOLERANCE);
   }
 }

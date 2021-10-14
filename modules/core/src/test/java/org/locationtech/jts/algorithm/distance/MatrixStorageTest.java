@@ -21,7 +21,7 @@ import org.locationtech.jts.algorithm.distance.DiscreteFrechetDistance.RectMatri
 
 import org.junit.Test;
 
-public class MatrixStorageImplTests extends TestCase {
+public class MatrixStorageTest extends TestCase {
 
   @Test
   public void testCsrMatrix()
