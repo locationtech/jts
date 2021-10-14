@@ -79,20 +79,8 @@ public class DiscreteFrechetDistanceTest extends GeometryTestCase {
     Geometry g1 = read(wkt1);
     Geometry g2 = read(wkt2);
 
-    DiscreteFrechetDistanceLinear.distance(g1, g2);
-    Stopwatch sw = new Stopwatch();
-    sw.start();
-    double distance0 = DiscreteFrechetDistanceLinear.distance(g1, g2);
-    sw.stop();
-    //System.out.println(String.format("DiscreteFrechetDistanceLinear %dms.%n", sw.getTime()));
-    assertEquals(expectedDistance, distance0, TOLERANCE);
-
     DiscreteFrechetDistance.distance(g1, g2);
-    sw.reset();
-    sw.start();
     double distance1 = DiscreteFrechetDistance.distance(g1, g2);
-    sw.stop();
-    //System.out.println(String.format("DiscreteFrechetDistance %dms.%n", sw.getTime()));
     assertEquals(expectedDistance, distance1, TOLERANCE);
   }
 }
