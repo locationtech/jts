@@ -11,12 +11,11 @@
  */
 package org.locationtech.jts.algorithm.distance;
 
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.util.Assert;
-
 import java.util.Arrays;
 import java.util.HashMap;
+
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
 
 /**
  * The Fréchet distance is a measure of similarity between curves. Thus, it can

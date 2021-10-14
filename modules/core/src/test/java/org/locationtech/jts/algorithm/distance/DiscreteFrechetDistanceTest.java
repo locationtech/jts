@@ -14,7 +14,7 @@ package org.locationtech.jts.algorithm.distance;
 
 import org.junit.Test;
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.util.Stopwatch;
+
 import test.jts.GeometryTestCase;
 
 public class DiscreteFrechetDistanceTest extends GeometryTestCase {
