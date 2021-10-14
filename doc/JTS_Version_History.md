@@ -29,7 +29,7 @@ Distributions for older JTS versions can be obtained at the
 * Simplify and fix logic of `BufferParameters.setQuadSegs` (#778)
 * Improve `KdTree` query code to avoid recursion (#779)
 * Add `KdTree` seeding to`SnappingNoder` (#780)
-* Add `DiscreteFrechetDistance` (#764)
+* Add `DiscreteFrechetDistance` (#764, #783)
 
 # Version 1.18.2
 
