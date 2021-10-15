@@ -64,7 +64,7 @@ public class GeometryPrecisionReducerTest
   public void testSquareKeepCollapse()
       throws Exception
   {
-    checkReduce("POLYGON (( 0 0, 0 1.4, .4 .4, .4 0, 0 0 ))",
+    checkReduceKeepCollapse(1, "POLYGON (( 0 0, 0 1.4, .4 .4, .4 0, 0 0 ))",
         "POLYGON EMPTY");
   }
   
@@ -106,16 +106,20 @@ public class GeometryPrecisionReducerTest
         "LINESTRING EMPTY");
   }
   
-  /**
-   * Disabled for now.
-   * @throws Exception
-   */
   public void testLineKeepCollapse()
       throws Exception
   {
     checkReduceKeepCollapse(1,
         "LINESTRING ( 0 0, 0 .4 )",
         "LINESTRING ( 0 0, 0 0 )");
+  }
+
+  public void testLinearRingKeepCollapse()
+      throws Exception
+  {
+    checkReduceKeepCollapse(1,
+        "LINEARRING ( 0 0, 0 .4, .4 0, 0 0 )",
+        "LINEARRING ( 0 0, 0 0, 0 0 )");
   }
 
   public void testPoint()

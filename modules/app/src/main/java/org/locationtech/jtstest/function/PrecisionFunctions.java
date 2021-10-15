@@ -37,6 +37,15 @@ public class PrecisionFunctions
 		return reducedGeom;
 	}
 	
+	 public static Geometry reducePrecisionKeepCollapsed(Geometry geom, 
+	      @Metadata(title="Scale factor")
+	      double scaleFactor)
+	  {
+	    PrecisionModel pm = new PrecisionModel(scaleFactor);
+	    Geometry reducedGeom = GeometryPrecisionReducer.reduceKeepCollapsed(geom, pm);
+	    return reducedGeom;
+	  }
+	  
   public static Geometry minClearanceLine(Geometry g)
   {
     return MinimumClearance.getLine(g);

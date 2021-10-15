@@ -23,11 +23,15 @@ import org.locationtech.jts.geom.util.GeometryEditor;
  * <p>
  * By default the reduced result is topologically valid
  * (i.e. {@link Geometry#isValid()} is true).
- * To ensure this a polygonal geometry is reduced in a topologically valid fashion
+ * To ensure this polygonal geometry is reduced in a topologically valid fashion
  * (technically, by using snap-rounding).
  * Note that this may change polygonal geometry structure
  * (e.g. two polygons separated by a distance below the specified precision
  * will be merged into a single polygon).
+ * <p>
+ * Normally, collapsed components (e.g. lines collapsing to a point) 
+ * are not included in the result. 
+ * This behavior can be changed by using {@link #setRemoveCollapsedComponents(boolean)}.
  * <p>
  * In general input must be valid geometry, or an {@link IllegalArgumentException} 
  * will be thrown. However if the invalidity is "mild" or very small then it
@@ -40,26 +44,23 @@ import org.locationtech.jts.geom.util.GeometryEditor;
  * <p>
  * By default the geometry precision model is not changed.
  * This can be overridden by using {@link #setChangePrecisionModel(boolean)}.
- * <p>
- * Normally, collapsed components (e.g. lines collapsing to a point) 
- * are not included in the result. 
- * This behavior can be changed by using {@link #setRemoveCollapsedComponents(boolean)}.
  *
  * @version 1.12
  */
 public class GeometryPrecisionReducer
 {
 	/**
-	 * Convenience method for doing precision reduction 
-   * on a single geometry,
-	 * with collapses removed 
-   * and keeping the geometry precision model the same,
-   * and preserving polygonal topology.
+	 * Reduces precision of a geometry, 
+   * ensuring output geometry is valid.
+   * Collapsed linear and polygonal components are removed. 
+   * The geometry precision model is not changed.
+   * Invalid input geometry may cause an error, 
+   * unless the invalidity is below the scale of the precision reduction.
 	 * 
 	 * @param g the geometry to reduce
 	 * @param precModel the precision model to use
 	 * @return the reduced geometry
-   * @throws IllegalArgumentException if the reduction fails due to invalid input geometry is invalid
+   * @throws IllegalArgumentException if the reduction fails due to invalid input geometry
 	 */
 	public static Geometry reduce(Geometry g, PrecisionModel precModel)
 	{
@@ -67,12 +68,32 @@ public class GeometryPrecisionReducer
 		return reducer.reduce(g);
 	}
 	
+  /**
+   * Reduces precision of a geometry, 
+   * ensuring output polygonal geometry is valid,
+   * but preserving collapsed linear elements. 
+   * The geometry precision model is not changed.
+   * Invalid input geometry may cause an error, 
+   * unless the invalidity is below the scale of the precision reduction.
+   * 
+   * @param g the geometry to reduce
+   * @param precModel the precision model to use
+   * @return the reduced geometry
+   * @throws IllegalArgumentException if the reduction fails due to invalid input geometry
+   */
+  public static Geometry reduceKeepCollapsed(Geometry geom, PrecisionModel pm) {
+    GeometryPrecisionReducer reducer = new GeometryPrecisionReducer(pm);
+    reducer.setRemoveCollapsedComponents(false);
+    return reducer.reduce(geom);
+  }
+  
 	/**
-	 * Convenience method for doing pointwise precision reduction 
-   * on a single geometry,
-	 * with collapses removed 
-   * and keeping the geometry precision model the same,
-   * but NOT preserving valid polygonal topology.
+	 * Reduce precision of a geometry in a pointwise way. 
+   * All input geometry elements are preserved in the output, 
+   * including invalid polygons and collapsed polygons and linestrings.
+   * The output may not be valid, due to collapse or self-intersection.
+   * The geometry precision model is not changed.
+   * Invalid input geometry is allowed.
 	 * 
 	 * @param g the geometry to reduce
 	 * @param precModel the precision model to use
