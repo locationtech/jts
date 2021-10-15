@@ -26,12 +26,6 @@ import test.jts.GeometryTestCase;
 public class GeometryPrecisionReducerTest
     extends GeometryTestCase
 {
-  private PrecisionModel pmFloat = new PrecisionModel();
-  private PrecisionModel pmFixed1 = new PrecisionModel(1);
-
-  private GeometryFactory gfFloat = new GeometryFactory(pmFloat, 0);
-  WKTReader reader = new WKTReader(gfFloat);
-
   public static void main(String args[]) {
     TestRunner.run(GeometryPrecisionReducerTest.class);
   }
@@ -41,11 +35,74 @@ public class GeometryPrecisionReducerTest
     super(name);
   }
 
+  public void testPoint()
+      throws Exception
+  {
+    checkReduce("POINT(1.1 4.9)",
+        "POINT(1 5)");
+  }
+
+  public void testMultiPoint()
+      throws Exception
+  {
+    checkReduce("MULTIPOINT( (1.1 4.9),(1.2 4.8), (3.3 6.6))",
+        "MULTIPOINT((1 5), (1 5), (3 7))");
+  }
+  
+  //--------------------------------------------------------------
+  
+  public void testLine()
+      throws Exception
+  {
+    checkReduce("LINESTRING ( 0 0, 0 1.4 )",
+        "LINESTRING (0 0, 0 1)");
+  }
+  
+  /**
+   * Tests that a self-crossing line is not noded by precision reduction.
+   * 
+   * @throws Exception
+   */
+  public void testLineNotNoded()
+      throws Exception
+  {
+    checkReduce(
+        "LINESTRING( 1 1, 3 3, 9 9, 5.1 5, 2.1 2 )",
+        "LINESTRING( 1 1, 3 3, 9 9, 5   5, 2   2 )");
+  }
+  
+  public void testLineDuplicatePointsRemoved()
+      throws Exception
+  {
+    checkReduce(
+        "LINESTRING( 1 1, 3 3, 3.1 3, 4 4, 4 4, 9 9 )",
+        "LINESTRING (1 1, 3 3,        4 4,      9 9)");
+  }
+
+  public void testLineRemoveCollapse()
+      throws Exception
+  {
+    checkReduce(
+        "LINESTRING ( 0 0, 0 .4 )",
+        "LINESTRING EMPTY");
+  }
+
+  public void testMultiLineRemoveCollapse()
+      throws Exception
+  {
+    checkReduce(
+        "MULTILINESTRING ((0 0, 9 9), ( 0 0, 0 .4 ))",
+             "LINESTRING  (0 0, 9 9)");
+  }
+
+  //--------------------------------------------------------------
+
   public void testSquare()
       throws Exception
   {
-    checkReduce("POLYGON (( 0 0, 0 1.4, 1.4 1.4, 1.4 0, 0 0 ))",
-        "POLYGON (( 0 0, 0 1, 1 1, 1 0, 0 0 ))");
+    checkReduce(
+        "POLYGON (( 0 0, 0 1.4, 1.4 1.4, 1.4 0, 0 0 ))",
+        "POLYGON (( 0 0, 0 1,   1   1,   1   0, 0 0 ))");
   }
   public void testTinySquareCollapse()
       throws Exception
@@ -58,13 +115,6 @@ public class GeometryPrecisionReducerTest
       throws Exception
   {
     checkReduce("POLYGON (( 0 0, 0 1.4, .4 .4, .4 0, 0 0 ))",
-        "POLYGON EMPTY");
-  }
-  
-  public void testSquareKeepCollapse()
-      throws Exception
-  {
-    checkReduceKeepCollapse(1, "POLYGON (( 0 0, 0 1.4, .4 .4, .4 0, 0 0 ))",
         "POLYGON EMPTY");
   }
   
@@ -85,57 +135,6 @@ public class GeometryPrecisionReducerTest
 "POLYGON ((558495.1 6395532, 558495.1 6395533.6, 558495.2 6395837.8, 558496 6395838.3, 558497.3 6395839.6, 558498.3 6395841, 558499 6395842.6, 558499.4 6395844.3, 558499.6 6395845.9, 558500 6395896, 558499.6 6396031.2, 558499.4 6396032.9, 558499 6396034.6, 558498.3 6396036.2, 558497.3 6396037.6, 558496 6396038.9, 558495.2 6396039.4, 558494.8 6396563.2, 558494.4 6396631.3, 558494.2 6396632.9, 558493.8 6396634.6, 558493.1 6396636.2, 558492.1 6396637.6, 558490.8 6396638.9, 558490.4 6396639.2, 558490 6397089.6, 558489.6 6397231.2, 558489.4 6397232.9, 558489 6397234.6, 558488.3 6397236.2, 558487.3 6397237.6, 558486 6397238.9, 558485.2 6397239.4, 558484.4 6397831.2, 558484.2 6397832.9, 558483.8 6397834.6, 558483.1 6397836.2, 558482.1 6397837.6, 558480.8 6397838.9, 558480 6397839.4, 558479.6 6398431.2, 558479.4 6398432.9, 558479 6398434.6, 558478.3 6398436.2, 558477.3 6398437.6, 558476 6398438.9, 558475.2 6398439.4, 558474.4 6399031.2, 558474.2 6399032.9, 558473.8 6399034.6, 558473.1 6399036.2, 558472.1 6399037.6, 558470.8 6399038.9, 558470.4 6399039.2, 558469.6 6399631.2, 558469.4 6399632.9, 558469 6399634.6, 558468.3 6399636.2, 558467.3 6399637.6, 558466 6399638.9, 558465.2 6399639.4, 558464.4 6400231.2, 558464.2 6400232.9, 558463.8 6400234.6, 558463.1 6400236.2, 558462.1 6400237.6, 558460.8 6400238.9, 558460 6400239.4, 558459.6 6400831.2, 558459.4 6400832.9, 558459 6400834.6, 558458.3 6400836.2, 558457.3 6400837.6, 558456 6400838.9, 558455.2 6400839.4, 558454.8 6401378, 558454.4 6401431.3, 558454.2 6401432.9, 558453.8 6401434.6, 558453.1 6401436.2, 558452.1 6401437.6, 558450.8 6401438.9, 558450.4 6401439.2, 558450 6401919.6, 558449.6 6402031.2, 558449.4 6402032.9, 558449 6402034.6, 558448.3 6402036.2, 558447.3 6402037.6, 558446 6402038.9, 558445.2 6402039.4, 558444.4 6402631.2, 558444.2 6402632.9, 558443.8 6402634.6, 558443.1 6402636.2, 558442.1 6402637.6, 558440.8 6402638.9, 558440 6402639.4, 558439.6 6403231.2, 558439.4 6403232.9, 558439 6403234.6, 558438.3 6403236.2, 558437.3 6403237.6, 558436 6403238.9, 558435.2 6403239.4, 558434.4 6403831.2, 558434.2 6403832.9, 558433.8 6403834.6, 558433.1 6403836.2, 558432.1 6403837.6, 558430.8 6403838.9, 558430.4 6403839.2, 558429.6 6404431.2, 558429.4 6404432.9, 558429 6404434.6, 558428.3 6404436.2, 558427.3 6404437.6, 558426 6404438.9, 558425.2 6404439.4, 558424.4 6405031.2, 558424.2 6405032.9, 558423.8 6405034.6, 558423.1 6405036.2, 558422.1 6405037.6, 558420.8 6405038.9, 558420 6405039.4, 558419.6 6405631.2, 558419.4 6405632.9, 558419 6405634.6, 558418.3 6405636.2, 558417.3 6405637.6, 558416 6405638.9, 558415.2 6405639.4, 558414.8 6406180.8, 558414.4 6406231.3, 558414.2 6406232.9, 558413.8 6406234.6, 558413.1 6406236.2, 558412.1 6406237.6, 558410.8 6406238.9, 558410.4 6406239.2, 558410 6406725.2, 558409.6 6406831.2, 558409.4 6406832.9, 558409 6406834.6, 558408.3 6406836.2, 558407.3 6406837.6, 558406 6406838.9, 558405.2 6406839.4, 558404.4 6407431.2, 558404.2 6407432.9, 558403.8 6407434.6, 558403.1 6407436.2, 558402.1 6407437.6, 558400.8 6407438.9, 558400.4 6407439.2, 558399.6 6408031.2, 558399.4 6408032.9, 558399 6408034.6, 558398.3 6408036.2, 558397.3 6408037.6, 558396 6408038.9, 558394.8 6408039.7, 558394.4 6408631.2, 558394.2 6408632.9, 558393.8 6408634.6, 558393.1 6408636.2, 558392.1 6408637.6, 558390.8 6408638.9, 558390.4 6408639.2, 563540 6408639.2, 563541.6 6408639.2, 563541.6 6408637.6, 563541.6 6395533.6, 563541.6 6395532, 563540 6395532, 558495.1 6395532))");
   }
   
-  public void testLine()
-      throws Exception
-  {
-    checkReduce("LINESTRING ( 0 0, 0 1.4 )",
-        "LINESTRING (0 0, 0 1)");
-  }
-  
-  public void testLineNotNoded()
-      throws Exception
-  {
-    checkReduce("LINESTRING(1 1, 3 3, 9 9, 5.1 5, 2.1 2)",
-        "LINESTRING(1 1, 3 3, 9 9, 5 5, 2 2)");
-  }
-  
-  public void testLineRemoveCollapse()
-      throws Exception
-  {
-    checkReduce("LINESTRING ( 0 0, 0 .4 )",
-        "LINESTRING EMPTY");
-  }
-  
-  public void testLineKeepCollapse()
-      throws Exception
-  {
-    checkReduceKeepCollapse(1,
-        "LINESTRING ( 0 0, 0 .4 )",
-        "LINESTRING ( 0 0, 0 0 )");
-  }
-
-  public void testLinearRingKeepCollapse()
-      throws Exception
-  {
-    checkReduceKeepCollapse(1,
-        "LINEARRING ( 0 0, 0 .4, .4 0, 0 0 )",
-        "LINEARRING ( 0 0, 0 0, 0 0 )");
-  }
-
-  public void testPoint()
-      throws Exception
-  {
-    checkReduce("POINT(1.1 4.9)",
-        "POINT(1 5)");
-  }
-
-  public void testMultiPoint()
-      throws Exception
-  {
-    checkReduce("MULTIPOINT( (1.1 4.9),(1.2 4.8), (3.3 6.6))",
-        "MULTIPOINT((1 5), (1 5), (3 7))");
-  }
-
   public void testPolgonWithCollapsedLine() throws Exception {
     checkReduce("POLYGON ((10 10, 100 100, 200 10.1, 300 10, 10 10))",
         "POLYGON ((10 10, 100 100, 200 10, 10 10))");
@@ -146,7 +145,7 @@ public class GeometryPrecisionReducerTest
         "MULTIPOLYGON (((10 10, 100 100, 200 10, 10 10)), ((200 10, 300 100, 400 10, 200 10)))");
   }
 
-  public void testMultiPolgonCollapse() throws Exception {
+  public void testMultiPolgonCollapseRemoved() throws Exception {
     checkReduce("MULTIPOLYGON (((1 9, 5 9, 5 1, 1 1, 1 9)), ((5.2 8.7, 9 8.7, 9 1, 5.2 1, 5.2 8.7)))",
         "POLYGON ((1 1, 1 9, 5 9, 9 9, 9 1, 5 1, 1 1))");
   }
@@ -172,40 +171,48 @@ public class GeometryPrecisionReducerTest
         );
   }
 
-  public void testPolgonWithCollapsedLinePointwise() throws Exception {
-    checkReducePointwise("POLYGON ((10 10, 100 100, 200 10.1, 300 10, 10 10))",
-        "POLYGON ((10 10, 100 100, 200 10,   300 10, 10 10))");
-	}
+  //=============================================
+  
+  public void testKeepCollapsedLine()
+      throws Exception
+  {
+    checkReduceKeepCollapsed(1,
+        "LINESTRING ( 0 0, 0 .4 )",
+        "LINESTRING ( 0 0, 0 0 )");
+  }
 
-  public void testPolgonWithCollapsedPointPointwise() throws Exception {
-    checkReducePointwise("POLYGON ((10 10, 100 100, 200 10.1, 300 100, 400 10, 10 10))",
-        "POLYGON ((10 10, 100 100, 200 10,   300 100, 400 10, 10 10))");
-	}
+  public void testKeepCollapsedLinearRing()
+      throws Exception
+  {
+    checkReduceKeepCollapsed(1,
+        "LINEARRING ( 0 0, 0 .4, .4 0, 0 0 )",
+        "LINEARRING ( 0 0, 0 0, 0 0 )");
+  }
+
+  public void testKeepCollapsedSquare()
+      throws Exception
+  {
+    checkReduceKeepCollapsed(1, "POLYGON (( 0 0, 0 1.4, .4 .4, .4 0, 0 0 ))",
+        "POLYGON EMPTY");
+  }
+  
+  public void testKeepCollapsedPolygon()
+      throws Exception
+  {
+    checkReduceKeepCollapsed(1,
+        "POLYGON ((0.1 0.3, 0.3 0.3, 0.3 0.1, 0.1 0.1, 0.1 0.3))",
+        "POLYGON EMPTY");
+  }
+  
+  public void testKeepCollapsedMultiPolygon()
+      throws Exception
+  {
+    checkReduceKeepCollapsed(1,
+        "MULTIPOLYGON (((0.1 0.3, 0.3 0.3, 0.3 0.1, 0.1 0.1, 0.1 0.3)), ((1 2, 2.1 2, 2 1.1, 1 1, 1 2)))",
+                                                               "POLYGON ((2 2, 2 1, 1 1, 1 2, 2 2))");
+  }
 
   //=======================================
-  
-  private void checkReducePointwise(String wkt, String wktExpected) {
-    Geometry g  =        read(wkt);
-    Geometry gExpected = read(wktExpected);
-    Geometry gReduce = GeometryPrecisionReducer.reducePointwise(g, pmFixed1);
-    assertEqualsExactAndHasSameFactory(gExpected, gReduce);
-  }
-  
-  private void assertEqualsExactAndHasSameFactory(Geometry expected, Geometry actual)
-  {
-    checkEqual(expected, actual);
-    assertTrue("Factories are not the same", expected.getFactory() == actual.getFactory());
-  }
-  
-  private void checkReduceKeepCollapse( 
-      double scaleFactor, 
-      String wkt,
-      String wktExpected) {
-    PrecisionModel pm = new PrecisionModel(scaleFactor);
-    GeometryPrecisionReducer reducer = new GeometryPrecisionReducer(pm);
-    reducer.setRemoveCollapsedComponents(false);
-    checkReduce(reducer, wkt, wktExpected);
-  }
   
   private void checkReduce( 
       String wkt,
@@ -216,6 +223,16 @@ public class GeometryPrecisionReducerTest
   private void checkReduce(double scaleFactor, String wkt, String wktExpected) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
     GeometryPrecisionReducer reducer = new GeometryPrecisionReducer(pm);
+    checkReduce(reducer, wkt, wktExpected);
+  }
+  
+  private void checkReduceKeepCollapsed( 
+      double scaleFactor, 
+      String wkt,
+      String wktExpected) {
+    PrecisionModel pm = new PrecisionModel(scaleFactor);
+    GeometryPrecisionReducer reducer = new GeometryPrecisionReducer(pm);
+    reducer.setRemoveCollapsedComponents(false);
     checkReduce(reducer, wkt, wktExpected);
   }
   
