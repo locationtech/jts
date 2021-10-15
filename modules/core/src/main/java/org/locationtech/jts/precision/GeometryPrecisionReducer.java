@@ -52,8 +52,10 @@ public class GeometryPrecisionReducer
 	/**
 	 * Reduces precision of a geometry, 
    * ensuring output geometry is valid.
-   * Collapsed linear and polygonal components are removed. 
+   * Collapsed linear and polygonal components are removed.
+   * Duplicate vertices are removed. 
    * The geometry precision model is not changed.
+   * <p>
    * Invalid input geometry may cause an error, 
    * unless the invalidity is below the scale of the precision reduction.
 	 * 
@@ -70,9 +72,11 @@ public class GeometryPrecisionReducer
 	
   /**
    * Reduces precision of a geometry, 
-   * ensuring output polygonal geometry is valid,
-   * but preserving collapsed linear elements. 
+   * preserving collapsed linear elements.
+   * and ensuring output polygonal geometry is valid, 
+   * Duplicate vertices are removed.
    * The geometry precision model is not changed.
+   * <p>
    * Invalid input geometry may cause an error, 
    * unless the invalidity is below the scale of the precision reduction.
    * 
@@ -92,7 +96,9 @@ public class GeometryPrecisionReducer
    * All input geometry elements are preserved in the output, 
    * including invalid polygons and collapsed polygons and linestrings.
    * The output may not be valid, due to collapse or self-intersection.
+   * Duplicate vertices are not removed.
    * The geometry precision model is not changed.
+   * <p>
    * Invalid input geometry is allowed.
 	 * 
 	 * @param g the geometry to reduce
