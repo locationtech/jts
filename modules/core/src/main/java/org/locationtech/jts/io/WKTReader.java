@@ -769,22 +769,15 @@ S  */
     String type;
 
     EnumSet<Ordinate> ordinateFlags = EnumSet.of(Ordinate.X, Ordinate.Y);
-    try {
-      type = getNextWord(tokenizer).toUpperCase(Locale.ROOT);
-      if (type.endsWith(WKTConstants.ZM)) {
-        ordinateFlags.add(Ordinate.Z);
-        ordinateFlags.add(Ordinate.M);
-      } else if (type.endsWith(WKTConstants.Z)) {
-        ordinateFlags.add(Ordinate.Z);
-      } else if (type.endsWith(WKTConstants.M)) {
-        ordinateFlags.add(Ordinate.M);
-      }
-    } catch (IOException e) {
-      return null;
-    } catch (ParseException e) {
-      return null;
+    type = getNextWord(tokenizer).toUpperCase(Locale.ROOT);
+    if (type.endsWith(WKTConstants.ZM)) {
+      ordinateFlags.add(Ordinate.Z);
+      ordinateFlags.add(Ordinate.M);
+    } else if (type.endsWith(WKTConstants.Z)) {
+      ordinateFlags.add(Ordinate.Z);
+    } else if (type.endsWith(WKTConstants.M)) {
+      ordinateFlags.add(Ordinate.M);
     }
-
     return readGeometryTaggedText(tokenizer, type, ordinateFlags);
   }
 
@@ -808,31 +801,48 @@ S  */
               geometryFactory.getSRID(), csFactoryXYZM);
     }
 
-    if (type.startsWith(WKTConstants.POINT)) {
+    if (isTypeName(tokenizer, type, WKTConstants.POINT)) {
       return readPointText(tokenizer, ordinateFlags);
     }
-    else if (type.startsWith(WKTConstants.LINESTRING)) {
+    else if (isTypeName(tokenizer, type, WKTConstants.LINESTRING)) {
       return readLineStringText(tokenizer, ordinateFlags);
     }
-    else if (type.startsWith(WKTConstants.LINEARRING)) {
+    else if (isTypeName(tokenizer, type, WKTConstants.LINEARRING)) {
       return readLinearRingText(tokenizer, ordinateFlags);
     }
-    else if (type.startsWith(WKTConstants.POLYGON)) {
+    else if (isTypeName(tokenizer, type, WKTConstants.POLYGON)) {
       return readPolygonText(tokenizer, ordinateFlags);
     }
-    else if (type.startsWith(WKTConstants.MULTIPOINT)) {
+    else if (isTypeName(tokenizer, type, WKTConstants.MULTIPOINT)) {
       return readMultiPointText(tokenizer, ordinateFlags);
     }
-    else if (type.startsWith(WKTConstants.MULTILINESTRING)) {
+    else if (isTypeName(tokenizer, type, WKTConstants.MULTILINESTRING)) {
       return readMultiLineStringText(tokenizer, ordinateFlags);
     }
-    else if (type.startsWith(WKTConstants.MULTIPOLYGON)) {
+    else if (isTypeName(tokenizer, type, WKTConstants.MULTIPOLYGON)) {
       return readMultiPolygonText(tokenizer, ordinateFlags);
     }
-    else if (type.startsWith(WKTConstants.GEOMETRYCOLLECTION)) {
+    else if (isTypeName(tokenizer, type, WKTConstants.GEOMETRYCOLLECTION)) {
       return readGeometryCollectionText(tokenizer, ordinateFlags);
     }
     throw parseErrorWithLine(tokenizer, "Unknown geometry type: " + type);
+  }
+
+  private boolean isTypeName(StreamTokenizer tokenizer, String type, String typeName) throws ParseException {
+    if (! type.startsWith(typeName))
+      return false;
+    
+    String modifiers = type.substring(typeName.length());
+    boolean isValidMod = modifiers.length() <= 2 &&
+        (modifiers.length() == 0
+        ||modifiers.equals(WKTConstants.Z)
+        || modifiers.equals(WKTConstants.M)
+        || modifiers.equals(WKTConstants.ZM));
+    if (! isValidMod) {
+      throw parseErrorWithLine(tokenizer, "Invalid dimension modifiers: " + type);
+    }
+    
+    return true;
   }
 
   /**
