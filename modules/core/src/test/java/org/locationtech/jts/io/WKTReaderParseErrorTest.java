@@ -39,37 +39,70 @@ public class WKTReaderParseErrorTest
     super(name);
   }
 
-  public void testExtraLParen() throws IOException, ParseException
-  {
-    readBad("POINT (( 1e01 -1E02)");
+  public void testExtraLParen() throws IOException {
+    readWithParseException("POINT (( 1e01 -1E02)");
   }
 
-  public void testMissingOrdinate() throws IOException, ParseException
+  public void testMissingOrdinate() throws IOException
   {
-    readBad("POINT ( 1e01 )");
+    readWithParseException("POINT ( 1e01 )");
   }
 
-  public void testBadChar() throws IOException, ParseException
+  public void testBadChar() throws IOException
   {
-    readBad("POINT ( # 1e-04 1E-05)");
+    readWithParseException("POINT ( # 1e-04 1E-05)");
   }
 
-  public void testBadExpFormat() throws IOException, ParseException
+  public void testBadExpFormat() throws IOException
   {
-    readBad("POINT (1e0a1 1X02)");
+    readWithParseException("POINT (1e0a1 1X02)");
   }
 
-  public void testBadExpPlusSign() throws IOException, ParseException
+  public void testBadExpPlusSign() throws IOException
   {
-    readBad("POINT (1e+01 1X02)");
+    readWithParseException("POINT (1e+01 1X02)");
   }
 
-  public void testBadPlusSign() throws IOException, ParseException
+  public void testBadPlusSign() throws IOException
   {
-    readBad("POINT ( +1e+01 1X02)");
+    readWithParseException("POINT ( +1e+01 1X02)");
   }
 
-  private void readBad(String wkt)
+  public void testBadCharsInType() throws IOException
+  {
+    readWithParseException("POINTABC ( 0 0 )");
+    readWithParseException("LINESTRINGABC ( 0 0 )");
+    readWithParseException("LINEARRINGABC ( 0 0, 0 0, 0 0 )");
+    readWithParseException("POLYGONABC (( 0 0, 0 0, 0 0, 0 0 ))");
+    readWithParseException("MULTIPOINTABC (( 0 0 ), ( 0 0 ))");
+    readWithParseException("MULTILINESTRINGABC (( 0 0, 1 1 ), ( 0 0, 1 1 ))");
+    readWithParseException("MULTIPOLYGONABC ((( 0 0, 1 1, 2 2, 0 0 )), (( 0 0, 1 1, 2 2, 0 0 )))");
+    readWithParseException("GEOMETRYCOLLECTIONABC (POINT( 0 0 ), LINESTRING( 0 0, 1 1))");
+  }
+
+  public void testBadCharsInTypeZ() throws IOException
+  {
+    readWithParseException("POINTABCZ ( 0 0 )");
+    readWithParseException("LINESTRINGABCZ ( 0 0 )");
+    readWithParseException("LINEARRINGABCZ ( 0 0, 0 0, 0 0 )");
+    readWithParseException("POLYGONABCZ (( 0 0, 0 0, 0 0, 0 0 ))");
+    readWithParseException("MULTIPOINTABCZ (( 0 0 ), ( 0 0 ))");
+    readWithParseException("MULTILINESTRINGABCZ (( 0 0, 1 1 ), ( 0 0, 1 1 ))");
+    readWithParseException("MULTIPOLYGONABCZ ((( 0 0, 1 1, 2 2, 0 0 )), (( 0 0, 1 1, 2 2, 0 0 )))");
+    readWithParseException("GEOMETRYCOLLECTIONABCZ (POINT( 0 0 ), LINESTRING( 0 0, 1 1))");
+  }
+
+  public void testBadCharsInTypeM() throws IOException
+  {
+    readWithParseException("LINESTRINGABCM ( 0 0 0, 1 1 1 )");
+  }
+
+  public void testBadCharsInTypeZM() throws IOException
+  {
+    readWithParseException("LINESTRINGABCZM ( 0 0 0 0, 1 1 1 1 )");
+  }
+
+  private void readWithParseException(String wkt)
       throws IOException
   {
     boolean threwParseEx = false;
