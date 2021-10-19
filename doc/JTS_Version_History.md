@@ -31,6 +31,10 @@ Distributions for older JTS versions can be obtained at the
 * Add `KdTree` seeding to`SnappingNoder` (#780)
 * Add `DiscreteFrechetDistance` (#764, #783)
 
+### Bug Fixes
+
+* Fix `WKTReader` geometry typename parsing (#786)
+
 # Version 1.18.2
 
 *Release Date: 08/27/2021* 
