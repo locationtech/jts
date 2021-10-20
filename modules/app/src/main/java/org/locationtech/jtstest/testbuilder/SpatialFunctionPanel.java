@@ -103,7 +103,6 @@ extends JPanel implements FunctionPanel
   
   private transient Vector spatialFunctionPanelListeners;
   private JPanel panelControl = new JPanel();
-  private JCheckBox displayAAndBCheckBox = new JCheckBox();
   private JCheckBox cbExecEachA = new JCheckBox();
   private JCheckBox cbExecEachB = new JCheckBox();
   private JCheckBox cbExecRepeat = new JCheckBox();
@@ -152,16 +151,6 @@ extends JPanel implements FunctionPanel
     panelExec.setLayout(flowLayout);
     panelExecMeta.setLayout(flowLayout2);
     panelExecParam.setLayout(borderLayout2);
-
-    
-    displayAAndBCheckBox.setSelected(true);
-    displayAAndBCheckBox.setToolTipText("");
-    displayAAndBCheckBox.setText("Display Input");
-    displayAAndBCheckBox.addActionListener(new java.awt.event.ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          displayAAndBCheckBox_actionPerformed(e);
-        }
-      });
 
     lblFunction.setText("Function");
     lblFunction.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -221,10 +210,8 @@ extends JPanel implements FunctionPanel
     panelParam.add(txtMitreLimit);
 
     panelControl.setLayout(flowLayout1);
-    panelControl.add(displayAAndBCheckBox, null);
     //panelControl.add(btnClearResult, null);
     
-
     cbExecEachA.setToolTipText("Compute for each A geometry element");
     cbExecEachA.setText("Each A");
     
@@ -371,10 +358,6 @@ extends JPanel implements FunctionPanel
     cbExecEachA.setSelected(false);
     cbExecEachB.setSelected(false);
   }
-  
-  void displayAAndBCheckBox_actionPerformed(ActionEvent e) {
-    JTSTestBuilderController.editPanel().setShowingInput(displayAAndBCheckBox.isSelected());
-  }
 
   private void setCurrentFunction(GeometryFunction func) {
     currentFunc = func;
@@ -443,14 +426,6 @@ extends JPanel implements FunctionPanel
   
   public static int attributeParamOffset(GeometryFunction func) {
     return func.isBinary() ? 1 : 0;
-  }
-  
-  public boolean shouldShowGeometryA() {
-    return displayAAndBCheckBox.isSelected();
-  }
-
-  public boolean shouldShowGeometryB() {
-    return displayAAndBCheckBox.isSelected();
   }
 
   public void clearFunction() {

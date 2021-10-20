@@ -34,6 +34,7 @@ import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 
+import org.locationtech.jtstest.testbuilder.controller.JTSTestBuilderController;
 import org.locationtech.jtstest.testbuilder.event.ValidPanelEvent;
 import org.locationtech.jtstest.testbuilder.event.ValidPanelListener;
 import org.locationtech.jtstest.testbuilder.model.*;
@@ -276,6 +277,18 @@ public class TestCasePanel extends JPanel {
     editGroupPanel.add(editFramePanel, BorderLayout.CENTER);
     editGroupPanel.add(statusBarPanel, BorderLayout.SOUTH);
  
+    JCheckBox cbDisplayAB = new JCheckBox();
+    cbDisplayAB.setSelected(true);
+    cbDisplayAB.setToolTipText("Dislplay A and B");
+    //cbDisplayAB.setText("Display Input");
+    cbDisplayAB.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          JTSTestBuilderController.editPanel().setShowingInput(cbDisplayAB.isSelected());
+        }
+      });
+    JLabel lblDisplayAB = new JLabel();
+    lblDisplayAB.setIcon(AppIcons.GEOFUNC_BINARY);
+    
     cbRevealTopo.setToolTipText("Reveal Topology - visualize topological detail by stretching geometries");
     spStretchDist.setToolTipText("Stretch Distance (pixels)");
     spStretchDist.setMaximumSize(new Dimension(20,20));
@@ -284,9 +297,11 @@ public class TestCasePanel extends JPanel {
     jPanelReveal.add(Box.createHorizontalGlue());
     jPanelReveal.add(cbRevealTopo);
     jPanelReveal.add(spStretchDist);
+    jPanelReveal.add(Box.createHorizontalStrut(8));
+    jPanelReveal.add(cbDisplayAB);
+    jPanelReveal.add(lblDisplayAB);
     jPanelReveal.add(Box.createHorizontalGlue());
     jPanelReveal.setBorder(BorderFactory.createLoweredBevelBorder());
-
 
     JButton btnSaveImage = SwingUtil.createButton(
         AppIcons.SAVE_IMAGE, AppStrings.TIP_SAVE_IMAGE,   

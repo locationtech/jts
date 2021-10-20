@@ -28,6 +28,8 @@ public class AppIcons {
   public final static ImageIcon GEOM_INSPECT = IconLoader.icon("InspectGeometry.png");
   public final static ImageIcon GEOM_EXCHANGE = IconLoader.icon("ExchangeGeoms.png");
   
+  public final static ImageIcon GEOFUNC_BINARY = IconLoader.icon("BinaryGeomFunction.png");
+  
   public final static ImageIcon DOWN = IconLoader.icon("Down.png");
   public final static ImageIcon UP = IconLoader.icon("Up.png");
   public final static ImageIcon LEFT = IconLoader.icon("Left.png");
