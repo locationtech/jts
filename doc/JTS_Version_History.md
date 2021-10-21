@@ -34,6 +34,7 @@ Distributions for older JTS versions can be obtained at the
 ### Bug Fixes
 
 * Fix `WKTReader` geometry typename parsing (#786)
+* Fix `CoordinateArrays.reverse` to handle zero-length arrays #787
 
 # Version 1.18.2
 
