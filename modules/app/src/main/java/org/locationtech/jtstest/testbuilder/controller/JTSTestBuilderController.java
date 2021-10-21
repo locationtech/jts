@@ -24,6 +24,7 @@ import org.locationtech.jtstest.testbuilder.GeometryEditPanel;
 import org.locationtech.jtstest.testbuilder.JTSTestBuilder;
 import org.locationtech.jtstest.testbuilder.JTSTestBuilderFrame;
 import org.locationtech.jtstest.testbuilder.JTSTestBuilderToolBar;
+import org.locationtech.jtstest.testbuilder.SpatialFunctionPanel;
 import org.locationtech.jtstest.testbuilder.model.GeometryEditModel;
 import org.locationtech.jtstest.testbuilder.model.LayerList;
 import org.locationtech.jtstest.testbuilder.model.TestBuilderModel;
@@ -45,6 +46,8 @@ import org.locationtech.jtstest.testbuilder.ui.tools.ZoomTool;
 
 public class JTSTestBuilderController 
 { 
+  private static ResultController resultController = new ResultController();
+
   /*
   private static boolean autoZoomOnNextChange = false;
 
@@ -57,12 +60,17 @@ public class JTSTestBuilderController
   public JTSTestBuilderController() {
     
   }
-
+  public static ResultController resultController() {
+    return resultController;
+  }
   public static TestBuilderModel model() {
     return frame().getModel();
   }
   public static GeometryEditPanel editPanel() {
     return JTSTestBuilderFrame.getGeometryEditPanel();
+  }
+  public static SpatialFunctionPanel spatialFunctionPanel() {
+    return JTSTestBuilderFrame.getSpatialFunctionPanel();
   }
 
   public static JTSTestBuilderToolBar toolbar() {
@@ -79,6 +87,14 @@ public class JTSTestBuilderController
   
   public void reportException(Exception e) {
     SwingUtil.reportException(frame(), e);
+  }
+  
+  public void geometryChanged()
+  {
+    if (spatialFunctionPanel().isAutoExecute()) {
+      resultController.execute(false);
+    }
+    geometryViewChanged();
   }
   
   public void geometryViewChanged()

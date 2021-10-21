@@ -48,6 +48,7 @@ import org.locationtech.jtstest.testbuilder.event.GeometryFunctionEvent;
 import org.locationtech.jtstest.testbuilder.event.GeometryFunctionListener;
 import org.locationtech.jtstest.testbuilder.event.SpatialFunctionPanelEvent;
 import org.locationtech.jtstest.testbuilder.event.SpatialFunctionPanelListener;
+import org.locationtech.jtstest.testbuilder.model.GeometryEvent;
 import org.locationtech.jtstest.testbuilder.ui.SwingUtil;
 import org.locationtech.jtstest.util.ClassUtil;
 
@@ -77,7 +78,7 @@ extends JPanel implements FunctionPanel
 
 	
 	
-  JPanel panelExecControl = new JPanel();
+  
 //  GeometryFunctionListPanel geomFuncPanel = new GeometryFunctionListPanel();
   GeometryFunctionTreePanel geomFuncPanel = new GeometryFunctionTreePanel();
   GridLayout gridLayout1 = new GridLayout();
@@ -91,9 +92,6 @@ extends JPanel implements FunctionPanel
   JPanel panelExec = new JPanel();
   JPanel panelExecMeta = new JPanel();
   JPanel panelExecParam = new JPanel();
-  FlowLayout flowLayout = new FlowLayout();
-  FlowLayout flowLayout1 = new FlowLayout();
-  FlowLayout flowLayout2 = new FlowLayout();
   
   private JButton execButton = new JButton();
   private JButton execToNewButton = new JButton();
@@ -102,13 +100,14 @@ extends JPanel implements FunctionPanel
   private final ImageIcon expandDownIcon = new ImageIcon(this.getClass().getResource("Expand-Down.png"));
   
   private transient Vector spatialFunctionPanelListeners;
-  private JPanel panelControl = new JPanel();
   private JCheckBox cbExecEachA = new JCheckBox();
   private JCheckBox cbExecEachB = new JCheckBox();
   private JCheckBox cbExecRepeat = new JCheckBox();
   private final JTextField txtRepeatCount = new JTextField();
   private JButton btnClearResult = new JButton();
-
+  private JButton btnExecEach;
+  private JCheckBox cbExecAuto = new JCheckBox();
+  
   private JLabel lblFunctionName = new JLabel();
   private JLabel lblFunction = new JLabel();
   private JLabel lblDistance = new JLabel();
@@ -127,8 +126,6 @@ extends JPanel implements FunctionPanel
   
   private GeometryFunction currentFunc = null;
   private Stopwatch timer;
-
-  private JButton btnExecEach;
   
   public SpatialFunctionPanel() {
     try {
@@ -148,8 +145,7 @@ extends JPanel implements FunctionPanel
     panelParam.setLayout(gridLayout2);
     gridLayout2.setRows(6);
     gridLayout2.setColumns(2);
-    panelExec.setLayout(flowLayout);
-    panelExecMeta.setLayout(flowLayout2);
+    panelExec.setLayout(new FlowLayout());
     panelExecParam.setLayout(borderLayout2);
 
     lblFunction.setText("Function");
@@ -182,19 +178,7 @@ extends JPanel implements FunctionPanel
     txtMitreLimit.setHorizontalAlignment(SwingConstants.RIGHT);
 
     initLabels(paramLabel);
-    
 
-
-    btnClearResult.setToolTipText("");
-    btnClearResult.setMargin(new Insets(0, 10, 0, 10));
-    btnClearResult.setSelected(true);
-    btnClearResult.setText("Clear Result");
-    btnClearResult.addActionListener(new java.awt.event.ActionListener() {
-
-        public void actionPerformed(ActionEvent e) {
-          clearResultButton_actionPerformed(e);
-        }
-      });
 
     panelParam.add(lblFunction);
     panelParam.add(lblFunctionName);
@@ -209,9 +193,6 @@ extends JPanel implements FunctionPanel
     panelParam.add(lblMitreLimit);
     panelParam.add(txtMitreLimit);
 
-    panelControl.setLayout(flowLayout1);
-    //panelControl.add(btnClearResult, null);
-    
     cbExecEachA.setToolTipText("Compute for each A geometry element");
     cbExecEachA.setText("Each A");
     
@@ -221,6 +202,9 @@ extends JPanel implements FunctionPanel
     cbExecRepeat.setToolTipText("Repeat function a number of times, incrementing the first parameter");
     cbExecRepeat.setText("Repeat");
     
+    cbExecAuto.setToolTipText("Execute function when geometry changes");
+    cbExecAuto.setText("Live Exec");
+
     txtRepeatCount.setMaximumSize(new Dimension(25, 2147483647));
     txtRepeatCount.setMinimumSize(new Dimension(30, 21));
     txtRepeatCount.setPreferredSize(new Dimension(30, 21));
@@ -230,7 +214,7 @@ extends JPanel implements FunctionPanel
     execButton = SwingUtil.createButton(AppIcons.EXECUTE, AppStrings.TIP_EXECUTE,
         new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        execButton_actionPerformed(e);
+        execFunction(false);
       }
     });
     execButton.setEnabled(false);
@@ -238,7 +222,7 @@ extends JPanel implements FunctionPanel
     execToNewButton = SwingUtil.createButton("New", AppIcons.EXECUTE, "Compute function result to a new case",
         new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        execToNewButton_actionPerformed(e);
+        execFunction(true);
       }
     });
     execToNewButton.setEnabled(false); 
@@ -265,16 +249,26 @@ extends JPanel implements FunctionPanel
     panelExecHolder.add(panelExec, BorderLayout.CENTER);
     panelExecHolder.add(btnShowExecExt, BorderLayout.EAST);
 
-    panelExecMeta.add(cbExecEachA);
-    panelExecMeta.add(cbExecEachB);
-    panelExecMeta.add(cbExecRepeat);
-    panelExecMeta.add(txtRepeatCount);
+    JPanel panelExecMeta1 = new JPanel();
+    panelExecMeta1.setLayout(new FlowLayout());
+    panelExecMeta1.add(cbExecEachA);
+    panelExecMeta1.add(cbExecEachB);
+    panelExecMeta1.add(cbExecRepeat);
+    panelExecMeta1.add(txtRepeatCount);
+    
+    JPanel panelExecMeta2 = new JPanel();
+    panelExecMeta2.setLayout(new FlowLayout());
+    panelExecMeta2.add(cbExecAuto);
+    
+    panelExecMeta.setLayout(new BoxLayout(panelExecMeta, BoxLayout.Y_AXIS));
+    panelExecMeta.add(panelExecMeta1);
+    panelExecMeta.add(panelExecMeta2);
     panelExecMeta.setVisible(false);
     
+    JPanel panelExecControl = new JPanel();
     panelExecControl.setLayout(new BoxLayout(panelExecControl, BoxLayout.Y_AXIS));
     panelExecControl.add(panelExecHolder);
     panelExecControl.add(panelExecMeta);
-    panelExecControl.add(panelControl);
     
     panelExecParam.add(panelParam, BorderLayout.CENTER);
     panelExecParam.add(panelExecControl, BorderLayout.SOUTH);
@@ -312,14 +306,6 @@ extends JPanel implements FunctionPanel
   
   void clearResultButton_actionPerformed(ActionEvent e) {
     clearFunction();
-  }
-
-  void execButton_actionPerformed(ActionEvent e) {
-    execFunction(getMetaFunction(), false);
-  }
-
-  void execToNewButton_actionPerformed(ActionEvent e) {
-    execFunction(getMetaFunction(), true);
   }
 
   GeometryFunction getMetaFunction() {
@@ -365,11 +351,15 @@ extends JPanel implements FunctionPanel
     fireFunctionExecuted(new SpatialFunctionPanelEvent(this));
   }
 
+  public void execFunction(boolean createNew) {
+    execFunction(getMetaFunction(), createNew);
+  }
+
   public void execFunction(GeometryFunction func, boolean createNew) {
     currentFunc = func;
     if (currentFunc == null)
       return;
-    fireFunctionExecuted(new SpatialFunctionPanelEvent(this, createNew));
+    JTSTestBuilderController.resultController().execute(createNew);
   }
 
   private void functionChanged(GeometryFunction func)
@@ -382,6 +372,7 @@ extends JPanel implements FunctionPanel
     
     execButton.setEnabled(true);
     execToNewButton.setEnabled(true); 
+    cbExecAuto.setSelected(false);
   }
   
   static void updateParameters(GeometryFunction func, JComponent[] paramComp, JLabel[] paramLabel) {
@@ -468,7 +459,12 @@ extends JPanel implements FunctionPanel
     
   public boolean isFunctionSelected()
   {
-  	return currentFunc != null;
+    return currentFunc != null;
+  }
+
+  public boolean isAutoExecute()
+  {
+    return cbExecAuto.isSelected();
   }
 
   public GeometryFunction getFunction() {

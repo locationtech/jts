@@ -38,9 +38,6 @@ import javax.swing.event.ChangeListener;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.util.Assert;
-import org.locationtech.jtstest.testbuilder.controller.ResultController;
-import org.locationtech.jtstest.testbuilder.event.SpatialFunctionPanelEvent;
-import org.locationtech.jtstest.testbuilder.event.SpatialFunctionPanelListener;
 import org.locationtech.jtstest.testbuilder.io.XMLTestWriter;
 import org.locationtech.jtstest.testbuilder.model.DisplayParameters;
 import org.locationtech.jtstest.testbuilder.model.GeometryEvent;
@@ -65,7 +62,6 @@ public class JTSTestBuilderFrame extends JFrame
   
   TestBuilderModel tbModel;
 
-  private ResultController resultController = new ResultController(this);
   private JTSTestBuilderMenuBar tbMenuBar = new JTSTestBuilderMenuBar(this);
   private JTSTestBuilderToolBar tbToolBar = new JTSTestBuilderToolBar(this);
   //---------------------------------------------
@@ -108,19 +104,6 @@ public class JTSTestBuilderFrame extends JFrame
       enableEvents(AWTEvent.WINDOW_EVENT_MASK);
       setIconImage(AppIcons.APP.getImage());
       jbInit();
-
-      testCasePanel.spatialFunctionPanel.addSpatialFunctionPanelListener(
-          new SpatialFunctionPanelListener() {
-            public void functionExecuted(SpatialFunctionPanelEvent e) {
-            	resultController.spatialFunctionPanel_functionExecuted(e);
-            }
-          });
-      testCasePanel.scalarFunctionPanel.addSpatialFunctionPanelListener(
-          new SpatialFunctionPanelListener() {
-            public void functionExecuted(SpatialFunctionPanelEvent e) {
-            	resultController.executeScalarFunction();
-            }
-          });
       testCasePanel.cbRevealTopo.addActionListener(
           new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -188,6 +171,11 @@ public class JTSTestBuilderFrame extends JFrame
   public static GeometryEditPanel getGeometryEditPanel()
   {
     return instance().getTestCasePanel().getGeometryEditPanel();
+  }
+
+  public static SpatialFunctionPanel getSpatialFunctionPanel()
+  {
+    return instance().getTestCasePanel().spatialFunctionPanel;
   }
 
   public TestBuilderModel getModel()
@@ -311,8 +299,7 @@ public class JTSTestBuilderFrame extends JFrame
   }
 
   void model_geometryChanged(GeometryEvent e) {
-    //testCasePanel.relatePanel.clearResults();
-    JTSTestBuilder.controller().geometryViewChanged();
+    JTSTestBuilder.controller().geometryChanged();
     updateWktPanel();
   }
 
