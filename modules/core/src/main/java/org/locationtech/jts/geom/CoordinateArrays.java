@@ -471,6 +471,9 @@ public class CoordinateArrays {
    * Reverses the coordinates in an array in-place.
    */
   public static void reverse(Coordinate[] coord) {
+    if (coord.length <= 1)
+      return;
+    
     int last = coord.length - 1;
     int mid = last / 2;
     for (int i = 0; i <= mid; i++) {
