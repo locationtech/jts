@@ -39,6 +39,7 @@ import org.locationtech.jts.operation.overlayng.OverlayNGRobust;
  * <p>
  * Input geometries are always processed, so even valid inputs may 
  * have some minor alterations.  The output is always a new geometry object.
+ * 
  * <h2>Semantic Rules</h2>
  * <ol>
  * <li>Vertices with non-finite X or Y ordinates are removed 
@@ -62,7 +63,8 @@ import org.locationtech.jts.operation.overlayng.OverlayNGRobust;
  * <li>Collapsed lines and polygons are handled as follows,
  * depending on the <code>keepCollapsed</code> setting:
  * <ul>
- *   <li><code>false</code>: (default) collapses are converted to empty geometries</li>
+ *   <li><code>false</code>: (default) collapses are converted to empty geometries
+ *   (and removed if they are elements of collections)</li>
  *   <li><code>true</code>: collapses are converted to a valid geometry of lower dimension</li>
  * </ul>
  * </li>
@@ -375,8 +377,14 @@ public class GeometryFixer {
   private Geometry fixCollection(GeometryCollection geom) {
     Geometry[] geomRep = new Geometry[geom.getNumGeometries()];
     for (int i = 0; i < geom.getNumGeometries(); i++) {
-      geomRep[i] = fix(geom.getGeometryN(i));
+      geomRep[i] = fix(geom.getGeometryN(i), isKeepCollapsed);
     }
     return factory.createGeometryCollection(geomRep);
+  }
+  
+  private static Geometry fix(Geometry geom, boolean isKeepCollapsed) {
+    GeometryFixer fix = new GeometryFixer(geom);
+    fix.setKeepCollapsed(isKeepCollapsed);
+    return fix.getResult();
   }
 }
