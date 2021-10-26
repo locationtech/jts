@@ -348,23 +348,6 @@ public class GeometryFixer {
     return OverlayNGRobust.union(polys);
   }
 
-  private Geometry OLDfixHoles(Polygon geom) {
-    List<Geometry> holes = new ArrayList<Geometry>();
-    for (int i = 0; i < geom.getNumInteriorRing(); i++) {
-      Geometry holeRep = fixRing(geom.getInteriorRingN(i));
-      if (holeRep != null) {
-        holes.add(holeRep);
-      }
-    }
-    if (holes.size() == 0) return null;
-    if (holes.size() == 1) {
-      return holes.get(0);
-    }
-    // TODO: replace with holes.union() once OverlayNG is the default
-    Geometry holesUnion = OverlayNGRobust.union(holes);
-    return holesUnion;
-  }
-
   private Geometry fixRing(LinearRing ring) {
     //-- always execute fix, since it may remove repeated/invalid coords etc
     // TODO: would it be faster to check ring validity first?
