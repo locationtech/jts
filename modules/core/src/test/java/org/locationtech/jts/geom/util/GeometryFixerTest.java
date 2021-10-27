@@ -23,11 +23,11 @@ public class GeometryFixerTest extends GeometryTestCase {
   public static void main(String args[]) {
     TestRunner.run(GeometryFixerTest.class);
   }
-  
+
 	public GeometryFixerTest(String name) {
 		super(name);
 	}
-	
+
   public void testPoint() {
     checkFix("POINT (0 0)", "POINT (0 0)");
   }
@@ -53,7 +53,7 @@ public class GeometryFixerTest extends GeometryTestCase {
     Point pt = getGeometryFactory().createPoint(p);
     return pt;
   }
-  
+
   //----------------------------------------
 
   public void testMultiPointNaN() {
@@ -66,11 +66,15 @@ public class GeometryFixerTest extends GeometryTestCase {
         "MULTIPOINT ((0 0), (1 1))");
   }
 
-  public void testMultiPointWithEmpty() {
+  public void testMultiPointWithEmptyKeepMulti() {
     checkFix("MULTIPOINT ((0 0), EMPTY)",
-        "MULTIPOINT ((0 0))");
+        "MULTIPOINT ((0 0))", true);
   }
 
+  public void testMultiPointWithEmpty() {
+    checkFix("MULTIPOINT ((0 0), EMPTY)",
+      "POINT (0 0)", false);
+  }
   public void testMultiPointWithMultiEmpty() {
     checkFix("MULTIPOINT (EMPTY, EMPTY)",
         "MULTIPOINT EMPTY");
@@ -110,7 +114,7 @@ public class GeometryFixerTest extends GeometryTestCase {
     checkFix("LINESTRING (0 0, 9 9, 9 5, 0 5)",
         "LINESTRING (0 0, 9 9, 9 5, 0 5)");
   }
-  
+
   //----------------------------------------
 
   public void testLinearRingEmpty() {
@@ -155,7 +159,7 @@ public class GeometryFixerTest extends GeometryTestCase {
     checkFix("LINEARRING (10 10, 10 90, 90 10, 90 90, 10 10)",
         "LINESTRING (10 10, 10 90, 90 10, 90 90, 10 10)");
   }
-  
+
   //----------------------------------------
 
   /**
@@ -165,29 +169,34 @@ public class GeometryFixerTest extends GeometryTestCase {
     checkFix("MULTILINESTRING ((10 90, 90 10, 90 90), (90 50, 10 50))",
         "MULTILINESTRING ((10 90, 90 10, 90 90), (90 50, 10 50))");
   }
-  
+
   public void testMultiLineStringWithCollapse() {
     checkFix("MULTILINESTRING ((10 10, 90 90), (10 10, 10 10, 10 10))",
-        "LINESTRING (10 10, 90 90))");
+        "LINESTRING (10 10, 90 90))", false);
   }
-  
+
+  public void testMultiLineStringWithCollapseKeepMulti() {
+    checkFix("MULTILINESTRING ((10 10, 90 90), (10 10, 10 10, 10 10))",
+      "MULTILINESTRING ((10 10, 90 90)))", true);
+  }
+
   public void testMultiLineStringKeepCollapse() {
     checkFixKeepCollapse("MULTILINESTRING ((10 10, 90 90), (10 10, 10 10, 10 10))",
         "GEOMETRYCOLLECTION (POINT (10 10), LINESTRING (10 10, 90 90))");
   }
-  
+
   public void testMultiLineStringWithEmpty() {
     checkFix("MULTILINESTRING ((10 10, 90 90), EMPTY)",
-        "LINESTRING (10 10, 90 90))");
+        "MULTILINESTRING ((10 10, 90 90))");
   }
-  
+
   public void testMultiLineStringWithMultiEmpty() {
     checkFix("MULTILINESTRING (EMPTY, EMPTY)",
         "MULTILINESTRING EMPTY");
   }
-  
+
   //----------------------------------------
-  
+
   public void testPolygonEmpty() {
     checkFix("POLYGON EMPTY",
         "POLYGON EMPTY");
@@ -252,12 +261,12 @@ public class GeometryFixerTest extends GeometryTestCase {
     checkFixKeepCollapse("POLYGON ((10 90, 90 90, 90 10, 10 10, 10 90), (80 80, 20 80, 20 20, 20 80, 80 80))",
         "POLYGON ((10 10, 10 90, 90 90, 90 10, 10 10))");
   }
-  
+
   public void testPolygonHoleOverlapAndOutsideOverlap() {
     checkFix("POLYGON ((50 90, 80 90, 80 10, 50 10, 50 90), (70 80, 90 80, 90 20, 70 20, 70 80), (40 80, 40 50, 0 50, 0 80, 40 80), (30 40, 10 40, 10 60, 30 60, 30 40), (60 70, 80 70, 80 30, 60 30, 60 70))",
         "MULTIPOLYGON (((10 40, 10 50, 0 50, 0 80, 40 80, 40 50, 30 50, 30 40, 10 40)), ((70 80, 70 70, 60 70, 60 30, 70 30, 70 20, 80 20, 80 10, 50 10, 50 90, 80 90, 80 80, 70 80)))");
   }
-  
+
   //----------------------------------------
 
   public void testMultiPolygonEmpty() {
@@ -275,9 +284,14 @@ public class GeometryFixerTest extends GeometryTestCase {
         "MULTIPOLYGON (((10 40, 40 40, 40 10, 10 10, 10 40)), ((50 40, 80 40, 80 10, 50 10, 50 40)))");
   }
 
+  public void testMultiPolygonWithCollapseKeepMulti() {
+    checkFix("MULTIPOLYGON (((10 40, 40 40, 40 10, 10 10, 10 40)), ((50 40, 50 40, 50 40, 50 40, 50 40)))",
+        "MULTIPOLYGON (((10 10, 10 40, 40 40, 40 10, 10 10)))", true);
+  }
+
   public void testMultiPolygonWithCollapse() {
     checkFix("MULTIPOLYGON (((10 40, 40 40, 40 10, 10 10, 10 40)), ((50 40, 50 40, 50 40, 50 40, 50 40)))",
-        "POLYGON ((10 10, 10 40, 40 40, 40 10, 10 10))");
+      "POLYGON ((10 10, 10 40, 40 40, 40 10, 10 10))", false);
   }
 
   public void testMultiPolygonKeepCollapse() {
@@ -320,41 +334,47 @@ public class GeometryFixerTest extends GeometryTestCase {
   }
 
   //================================================
-  
-  
+
+
   private void checkFix(String wkt, String wktExpected) {
     Geometry geom = read(wkt);
-    checkFix(geom, false, wktExpected);
+    checkFix(geom, false, true, wktExpected);
   }
-  
+
+  private void checkFix(String wkt, String wktExpected, boolean keepMulti) {
+    Geometry geom = read(wkt);
+    checkFix(geom, false, keepMulti, wktExpected);
+  }
+
   private void checkFixKeepCollapse(String wkt, String wktExpected) {
     Geometry geom = read(wkt);
-    checkFix(geom, true, wktExpected);
+    checkFix(geom, true, true, wktExpected);
   }
-  
+
   private void checkFix(Geometry input, String wktExpected) {
-    checkFix(input, false, wktExpected);
+    checkFix(input, false, true, wktExpected);
   }
-  
+
   private void checkFixKeepCollapse(Geometry input, String wktExpected) {
-    checkFix(input, true, wktExpected);
+    checkFix(input, true, true, wktExpected);
   }
-  
-  private void checkFix(Geometry input, boolean keepCollapse, String wktExpected) {
+
+  private void checkFix(Geometry input, boolean keepCollapse, boolean keepMulti, String wktExpected) {
     Geometry actual;
     if (keepCollapse) {
       GeometryFixer fixer = new GeometryFixer(input);
       fixer.setKeepCollapsed(true);
+      fixer.setKeepMulti(keepMulti);
       actual = fixer.getResult();
     }
     else {
-      actual= GeometryFixer.fix(input);
+      actual= GeometryFixer.fix(input, keepMulti);
     }
-    
+
     assertTrue("Result is invalid", actual.isValid());
     assertTrue("Input geometry was not copied", input != actual);
     assertTrue("Result has aliased coordinates", checkDeepCopy(input, actual));
-    
+
     Geometry expected = read(wktExpected);
     checkEqual(expected, actual);
   }
@@ -381,12 +401,12 @@ public class GeometryFixerTest extends GeometryTestCase {
     Geometry geom = read(wkt);
     checkFixZ(geom, false, wktExpected);
   }
-  
+
   private void checkFixZKeepCollapse(String wkt, String wktExpected) {
     Geometry geom = read(wkt);
     checkFixZ(geom, true, wktExpected);
   }
-  
+
   private void checkFixZ(Geometry input, boolean keepCollapse, String wktExpected) {
     Geometry actual;
     if (keepCollapse) {
@@ -397,12 +417,12 @@ public class GeometryFixerTest extends GeometryTestCase {
     else {
       actual= GeometryFixer.fix(input);
     }
-    
+
     assertTrue("Result is invalid", actual.isValid());
-    
+
     Geometry expected = read(wktExpected);
     checkEqualXYZ(expected, actual);
   }
-  
+
 
 }
