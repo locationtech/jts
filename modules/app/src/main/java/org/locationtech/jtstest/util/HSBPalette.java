@@ -21,21 +21,21 @@ public class HSBPalette {
   public static final float HUE_WIDTH = 0.08333f;
   private static final float HUE_WRAP_MAX = 1 - HUE_WIDTH;
 
-  public static HSBPalette createRainbow(int numHue, float s, float b) {
+  public static HSBPalette createSpectrum(int numHue, float s, float b) {
     return new HSBPalette(numHue, 0, HUE_WRAP_MAX,
         1, s, s,
         1, b, b
         ); 
   }
 
-  public static HSBPalette createRainbowWrap(int numHue, float s, float b) {
+  public static HSBPalette createSpectrumWrap(int numHue, float s, float b) {
     return new HSBPalette(numHue, 0, 1,
         1, s, s,
         1, b, b
         ); 
   }
 
-  public static HSBPalette createRainbowIncremental(float hInc, float s, float b) {
+  public static HSBPalette createSpectrumIncremental(float hInc, float s, float b) {
     HSBPalette pal = new HSBPalette(50, 0, 1,
         1, s, s,
         1, b, b

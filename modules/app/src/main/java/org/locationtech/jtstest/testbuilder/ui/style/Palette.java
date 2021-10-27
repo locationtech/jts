@@ -20,8 +20,8 @@ public class Palette {
 
   public static final int TYPE_BASIC = 1;
   public static final int TYPE_VARY = 2;
-  public static final int TYPE_RAINBOW = 3;
-  public static final int TYPE_RAINBOW_RANDOM = 4;
+  public static final int TYPE_SPECTRUM = 3;
+  public static final int TYPE_SPECTRUM_RANDOM = 4;
   
   private static final float BRIGHT_RANGE = 0.1f;
   private static final float SAT_RANGE = 0.2f;
@@ -37,11 +37,11 @@ public class Palette {
           3, bright - BRIGHT_RANGE/2, bright + BRIGHT_RANGE/2
           );
     }
-    else if (TYPE_RAINBOW == paletteType) {
-      return HSBPalette.createRainbow(numHues, sat, bright);
+    else if (TYPE_SPECTRUM == paletteType) {
+      return HSBPalette.createSpectrum(numHues, sat, bright);
     }
-    else if (TYPE_RAINBOW_RANDOM == paletteType) {
-      return HSBPalette.createRainbowIncremental(0.23f, sat, bright);
+    else if (TYPE_SPECTRUM_RANDOM == paletteType) {
+      return HSBPalette.createSpectrumIncremental(0.23f, sat, bright);
     }
     return pal;
   }

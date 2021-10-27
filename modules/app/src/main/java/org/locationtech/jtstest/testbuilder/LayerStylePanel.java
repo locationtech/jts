@@ -531,23 +531,23 @@ public class LayerStylePanel extends JPanel {
   }
 
   //-----------------------------------------
-  static String[] paletteNames = { "Basic", "Varying", "Rainbow", "Rainbow Random" }; 
+  static String[] paletteNames = { "Basic", "Varying", "Spectrum", "Spectrum Random" }; 
 
   private static int getPaletteType(JComboBox comboPal) {
     String palName = (String)comboPal.getSelectedItem();
     
     int paletteType = Palette.TYPE_BASIC;
     if (palName.equalsIgnoreCase(paletteNames[1])) paletteType = Palette.TYPE_VARY;
-    if (palName.equalsIgnoreCase(paletteNames[2])) paletteType = Palette.TYPE_RAINBOW;
-    if (palName.equalsIgnoreCase(paletteNames[3])) paletteType = Palette.TYPE_RAINBOW_RANDOM;
+    if (palName.equalsIgnoreCase(paletteNames[2])) paletteType = Palette.TYPE_SPECTRUM;
+    if (palName.equalsIgnoreCase(paletteNames[3])) paletteType = Palette.TYPE_SPECTRUM_RANDOM;
     return paletteType;
   }
   
   private static void setPaletteType(JComboBox comboPal, int paletteType) {
     int index = 0;
     if (paletteType == Palette.TYPE_VARY) index = 1;
-    if (paletteType == Palette.TYPE_RAINBOW) index = 2;
-    if (paletteType == Palette.TYPE_RAINBOW_RANDOM) index = 3;
+    if (paletteType == Palette.TYPE_SPECTRUM) index = 2;
+    if (paletteType == Palette.TYPE_SPECTRUM_RANDOM) index = 3;
     comboPal.setSelectedIndex(index);
   }
   
