@@ -31,6 +31,7 @@ Distributions for older JTS versions can be obtained at the
 * Add `KdTree` seeding to`SnappingNoder` (#780)
 * Add `DiscreteFrechetDistance` (#764, #783)
 * Add `GeometryFixer` option to preserve `Multi` geometry types when collapses occur (#791)
+* Make `QuadTree` thread-safe (#792)
 
 ### Bug Fixes
 
