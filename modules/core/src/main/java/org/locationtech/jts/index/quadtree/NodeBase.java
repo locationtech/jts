@@ -13,7 +13,7 @@ package org.locationtech.jts.index.quadtree;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Collections;
 import java.util.List;
 
 import org.locationtech.jts.geom.Envelope;
@@ -50,7 +50,7 @@ public abstract class NodeBase implements Serializable {
     return subnodeIndex;
   }
 
-  protected List items = new ArrayList();
+  protected List items = Collections.synchronizedList(new ArrayList());
 
   /**
    * subquads are numbered as follows:
@@ -190,8 +190,10 @@ public abstract class NodeBase implements Serializable {
   private void visitItems(Envelope searchEnv, ItemVisitor visitor)
   {
     // would be nice to filter items based on search envelope, but can't until they contain an envelope
-    for (Iterator i = items.iterator(); i.hasNext(); ) {
-      visitor.visitItem(i.next());
+    synchronized (items) {
+        for (int i = 0; i < items.size(); i++) {
+            visitor.visitItem(items.get(i));
+        }
     }
   }
 
