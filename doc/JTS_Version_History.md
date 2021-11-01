@@ -38,6 +38,7 @@ Distributions for older JTS versions can be obtained at the
 * Fix `WKTReader` geometry typename parsing (#786)
 * Fix `CoordinateArrays.reverse` to handle zero-length arrays #787
 * Fix `GeometryFixer` to appply `isKeepCollapsed` flag to `GeometryCollection` elements (#790)
+* Fix `RectangleIntersects` to handle XYZM geometry (#794) 
 
 # Version 1.18.2
 
