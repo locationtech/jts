@@ -266,8 +266,6 @@ class RectangleIntersectsSegmentVisitor extends ShortCircuitedGeometryVisitor
   private RectangleLineIntersector rectIntersector;
 
   private boolean hasIntersection = false;
-  private Coordinate p0 = new Coordinate();
-  private Coordinate p1 = new Coordinate();
 
   /**
    * Creates a visitor for checking rectangle intersection
@@ -323,6 +321,8 @@ class RectangleIntersectsSegmentVisitor extends ShortCircuitedGeometryVisitor
   private void checkIntersectionWithSegments(LineString testLine)
   {
     CoordinateSequence seq1 = testLine.getCoordinateSequence();
+    Coordinate p0 = seq1.createCoordinate();
+    Coordinate p1 = seq1.createCoordinate();
     for (int j = 1; j < seq1.size(); j++) {
       seq1.getCoordinate(j - 1, p0);
       seq1.getCoordinate(j,     p1);
