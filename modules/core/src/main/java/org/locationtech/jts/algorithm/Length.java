@@ -37,7 +37,7 @@ public class Length {
   
     double len = 0.0;
   
-    Coordinate p = new Coordinate();
+    Coordinate p = pts.createCoordinate();
     pts.getCoordinate(0, p);
     double x0 = p.x;
     double y0 = p.y;

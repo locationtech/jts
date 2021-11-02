@@ -93,9 +93,9 @@ public class Area {
      * Based on the Shoelace formula.
      * http://en.wikipedia.org/wiki/Shoelace_formula
      */
-    Coordinate p0 = new Coordinate();
-    Coordinate p1 = new Coordinate();
-    Coordinate p2 = new Coordinate();
+    Coordinate p0 = ring.createCoordinate();
+    Coordinate p1 = ring.createCoordinate();
+    Coordinate p2 = ring.createCoordinate();
     ring.getCoordinate(0, p1);
     ring.getCoordinate(1, p2);
     double x0 = p1.x;
