@@ -39,6 +39,7 @@ Distributions for older JTS versions can be obtained at the
 * Fix `CoordinateArrays.reverse` to handle zero-length arrays #787
 * Fix `GeometryFixer` to appply `isKeepCollapsed` flag to `GeometryCollection` elements (#790)
 * Fix `RectangleIntersects` to handle XYZM geometry (#794) 
+* Fix various operations to handle XYZM geometry (#795)
 
 # Version 1.18.2
 
