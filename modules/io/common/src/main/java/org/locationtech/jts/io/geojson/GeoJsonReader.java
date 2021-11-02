@@ -152,6 +152,9 @@ public class GeoJsonReader {
       } else if (GeoJsonConstants.NAME_LINESTRING.equals(type)) {
         result = createLineString(geometryMap, geometryFactory);
 
+      }else if (GeoJsonConstants.NAME_LINEARRING.equals(type)) {
+        result = createLinearRing(geometryMap, geometryFactory);
+
       } else if (GeoJsonConstants.NAME_POLYGON.equals(type)) {
         result = createPolygon(geometryMap, geometryFactory);
 
@@ -378,7 +381,24 @@ public class GeoJsonReader {
 
     return result;
   }
+  private Geometry createLinearRing(Map<String, Object> geometryMap,
+      GeometryFactory geometryFactory) throws ParseException {
 
+      Geometry result = null;
+      try {
+        @SuppressWarnings("unchecked")
+        List<List<Number>> coordinatesList = (List<List<Number>>) geometryMap
+                .get(GeoJsonConstants.NAME_COORDINATES);
+
+        CoordinateSequence coordinate = this.createCoordinateSequence(coordinatesList);
+        result = geometryFactory.createLinearRing(coordinate);
+
+      }catch (RuntimeException e) {
+        throw new ParseException("Could not parse LinearRing from GeoJson string.", e);
+      }
+
+    return result;
+  }
   private Geometry createPoint(Map<String, Object> geometryMap,
       GeometryFactory geometryFactory) throws ParseException {
 
@@ -468,7 +488,6 @@ public class GeoJsonReader {
     if (ordinates == null || ordinates.size() == 0) {
       return new CoordinateArraySequence(0);
     }
-
     CoordinateSequence result = new CoordinateArraySequence(1);
 
     if (ordinates.size() > 0) {

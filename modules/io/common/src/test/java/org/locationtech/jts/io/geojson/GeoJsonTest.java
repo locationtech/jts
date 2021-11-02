@@ -45,6 +45,9 @@ public class GeoJsonTest extends GeometryTestCase {
   public void testLineString() throws ParseException {
     runTest("LINESTRING (1 2, 10 20, 100 200)");
   }
+  public void testLinearRing() throws ParseException {
+    runTest("LINEARRING (0 0, 100 0, 100 100, 0 0)");
+  }
 
   public void testPolygon() throws ParseException {
     runTest("POLYGON ((0 0, 100 0, 100 100, 0 100, 0 0))");

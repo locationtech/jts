@@ -13,15 +13,7 @@ package org.locationtech.jts.io.geojson;
 
 import org.json.simple.JSONAware;
 import org.json.simple.JSONObject;
-import org.locationtech.jts.geom.CoordinateSequence;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryCollection;
-import org.locationtech.jts.geom.LineString;
-import org.locationtech.jts.geom.MultiLineString;
-import org.locationtech.jts.geom.MultiPoint;
-import org.locationtech.jts.geom.MultiPolygon;
-import org.locationtech.jts.geom.Point;
-import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.geom.*;
 import org.locationtech.jts.util.Assert;
 
 import java.io.IOException;
@@ -158,6 +150,20 @@ public class GeoJsonWriter {
       CoordinateSequence coordinateSequence = lineString.getCoordinateSequence();
       final String jsonString = coordinateSequence.size() == 0
           ? JSON_ARRAY_EMPTY : getJsonString(coordinateSequence);
+
+      result.put(GeoJsonConstants.NAME_COORDINATES, new JSONAware() {
+
+        public String toJSONString() {
+          return jsonString;
+        }
+      });
+
+    }else if (geometry instanceof LinearRing) {
+      LinearRing linearRing = (LinearRing) geometry;
+
+      CoordinateSequence coordinateSequence = linearRing.getCoordinateSequence();
+      final String jsonString = coordinateSequence.size() == 0
+              ? JSON_ARRAY_EMPTY : getJsonString(coordinateSequence);
 
       result.put(GeoJsonConstants.NAME_COORDINATES, new JSONAware() {
 

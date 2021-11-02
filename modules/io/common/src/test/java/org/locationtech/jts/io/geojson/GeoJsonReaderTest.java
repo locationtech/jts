@@ -54,6 +54,14 @@ public class GeoJsonReaderTest extends GeometryTestCase {
     runTest("{\"type\":\"LineString\",\"coordinates\":null}", "LINESTRING EMPTY");
   }
 
+  public void testEmptyCoordinatesLinearRing() throws ParseException {
+    runTest("{\"type\":\"LinearRing\",\"coordinates\":[]}", "LINEARRING EMPTY");
+  }
+
+  public void testNullCoordinatesLinearRing() throws ParseException {
+    runTest("{\"type\":\"LinearRing\",\"coordinates\":null}", "LINEARRING EMPTY");
+  }
+
   public void testEmptyCoordinatesPolygon() throws ParseException {
     runTest("{\"type\":\"Polygon\",\"coordinates\":[]}", "POLYGON EMPTY");
   }
