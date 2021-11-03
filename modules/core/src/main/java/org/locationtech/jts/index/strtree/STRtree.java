@@ -50,12 +50,15 @@ import org.locationtech.jts.util.Assert;
  *
  * @version 1.7
  */
-public class STRtree extends AbstractSTRtree 
-implements SpatialIndex, Serializable 
+public class STRtree<T> extends AbstractSTRtree<T> 
+implements SpatialIndex<T>, Serializable 
 {
 
   static final class STRtreeNode extends AbstractNode
   {
+
+    private static final long serialVersionUID = -5153132721074681573L;
+
     STRtreeNode(int level)
     {
       super(level);
@@ -63,8 +66,8 @@ implements SpatialIndex, Serializable
 
     protected Object computeBounds() {
       Envelope bounds = null;
-      for (Iterator i = getChildBoundables().iterator(); i.hasNext(); ) {
-        Boundable childBoundable = (Boundable) i.next();
+      for (Iterator<Boundable> i = getChildBoundables().iterator(); i.hasNext(); ) {
+        Boundable childBoundable = i.next();
         if (bounds == null) {
           bounds = new Envelope((Envelope)childBoundable.getBounds());
         }
@@ -203,7 +206,7 @@ implements SpatialIndex, Serializable
    * The minimum recommended capacity setting is 4.
    *
    */
-  public STRtree(int nodeCapacity, ArrayList itemBoundables) {
+  public STRtree(int nodeCapacity, ArrayList<ItemBoundable<T>> itemBoundables) {
     super(nodeCapacity, itemBoundables);
   }
 
@@ -218,7 +221,7 @@ implements SpatialIndex, Serializable
   /**
    * Inserts an item having the given bounds into the tree.
    */
-  public void insert(Envelope itemEnv, Object item) {
+  public void insert(Envelope itemEnv, T item) {
     if (itemEnv.isNull()) { return; }
     super.insert(itemEnv, item);
   }
@@ -226,7 +229,7 @@ implements SpatialIndex, Serializable
   /**
    * Returns items whose bounds intersect the given envelope.
    */
-  public List query(Envelope searchEnv) {
+  public List<T> query(Envelope searchEnv) {
     //Yes this method does something. It specifies that the bounds is an
     //Envelope. super.query takes an Object, not an Envelope. [Jon Aquino 10/24/2003]
     return super.query((Object)searchEnv);
@@ -235,7 +238,7 @@ implements SpatialIndex, Serializable
   /**
    * Returns items whose bounds intersect the given envelope.
    */
-  public void query(Envelope searchEnv, ItemVisitor visitor) {
+  public void query(Envelope searchEnv, ItemVisitor<T> visitor) {
     //Yes this method does something. It specifies that the bounds is an
     //Envelope. super.query takes an Object, not an Envelope. [Jon Aquino 10/24/2003]
     super.query(searchEnv, visitor);
@@ -319,9 +322,9 @@ implements SpatialIndex, Serializable
    * @return the nearest item in this tree
    *    or <code>null</code> if the tree is empty
    */
-  public Object nearestNeighbour(Envelope env, Object item, ItemDistance itemDist)
+  public Object nearestNeighbour(Envelope env, T item, ItemDistance itemDist)
   {
-    Boundable bnd = new ItemBoundable(env, item);
+    Boundable bnd = new ItemBoundable<>(env, item);
     BoundablePair bp = new BoundablePair(this.getRoot(), bnd, itemDist);
     return nearestNeighbour(bp)[0];
   }
@@ -341,7 +344,7 @@ implements SpatialIndex, Serializable
    * @return the pair of the nearest items, one from each tree
    *    or <code>null</code> if no pair of distinct items can be found
    */
-  public Object[] nearestNeighbour(STRtree tree, ItemDistance itemDist)
+  public Object[] nearestNeighbour(STRtree<T> tree, ItemDistance itemDist)
   {
     if (isEmpty() || tree.isEmpty()) return null;
     BoundablePair bp = new BoundablePair(this.getRoot(), tree.getRoot(), itemDist);
@@ -414,7 +417,7 @@ implements SpatialIndex, Serializable
    * @param maxDistance the distance limit for the search
    * @return true if there are items within the distance
    */
-  public boolean isWithinDistance(STRtree tree, ItemDistance itemDist, double maxDistance)
+  public boolean isWithinDistance(STRtree<T> tree, ItemDistance itemDist, double maxDistance)
   {
     BoundablePair bp = new BoundablePair(this.getRoot(), tree.getRoot(), itemDist);
     return isWithinDistance(bp, maxDistance);
@@ -517,9 +520,9 @@ implements SpatialIndex, Serializable
    * @param k the K nearest items in kNearestNeighbour
    * @return the K nearest items in this tree
    */
-  public Object[] nearestNeighbour(Envelope env, Object item, ItemDistance itemDist,int k)
+  public Object[] nearestNeighbour(Envelope env, T item, ItemDistance itemDist,int k)
   {
-    Boundable bnd = new ItemBoundable(env, item);
+    Boundable bnd = new ItemBoundable<>(env, item);
     BoundablePair bp = new BoundablePair(this.getRoot(), bnd, itemDist);
     return nearestNeighbourK(bp,k);
   }

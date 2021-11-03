@@ -49,8 +49,8 @@ import org.locationtech.jts.index.SpatialIndex;
  *
  * @version 1.7
  */
-public class Quadtree
-    implements SpatialIndex, Serializable
+public class Quadtree<T>
+    implements SpatialIndex<T>, Serializable
 {
   private static final long serialVersionUID = -7461163625812743604L;
 
@@ -184,13 +184,13 @@ public class Quadtree
    * @param searchEnv the envelope of the desired query area.
    * @return a List of items which may intersect the search envelope
    */
-  public List query(Envelope searchEnv)
+  public List<T> query(Envelope searchEnv)
   {
     /**
      * the items that are matched are the items in quads which
      * overlap the search envelope
      */
-    ArrayListVisitor visitor = new ArrayListVisitor();
+    ArrayListVisitor<T> visitor = new ArrayListVisitor<>();
     query(searchEnv, visitor);
     return visitor.getItems();
   }
@@ -208,7 +208,7 @@ public class Quadtree
    * @param searchEnv the envelope of the desired query area.
    * @param visitor a visitor object which is passed the visited items
    */
-  public void query(Envelope searchEnv, ItemVisitor visitor)
+  public void query(Envelope searchEnv, ItemVisitor<T> visitor)
   {
     /**
      * the items that are matched are the items in quads which
@@ -220,9 +220,9 @@ public class Quadtree
   /**
    * Return a list of all items in the Quadtree
    */
-  public List queryAll()
+  public List<T> queryAll()
   {
-    List foundItems = new ArrayList();
+    List<T> foundItems = new ArrayList<>();
     root.addAllItems(foundItems);
     return foundItems;
   }

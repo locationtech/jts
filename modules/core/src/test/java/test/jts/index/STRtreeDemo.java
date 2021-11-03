@@ -35,7 +35,7 @@ public class STRtreeDemo {
   public STRtreeDemo() {
   }
 
-  public static class TestTree extends STRtree {
+  public static class TestTree<T> extends STRtree<T> {
     public TestTree(int nodeCapacity) {
       super(nodeCapacity);
     }

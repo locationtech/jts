@@ -19,11 +19,11 @@ import java.io.Serializable;
  *
  * @version 1.7
  */
-public class ItemBoundable implements Boundable, Serializable {
+public class ItemBoundable<T> implements Boundable, Serializable {
   private Object bounds;
-  private Object item;
+  private T item;
 
-  public ItemBoundable(Object bounds, Object item) {
+  public ItemBoundable(Object bounds, T item) {
     this.bounds = bounds;
     this.item = item;
   }
@@ -32,5 +32,5 @@ public class ItemBoundable implements Boundable, Serializable {
     return bounds;
   }
 
-  public Object getItem() { return item; }
+  public T getItem() { return item; }
 }

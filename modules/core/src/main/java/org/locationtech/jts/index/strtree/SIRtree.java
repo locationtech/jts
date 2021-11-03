@@ -28,7 +28,7 @@ import java.util.List;
  *
  * @version 1.7
  */
-public class SIRtree extends AbstractSTRtree {
+public class SIRtree<T> extends AbstractSTRtree<T> {
 
   private Comparator comparator = new Comparator() {
     public int compare(Object o1, Object o2) {
@@ -78,14 +78,14 @@ public class SIRtree extends AbstractSTRtree {
   /**
    * Inserts an item having the given bounds into the tree.
    */
-  public void insert(double x1, double x2, Object item) {
+  public void insert(double x1, double x2, T item) {
     super.insert(new Interval(Math.min(x1, x2), Math.max(x1, x2)), item);
   }
 
   /**
    * Returns items whose bounds intersect the given value.
    */
-  public List query(double x) {
+  public List<T> query(double x) {
     return query(x, x);
   }
 
@@ -93,7 +93,7 @@ public class SIRtree extends AbstractSTRtree {
    * Returns items whose bounds intersect the given bounds.
    * @param x1 possibly equal to x2
    */
-  public List query(double x1, double x2) {
+  public List<T> query(double x1, double x2) {
     return super.query(new Interval(Math.min(x1, x2), Math.max(x1, x2)));
   }
 

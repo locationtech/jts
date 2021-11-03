@@ -75,7 +75,7 @@ public class STRtreeTest extends TestCase {
   throws Exception
   {
     SpatialIndexTester tester = new SpatialIndexTester();
-    tester.setSpatialIndex(new STRtree(4));
+    tester.setSpatialIndex(new STRtree<>(4));
     tester.init();
     tester.run();
     assertTrue(tester.isSuccess());
@@ -173,7 +173,7 @@ public class STRtreeTest extends TestCase {
   }
 
   public void testRemove() {
-    STRtree tree = new STRtree();
+    STRtree<String> tree = new STRtree<>();
     tree.insert(new Envelope(0, 10, 0, 10), "1");
     tree.insert(new Envelope(5, 15, 5, 15), "2");
     tree.insert(new Envelope(10, 20, 10, 20), "3");
