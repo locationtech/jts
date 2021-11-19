@@ -40,6 +40,7 @@ Distributions for older JTS versions can be obtained at the
 * Fix `GeometryFixer` to appply `isKeepCollapsed` flag to `GeometryCollection` elements (#790)
 * Fix `RectangleIntersects` to handle XYZM geometry (#794) 
 * Fix various operations to handle XYZM geometry (#795)
+* Fix SnapRoundingNoder to use tolerance in noding (also fixes `GeometryPrecisionReducer`) (#802)
 
 # Version 1.18.2
 
