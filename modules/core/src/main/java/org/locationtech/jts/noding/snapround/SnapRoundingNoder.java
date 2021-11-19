@@ -57,6 +57,12 @@ import org.locationtech.jts.noding.SegmentString;
 public class SnapRoundingNoder
     implements Noder
 {
+  /**
+   * The division factor used to determine
+   * nearness distance tolerance for intersection detection.
+   */
+  private static final int NEARNESS_FACTOR = 100;
+  
   private final PrecisionModel pm;
   private final HotPixelIndex pixelIndex;
   
@@ -111,9 +117,14 @@ public class SnapRoundingNoder
    */
   private void addIntersectionPixels(Collection<NodedSegmentString> segStrings)
   {
-    SnapRoundingIntersectionAdder intAdder = new SnapRoundingIntersectionAdder(pm);
-    MCIndexNoder noder = new MCIndexNoder();
-    noder.setSegmentIntersector(intAdder);
+    /**
+     * nearness tolerance is a small fraction of the grid size.
+     */
+    double snapGridSize = 1.0 / pm.getScale();
+    double nearnessTol = snapGridSize / NEARNESS_FACTOR;
+    
+    SnapRoundingIntersectionAdder intAdder = new SnapRoundingIntersectionAdder(nearnessTol);
+    MCIndexNoder noder = new MCIndexNoder(intAdder, nearnessTol);
     noder.computeNodes(segStrings);
     List<Coordinate> intPts = intAdder.getIntersections();
     pixelIndex.addNodes(intPts);
