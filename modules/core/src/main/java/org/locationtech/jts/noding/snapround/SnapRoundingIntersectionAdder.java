@@ -43,16 +43,9 @@ import org.locationtech.jts.noding.SegmentString;
  */
 public class SnapRoundingIntersectionAdder
     implements SegmentIntersector
-{
-  /**
-   * The division factor used to determine
-   * nearness distance tolerance for interior intersection detection.
-   */
-  private static final int NEARNESS_FACTOR = 100;
-  
+{ 
   private final LineIntersector li;
   private final List<Coordinate> intersections;
-  private final PrecisionModel precModel;
   private final double nearnessTol;
 
 
@@ -60,16 +53,11 @@ public class SnapRoundingIntersectionAdder
    * Creates an intersector which finds all snapped interior intersections,
    * and adds them as nodes.
    *
-   * @param pm the precision mode to use
+   * @param nearnessTol the intersection distance tolerance
    */
-  public SnapRoundingIntersectionAdder(PrecisionModel pm)
+  public SnapRoundingIntersectionAdder(double nearnessTol)
   {
-    precModel = pm;
-    /**
-     * Nearness distance tolerance is a small fraction of the snap grid size
-     */
-    double snapGridSize = 1.0 / precModel.getScale();
-    nearnessTol =  snapGridSize / NEARNESS_FACTOR;
+    this.nearnessTol =  nearnessTol;
     
     /**
      * Intersections are detected and computed using full precision.
