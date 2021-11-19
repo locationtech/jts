@@ -183,6 +183,22 @@ public class SnapRoundingNoderTest  extends GeometryTestCase {
     checkRounding(wkt, 100000000, expected);
   }
   
+  /**
+   * A vertex lies near interior of horizontal segment.  
+   * Both are moved by rounding, and vertex ends up coincident with segment,
+   * but node is not created.
+   * This is very subtle, since because the segment is horizontal the vertex lies exactly on it
+   * and thus still reports as valid geometry (although a noding check reports failure).
+   * This is caused by the indexing used in Snap-rounding using exact envelopes.
+   * What is needed is a small expansion amount to ensure segments within snap distance are tested
+   * (in MCIndexNoder)
+   */
+  public void testVertexNearHorizSegNotNoded() {
+    String wkt = "MULTILINESTRING (( 2.5096893 48.9530182, 2.50762932500455 48.95233152500091, 2.5055695 48.9530182 ), ( 2.5090027 48.9523315, 2.5035095 48.9523315 ))";
+    String expected = null;
+    checkRounding(wkt, 1000000, expected);
+  }
+  
   void checkRounding(String wkt, double scale, String expectedWKT)
   {
     Geometry geom = read(wkt);
