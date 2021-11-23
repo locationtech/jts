@@ -26,6 +26,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jtstest.testbuilder.controller.JTSTestBuilderController;
+import org.locationtech.jtstest.testbuilder.geom.GeometryComponentDeleter;
 import org.locationtech.jtstest.testbuilder.ui.SwingUtil;
 
 
@@ -75,44 +77,31 @@ public class InspectorPanel extends TestBuilderPanel  {
     geomTreePanel.setPreferredSize(new Dimension(300, 500));
     this.add(geomTreePanel, BorderLayout.CENTER);
     
-    btnZoom.setEnabled(true);
-    btnZoom.setMaximumSize(new Dimension(30, 26));
-    //btnZoom.setText("Zoom");
-    btnZoom.setIcon(zoomIcon);
-    btnZoom.setToolTipText("Zoom to component");
-    btnZoom.addActionListener(new java.awt.event.ActionListener() {
+    JButton btnZoom = SwingUtil.createButton(AppIcons.ZOOM, "Zoom to component", new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e) {
         btnZoom_actionPerformed(e);
       }
     });
-    btnCopy.setEnabled(true);
-    btnCopy.setMaximumSize(new Dimension(30, 30));
-    //btnCopy.setText("Copy");
-    btnCopy.setIcon(copyIcon);
-    btnCopy.setToolTipText("Copy (Ctl-click to copy formatted");
-    btnCopy.addActionListener(new java.awt.event.ActionListener() {
+    JButton btnCopy = SwingUtil.createButton(AppIcons.COPY, "Copy (Ctl-click to copy formatted", new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e) {
         btnCopy_actionPerformed(e);
       }
     });
-    btnNext.setEnabled(true);
-    btnNext.setMaximumSize(new Dimension(30, 30));
-    btnNext.setToolTipText("Zoom to Next");
-    btnNext.setIcon(downIcon);
-    btnNext.addActionListener(new java.awt.event.ActionListener() {
+    JButton btnNext = SwingUtil.createButton(AppIcons.DOWN, "Zoom to Next", new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e) {
         btnZoomNext_actionPerformed(e, 1);
       }
     });
-    btnPrev.setEnabled(true);
-    btnPrev.setMaximumSize(new Dimension(30, 30));
-    btnPrev.setToolTipText("Zoom to Previous");
-    btnPrev.setIcon(upIcon);
-    btnPrev.addActionListener(new java.awt.event.ActionListener() {
+    JButton btnPrev = SwingUtil.createButton(AppIcons.UP, "Zoom to Previous", new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e) {
         btnZoomNext_actionPerformed(e, -1);
       }
     });
+    JButton btnDelete = SwingUtil.createButton(AppIcons.DELETE, "Delete", new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        deleteGeom();
+      }
+    });    
     
     lblGeom.setFont(new java.awt.Font("Dialog", 1, 16));
     lblGeom.setText(" ");
@@ -131,6 +120,7 @@ public class InspectorPanel extends TestBuilderPanel  {
     btnPanel.add(btnNext);
     btnPanel.add(Box.createRigidArea(new Dimension(0, BOX_SPACER)));
     btnPanel.add(btnCopy);
+    btnPanel.add(btnDelete);
     this.add(btnPanel, BorderLayout.WEST);
     
     if (showExpand) {
@@ -199,6 +189,14 @@ public class InspectorPanel extends TestBuilderPanel  {
     SwingUtil.copyToClipboard(geom, isFormatted);
   }
 
+  private void deleteGeom() {
+    Geometry geomComp = geomTreePanel.getSelectedGeometry();
+    if (geomComp == null) return;
+    Geometry geomEdit = GeometryComponentDeleter.deleteComponent(geometry, geomComp);
+    JTSTestBuilderController.model().getGeometryEditModel().setGeometry(source, geomEdit);
+    updateGeometry(geomEdit);
+  }
+
   public void setGeometry(String tag, Geometry geom, int source)
   {
     this.source = source;
@@ -208,6 +206,12 @@ public class InspectorPanel extends TestBuilderPanel  {
     lblGeom.setForeground(source == 0 ? Color.BLUE : Color.RED);
     
     sortNone();
+  }
+
+  private void updateGeometry(Geometry geom)
+  {
+    this.geometry = geom;
+    geomTreePanel.populate(geometry, source);
   }
 
   public void sortNone()
