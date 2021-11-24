@@ -35,18 +35,10 @@ public class InspectorPanel extends TestBuilderPanel  {
   
   private static final int BOX_SPACER = 5;
 
-  private static final ImageIcon downIcon = AppIcons.DOWN;
-  private static final ImageIcon upIcon = AppIcons.UP;
-  private static final ImageIcon zoomIcon = AppIcons.ZOOM;
-  private static final ImageIcon copyIcon = AppIcons.COPY;
-
   GeometryTreePanel geomTreePanel;
   
-  JButton btnZoom = new JButton();
-  JButton btnCopy = new JButton();
-  JButton btnNext = new JButton();
-  JButton btnPrev = new JButton();
-  JButton btnExpand = new JButton();
+  private JButton btnExpand = new JButton();
+  private JButton btnDelete;
 
   JLabel lblGeom = new JLabel();
 
@@ -97,7 +89,7 @@ public class InspectorPanel extends TestBuilderPanel  {
         btnZoomNext_actionPerformed(e, -1);
       }
     });
-    JButton btnDelete = SwingUtil.createButton(AppIcons.DELETE, "Delete", new java.awt.event.ActionListener() {
+    btnDelete = SwingUtil.createButton(AppIcons.DELETE, "Delete", new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e) {
         deleteGeom();
       }
@@ -197,11 +189,12 @@ public class InspectorPanel extends TestBuilderPanel  {
     updateGeometry(geomEdit);
   }
 
-  public void setGeometry(String tag, Geometry geom, int source)
+  public void setGeometry(String tag, Geometry geom, int source, boolean isEditable)
   {
     this.source = source;
     this.geometry = geom;
-    
+
+    btnDelete.setEnabled(isEditable);
     lblGeom.setText(tag);
     lblGeom.setForeground(source == 0 ? Color.BLUE : Color.RED);
     
@@ -245,5 +238,7 @@ public class InspectorPanel extends TestBuilderPanel  {
     }
     geomTreePanel.populate(geometry, source, sorterLen);
   }
+
+
   
 }

@@ -328,18 +328,18 @@ public class JTSTestBuilderFrame extends JFrame
     Object currResult = tbModel.getResult();
     if (! (currResult instanceof Geometry))
       return;
-    inspectGeometry((Geometry) currResult, 0, "R");
+    inspectGeometry((Geometry) currResult, 0, "R", false);
   }
 
   public void inspectGeometry() {
     int geomIndex = tbModel.getGeometryEditModel().getGeomIndex();
     String tag = geomIndex == 0 ? AppStrings.GEOM_LABEL_A : AppStrings.GEOM_LABEL_B;
     Geometry geometry = currentCase().getGeometry(geomIndex);
-    inspectGeometry(geometry, geomIndex, tag);
+    inspectGeometry(geometry, geomIndex, tag, true);
   }
 
-  private void inspectGeometry(Geometry geometry, int geomIndex, String tag) {
-    inspectPanel.setGeometry( tag, geometry, geomIndex);
+  private void inspectGeometry(Geometry geometry, int geomIndex, String tag, boolean isEditable) {
+    inspectPanel.setGeometry( tag, geometry, geomIndex, isEditable);
     showTab(AppStrings.TAB_LABEL_INSPECT);
   }
 
