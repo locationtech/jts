@@ -35,7 +35,7 @@ public class AppIcons {
   public final static ImageIcon LEFT = IconLoader.icon("Left.png");
   public final static ImageIcon RIGHT = IconLoader.icon("Right.png");
   
-  public final static ImageIcon ZOOM = IconLoader.icon("MagnifyCursor.gif");
+  public final static ImageIcon ZOOM = IconLoader.icon("Magnify.png");
   public final static ImageIcon COPY_TO_TEST = IconLoader.icon("CopyToTest.png");
   public final static ImageIcon COPY = IconLoader.icon("Copy.png");
   public final static ImageIcon PASTE = IconLoader.icon("Paste.png");
