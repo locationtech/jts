@@ -24,7 +24,6 @@ import org.locationtech.jts.geom.util.GeometryEditor;
  * By default the geometry precision model is not changed.
  * This can be overridden by using {@link #setChangePrecisionModel(boolean)}.
  *  
- *  
  * <h4>Topological Precision Reduction</h4>
  * 
  * The default mode of operation ensures the reduced result is topologically valid
