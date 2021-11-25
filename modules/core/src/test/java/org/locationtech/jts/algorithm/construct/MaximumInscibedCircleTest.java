@@ -56,6 +56,15 @@ public class MaximumInscibedCircleTest extends GeometryTestCase {
   }
 
   /**
+   * Invalid polygon collapsed to a flat line
+   * (originally caused infinite loop)
+   */
+  public void testCollapsedLineFlat() {
+    checkCircle("POLYGON((1 2, 1 2, 1 2, 1 2, 3 2, 1 2))",
+        0.01, 2, 2, 0 );
+  }
+
+  /**
    * Invalid polygon collapsed to a point
    */
   public void testCollapsedPoint() {

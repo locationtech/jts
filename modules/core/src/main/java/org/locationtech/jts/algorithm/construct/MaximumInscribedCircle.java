@@ -256,6 +256,11 @@ public class MaximumInscribedCircle {
     double width = env.getWidth();
     double height = env.getHeight();
     double cellSize = Math.min(width, height);
+    
+    // Check for flat collapsed input and if so short-circuit
+    // Result will just be centroid
+    if (cellSize == 0) return;
+    
     double hSide = cellSize / 2.0;
 
     // compute initial grid of cells to cover area
