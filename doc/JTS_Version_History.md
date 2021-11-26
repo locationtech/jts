@@ -32,6 +32,7 @@ Distributions for older JTS versions can be obtained at the
 * Add `DiscreteFrechetDistance` (#764, #783)
 * Add `GeometryFixer` option to preserve `Multi` geometry types when collapses occur (#791)
 * Make `QuadTree` thread-safe (#792)
+* Allow specifying a fixed `PrecisionModel` via grid size (#804)
 
 ### Bug Fixes
 
@@ -40,7 +41,8 @@ Distributions for older JTS versions can be obtained at the
 * Fix `GeometryFixer` to appply `isKeepCollapsed` flag to `GeometryCollection` elements (#790)
 * Fix `RectangleIntersects` to handle XYZM geometry (#794) 
 * Fix various operations to handle XYZM geometry (#795)
-* Fix SnapRoundingNoder to use tolerance in noding (also fixes `GeometryPrecisionReducer`) (#802)
+* Fix `SnapRoundingNoder` to use tolerance in noding (also fixes `GeometryPrecisionReducer`) (#802)
+* Fix `MaximumInscribedCircle` to avoid infinite-looping on flat collapsed input (#807)
 
 # Version 1.18.2
 

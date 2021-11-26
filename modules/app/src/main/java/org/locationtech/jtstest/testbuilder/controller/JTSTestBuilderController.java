@@ -31,7 +31,7 @@ import org.locationtech.jtstest.testbuilder.model.TestBuilderModel;
 import org.locationtech.jtstest.testbuilder.ui.ImageUtil;
 import org.locationtech.jtstest.testbuilder.ui.SwingUtil;
 import org.locationtech.jtstest.testbuilder.ui.render.ViewStyle;
-import org.locationtech.jtstest.testbuilder.ui.tools.DeleteVertexTool;
+import org.locationtech.jtstest.testbuilder.ui.tools.DeleteByBoxTool;
 import org.locationtech.jtstest.testbuilder.ui.tools.EditVertexTool;
 import org.locationtech.jtstest.testbuilder.ui.tools.ExtractComponentTool;
 import org.locationtech.jtstest.testbuilder.ui.tools.InfoTool;
@@ -261,7 +261,7 @@ public class JTSTestBuilderController
   }
 
   public void modeDeleteVertex() {
-    setTool(DeleteVertexTool.getInstance());
+    setTool(DeleteByBoxTool.getInstance());
   }
   public void modeEditVertex() {
     setTool(EditVertexTool.getInstance());

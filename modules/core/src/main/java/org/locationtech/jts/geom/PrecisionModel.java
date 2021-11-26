@@ -19,30 +19,29 @@ import org.locationtech.jts.io.WKTWriter;
 
 /**
  * Specifies the precision model of the {@link Coordinate}s in a {@link Geometry}.
- * In other words, specifies the grid of allowable
- *  points for all <code>Geometry</code>s.
+ * In other words, specifies the grid of allowable points for a <code>Geometry</code>.
+ * A precision model may be <b>floating</b> ({@link #FLOATING} or {@link #FLOATING_SINGLE}), 
+ * in which case normal floating-point value semantics apply.
  * <p>
- * The {@link #makePrecise(Coordinate)} method allows rounding a coordinate to
+ * For a {@link #FIXED} precision model the {@link #makePrecise(Coordinate)} method allows rounding a coordinate to
  * a "precise" value; that is, one whose
  *  precision is known exactly.
  *<p>
  * Coordinates are assumed to be precise in geometries.
  * That is, the coordinates are assumed to be rounded to the
  * precision model given for the geometry.
- * JTS input routines automatically round coordinates to the precision model
- * before creating Geometries.
  * All internal operations
  * assume that coordinates are rounded to the precision model.
  * Constructive methods (such as boolean operations) always round computed
  * coordinates to the appropriate precision model.
  * <p>
- * Currently three types of precision model are supported:
+ * Three types of precision model are supported:
  * <ul>
  * <li>FLOATING - represents full double precision floating point.
  * This is the default precision model used in JTS
  * <li>FLOATING_SINGLE - represents single precision floating point.
  * <li>FIXED - represents a model with a fixed number of decimal places.
- *  A Fixed Precision Model is specified by a scale factor.
+ *  A Fixed Precision Model is specified by a <b>scale factor</b>.
  *  The scale factor specifies the size of the grid which numbers are rounded to.
  *  Input coordinates are mapped to fixed coordinates according to the following
  *  equations:
@@ -55,13 +54,16 @@ import org.locationtech.jts.io.WKTWriter;
  * of 1000. To specify -3 decimal places of precision (i.e. rounding to
  * the nearest 1000), use a scale factor of 0.001.
  * <p>
+ * It is also supported to specify a precise <b>grid size</b> 
+ * by providing it as a negative scale factor.
+ * This allows setting a precise grid size rather than using a fractional scale,
+ * which provides more accurate and robust rounding.
+ * For example, to specify rounding to the nearest 1000 use a scale factor of -1000.
+ * <p>
  * Coordinates are represented internally as Java double-precision values.
- * Since Java uses the IEEE-394 floating point standard, this
+ * Java uses the IEEE-394 floating point standard, which
  * provides 53 bits of precision. (Thus the maximum precisely representable
  * <i>integer</i> is 9,007,199,254,740,992 - or almost 16 decimal digits of precision).
- * <p>
- * JTS binary methods currently do not handle inputs which have different precision models.
- * The precision model of any constructed geometric value is undefined.
  *
  *@version 1.7
  */
@@ -142,6 +144,12 @@ public class PrecisionModel implements Serializable, Comparable
    * The scale factor which determines the number of decimal places in fixed precision.
    */
   private double scale;
+  /**
+   * If non-zero, the precise grid size specified.
+   * In this case, the scale is also valid and is computed from the grid size.
+   * If zero, the scale is used to compute the grid size where needed.
+   */
+  private double gridSize;
 
   /**
    * Creates a <code>PrecisionModel</code> with a default precision
@@ -187,9 +195,11 @@ public class PrecisionModel implements Serializable, Comparable
    *  Creates a <code>PrecisionModel</code> that specifies Fixed precision.
    *  Fixed-precision coordinates are represented as precise internal coordinates,
    *  which are rounded to the grid defined by the scale factor.
+   *  The provided scale may be negative, to specify an exact grid size. 
+   *  The scale is then computed as the reciprocal.
    *
-   *@param  scale    amount by which to multiply a coordinate after subtracting
-   *      the offset, to obtain a precise coordinate
+   *@param  scale amount by which to multiply a coordinate after subtracting
+   *      the offset, to obtain a precise coordinate.  Must be non-zero.
    */
   public PrecisionModel(double scale) {
     modelType = FIXED;
@@ -202,6 +212,7 @@ public class PrecisionModel implements Serializable, Comparable
   public PrecisionModel(PrecisionModel pm) {
     modelType = pm.modelType;
     scale = pm.scale;
+    gridSize = pm.gridSize;
   }
 
 
@@ -262,6 +273,23 @@ public class PrecisionModel implements Serializable, Comparable
   }
 
   /**
+   * Computes the grid size for a fixed precision model.
+   * This is equal to the reciprocal of the scale factor.
+   * If the grid size has been set explicity (via a negative scale factor)
+   * it will be returned.
+   *  
+   * @return the grid size at a fixed precision scale.
+   */
+  public double gridSize() {
+    if (isFloating())
+      return Double.NaN;
+    
+    if (gridSize != 0)
+      return gridSize;
+    return 1.0 / scale;
+  }
+  
+  /**
    * Gets the type of this precision model
    * @return the type of this precision model
    * @see Type
@@ -276,7 +304,21 @@ public class PrecisionModel implements Serializable, Comparable
    */
   private void setScale(double scale)
   {
-    this.scale = Math.abs(scale);
+    /**
+     * A negative scale indicates the grid size is being set.
+     * The scale is set as well, as the reciprocal.
+     */
+    if (scale < 0) {
+      gridSize = Math.abs(scale);
+      this.scale = 1.0 / gridSize;
+    }
+    else {
+      this.scale = Math.abs(scale);
+      /**
+       * Leave gridSize as 0, to ensure it is computed using scale
+       */
+      gridSize = 0.0;
+    }
   }
 
   /**
@@ -385,8 +427,12 @@ public class PrecisionModel implements Serializable, Comparable
   		return (double) floatSingleVal;
   	}
   	if (modelType == FIXED) {
-            return Math.round(val * scale) / scale;
-//  		return Math.rint(val * scale) / scale;
+  	  if (gridSize > 0) {
+  	    return Math.round(val / gridSize) * gridSize;
+  	  }
+  	  else {
+  	    return Math.round(val * scale) / scale;
+  	  }
   	}
   	// modelType == FLOATING - no rounding necessary
   	return val;

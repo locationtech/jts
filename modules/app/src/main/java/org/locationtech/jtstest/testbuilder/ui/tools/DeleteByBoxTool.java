@@ -20,16 +20,16 @@ import org.locationtech.jtstest.testbuilder.geom.GeometryBoxDeleter;
  * Deletes vertices or components within a selection box from a geometry component
  * @version 1.7
  */
-public class DeleteVertexTool extends BoxBandTool {
-  private static DeleteVertexTool singleton = null;
+public class DeleteByBoxTool extends BoxBandTool {
+  private static DeleteByBoxTool singleton = null;
 
-  public static DeleteVertexTool getInstance() {
+  public static DeleteByBoxTool getInstance() {
     if (singleton == null)
-      singleton = new DeleteVertexTool();
+      singleton = new DeleteByBoxTool();
     return singleton;
   }
 
-  private DeleteVertexTool() {
+  private DeleteByBoxTool() {
     super();
   }
 

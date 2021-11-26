@@ -14,42 +14,46 @@ package org.locationtech.jtstest.testbuilder;
 import javax.swing.ImageIcon;
 
 public class AppIcons {
-  public final static ImageIcon APP = IconLoader.icon("app-icon.gif");
+  public final static ImageIcon APP = load("app-icon.gif");
   
-  public final static ImageIcon ADD = IconLoader.icon("Plus.png");
-  public final static ImageIcon ADD_SMALL = IconLoader.icon("Plus_small.png");
-  public final static ImageIcon DELETE = IconLoader.icon("Delete.png");
-  public final static ImageIcon DELETE_SMALL = IconLoader.icon("Delete_small.png");
+  public final static ImageIcon ADD = load("Plus.png");
+  public final static ImageIcon ADD_SMALL = load("Plus_small.png");
+  public final static ImageIcon DELETE = load("Delete.png");
+  public final static ImageIcon DELETE_SMALL = load("Delete_small.png");
   
-  public final static ImageIcon EXECUTE = IconLoader.icon("Execute.png");
-  public final static ImageIcon SAVE_IMAGE = IconLoader.icon("SaveImage.png");
-  public final static ImageIcon UNDO = IconLoader.icon("Undo.png");
-  public final static ImageIcon CLEAR = IconLoader.icon("Delete_small.png");
-  public final static ImageIcon GEOM_INSPECT = IconLoader.icon("InspectGeometry.png");
-  public final static ImageIcon GEOM_EXCHANGE = IconLoader.icon("ExchangeGeoms.png");
+  public final static ImageIcon EXECUTE = load("Execute.png");
+  public final static ImageIcon SAVE_IMAGE = load("SaveImage.png");
+  public final static ImageIcon UNDO = load("Undo.png");
+  public final static ImageIcon CLEAR = load("Delete_small.png");
+  public final static ImageIcon GEOM_INSPECT = load("InspectGeometry.png");
+  public final static ImageIcon GEOM_EXCHANGE = load("ExchangeGeoms.png");
   
-  public final static ImageIcon GEOFUNC_BINARY = IconLoader.icon("BinaryGeomFunction.png");
+  public final static ImageIcon GEOFUNC_BINARY = load("BinaryGeomFunction.png");
   
-  public final static ImageIcon DOWN = IconLoader.icon("Down.png");
-  public final static ImageIcon UP = IconLoader.icon("Up.png");
-  public final static ImageIcon LEFT = IconLoader.icon("Left.png");
-  public final static ImageIcon RIGHT = IconLoader.icon("Right.png");
+  public final static ImageIcon DOWN = load("Down.png");
+  public final static ImageIcon UP = load("Up.png");
+  public final static ImageIcon LEFT = load("Left.png");
+  public final static ImageIcon RIGHT = load("Right.png");
   
-  public final static ImageIcon ZOOM = IconLoader.icon("MagnifyCursor.gif");
-  public final static ImageIcon COPY_TO_TEST = IconLoader.icon("CopyToTest.png");
-  public final static ImageIcon COPY = IconLoader.icon("Copy.png");
-  public final static ImageIcon PASTE = IconLoader.icon("Paste.png");
-  public final static ImageIcon CUT = IconLoader.icon("Delete_small.png");
-  public final static ImageIcon GEOM_LOAD = IconLoader.icon("LoadWKTToTest.png");
+  public final static ImageIcon ZOOM = load("Magnify.png");
+  public final static ImageIcon COPY_TO_TEST = load("CopyToTest.png");
+  public final static ImageIcon COPY = load("Copy.png");
+  public final static ImageIcon PASTE = load("Paste.png");
+  public final static ImageIcon CUT = load("Delete_small.png");
+  public final static ImageIcon GEOM_LOAD = load("LoadWKTToTest.png");
   
-  public final static ImageIcon ICON_COLLECTION 	= IconLoader.icon("Icon_GeomCollection.png");
-  public final static ImageIcon ICON_COLLECTION_B 	= IconLoader.icon("Icon_GeomCollection_B.png");
-  public final static ImageIcon ICON_LINEARRING 	= IconLoader.icon("Icon_LinearRing.png");
-  public final static ImageIcon ICON_LINEARRING_B 	= IconLoader.icon("Icon_LinearRing_B.png");
-  public final static ImageIcon ICON_LINESTRING 	= IconLoader.icon("Icon_LineString.png");
-  public final static ImageIcon ICON_LINESTRING_B 	= IconLoader.icon("Icon_LineString_B.png");
-  public final static ImageIcon ICON_POINT 		= IconLoader.icon("Icon_Point.png");
-  public final static ImageIcon ICON_POINT_B 	= IconLoader.icon("Icon_Point_B.png");
-  public final static ImageIcon ICON_POLYGON 	= IconLoader.icon("Icon_Polygon.png");
-  public final static ImageIcon ICON_POLYGON_B 	= IconLoader.icon("Icon_Polygon_B.png");
+  public final static ImageIcon ICON_COLLECTION 	= load("Icon_GeomCollection.png");
+  public final static ImageIcon ICON_COLLECTION_B 	= load("Icon_GeomCollection_B.png");
+  public final static ImageIcon ICON_LINEARRING 	= load("Icon_LinearRing.png");
+  public final static ImageIcon ICON_LINEARRING_B 	= load("Icon_LinearRing_B.png");
+  public final static ImageIcon ICON_LINESTRING 	= load("Icon_LineString.png");
+  public final static ImageIcon ICON_LINESTRING_B 	= load("Icon_LineString_B.png");
+  public final static ImageIcon ICON_POINT 		= load("Icon_Point.png");
+  public final static ImageIcon ICON_POINT_B 	= load("Icon_Point_B.png");
+  public final static ImageIcon ICON_POLYGON 	= load("Icon_Polygon.png");
+  public final static ImageIcon ICON_POLYGON_B 	= load("Icon_Polygon_B.png");
+  
+  public static ImageIcon load(String filename) {
+    return new ImageIcon(AppIcons.class.getResource(filename));
+  }
 }
