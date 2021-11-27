@@ -11,11 +11,15 @@
  */
 package org.locationtech.jts.operation.overlayng;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryCollection;
 import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.geom.TopologyException;
 import org.locationtech.jts.noding.ValidatingNoder;
@@ -145,6 +149,45 @@ public class OverlayNGRobust
       exOriginal = ex;
     }
     
+    /**
+     * If we have intersection op. and there is more the input 
+     * has more than one geometrie try to work each of them separately
+     */
+    if (OverlayNG.INTERSECTION == opCode && 
+            (geom0.getNumGeometries() > 1 || geom1.getNumGeometries() > 1)) {
+        try {
+            ArrayList<Geometry> newGeoList = new ArrayList<Geometry>();
+            Boolean canBeMultiPolygon = true;
+            
+            // TODO we could here make a test on what geo has the less geos to get less looping
+            for (int i = 0; i < geom1.getNumGeometries(); i++) {
+                Geometry g1GeoN = geom1.getGeometryN(i);
+                for (int y = 0; y < geom0.getNumGeometries(); y++) {
+                    Geometry g0GeoN = geom0.getGeometryN(y);
+                    Geometry cleanIntersection = g0GeoN.intersection(g1GeoN);
+                    if (!(cleanIntersection instanceof MultiPolygon || cleanIntersection instanceof Polygon )) {
+                        canBeMultiPolygon = false;
+                    }
+                    newGeoList.add(cleanIntersection);
+                }
+            }
+            
+            GeometryFactory geometryFactory = new GeometryFactory();
+            result = geometryFactory.createGeometryCollection(((Geometry[]) newGeoList.toArray(new Geometry[0])));
+            
+            // TODO should we run union clean up overlap
+
+            if (canBeMultiPolygon) {
+                // TODO maybe create a multiPologon, but then need also handle overlap
+            }
+            return result;
+          }
+       catch (RuntimeException ex) {
+           // TODO I just print this error, not sure what to do with it.
+           ex.printStackTrace();
+       }
+              
+    }
     /**
      * On failure retry using snapping noding with a "safe" tolerance.
      * if this throws an exception just let it go,
