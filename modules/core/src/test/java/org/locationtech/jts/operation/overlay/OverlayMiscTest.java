@@ -11,6 +11,8 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryCollection;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
 import org.locationtech.jts.operation.overlayng.OverlayNG;
@@ -73,10 +75,15 @@ public class OverlayMiscTest extends GeometryTestCase
       
       ArrayList<Geometry> newGeoList = new ArrayList<Geometry>();
 
+     
       for (int i = 0; i < g2.getNumGeometries(); i++) {
-          Geometry gTmp = g2.getGeometryN(i);
-          Geometry cleanIntersection = g1.intersection(gTmp);
-          newGeoList.add(cleanIntersection);
+          Geometry g2GeoN = g2.getGeometryN(i);
+          for (int y = 0; y < g1.getNumGeometries(); y++) {
+              Geometry g1GeoN = g1.getGeometryN(y);
+              Geometry cleanIntersection = g1GeoN.intersection(g2GeoN);
+              cleanIntersection.getGeometryType();
+              newGeoList.add(cleanIntersection);
+          }
       }
 
       GeometryFactory geometryFactory = new GeometryFactory();
@@ -87,16 +94,27 @@ public class OverlayMiscTest extends GeometryTestCase
       
       Assert.assertTrue(loop_intersection.isValid());
       Assert.assertTrue(loop_intersection_area > 0);
-      Assert.assertTrue("To big intersection  area1:" + area1 + " loop_intersection:" + loop_intersection_area, loop_intersection_area <= area1  );
-      Assert.assertTrue("To big intersection  area2:" + area2 + " loop_intersection:" + loop_intersection_area, loop_intersection_area <= area2  );
-      
-  }   
+      Assert.assertTrue("To big intersection related to input area1:" + area1 + " loop_intersection:" + loop_intersection_area, loop_intersection_area <= area1  );
+      Assert.assertTrue("To big intersection related to input area2:" + area2 + " loop_intersection:" + loop_intersection_area, loop_intersection_area <= area2  );
+
+      // buffer out a tiny part just part to avoid to be sure to avoid rounding error
+      double distance = 0.0000000001;
+      ArrayList<Polygon> g1bufferout_polygon_list = resolveAreaGeos(g1.buffer(distance));
+      ArrayList<Polygon> g2bufferout_polygon_list = resolveAreaGeos(g2.buffer(distance));
+      ArrayList<Polygon> intersection_polygon_list = resolveAreaGeos(loop_intersection);
+      testThatIntersectionIsCoveredByInput(g1bufferout_polygon_list, g2bufferout_polygon_list, intersection_polygon_list);
+
+
+  }
 
   @Test
   /**
    * Test a intersection with a very narrow geometry close to the border using a for loop.
    * 
    * This is falling now and returns the big area and not the narrow area.
+   * 
+   * Failed tests: 
+   * java.lang.AssertionError: To big intersection related to input area2:2.1960576832560605E-16 overlayNGRobust_intersection:2.0040991178807718E-7
    *  
    * @throws ParseException
    */
@@ -116,12 +134,75 @@ public class OverlayMiscTest extends GeometryTestCase
 
       Assert.assertTrue(overlayNGRobust_intersection.isValid());
       Assert.assertTrue(overlayNGRobust_intersection_area > 0);
-      Assert.assertTrue("To big intersection  area1:" + area1 + " overlayNGRobust_intersection:" + overlayNGRobust_intersection_area, overlayNGRobust_intersection_area <= area1  );
-      Assert.assertTrue("To big intersection  area2:" + area2 + " overlayNGRobust_intersection:" + overlayNGRobust_intersection_area, overlayNGRobust_intersection_area <= area2  );
       
+      
+      double distance = 0.0000000001;
+      ArrayList<Polygon> g1bufferout_polygon_list = resolveAreaGeos(g1.buffer(distance));
+      ArrayList<Polygon> g2bufferout_polygon_list = resolveAreaGeos(g2.buffer(distance));
+      ArrayList<Polygon> intersection_polygon_list = resolveAreaGeos(overlayNGRobust_intersection);
+      //if you comment in test testThatIntersectionIsCoveredByInput it will fail with this error
+      //OverlayMiscTest.test_7_Intersection_OverlayNGRobust:144->testThatIntersectionIsCoveredByInput:177 input area2 do not cover loop_intersectionN:POLYGON ((5.171796676245829 61.63109295594216, 5.171765430643211 61.63109513643147, 5.17171972428688 61.63110275399046, 5.171693714982271 61.63111146271694, 5.17165467365684 61.631121693785616, 5.171647369933198 61.631123368287206, 5.1716449403479 61.631124618924865, 5.171585767657087 61.631155078277516, 5.171584599055308 61.63115572259883, 5.17157056467294 61.63116346060828, 5.171554021565499 61.63117504109626, 5.171510591367186 61.63121921397677, 5.171472849060388 61.631287634284774, 5.1714526857206184 61.63132281631538, 5.171431175423897 61.631360348585645, 5.171410832239342 61.63138889993328, 5.171369882904709 61.631423704808434, 5.171355403249634 61.63143446243659, 5.17134097067367 61.631445185087415, 5.171322078939662 61.63146505865625, 5.171320993973893 61.63146756125566, 5.171308477044493 61.63149643300548, 5.171300404098109 61.631515054192896, 5.171300404024736 61.63151505437896, 5.171288682554027 61.631544777638794, 5.171272603528746 61.631585550662514, 5.171264482517947 61.63162370220873, 5.171263616533105 61.631641384465254, 5.1712634250572425 61.631644992309006, 5.17126323358138 61.63164860015275, 5.171265335707341 61.631648751507534, 5.171270591021064 61.63164912989441, 5.171270598747127 61.63164913045177, 5.171294515991664 61.63165085584459, 5.171305224690445 61.63165162836994, 5.171350771945397 61.63165336444806, 5.171357855375412 61.631631252842645, 5.171413619065784 61.63163529798867, 5.171422119715523 61.63160876219859, 5.171533647053681 61.63161685241401, 5.171542147594096 61.631590316614194, 5.17176520228535 61.63160649675632, 5.171773702623785 61.631579960937884, 5.171819313556502 61.63158326935801, 5.171819313556502 61.631094526015076, 5.171796850040617 61.63109289654953, 5.171796676245829 61.63109295594216))
+      //testThatIntersectionIsCoveredByInput(g1bufferout_polygon_list, g2bufferout_polygon_list, intersection_polygon_list);
+      
+      Assert.assertTrue("To big intersection related to input area1:" + area1 + " overlayNGRobust_intersection:" + overlayNGRobust_intersection_area, overlayNGRobust_intersection_area <= area1  );
+      Assert.assertTrue("To big intersection related to input area2:" + area2 + " overlayNGRobust_intersection:" + overlayNGRobust_intersection_area, overlayNGRobust_intersection_area <= area2  );
+
+
+  }   
+
+  // A helper method to test that the result is overlapped input polygons
+  private void testThatIntersectionIsCoveredByInput(ArrayList<Polygon> g1bufferout_polygon_list,
+          ArrayList<Polygon> g2bufferout_polygon_list, ArrayList<Polygon> intersection_polygon_list) {
+      for (int i = 0; i < intersection_polygon_list.size(); i++) {
+            Geometry loop_intersectionN = intersection_polygon_list.get(i);
+            Assert.assertTrue(loop_intersectionN.isValid());
+            
+            boolean isCoverd_g1 = false;
+            for (int ig1 = 0; ig1 < g1bufferout_polygon_list.size(); ig1++) {
+                Geometry g1bufferoutN = g1bufferout_polygon_list.get(ig1);
+                if (loop_intersectionN.coveredBy(g1bufferoutN)) {
+                    isCoverd_g1 = true;
+                    break;
+                }
+            }
+            Assert.assertTrue("input area1 do not cover loop_intersectionN:" + loop_intersectionN, isCoverd_g1 );
+            
+            boolean isCoverd_g2 = false;
+            for (int ig2 = 0; ig2 < g2bufferout_polygon_list.size(); ig2++) {
+                Geometry g2bufferoutN = g2bufferout_polygon_list.get(ig2);
+                if (loop_intersectionN.coveredBy(g2bufferoutN)) {
+                    isCoverd_g2 = true;
+                    break;
+                }
+            }
+            Assert.assertTrue("input area2 do not cover loop_intersectionN:" + loop_intersectionN, isCoverd_g2 );
+
+        }
   }   
 
 
 
+  //  Helper methods to get a list area
+  public static ArrayList<Polygon> resolveAreaGeos(Geometry geoToAdd) {
+      ArrayList<Polygon> geoList = new ArrayList<Polygon>();
+      resolveAreaGeos(geoList, geoToAdd);
+      return geoList;
+  }
+
+  private static void resolveAreaGeos(ArrayList<Polygon> geoList, Geometry geoToAdd) {
+      if (geoToAdd instanceof GeometryCollection) {
+          if (geoToAdd.getArea() > 0) {
+              for (int x = 0, xx = geoToAdd.getNumGeometries(); x < xx; x++) {
+                  resolveAreaGeos(geoList, geoToAdd.getGeometryN(x));
+              }
+          }
+      } else if (geoToAdd instanceof MultiPolygon) {
+          for (int x = 0, xx = geoToAdd.getNumGeometries(); x < xx; x++) {
+              resolveAreaGeos(geoList, geoToAdd.getGeometryN(x));
+          }
+      } else if (geoToAdd instanceof Polygon) {
+              geoList.add((Polygon) geoToAdd);
+      }
+  }
       
 }
