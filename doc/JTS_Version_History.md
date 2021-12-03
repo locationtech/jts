@@ -33,6 +33,7 @@ Distributions for older JTS versions can be obtained at the
 * Add `GeometryFixer` option to preserve `Multi` geometry types when collapses occur (#791)
 * Make `QuadTree` thread-safe (#792)
 * Allow specifying a fixed `PrecisionModel` via grid size (#804)
+* Add `OffsetCurve` class (#810)
 
 ### Bug Fixes
 
