@@ -14,6 +14,7 @@ package org.locationtech.jts.operation.buffer;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateArrays;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.LineSegment;
 import org.locationtech.jts.geom.Position;
 import org.locationtech.jts.geom.PrecisionModel;
 
@@ -157,7 +158,7 @@ public class OffsetCurveBuilder
       CoordinateArrays.reverse(curvePts);
     return curvePts;
   }
-
+  
   private static Coordinate[] copyCoordinates(Coordinate[] pts)
   {
     Coordinate[] copy = new Coordinate[pts.length];
@@ -279,7 +280,7 @@ public class OffsetCurveBuilder
 
   private void computeOffsetCurve(Coordinate[] inputPts, boolean isRightSide, OffsetSegmentGenerator segGen)
   {
-    double distTol = simplifyTolerance(distance);
+    double distTol = simplifyTolerance(Math.abs(distance));
     
     if (isRightSide) {
       //---------- compute points for right side of line

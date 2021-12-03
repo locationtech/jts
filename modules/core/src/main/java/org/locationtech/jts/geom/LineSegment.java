@@ -446,6 +446,24 @@ public class LineSegment
   }
   
   /**
+   * Computes the {@link LineSegment} that is offset from 
+   * the segment by a given distance.
+   * The computed segment is offset to the left of the line if the offset distance is
+   * positive, to the right if negative.
+   *
+   * @param offsetDistance the distance the point is offset from the segment
+   *    (positive is to the left, negative is to the right)
+   * @return a line segment offset by the specified distance
+   * 
+   * @throws IllegalStateException if the segment has zero length
+   */
+  public LineSegment offset(double offsetDistance) {
+    Coordinate offset0 = pointAlongOffset(0, offsetDistance);
+    Coordinate offset1 = pointAlongOffset(1, offsetDistance);
+    return new LineSegment(offset0, offset1);
+  }
+  
+  /**
    * Computes the reflection of a point in the line defined
    * by this line segment.
    * 

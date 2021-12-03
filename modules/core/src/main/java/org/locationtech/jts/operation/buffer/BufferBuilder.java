@@ -137,9 +137,7 @@ class BufferBuilder
     // factory must be the same as the one used by the input
     geomFact = g.getFactory();
 
-    OffsetCurveBuilder curveBuilder = new OffsetCurveBuilder(precisionModel, bufParams);
-    
-    OffsetCurveSetBuilder curveSetBuilder = new OffsetCurveSetBuilder(g, distance, curveBuilder);
+    BufferCurveSetBuilder curveSetBuilder = new BufferCurveSetBuilder(g, distance, precisionModel, bufParams);
     curveSetBuilder.setInvertOrientation(isInvertOrientation);
     
     List bufferSegStrList = curveSetBuilder.getCurves();
