@@ -74,32 +74,50 @@ public class LineSegmentTest extends TestCase {
     assertTrue(dist <= MAX_ABS_ERROR_INTERSECTION);
   }
 
-  public void testOffset() throws Exception
+  public void testOffsetPoint() throws Exception
   {
-    checkOffset(0, 0, 10, 10, 0.0, ROOT2, -1, 1);
-    checkOffset(0, 0, 10, 10, 0.0, -ROOT2, 1, -1);
+    checkOffsetPoint(0, 0, 10, 10, 0.0, ROOT2, -1, 1);
+    checkOffsetPoint(0, 0, 10, 10, 0.0, -ROOT2, 1, -1);
     
-    checkOffset(0, 0, 10, 10, 1.0, ROOT2, 9, 11);
-    checkOffset(0, 0, 10, 10, 0.5, ROOT2, 4, 6);
+    checkOffsetPoint(0, 0, 10, 10, 1.0, ROOT2, 9, 11);
+    checkOffsetPoint(0, 0, 10, 10, 0.5, ROOT2, 4, 6);
     
-    checkOffset(0, 0, 10, 10, 0.5, -ROOT2, 6, 4);
-    checkOffset(0, 0, 10, 10, 0.5, -ROOT2, 6, 4);
+    checkOffsetPoint(0, 0, 10, 10, 0.5, -ROOT2, 6, 4);
+    checkOffsetPoint(0, 0, 10, 10, 0.5, -ROOT2, 6, 4);
     
-    checkOffset(0, 0, 10, 10, 2.0, ROOT2, 19, 21);
-    checkOffset(0, 0, 10, 10, 2.0, -ROOT2, 21, 19);
+    checkOffsetPoint(0, 0, 10, 10, 2.0, ROOT2, 19, 21);
+    checkOffsetPoint(0, 0, 10, 10, 2.0, -ROOT2, 21, 19);
     
-    checkOffset(0, 0, 10, 10, 2.0, 5 * ROOT2, 15, 25);
-    checkOffset(0, 0, 10, 10, -2.0, 5 * ROOT2, -25, -15);
+    checkOffsetPoint(0, 0, 10, 10, 2.0, 5 * ROOT2, 15, 25);
+    checkOffsetPoint(0, 0, 10, 10, -2.0, 5 * ROOT2, -25, -15);
 
   }
 
-  void checkOffset(double x0, double y0, double x1, double y1, double segFrac, double offset, 
-  		double expectedX, double expectedY)
+  public void testOffsetLine() throws Exception
   {
-  	LineSegment seg = new LineSegment(x0, y0, x1, y1);
-  	Coordinate p = seg.pointAlongOffset(segFrac, offset);
-  	
-  	assertTrue(equalsTolerance(new Coordinate(expectedX, expectedY), p, 0.000001));
+    checkOffsetLine(0, 0, 10, 10, 0, 0, 0, 10, 10 );
+    
+    checkOffsetLine(0, 0, 10, 10, ROOT2, -1, 1,  9, 11 );
+    checkOffsetLine(0, 0, 10, 10, -ROOT2, 1, -1, 11, 9);
+  }
+  
+  void checkOffsetPoint(double x0, double y0, double x1, double y1, double segFrac, double offset, 
+      double expectedX, double expectedY)
+  {
+    LineSegment seg = new LineSegment(x0, y0, x1, y1);
+    Coordinate p = seg.pointAlongOffset(segFrac, offset);
+    
+    assertTrue(equalsTolerance(new Coordinate(expectedX, expectedY), p, 0.000001));
+  }
+  
+  void checkOffsetLine(double x0, double y0, double x1, double y1, double offset, 
+      double expectedX0, double expectedY0, double expectedX1, double expectedY1)
+  {
+    LineSegment seg = new LineSegment(x0, y0, x1, y1);
+    LineSegment actual = seg.offset(offset);
+    
+    assertTrue(equalsTolerance(new Coordinate(expectedX0, expectedY0), actual.p0, 0.000001));
+    assertTrue(equalsTolerance(new Coordinate(expectedX1, expectedY1), actual.p1, 0.000001));
   }
   
   public static boolean equalsTolerance(Coordinate p0, Coordinate p1, double tolerance)

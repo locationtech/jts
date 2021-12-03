@@ -14,21 +14,29 @@ package org.locationtech.jtstest.function;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.operation.buffer.BufferParameters;
-import org.locationtech.jts.operation.buffer.OffsetCurveBuilder;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.util.GeometryCombiner;
+import org.locationtech.jts.operation.buffer.OffsetCurve;
 
 public class OffsetCurveFunctions {
 
   public static Geometry offsetCurve(Geometry geom, double distance)
   {
-    BufferParameters bufParams = new BufferParameters();
-    OffsetCurveBuilder ocb = new OffsetCurveBuilder(
-        geom.getFactory().getPrecisionModel(), bufParams
-        );
-    Coordinate[] pts = ocb.getOffsetCurve(geom.getCoordinates(), distance);
+    return OffsetCurve.getCurve(geom, distance);
+  }
+
+  public static Geometry offsetCurveBoth(Geometry geom, double distance)
+  {
+    Geometry curve1 = OffsetCurve.getCurve(geom, distance);
+    Geometry curve2 = OffsetCurve.getCurve(geom, -distance);
+    return GeometryCombiner.combine(curve1, curve2);
+  }
+
+  public static Geometry rawCurve(Geometry geom, double distance)
+  {
+    Coordinate[] pts = OffsetCurve.rawOffset((LineString) geom, distance);
     Geometry curve = geom.getFactory().createLineString(pts);
     return curve;
   }
-
 
 }

@@ -382,7 +382,7 @@ class OffsetSegmentGenerator
    * @param distance the offset distance
    * @param offset the points computed for the offset segment
    */
-  private void computeOffsetSegment(LineSegment seg, int side, double distance, LineSegment offset)
+  static void computeOffsetSegment(LineSegment seg, int side, double distance, LineSegment offset)
   {
     int sideSign = side == Position.LEFT ? 1 : -1;
     double dx = seg.p1.x - seg.p0.x;

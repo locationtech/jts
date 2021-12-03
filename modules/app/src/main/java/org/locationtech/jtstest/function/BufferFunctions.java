@@ -28,7 +28,7 @@ import org.locationtech.jts.operation.buffer.BufferInputLineSimplifier;
 import org.locationtech.jts.operation.buffer.BufferOp;
 import org.locationtech.jts.operation.buffer.BufferParameters;
 import org.locationtech.jts.operation.buffer.OffsetCurveBuilder;
-import org.locationtech.jts.operation.buffer.OffsetCurveSetBuilder;
+import org.locationtech.jts.operation.buffer.BufferCurveSetBuilder;
 import org.locationtech.jts.operation.buffer.VariableBuffer;
 import org.locationtech.jts.operation.buffer.validate.BufferResultValidator;
 import org.locationtech.jtstest.geomfunction.Metadata;
@@ -108,10 +108,9 @@ public class BufferFunctions {
   private static Geometry buildCurveSet(Geometry g, double dist, BufferParameters bufParams)
   {
     // --- now construct curve
-    OffsetCurveBuilder ocb = new OffsetCurveBuilder(
+    BufferCurveSetBuilder ocsb = new BufferCurveSetBuilder(g, dist, 
         g.getFactory().getPrecisionModel(),
         bufParams);
-    OffsetCurveSetBuilder ocsb = new OffsetCurveSetBuilder(g, dist, ocb);
     List curves = ocsb.getCurves();
     
     List lines = new ArrayList();

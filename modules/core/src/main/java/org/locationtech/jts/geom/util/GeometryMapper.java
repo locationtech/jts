@@ -65,7 +65,64 @@ public class GeometryMapper
   }
   
   /**
-   * An interface for geometry functions used for mapping.
+   * Maps the atomic elements of a {@link Geometry}
+   * (which may be atomic or composite)
+   * using a {@link MapOp} mapping operation
+   * into an atomic <tt>Geometry</tt> or a flat collection
+   * of the most specific type.
+   * <tt>null</tt> and empty values returned from the mapping operation
+   * are discarded.
+   * 
+   * @param geom the geometry to map
+   * @param emptyDim the dimension of empty geometry to create
+   * @param op the mapping operation
+   * @return the mapped result
+   */
+  public static Geometry flatMap(Geometry geom, int emptyDim, MapOp op)
+  {
+    List<Geometry> mapped = new ArrayList<Geometry>();
+    flatMap(geom, op, mapped);
+
+    if (mapped.size() == 0) {
+      return geom.getFactory().createEmpty(emptyDim);
+    }
+    if (mapped.size() == 1)
+      return mapped.get(0);
+    return geom.getFactory().buildGeometry(mapped);
+  }
+  
+  private static void flatMap(Geometry geom, MapOp op, List<Geometry> mapped)
+  {
+    for (int i = 0; i < geom.getNumGeometries(); i++) {
+      Geometry g = geom.getGeometryN(i);
+      if (g instanceof GeometryCollection) {
+        flatMap(g, op, mapped);
+      }
+      else {
+        Geometry res = op.map(g);
+        if (res != null && ! res.isEmpty()) {
+          addFlat(res, mapped);
+        }
+      }
+    }
+  }
+  
+  private static void addFlat(Geometry geom, List<Geometry> geomList) {
+    if (geom.isEmpty()) return;
+    if (geom instanceof GeometryCollection) {
+      for (int i = 0; i < geom.getNumGeometries(); i++) {
+        addFlat(geom.getGeometryN(i), geomList);
+      }
+    }
+    else {
+      geomList.add(geom);
+    }
+  }
+  
+  /**
+   * An interface for geometry functions that map a geometry input to a geometry output.
+   * The output may be <tt>null</tt> if there is no valid output value for 
+   * the given input value.
    * 
    * @author Martin Davis
    *
@@ -73,11 +130,11 @@ public class GeometryMapper
   public interface MapOp 
   {
     /**
-     * Computes a new geometry value.
+     * Maps a geometry value into another value.
      * 
-     * @param g the input geometry
+     * @param geom the input geometry
      * @return a result geometry
      */
-    Geometry map(Geometry g);
+    Geometry map(Geometry geom);
   }
 }
