@@ -22,6 +22,7 @@ import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.PrecisionModel;
+import org.locationtech.jts.geom.TopologyException;
 import org.locationtech.jts.util.Assert;
 
 /**
@@ -357,23 +358,60 @@ class OverlayUtil {
     return p;
   }
   
-  /*
-  private void checkSanity(Geometry result) {
-    // for Union, area should be greater than largest of inputs
-    double areaA = inputGeom.getGeometry(0).getArea();
-    double areaB = inputGeom.getGeometry(1).getArea();
-    double area = result.getArea();
+  private static final double AREA_HEURISTIC_TOLERANCE = 0.1;
+
+  /**
+   * A heuristic check for overlay result correctness
+   * comparing the areas of the input and result.
+   * The heuristic is necessarily coarse, but it detects some obvious issues.
+   * (e.g. https://github.com/locationtech/jts/issues/798)
+   * <p>
+   * <b>Note:</b> - this check is only safe if the precision model is floating.
+   * It should also be safe for snapping noding if the distance tolerance is reasonably small.
+   * (Fixed precision models can lead to collapse causing result area to expand.)
+   * 
+   * @param geom0 input geometry 0
+   * @param geom1 input geometry 1
+   * @param opCode the overlay opcode
+   * @param result the overlay result
+   * @return true if the result area is consistent
+   */
+  public static boolean isResultAreaConsistent(Geometry geom0, Geometry geom1, int opCode, Geometry result) {
+    if (geom0 == null || geom1 == null) 
+      return true;
     
-    // if result is empty probably had a complete collapse, so can't use this check
-    if (area == 0) return;
+    double areaResult = result.getArea();
+    double areaA = geom0.getArea();
+    double areaB = geom1.getArea();
     
-    if (opCode == UNION) {
-      double minAreaLimit = 0.5 * Math.max(areaA, areaB);
-      if (area < minAreaLimit ) {
-        throw new TopologyException("Result area sanity issue");
-      }
+    boolean isConsistent = true;
+    switch (opCode) {
+    case OverlayNG.INTERSECTION:
+      isConsistent = isLess(areaResult, areaA, AREA_HEURISTIC_TOLERANCE) 
+                  && isLess(areaResult, areaB, AREA_HEURISTIC_TOLERANCE);
+      break;
+    case OverlayNG.DIFFERENCE:
+      isConsistent = isLess(areaResult, areaA, AREA_HEURISTIC_TOLERANCE)
+                  && isGreater(areaResult, areaA - areaB, AREA_HEURISTIC_TOLERANCE);
+      break;
+    case OverlayNG.SYMDIFFERENCE:
+      isConsistent = isLess(areaResult, areaA + areaB, AREA_HEURISTIC_TOLERANCE);
+      break;
+    case OverlayNG.UNION:
+      isConsistent = isLess(areaA, areaResult, AREA_HEURISTIC_TOLERANCE) 
+                  && isLess(areaB, areaResult, AREA_HEURISTIC_TOLERANCE)
+                  && isGreater(areaResult, areaA - areaB, AREA_HEURISTIC_TOLERANCE);
+      break;
     }
+    return isConsistent;
   }
-*/
+
+  private static boolean isLess(double v1, double v2, double tol) {
+    return v1 <= v2 * (1 + tol);
+  }
+  
+  private static boolean isGreater(double v1, double v2, double tol) {
+    return v1 >= v2 * (1 - tol);
+  }
   
 }

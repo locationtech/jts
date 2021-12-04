@@ -1,0 +1,46 @@
+<run>
+<desc>JTS #798 - intersection fails with original OverlayNG.
+Problem is caused by Fast Noding causing an area to "invert"
+(but still producing correct noding).
+In this case Snapping Noding works.
+Fixed by adding result area heuristic check.
+
+https://github.com/locationtech/jts/issues/798
+Also https://github.com/Toblerity/Shapely/issues/1216
+</desc>
+<precisionModel type="FLOATING"/>
+
+<case>
+<desc> JTS #798 : 1- intersection fails with original OverlayNG. </desc>
+  <a>
+POLYGON ((66697.40120137333 185279.95469107336, 66698.375 185273.625, 66697.375 185280.125, 66697.40120137333 185279.95469107336))
+    </a>
+  <b>
+POLYGON ((66710 185280, 66710 185260, 66690 185260, 66690 185280, 66710 185280))
+    </b>
+<test><op name="overlayAreaTest" arg1="A" arg2="B">true</op></test>
+</case>
+
+<case>
+<desc> JTS #798 : 2 - intersection fails with original OverlayNG. </desc>
+  <a>
+POLYGON ((61607.62679190189 190194.1555478014, 61620.5389918983 190197.4990478009, 61619.64380966499 190197.26724827816, 61607.62679190189 190194.1555478014))
+    </a>
+  <b>
+POLYGON ((61620.04309999943 190199.41420000046, 61620.41290000081 190197.98570000008, 61620.53899999708 190197.4989, 61607.62680000067 190194.15549999848, 61607.07620000094 190196.27259999886, 61620.04309999943 190199.41420000046))
+    </b>
+<test><op name="overlayAreaTest" arg1="A" arg2="B">true</op></test>
+</case>
+
+<case>
+<desc> JTS #798 : 3 - intersection fails with original OverlayNG. </desc>
+  <a>
+POLYGON ((181093.43788657014 172099.78376270586, 181093.375 172099.375, 181093.57688359552 172100.6872433709, 181093.43788657014 172099.78376270586))
+    </a>
+  <b>
+POLYGON ((181118.78476615425 172110.76716212876, 181097.49019999802 172097.5095999986, 181081.35400000215 172105.30889999866, 181118.78476615425 172110.76716212876))
+    </b>
+<test><op name="overlayAreaTest" arg1="A" arg2="B">true</op></test>
+</case>
+
+</run>
