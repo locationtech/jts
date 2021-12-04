@@ -44,7 +44,7 @@ Distributions for older JTS versions can be obtained at the
 * Fix various operations to handle XYZM geometry (#795)
 * Fix `SnapRoundingNoder` to use tolerance in noding (also fixes `GeometryPrecisionReducer`) (#802)
 * Fix `MaximumInscribedCircle` to avoid infinite-looping on flat collapsed input (#807)
-* Add result area heuristic check to OverlayNG (#812)
+* Add OverlayNG result area heuristic check (#812)
 
 # Version 1.18.2
 
