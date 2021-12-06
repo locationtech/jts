@@ -26,11 +26,15 @@ import org.locationtech.jts.io.WKTWriter;
  * The line segments are represented by an array of {@link Coordinate}s.
  * Intended to optimize the noding of contiguous segments by
  * reducing the number of allocated objects.
- * SegmentStrings can carry a context object, which is useful
+ * {@link SegmentString}s can carry a context object, which is useful
  * for preserving topological or parentage information.
  * All noded substrings are initialized with the same context object.
+ * <p>
+ * For read-only applications use {@link BasicSegmentString}, 
+ * which is (slightly) more lightweight.
  *
  * @version 1.7
+ * @see BasicSegmentString
  */
 public class NodedSegmentString
 	implements NodableSegmentString
