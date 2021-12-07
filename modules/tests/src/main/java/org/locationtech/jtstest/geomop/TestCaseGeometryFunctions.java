@@ -26,6 +26,7 @@ import org.locationtech.jts.operation.buffer.BufferOp;
 import org.locationtech.jts.operation.buffer.BufferParameters;
 import org.locationtech.jts.operation.overlayng.OverlayNG;
 import org.locationtech.jts.operation.polygonize.Polygonizer;
+import org.locationtech.jts.precision.GeometryPrecisionReducer;
 import org.locationtech.jts.precision.MinimumClearance;
 
 /**
@@ -81,6 +82,10 @@ public class TestCaseGeometryFunctions
   
   public static Geometry polygonizeValidPolygonal(Geometry g) {
     return polygonize(g, true);
+  }
+  
+  public static Geometry reducePrecision(Geometry g, double scaleFactor) {
+    return GeometryPrecisionReducer.reduce(g, new PrecisionModel(scaleFactor));
   }
   
   public static Geometry intersectionNG(Geometry geom0, Geometry geom1) {
