@@ -65,6 +65,15 @@ public class PolygonTriangulatorTest extends GeometryTestCase {
     checkTri(
   "POLYGON ((110 170, 138 272, 145 286, 152 296, 160 307, 303 307, 314 301, 332 287, 343 278, 352 270, 385 99, 374 89, 359 79, 178 89, 167 91, 153 99, 146 107, 173 157, 182 163, 191 170, 199 176, 208 184, 218 194, 226 203, 198 252, 188 247, 182 239, 175 231, 167 223, 161 213, 156 203, 155 198, 110 170))"
         );
+  }  
+  
+  /**
+   * Ear clipping creates a collapsed corner (A-B-A), which was not detected by flat corner removal
+   */
+  public void testCollapsedCorner() {
+    checkTri(
+  "POLYGON ((186 90, 71 17, 74 10, 65 0, 0 121, 186 90), (73 34, 67 41, 71 17, 73 34))"
+        );
   }
   
   private void checkTri(String wkt, String wktExpected) {

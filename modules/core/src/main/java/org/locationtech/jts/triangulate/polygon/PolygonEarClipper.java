@@ -22,6 +22,7 @@ import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.Triangle;
+import org.locationtech.jts.io.WKTWriter;
 import org.locationtech.jts.triangulate.tri.Tri;
 
 /**
@@ -153,14 +154,17 @@ class PolygonEarClipper {
        * after enough ears are removed)
        */
       if (! isConvex(corner)) {
-        // remove the corner if it is flat or a repeated point        
-        boolean isCornerRemoved = hasRepeatedPoint(corner)
+        // remove the corner if it is invalid or flat (if required)        
+        boolean isCornerRemoved = isCornerInvalid(corner)
             || (isFlatCornersSkipped && isFlat(corner));
         if (isCornerRemoved) {
+          //System.out.println(WKTWriter.toLineString(corner));
           removeCorner();
         }
         cornerScanCount++;
         if ( cornerScanCount > 2 * vertexSize ) {
+          //System.out.println(toGeometry());
+          //System.out.println(WKTWriter.toLineString(corner));
           throw new IllegalStateException("Unable to find a convex corner");
         }
       }
@@ -383,8 +387,13 @@ class PolygonEarClipper {
     return Orientation.COLLINEAR == Orientation.index(pts[0], pts[1], pts[2]);
   }
   
-  private static boolean hasRepeatedPoint(Coordinate[] pts) {
-    return pts[1].equals2D(pts[0]) || pts[1].equals2D(pts[2]);
+  /**
+   * Detects if a corner has repeated points (AAB or ABB), or is collapsed (ABA).
+   * @param pts the corner points
+   * @return true if the corner is flat or collapsed
+   */
+  private static boolean isCornerInvalid(Coordinate[] pts) {
+    return pts[1].equals2D(pts[0]) || pts[1].equals2D(pts[2]) || pts[0].equals2D(pts[2]);
   }
   
   public Polygon toGeometry() {
