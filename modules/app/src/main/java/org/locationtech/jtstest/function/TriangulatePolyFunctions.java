@@ -12,7 +12,9 @@
 package org.locationtech.jtstest.function;
 
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.triangulate.polygon.ConstrainedDelaunayTriangulator;
+import org.locationtech.jts.triangulate.polygon.PolygonHoleJoiner;
 import org.locationtech.jts.triangulate.polygon.PolygonTriangulator;
 
 
@@ -28,5 +30,9 @@ public class TriangulatePolyFunctions
     return ConstrainedDelaunayTriangulator.triangulate(geom);
   }
 
+  public static Geometry joinHoles(Geometry geom)
+  {
+    return PolygonHoleJoiner.joinAsPolygon((Polygon) geom);
+  }
 
 }
