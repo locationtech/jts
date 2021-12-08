@@ -148,8 +148,8 @@ public class SnapRoundingIntersectionAdder
      * This avoids creating "zig-zag" linework
      * (since the vertex could actually be outside the segment envelope).
      */
-    if (p.distance(p0) < nearnessTol) return;
-    if (p.distance(p1) < nearnessTol) return;
+    // if (p.distance(p0) < nearnessTol) return;
+    // if (p.distance(p1) < nearnessTol) return;
     
     double distSeg = Distance.pointToSegment(p, p0, p1);
     if (distSeg < nearnessTol) {
