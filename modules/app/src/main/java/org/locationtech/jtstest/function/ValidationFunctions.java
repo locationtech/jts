@@ -73,24 +73,6 @@ public class ValidationFunctions
     validOp.setSelfTouchingRingFormingHoleValid(true);
     return validOp.isValid();     
   }
-
-  public static Geometry makeValid(Geometry geom) {
-    if (geom.getDimension() < 2) return geom;
-    //TODO: handle MultiPolygons
-    //TODO: handle GeometryCollections
-    
-    if (! ((geom instanceof Polygonal) || geom.getNumGeometries() > 1)) {
-      throw new IllegalArgumentException("Only single polygons are handled - for now");
-    }
-    // get single polygon (hack)
-    Geometry poly = geom.getGeometryN(0);
-    List lines = LinearComponentExtracter.getLines(geom);
-    Geometry lineGeom = geom.getFactory().buildGeometry(lines);
-    Geometry nodedLines = OverlayNGRobust.overlay(lineGeom, null, OverlayNG.UNION);
-    Polygonizer polygonizer = new Polygonizer(true);
-    polygonizer.add(nodedLines);
-    return polygonizer.getGeometry();
-  }
   
   public static Geometry fixInvalid(Geometry geom) {
     return GeometryFixer.fix(geom);
