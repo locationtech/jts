@@ -74,7 +74,7 @@ public class VertexStyle  implements Style
   private void init() {
     sizeOver2 = size / 2d;
     shape = new Rectangle(0, 0, size, size);
-    float strokeSize = size / 4;
+    float strokeSize = size / 4F ;
     if (strokeSize < 1) strokeSize = 1;
     stroke = new BasicStroke(strokeSize);
   }
