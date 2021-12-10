@@ -28,12 +28,13 @@ import org.locationtech.jts.index.chain.MonotoneChainSelectAction;
 
 /**
  * Computes an offset curve from a geometry.
- * The offset curve of a line is a {@link LineString} which
- * lies at a given distance from the input line.
+ * The offset curve is a linear geometry which is offset a specified distance
+ * from the input.
  * If the offset distance is positive the curve lies on the left side of the input;
  * if it is negative the curve is on the right side.
  * <p>
- * The offset curve of a Point is an empty LineString.
+ * The offset curve of a line is a {@link LineString} which
+ * The offset curve of a Point is an empty {@link LineString}.
  * The offset curve of a Polygon is the boundary of the polygon buffer (which
  * may be a {@link MultiLineString}.
  * For a collection the output is a {@link MultiLineString} of the element offset curves.
@@ -49,6 +50,9 @@ import org.locationtech.jts.index.chain.MonotoneChainSelectAction;
  * <li>If the offset corresponds to buffer holes, only the largest hole is used. 
  * </li>
  * </ul>
+ * Offset curves support setting the number of quadrant segments, 
+ * the join style, and the mitre limit (if applicable) via 
+ * the {@link BufferParameters}.
  * 
  * @author Martin Davis
  *
@@ -61,10 +65,10 @@ public class OffsetCurve {
   private static final int NEARNESS_FACTOR = 10000;
 
   /**
-   * Computes the offset curve of a linear geometry.
+   * Computes the offset curve of a geometry at a given distance.
    * 
-   * @param geom a linear geometry
-   * @param distance the offset curve distance
+   * @param geom a geometry
+   * @param distance the offset distance (positive = left, negative = right)
    * @return the offset curve
    */
   public static Geometry getCurve(Geometry geom, double distance) {
@@ -72,16 +76,69 @@ public class OffsetCurve {
     return oc.getCurve();
   }
   
+  /**
+   * Computes the offset curve of a geometry at a given distance,
+   * and for a specified quadrant segments, join style and mitre limit.
+   * 
+   * @param geom a geometry
+   * @param distance the offset distance (positive = left, negative = right)
+   * @param quadSegs the quadrant segments (-1 for default)
+   * @param joinStyle the join style (-1 for default)
+   * @param mitreLimit the mitre limit (-1 for default)
+   * @return the offset curve
+   */
+  public static Geometry getCurve(Geometry geom, double distance, int quadSegs, int joinStyle, double mitreLimit) {
+    BufferParameters bufferParams = new BufferParameters();
+    if (quadSegs >= 0) bufferParams.setQuadrantSegments(quadSegs);
+    if (joinStyle >= 0) bufferParams.setJoinStyle(joinStyle);
+    if (mitreLimit >= 0) bufferParams.setMitreLimit(mitreLimit);    
+    OffsetCurve oc = new OffsetCurve(geom, distance, bufferParams);
+    return oc.getCurve();
+  }
+  
   private Geometry inputGeom;
   private double distance;
+  private BufferParameters bufferParams;
   private double matchDistance;
   private GeometryFactory geomFactory;
 
+  /**
+   * Creates a new instance for computing an offset curve for a geometryat a given distance.
+   * with default quadrant segments ({@link BufferParameters#DEFAULT_QUADRANT_SEGMENTS})
+   * and join style ({@link BufferParameters#JOIN_STYLE}).
+   * 
+   * @param geom the geometry to offset
+   * @param distance the offset distance (positive = left, negative = right)
+   * 
+   * @see BufferParameters
+   */
   public OffsetCurve(Geometry geom, double distance) {
+    this(geom, distance, null);
+  }
+  
+  /**
+   * Creates a new instance for computing an offset curve for a geometry at a given distance.
+   * allowing the quadrant segments and join style and mitre limit to be set
+   * via {@link BufferParameters}.
+   * 
+   * @param geom
+   * @param distance
+   * @param bufParams
+   */
+  public OffsetCurve(Geometry geom, double distance, BufferParameters bufParams) {
     this.inputGeom = geom;
     this.distance = distance;
+    
     matchDistance = Math.abs(distance) / NEARNESS_FACTOR;
     geomFactory = inputGeom.getFactory();
+    
+    //-- make new buffer params since the end cap style must be the default
+    this.bufferParams = new BufferParameters();
+    if (bufParams != null) {
+      bufferParams.setQuadrantSegments(bufParams.getQuadrantSegments());
+      bufferParams.setJoinStyle(bufParams.getJoinStyle());
+      bufferParams.setMitreLimit(bufParams.getMitreLimit());
+    }
   }
   
   /**
@@ -119,18 +176,21 @@ public class OffsetCurve {
   
   /**
    * Gets the raw offset line.
-   * This may contain loops and other artifacts which are 
-   * not present in the actual offset curve.
-   * The raw offset line is used to extract the offset curve
-   * by matching it to a buffer ring (which is clean).
+   * The quadrant segments and join style and mitre limit to be set
+   * via {@link BufferParameters}.
+   * <p>
+   * The raw offset line may contain loops and other artifacts which are 
+   * not present in the true offset curve.
+   * The raw offset line is matched to the buffer ring (which is clean)
+   * to extract the offset curve.
    * 
    * @param geom the linestring to offset
    * @param distance the offset distance
+   * @param bufParams the buffer parameters to use
    * @return the raw offset line
    */
-  public static Coordinate[] rawOffset(LineString geom, double distance)
+  public static Coordinate[] rawOffset(LineString geom, double distance, BufferParameters bufParams)
   {
-    BufferParameters bufParams = new BufferParameters();
     OffsetCurveBuilder ocb = new OffsetCurveBuilder(
         geom.getFactory().getPrecisionModel(), bufParams
         );
@@ -138,6 +198,18 @@ public class OffsetCurve {
     return pts;
   }
   
+  /**
+   * Gets the raw offset line, with default buffer parameters.
+   * 
+   * @param geom the linestring to offset
+   * @param distance the offset distance
+   * @return the raw offset line
+   */
+  public static Coordinate[] rawOffset(LineString geom, double distance)
+  {
+    return rawOffset(geom, distance, new BufferParameters());
+  }
+
   private LineString computeCurve(LineString lineGeom, double distance) {
     //-- first handle special/simple cases
     if (lineGeom.getNumPoints() < 2 || lineGeom.getLength() == 0.0) {
@@ -147,7 +219,7 @@ public class OffsetCurve {
       return offsetSegment(lineGeom.getCoordinates(), distance);
     }
 
-    Coordinate[] rawOffset = rawOffset(lineGeom, distance);
+    Coordinate[] rawOffset = rawOffset(lineGeom, distance, bufferParams);
     if (rawOffset.length == 0) {
       return geomFactory.createLineString();
     }
@@ -159,7 +231,7 @@ public class OffsetCurve {
      * so not doing this. 
      */
     
-    Polygon bufferPoly = getBufferOriented(lineGeom, distance);
+    Polygon bufferPoly = getBufferOriented(lineGeom, distance, bufferParams);
     
     //-- first try matching shell to raw curve
     Coordinate[] shell = bufferPoly.getExteriorRing().getCoordinates();
@@ -179,8 +251,8 @@ public class OffsetCurve {
     return geomFactory.createLineString(new Coordinate[] { offsetSeg.p0, offsetSeg.p1 });
   }
 
-  private static Polygon getBufferOriented(LineString geom, double distance) {
-    Geometry buffer = geom.buffer(Math.abs(distance));
+  private static Polygon getBufferOriented(LineString geom, double distance, BufferParameters bufParams) {
+    Geometry buffer = BufferOp.bufferOp(geom, Math.abs(distance), bufParams);
     Polygon bufferPoly = extractMaxAreaPolygon(buffer);
     //-- for negative distances (Right of input) reverse buffer direction to match offset curve
     if (distance < 0) {

@@ -308,4 +308,13 @@ public class BufferParameters
   {
     this.simplifyFactor = simplifyFactor < 0 ? 0 : simplifyFactor;
   }
+  
+  public BufferParameters copy() {
+    BufferParameters bp = new BufferParameters();
+    bp.quadrantSegments = quadrantSegments;
+    bp.endCapStyle = endCapStyle;
+    bp.joinStyle = joinStyle;
+    bp.mitreLimit = mitreLimit;
+    return bp;
+  }
 }

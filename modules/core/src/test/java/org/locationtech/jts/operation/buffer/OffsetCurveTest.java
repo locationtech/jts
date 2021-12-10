@@ -165,8 +165,43 @@ public class OffsetCurveTest extends GeometryTestCase {
 
   }
   
+  //---------------------------------------
+  
+  public void testQuadSegs() {
+    checkOffsetCurve(
+        "LINESTRING (20 20, 50 50, 80 20)", 
+        10, 2, -1, -1,
+        "LINESTRING (12.93 27.07, 42.93 57.07, 50 60, 57.07 57.07, 87.07 27.07)"
+    );
+  }
+
+  public void testJoinBevel() {
+    checkOffsetCurve(
+        "LINESTRING (20 20, 50 50, 80 20)", 
+        10, -1, BufferParameters.JOIN_BEVEL, -1,
+        "LINESTRING (12.93 27.07, 42.93 57.07, 57.07 57.07, 87.07 27.07)"
+    );
+  }
+  
+  public void testJoinMitre() {
+    checkOffsetCurve(
+        "LINESTRING (20 20, 50 50, 80 20)", 
+        10, -1, BufferParameters.JOIN_MITRE, -1,
+        "LINESTRING (12.93 27.07, 50 64.14, 87.07 27.07)"
+    );
+  }
+  
+  //=======================================
+  
   private void checkOffsetCurve(String wkt, double distance, String wktExpected) {
     checkOffsetCurve(wkt, distance, wktExpected, 0.05);
+  }
+  
+  private void checkOffsetCurve(String wkt, double distance, 
+      int quadSegs, int joinStyle, double mitreLimit,
+      String wktExpected) 
+  {
+    checkOffsetCurve(wkt, distance, quadSegs, joinStyle, mitreLimit, wktExpected, 0.05);
   }
   
   private void checkOffsetCurve(String wkt, double distance, String wktExpected, double tolerance) {
@@ -180,4 +215,19 @@ public class OffsetCurveTest extends GeometryTestCase {
     Geometry expected = read(wktExpected);
     checkEqual(expected, result, tolerance);
   }
+  
+  private void checkOffsetCurve(String wkt, double distance, 
+      int quadSegs, int joinStyle, double mitreLimit,
+      String wktExpected, double tolerance) {
+    Geometry geom = read(wkt);
+    Geometry result = OffsetCurve.getCurve(geom, distance, quadSegs, joinStyle, mitreLimit);
+    //System.out.println(result);
+    
+    if (wktExpected == null)
+      return;
+    
+    Geometry expected = read(wktExpected);
+    checkEqual(expected, result, tolerance);
+  }
+
 }
