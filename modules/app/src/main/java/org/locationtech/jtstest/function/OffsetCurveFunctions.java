@@ -17,6 +17,7 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.util.GeometryCombiner;
 import org.locationtech.jts.operation.buffer.OffsetCurve;
+import org.locationtech.jtstest.geomfunction.Metadata;
 
 public class OffsetCurveFunctions {
 
@@ -25,10 +26,40 @@ public class OffsetCurveFunctions {
     return OffsetCurve.getCurve(geom, distance);
   }
 
+  public static Geometry offsetCurveWithParams(Geometry geom,       
+      Double distance,
+      @Metadata(title="Quadrant Segs")
+      Integer quadrantSegments, 
+      @Metadata(title="NOT USED")
+      Integer capStyle, 
+      @Metadata(title="Join style")
+      Integer joinStyle, 
+      @Metadata(title="Mitre limit")
+      Double mitreLimit)
+  {
+    return OffsetCurve.getCurve(geom, distance, quadrantSegments, joinStyle, mitreLimit);
+  }
+
   public static Geometry offsetCurveBoth(Geometry geom, double distance)
   {
     Geometry curve1 = OffsetCurve.getCurve(geom, distance);
     Geometry curve2 = OffsetCurve.getCurve(geom, -distance);
+    return GeometryCombiner.combine(curve1, curve2);
+  }
+
+  public static Geometry offsetCurveBothWithParams(Geometry geom,       
+      Double distance,
+      @Metadata(title="Quadrant Segs")
+      Integer quadrantSegments, 
+      @Metadata(title="NOT USED")
+      Integer capStyle, 
+      @Metadata(title="Join style")
+      Integer joinStyle, 
+      @Metadata(title="Mitre limit")
+      Double mitreLimit)
+  {
+    Geometry curve1 = OffsetCurve.getCurve(geom, distance, quadrantSegments, joinStyle, mitreLimit);
+    Geometry curve2 = OffsetCurve.getCurve(geom, -distance, quadrantSegments, joinStyle, mitreLimit);
     return GeometryCombiner.combine(curve1, curve2);
   }
 
