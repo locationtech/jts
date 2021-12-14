@@ -532,16 +532,10 @@ class OffsetSegmentGenerator
     // compute the candidate bevel segment by projecting both sides of the midpoint
     Coordinate bevel0 = project(bevelMidPt, distance, dirBevel);
     Coordinate bevel1 = project(bevelMidPt, distance, dirBevel + Math.PI);
-    LineSegment bevel = new LineSegment(bevel0, bevel1);
-    
-    //-- compute intersections with extended offset segments
-    double extendLen = mitreLimitDistance < distance ? distance : mitreLimitDistance;
-    
-    LineSegment extend0 = extend(offset0, 2 * extendLen);
-    LineSegment extend1 = extend(offset1, -2 * extendLen);
-    Coordinate bevelInt0 = bevel.intersection(extend0);
-    Coordinate bevelInt1 = bevel.intersection(extend1);
-    
+
+    Coordinate bevelInt0 = Intersection.intersectionLineSegment(offset0.p0, offset0.p1, bevel0, bevel1);
+    Coordinate bevelInt1 = Intersection.intersectionLineSegment(offset1.p0, offset1.p1, bevel0, bevel1);
+
     //-- add the limited bevel, if it intersects the offsets
     if (bevelInt0 != null && bevelInt1 != null) {
       segList.addPt(bevelInt0);
@@ -554,23 +548,6 @@ class OffsetSegmentGenerator
      * In this case just bevel the join.
      */
     addBevelJoin(offset0, offset1); 
-  }
-
-  /**
-   * Extends a line segment forwards or backwards a given distance.
-   * 
-   * @param seg the base line segment
-   * @param dist the distance to extend by
-   * @return the extended segment
-   */
-  private static LineSegment extend(LineSegment seg, double dist) {
-    double distFrac = Math.abs(dist) / seg.getLength();
-    double segFrac = dist >= 0 ? 1 + distFrac : 0 - distFrac;
-    Coordinate extendPt = seg.pointAlong(segFrac);
-    if (dist > 0)
-      return new LineSegment(seg.p0, extendPt);
-    else
-      return new LineSegment(extendPt, seg.p1);
   }
   
   /**

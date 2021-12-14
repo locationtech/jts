@@ -49,6 +49,30 @@ public class IntersectionTest extends TestCase {
         7.772841461, 60.5339209242 );
   }
 
+  //------------------------------------------------------------
+  
+  public void testLineSegCross() {
+    checkIntersectionLineSegment( 0, 0, 0, 1,     -1, 9, 1, 9,     0, 9 );
+    checkIntersectionLineSegment( 0, 0, 0, 1,     -1, 2, 1, 4,     0, 3 );
+  }
+
+  public void testLineSegTouch() {
+    checkIntersectionLineSegment( 0, 0, 0, 1,     -1, 9, 0, 9,     0, 9 );
+    checkIntersectionLineSegment( 0, 0, 0, 1,      0, 2, 1, 4,     0, 2 );
+  }
+
+  public void testLineSegCollinear() {
+    checkIntersectionLineSegment( 0, 0, 0, 1,     0, 9, 0, 8,     0, 9 );
+  }
+
+  public void testLineSegNone() {
+    checkIntersectionLineSegmentNull( 0, 0, 0, 1,    2, 9,  1, 9 );
+    checkIntersectionLineSegmentNull( 0, 0, 0, 1,   -2, 9, -1, 9 );
+    checkIntersectionLineSegmentNull( 0, 0, 0, 1,    2, 9,  1, 9 );
+  }
+
+  //==================================================
+  
   private void checkIntersection(double p1x, double p1y, double p2x, double p2y, 
       double q1x, double q1y, double q2x, double q2y, 
       double expectedx, double expectedy) {
@@ -71,6 +95,31 @@ public class IntersectionTest extends TestCase {
     Coordinate q1 = new Coordinate(q1x, q1y);
     Coordinate q2 = new Coordinate(q2x, q2y);
     Coordinate actual = Intersection.intersection(p1, p2, q1, q2);
+    assertTrue(actual == null);
+  }
+  
+  private void checkIntersectionLineSegment(double p1x, double p1y, double p2x, double p2y, 
+      double q1x, double q1y, double q2x, double q2y, 
+      double expectedx, double expectedy) {
+    Coordinate p1 = new Coordinate(p1x, p1y);
+    Coordinate p2 = new Coordinate(p2x, p2y);
+    Coordinate q1 = new Coordinate(q1x, q1y);
+    Coordinate q2 = new Coordinate(q2x, q2y);
+    //Coordinate actual = CGAlgorithmsDD.intersection(p1, p2, q1, q2);
+    Coordinate actual = Intersection.intersectionLineSegment(p1, p2, q1, q2);
+    Coordinate expected = new Coordinate( expectedx, expectedy );
+    double dist = actual.distance(expected);
+    //System.out.println("Expected: " + expected + "  Actual: " + actual + "  Dist = " + dist);
+    assertTrue(dist <= MAX_ABS_ERROR);
+  }
+  
+  private void checkIntersectionLineSegmentNull(double p1x, double p1y, double p2x, double p2y, 
+      double q1x, double q1y, double q2x, double q2y) {
+    Coordinate p1 = new Coordinate(p1x, p1y);
+    Coordinate p2 = new Coordinate(p2x, p2y);
+    Coordinate q1 = new Coordinate(q1x, q1y);
+    Coordinate q2 = new Coordinate(q2x, q2y);
+    Coordinate actual = Intersection.intersectionLineSegment(p1, p2, q1, q2);
     assertTrue(actual == null);
   }
 }

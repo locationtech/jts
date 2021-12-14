@@ -14,7 +14,15 @@ package org.locationtech.jts.algorithm;
 import org.locationtech.jts.geom.Coordinate;
 
 /**
- * Contains functions to compute intersections between lines.
+ * Functions to compute intersection points between lines and line segments.
+ * <p>
+ * In general it is not possible to compute
+ * the intersection point of two lines exactly, due to numerical roundoff.
+ * This is particularly true when the lines are nearly parallel.
+ * These routines uses numerical conditioning on the input values
+ * to ensure that the computed value is very close to the correct value.
+ * <p>
+ * The Z-ordinate is ignored, and not populated.
  * 
  * @author Martin Davis
  *
@@ -25,13 +33,6 @@ public class Intersection {
    * Computes the intersection point of two lines.
    * If the lines are parallel or collinear this case is detected 
    * and <code>null</code> is returned.
-   * <p>
-   * In general it is not possible to accurately compute
-   * the intersection point of two lines, due to 
-   * numerical roundoff.
-   * This is particularly true when the input lines are nearly parallel.
-   * This routine uses numerical conditioning on the input values
-   * to ensure that the computed value should be very close to the correct value.
    * 
    * @param p1 an endpoint of line 1
    * @param p2 an endpoint of line 1
@@ -97,6 +98,52 @@ public class Intersection {
     return new Coordinate(xInt + midx, yInt + midy);
   }
 
+  /**
+   * Computes the intersection point of a line and a line segment (if any).
+   * There will be no intersection point if:
+   * <ul>
+   * <li>the segment does not intersect the line
+   * <li>the line or the segment are degenerate (have zero length)
+   * </ul>
+   * If the segment is collinear with the line the first segment endpoint is returned.
+   * 
+   * @param line1 a point on the line
+   * @param line2 a point on the line
+   * @param seg1 an endpoint of the line segment
+   * @param seg2 an endpoint of the line segment
+   * @return the intersection point, or null if it is not possible to find an intersection
+   */
+  public static Coordinate intersectionLineSegment(Coordinate line1, Coordinate line2, Coordinate seg1, Coordinate seg2) {
+    int orientS1 = Orientation.index(line1, line2, seg1);
+    if (orientS1 == 0) return seg1.copy();
+    
+    int orientS2 = Orientation.index(line1, line2, seg2);
+    if (orientS2 == 0) return seg2.copy();
+
+    /**
+     * If segment lies completely on one side of the line, it does not intersect
+     */
+    if ((orientS1 > 0 && orientS2 > 0) || (orientS1 < 0 && orientS2 < 0)) {
+      return null;
+    }
+    
+    /**
+     * The segment intersects the line.
+     * The full line-line intersection is used to compute the intersection point.
+     */
+    Coordinate intPt = intersection(line1, line2, seg1, seg2);
+    if (intPt != null) return intPt;
+    
+    /**
+     * Due to robustness failure it is possible the intersection computation will return null.
+     * In this case choose the closest point
+     */
+    double dist1 = Distance.pointToLinePerpendicular(seg1, line1, line2);
+    double dist2 = Distance.pointToLinePerpendicular(seg2, line1, line2);
+    if (dist1 < dist2)
+      return seg1.copy();
+    return seg2;
+  }
 }
 
 
