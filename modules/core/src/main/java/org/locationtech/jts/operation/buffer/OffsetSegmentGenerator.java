@@ -12,6 +12,7 @@
 package org.locationtech.jts.operation.buffer;
 
 import org.locationtech.jts.algorithm.Angle;
+import org.locationtech.jts.algorithm.Distance;
 import org.locationtech.jts.algorithm.Intersection;
 import org.locationtech.jts.algorithm.LineIntersector;
 import org.locationtech.jts.algorithm.Orientation;
@@ -443,101 +444,152 @@ class OffsetSegmentGenerator
 
     }
   }
+  
   /**
-   * Adds a mitre join connecting the two reflex offset segments.
-   * The mitre will be beveled if it exceeds the mitre ratio limit.
+   * Adds a mitre join connecting two convex offset segments.
+   * The mitre is beveled if it exceeds the mitre limit factor.
+   * The mitre limit is intended to prevent extremely long corners occurring.
+   * If the mitre limit is very small it can cause unwanted artifacts around fairly flat corners.
+   * This is prevented by using a simple bevel join in this case.
+   * In other words, the limit prevents the corner from getting too long, 
+   * but it won't force it to be very short/flat.
    * 
    * @param offset0 the first offset segment
    * @param offset1 the second offset segment
    * @param distance the offset distance
    */
-  private void addMitreJoin(Coordinate p, 
+  private void addMitreJoin(Coordinate cornerPt, 
       LineSegment offset0, 
       LineSegment offset1,
       double distance)
   { 
+    double mitreLimitDistance = bufParams.getMitreLimit() * distance;
     /**
-     * This computation is unstable if the offset segments are nearly collinear.
+     * First try a non-beveled join.
+     * Compute the intersection point of the lines determined by the offsets.
+     * Parallel or collinear lines will return a null point ==> need to be beveled
+     * 
+     * Note: This computation is unstable if the offset segments are nearly collinear.
      * However, this situation should have been eliminated earlier by the check
      * for whether the offset segment endpoints are almost coincident
      */
     Coordinate intPt = Intersection.intersection(offset0.p0, offset0.p1, offset1.p0, offset1.p1);
-    if (intPt != null) {
-      double mitreRatio = distance <= 0.0 ? 1.0 : intPt.distance(p) / Math.abs(distance);
-      if (mitreRatio <= bufParams.getMitreLimit()) {
+    if (intPt != null && intPt.distance(cornerPt) <= mitreLimitDistance) {
         segList.addPt(intPt);
         return;
-      }
     }
-    // at this point either intersection failed or mitre limit was exceeded
-    addLimitedMitreJoin(offset0, offset1, distance, bufParams.getMitreLimit());
-//      addBevelJoin(offset0, offset1);
+    /**
+     * In case the mitre limit is very small, try a plain bevel.
+     * Use it if it's further than the limit.
+     */
+    double bevelDist = Distance.pointToSegment(cornerPt, offset0.p1, offset1.p0);
+    if (bevelDist >= mitreLimitDistance) {
+      addBevelJoin(offset0, offset1);
+      return;
+    }
+    /**
+     * Have to construct a limited mitre bevel.
+     */
+    addLimitedMitreJoin(offset0, offset1, distance, mitreLimitDistance);
   }
   
-  
   /**
-   * Adds a limited mitre join connecting the two reflex offset segments.
-   * A limited mitre is a mitre which is beveled at the distance
-   * determined by the mitre ratio limit.
+   * Adds a limited mitre join connecting two convex offset segments.
+   * A limited mitre join is beveled at the distance
+   * determined by the mitre limit factor,
+   * or as a standard bevel join, whichever is further.
    * 
    * @param offset0 the first offset segment
    * @param offset1 the second offset segment
    * @param distance the offset distance
-   * @param mitreLimit the mitre limit ratio
+   * @param mitreLimitDistance the mitre limit distance
    */
   private void addLimitedMitreJoin( 
       LineSegment offset0, 
       LineSegment offset1,
       double distance,
-      double mitreLimit)
+      double mitreLimitDistance)
   {
-    Coordinate basePt = seg0.p1;
-
-    double ang0 = Angle.angle(basePt, seg0.p0);
-
-    // oriented angle between segments
-    double angDiff = Angle.angleBetweenOriented(seg0.p0, basePt, seg1.p1);
+    Coordinate cornerPt = seg0.p1;
+    // oriented angle of the corner formed by segments
+    double angInterior = Angle.angleBetweenOriented(seg0.p0, cornerPt, seg1.p1);
     // half of the interior angle
-    double angDiffHalf = angDiff / 2;
+    double angInterior2 = angInterior / 2;
   
-    // angle for bisector of the interior angle between the segments
-    double midAng = Angle.normalize(ang0 + angDiffHalf);
-    // rotating this by PI gives the bisector of the reflex angle
-    double mitreMidAng = Angle.normalize(midAng + Math.PI);
+    // direction of bisector of the interior angle between the segments
+    double dir0 = Angle.angle(cornerPt, seg0.p0);
+    double dirBisector = Angle.normalize(dir0 + angInterior2);
+    // rotating by PI gives the bisector of the outside angle,
+    // which is the direction of the bevel midpoint from the corner apex
+    double dirBisectorOut = Angle.normalize(dirBisector + Math.PI);
     
-    // the miterLimit determines the distance to the mitre bevel
-    double mitreDist = mitreLimit * distance;
-    // the bevel delta is the difference between the buffer distance
-    // and half of the length of the bevel segment
-    double bevelDelta = mitreDist * Math.abs(Math.sin(angDiffHalf));
-    double bevelHalfLen = distance - bevelDelta;
-
     // compute the midpoint of the bevel segment
-    double bevelMidX = basePt.x + mitreDist * Math.cos(mitreMidAng);
-    double bevelMidY = basePt.y + mitreDist * Math.sin(mitreMidAng);
-    Coordinate bevelMidPt = new Coordinate(bevelMidX, bevelMidY);
+    Coordinate bevelMidPt = project(cornerPt, mitreLimitDistance, dirBisectorOut);
     
-    // compute the mitre midline segment from the corner point to the bevel segment midpoint
-    LineSegment mitreMidLine = new LineSegment(basePt, bevelMidPt);
+    // slope angle of bevel segment
+    double dirBevel = Angle.normalize(dirBisectorOut + Math.PI/2.0);
     
-    // finally the bevel segment endpoints are computed as offsets from 
-    // the mitre midline
-    Coordinate bevelEndLeft = mitreMidLine.pointAlongOffset(1.0, bevelHalfLen);
-    Coordinate bevelEndRight = mitreMidLine.pointAlongOffset(1.0, -bevelHalfLen);
+    // compute the candidate bevel segment by projecting both sides of the midpoint
+    Coordinate bevel0 = project(bevelMidPt, distance, dirBevel);
+    Coordinate bevel1 = project(bevelMidPt, distance, dirBevel + Math.PI);
+    LineSegment bevel = new LineSegment(bevel0, bevel1);
     
-    if (side == Position.LEFT) {
-      segList.addPt(bevelEndLeft);
-      segList.addPt(bevelEndRight);
+    //-- compute intersections with extended offset segments
+    double extendLen = mitreLimitDistance < distance ? distance : mitreLimitDistance;
+    
+    LineSegment extend0 = extend(offset0, 2 * extendLen);
+    LineSegment extend1 = extend(offset1, -2 * extendLen);
+    Coordinate bevelInt0 = bevel.intersection(extend0);
+    Coordinate bevelInt1 = bevel.intersection(extend1);
+    
+    //-- add the limited bevel, if it intersects the offsets
+    if (bevelInt0 != null && bevelInt1 != null) {
+      segList.addPt(bevelInt0);
+      segList.addPt(bevelInt1);      
+      return;
     }
-    else {
-      segList.addPt(bevelEndRight);
-      segList.addPt(bevelEndLeft);     
-    }
+    /**
+     * If the corner is very flat or the mitre limit is very small
+     * the limited bevel segment may not intersect the offsets.
+     * In this case just bevel the join.
+     */
+    addBevelJoin(offset0, offset1); 
+  }
+
+  /**
+   * Extends a line segment forwards or backwards a given distance.
+   * 
+   * @param seg the base line segment
+   * @param dist the distance to extend by
+   * @return the extended segment
+   */
+  private static LineSegment extend(LineSegment seg, double dist) {
+    double distFrac = Math.abs(dist) / seg.getLength();
+    double segFrac = dist >= 0 ? 1 + distFrac : 0 - distFrac;
+    Coordinate extendPt = seg.pointAlong(segFrac);
+    if (dist > 0)
+      return new LineSegment(seg.p0, extendPt);
+    else
+      return new LineSegment(extendPt, seg.p1);
   }
   
   /**
-   * Adds a bevel join connecting the two offset segments
-   * around a reflex corner.
+   * Projects a point to a given distance in a given direction angle.
+   * 
+   * @param pt the point to project
+   * @param d the projection distance
+   * @param dir the direction angle (in radians)
+   * @return the projected point
+   */
+  private static Coordinate project(Coordinate pt, double d, double dir) {
+    double x = pt.x + d * Math.cos(dir);
+    double y = pt.y + d * Math.sin(dir);
+    return new Coordinate(x, y);
+  }
+  
+  /**
+   * Adds a bevel join connecting two offset segments
+   * around a convex corner.
    * 
    * @param offset0 the first offset segment
    * @param offset1 the second offset segment
@@ -550,9 +602,8 @@ class OffsetSegmentGenerator
      segList.addPt(offset1.p0);        
   }
   
-  
   /**
-   * Add points for a circular fillet around a reflex corner.
+   * Add points for a circular fillet around a convex corner.
    * Adds the start and end points
    * 
    * @param p base point of curve
