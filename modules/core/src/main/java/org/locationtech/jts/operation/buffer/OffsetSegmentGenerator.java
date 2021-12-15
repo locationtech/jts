@@ -519,20 +519,18 @@ class OffsetSegmentGenerator
     // direction of bisector of the interior angle between the segments
     double dir0 = Angle.angle(cornerPt, seg0.p0);
     double dirBisector = Angle.normalize(dir0 + angInterior2);
-    // rotating by PI gives the bisector of the outside angle,
-    // which is the direction of the bevel midpoint from the corner apex
-    double dirBisectorOut = Angle.normalize(dirBisector + Math.PI);
     
-    // compute the midpoint of the bevel segment
-    Coordinate bevelMidPt = project(cornerPt, mitreLimitDistance, dirBisectorOut);
+    // midpoint of the bevel segment
+    Coordinate bevelMidPt = project(cornerPt, -mitreLimitDistance, dirBisector);
     
-    // slope angle of bevel segment
-    double dirBevel = Angle.normalize(dirBisectorOut + Math.PI/2.0);
+    // direction of bevel segment (at right angle to corner bisector)
+    double dirBevel = Angle.normalize(dirBisector + Math.PI/2.0);
     
     // compute the candidate bevel segment by projecting both sides of the midpoint
     Coordinate bevel0 = project(bevelMidPt, distance, dirBevel);
     Coordinate bevel1 = project(bevelMidPt, distance, dirBevel + Math.PI);
-
+    
+    // compute actual bevel segment between the offset lines
     Coordinate bevelInt0 = Intersection.intersectionLineSegment(offset0.p0, offset0.p1, bevel0, bevel1);
     Coordinate bevelInt1 = Intersection.intersectionLineSegment(offset1.p0, offset1.p1, bevel0, bevel1);
 
