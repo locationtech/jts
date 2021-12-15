@@ -19,8 +19,8 @@ import junit.textui.TestRunner;
 
 /**
  * Union of high-precision polygons - result misses one input area.
- * Original issue was a unary union of 6 polygons, 
- * but problem is manifested by two specific polygons.
+ * Original issue was a unary union of 6 polygons. 
+ * Problem is also manifested in a simpler form by two specific polygons.
  *  
  * See https://github.com/locationtech/jts/issues/784
  *
@@ -80,7 +80,7 @@ public class Issue784Test extends TestCase {
   }
 
   /**
-   * Original test case.  Simplified version below shows same problem.
+   * Original test case.  Simplified version shows same problem.
    * 
    * @throws ParseException
    */
@@ -112,7 +112,7 @@ public class Issue784Test extends TestCase {
   }
   
   /**
-   * See simpler case below.
+   * See simpler case.
    * 
    * @throws ParseException
    */
