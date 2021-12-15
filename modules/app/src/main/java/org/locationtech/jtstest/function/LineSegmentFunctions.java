@@ -13,6 +13,7 @@
 package org.locationtech.jtstest.function;
 
 import org.locationtech.jts.algorithm.CGAlgorithmsDD;
+import org.locationtech.jts.algorithm.Intersection;
 import org.locationtech.jts.algorithm.RobustLineIntersector;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
@@ -20,7 +21,7 @@ import org.locationtech.jts.geom.LineSegment;
 
 public class LineSegmentFunctions
 {
-  public static boolean segmentIntersects(Geometry g1, Geometry g2)
+  public static boolean intersects(Geometry g1, Geometry g2)
   {
     Coordinate[] pt1 = g1.getCoordinates();
     Coordinate[] pt2 = g2.getCoordinates();
@@ -29,7 +30,7 @@ public class LineSegmentFunctions
     return ri.hasIntersection();
   }
   
-  public static Geometry segmentIntersection(Geometry g1, Geometry g2)
+  public static Geometry intersection(Geometry g1, Geometry g2)
   {
     Coordinate[] pt1 = g1.getCoordinates();
     Coordinate[] pt2 = g2.getCoordinates();
@@ -53,7 +54,7 @@ public class LineSegmentFunctions
     return null;
   }
   
-  public static Geometry segmentIntersectionDD(Geometry g1, Geometry g2)
+  public static Geometry intersectionDD(Geometry g1, Geometry g2)
   {
     Coordinate[] pt1 = g1.getCoordinates();
     Coordinate[] pt2 = g2.getCoordinates();
@@ -92,6 +93,15 @@ public class LineSegmentFunctions
     if (Double.isNaN(intPt.getX())) {
       intPt = null;
     }
+    return g1.getFactory().createPoint(intPt);
+  }
+
+  public static Geometry lineSegmentIntersection(Geometry g1, Geometry g2)
+  {
+    Coordinate[] pt1 = g1.getCoordinates();
+    Coordinate[] pt2 = g2.getCoordinates();
+    
+    Coordinate intPt = Intersection.lineSegment(pt1[0], pt1[1], pt2[0], pt2[1]);
     return g1.getFactory().createPoint(intPt);
   }
 
