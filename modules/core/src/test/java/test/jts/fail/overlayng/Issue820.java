@@ -17,10 +17,10 @@ import junit.textui.TestRunner;
  * See https://github.com/locationtech/jts/issues/820
  *
  */
-public class Issue820Test extends TestCase {
+public class Issue820 extends TestCase {
   
   public static void main(String args[]) {
-    TestRunner.run(Issue820Test.class);
+    TestRunner.run(Issue820.class);
   }
   
   public void testIntersection() {

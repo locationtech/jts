@@ -25,10 +25,10 @@ import junit.textui.TestRunner;
  * See https://github.com/locationtech/jts/issues/784
  *
  */
-public class Issue784Test extends TestCase {
+public class Issue784 extends TestCase {
   
   public static void main(String args[]) {
-    TestRunner.run(Issue784Test.class);
+    TestRunner.run(Issue784.class);
   }
   
   private GeometryFactory gf = new GeometryFactory();
