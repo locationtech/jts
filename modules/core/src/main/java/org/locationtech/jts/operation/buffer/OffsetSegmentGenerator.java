@@ -531,8 +531,8 @@ class OffsetSegmentGenerator
     Coordinate bevel1 = project(bevelMidPt, distance, dirBevel + Math.PI);
     
     // compute actual bevel segment between the offset lines
-    Coordinate bevelInt0 = Intersection.intersectionLineSegment(offset0.p0, offset0.p1, bevel0, bevel1);
-    Coordinate bevelInt1 = Intersection.intersectionLineSegment(offset1.p0, offset1.p1, bevel0, bevel1);
+    Coordinate bevelInt0 = Intersection.lineSegment(offset0.p0, offset0.p1, bevel0, bevel1);
+    Coordinate bevelInt1 = Intersection.lineSegment(offset1.p0, offset1.p1, bevel0, bevel1);
 
     //-- add the limited bevel, if it intersects the offsets
     if (bevelInt0 != null && bevelInt1 != null) {

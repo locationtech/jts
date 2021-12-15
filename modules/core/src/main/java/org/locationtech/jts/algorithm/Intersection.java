@@ -113,7 +113,7 @@ public class Intersection {
    * @param seg2 an endpoint of the line segment
    * @return the intersection point, or null if it is not possible to find an intersection
    */
-  public static Coordinate intersectionLineSegment(Coordinate line1, Coordinate line2, Coordinate seg1, Coordinate seg2) {
+  public static Coordinate lineSegment(Coordinate line1, Coordinate line2, Coordinate seg1, Coordinate seg2) {
     int orientS1 = Orientation.index(line1, line2, seg1);
     if (orientS1 == 0) return seg1.copy();
     

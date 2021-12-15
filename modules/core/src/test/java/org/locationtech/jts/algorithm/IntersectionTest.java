@@ -106,7 +106,7 @@ public class IntersectionTest extends TestCase {
     Coordinate q1 = new Coordinate(q1x, q1y);
     Coordinate q2 = new Coordinate(q2x, q2y);
     //Coordinate actual = CGAlgorithmsDD.intersection(p1, p2, q1, q2);
-    Coordinate actual = Intersection.intersectionLineSegment(p1, p2, q1, q2);
+    Coordinate actual = Intersection.lineSegment(p1, p2, q1, q2);
     Coordinate expected = new Coordinate( expectedx, expectedy );
     double dist = actual.distance(expected);
     //System.out.println("Expected: " + expected + "  Actual: " + actual + "  Dist = " + dist);
@@ -119,7 +119,7 @@ public class IntersectionTest extends TestCase {
     Coordinate p2 = new Coordinate(p2x, p2y);
     Coordinate q1 = new Coordinate(q1x, q1y);
     Coordinate q2 = new Coordinate(q2x, q2y);
-    Coordinate actual = Intersection.intersectionLineSegment(p1, p2, q1, q2);
+    Coordinate actual = Intersection.lineSegment(p1, p2, q1, q2);
     assertTrue(actual == null);
   }
 }
