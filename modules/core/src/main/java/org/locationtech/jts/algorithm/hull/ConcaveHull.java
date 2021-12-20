@@ -142,19 +142,19 @@ public class ConcaveHull
    * @return the concave hull
    */
   public Geometry getHull() {
-    List<Tri> triList = createDelaunayTriangulation(inputGeometry);
+    List<HullTri> triList = createDelaunayTriangulation(inputGeometry);
     computeHull(triList);
-    Geometry hull = toPolygon(triList, geomFactory);
+    Geometry hull = toPolygonal(triList, geomFactory);
     return hull;
   }
 
-  private void computeHull(List<Tri> triList) {
+  private void computeHull(List<HullTri> triList) {
     //-- used if area is the threshold criteria
-    double areaConvex = area(triList);
+    double areaConvex = Tri.area(triList);
     double areaConcave = areaConvex;
     
-    PriorityQueue<OrderedTri> queue = new PriorityQueue<OrderedTri>();
-    for (Tri tri : triList) {
+    PriorityQueue<HullTri> queue = new PriorityQueue<HullTri>();
+    for (HullTri tri : triList) {
       if (isBorder(tri)) 
         addTri(tri, queue);
     }
@@ -163,17 +163,16 @@ public class ConcaveHull
       if (isBelowAreaThreshold(areaConcave, areaConvex))
         break;
 
-      OrderedTri candidate = queue.poll();
-      Tri tri = candidate.getTri();
+      HullTri tri = queue.poll();
       
       if (isBelowLengthThreshold(tri)) 
         break;
       
       if (isRemovable(tri)) {
         //-- the non-null adjacents are now on the border
-        Tri adj0 = tri.getAdjacent(0);
-        Tri adj1 = tri.getAdjacent(1);
-        Tri adj2 = tri.getAdjacent(2);
+        HullTri adj0 = (HullTri) tri.getAdjacent(0);
+        HullTri adj1 = (HullTri) tri.getAdjacent(1);
+        HullTri adj2 = (HullTri) tri.getAdjacent(2);
         //-- remove tri to ensure adjacents are on border when added
         tri.remove();
         triList.remove(tri);
@@ -194,14 +193,6 @@ public class ConcaveHull
     return lengthOfBorder(tri) < maxEdgeLength;
   }
 
-  private static double area(List<Tri> triList) {
-    double area = 0;
-    for (Tri tri : triList) {
-      area += tri.getArea();
-    }
-    return area;
-  }
-
   /**
    * Adds a Tri to the queue.
    * Only add tris with a single border edge.
@@ -210,10 +201,10 @@ public class ConcaveHull
    * @param tri the Tri to add
    * @param queue the priority queue
    */
-  private void addTri(Tri tri, PriorityQueue<OrderedTri> queue) {
+  private void addTri(HullTri tri, PriorityQueue<HullTri> queue) {
     if (tri == null) return;
     if (tri.numAdjacent() != 2) return;
-    queue.add(new OrderedTri(tri, lengthOfBorder(tri)));
+    queue.add(tri);
   }
 
   /**
@@ -289,45 +280,53 @@ public class ConcaveHull
     return len;
   }
   
-  private static class OrderedTri implements Comparable<OrderedTri> {
-    private Tri tri;
+  private static class HullTri extends Tri 
+      implements Comparable<HullTri> 
+  {
     private double size;
     
-    public OrderedTri(Tri tri, double size) {
-      this.tri = tri;
-      this.size = size;
+    public HullTri(Coordinate p0, Coordinate p1, Coordinate p2) {
+      super(p0, p1, p2);
+      this.size = lengthOfBorder(this);
     }
 
     public double getSize() {
       return size;
     }
 
-    public Tri getTri() {
-      return tri;
-    }
-
     /**
-     * To sort the PriorityQueue with larger sizes at the head,
+     * PriorityQueues sort in ascending order.
+     * To sort with the largest at the head,
      * smaller sizes must compare as greater than larger sizes.
      * (i.e. the normal numeric comparison is reversed)
      */
     @Override
-    public int compareTo(OrderedTri o) {
+    public int compareTo(HullTri o) {
       return -Double.compare(size, o.size);
+    }
+    
+    private static double lengthOfBorder(Tri tri) {
+      double len = 0.0;
+      for (int i = 0; i < 3; i++) {
+        if (! tri.hasAdjacent(i)) {
+          len += tri.getCoordinate(i).distance(tri.getCoordinate(Tri.next(i)));
+        }
+      }
+      return len;
     }
   }
   
-  private List<Tri> createDelaunayTriangulation(Geometry geom) {
-    //TODO: implement a DT on Tris directly
+  private static List<HullTri> createDelaunayTriangulation(Geometry geom) {
+    //TODO: implement a DT on Tris directly?
     DelaunayTriangulationBuilder dt = new DelaunayTriangulationBuilder();
     dt.setSites(geom);
     QuadEdgeSubdivision subdiv = dt.getSubdivision();
-    List<Tri> triList = toTris(subdiv);
+    List<HullTri> triList = toTris(subdiv);
     return triList;
   }
 
-  private static Geometry toPolygon(List<Tri> triList, GeometryFactory geomFactory) {
-    //TODO: make this more efficient by tracing boundary
+  private static Geometry toPolygonal(List<? extends Tri> triList, GeometryFactory geomFactory) {
+    //TODO: make this more efficient by tracing border
     List<Polygon> polys = new ArrayList<Polygon>();
     for (Tri tri : triList) {
       Polygon poly = tri.toPolygon(geomFactory);
@@ -336,30 +335,29 @@ public class ConcaveHull
     return CoverageUnion.union(geomFactory.buildGeometry(polys));
   }
   
-  private static List<Tri> toTris(QuadEdgeSubdivision subdiv) {
-    TriVisitor visitor = new TriVisitor();
+  private static List<HullTri> toTris(QuadEdgeSubdivision subdiv) {
+    HullTriVisitor visitor = new HullTriVisitor();
     subdiv.visitTriangles(visitor, false);
-    List<Tri> triList = visitor.getTriangles();
+    List<HullTri> triList = visitor.getTriangles();
     TriangulationBuilder.build(triList);
     return triList;
   }
   
-  private static class TriVisitor implements TriangleVisitor {
-    private List<Tri> triList = new ArrayList<Tri>();
+  private static class HullTriVisitor implements TriangleVisitor {
+    private List<HullTri> triList = new ArrayList<HullTri>();
 
-    public TriVisitor() {
+    public HullTriVisitor() {
     }
 
     public void visit(QuadEdge[] triEdges) {
       Coordinate p0 = triEdges[0].orig().getCoordinate();
       Coordinate p1 = triEdges[1].orig().getCoordinate();
       Coordinate p2 = triEdges[2].orig().getCoordinate();
-      //TODO: check for valid triangles only?
-      Tri tri = new Tri(p0, p1, p2);
+      HullTri tri = new HullTri(p0, p1, p2);
       triList.add(tri);
     }
     
-    public List<Tri> getTriangles() {
+    public List<HullTri> getTriangles() {
       return triList;
     }
   }

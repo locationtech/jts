@@ -51,6 +51,20 @@ public class Tri {
   }
 
   /**
+   * Computes the area of a set of Tris.
+   * 
+   * @param triList a set of Tris
+   * @return the total area of the triangles
+   */
+  public static double area(List<? extends Tri> triList) {
+    double area = 0;
+    for (Tri tri : triList) {
+      area += tri.getArea();
+    }
+    return area;
+  }
+  
+  /**
    * Validates a list of Tris.
    * 
    * @param triList the tris to validate
