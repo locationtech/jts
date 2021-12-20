@@ -13,6 +13,8 @@ package org.locationtech.jts.hull;
 
 import junit.textui.TestRunner;
 
+import org.locationtech.jts.algorithm.hull.ConcaveHull;
+import org.locationtech.jts.algorithm.hull.ConcaveHullTest;
 import org.locationtech.jts.geom.Geometry;
 
 import test.jts.GeometryTestCase;
