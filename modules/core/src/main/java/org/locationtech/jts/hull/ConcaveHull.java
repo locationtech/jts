@@ -65,12 +65,28 @@ public class ConcaveHull
     return Math.sqrt(areaCH / numPts);
   }
   
+  /**
+   * Computes the concave hull of the vertices in a geometry
+   * using the target criteria of maximum edge length.
+   * 
+   * @param geom the input geometry
+   * @param maxLength the target maximum edge length
+   * @return the concave hull
+   */
   public static Geometry concaveHullByLength(Geometry geom, double maxLength) {
     ConcaveHull hull = new ConcaveHull(geom);
     hull.setMaximumEdgeLength(maxLength);
     return hull.getHull();
   }
   
+  /**
+   * Computes the concave hull of the vertices in a geometry
+   * using the target criteria of maximum area ratio.
+   * 
+   * @param geom the input geometry
+   * @param areaRatio the target maximum area ratio
+   * @return the concave hull
+   */
   public static Geometry concaveHullByArea(Geometry geom, double areaRatio) {
     ConcaveHull hull = new ConcaveHull(geom);
     hull.setMaximumAreaRatio(areaRatio);
