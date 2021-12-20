@@ -21,6 +21,7 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.OctagonalEnvelope;
+import org.locationtech.jts.hull.ConcaveHull;
 import org.locationtech.jtstest.geomfunction.Metadata;
 
 public class ConstructionFunctions {
@@ -130,4 +131,19 @@ public class ConstructionFunctions {
     return radiusLine.getFactory().createPolygon(circlePts);
   }
  
+  public static Geometry concaveHullByLen(Geometry geom, 
+      @Metadata(title="Max edge length")
+      double maxLen) {
+    return ConcaveHull.concaveHullByLength(geom, maxLen);
+  }
+  
+  public static Geometry concaveHullByArea(Geometry geom, 
+      @Metadata(title="Max area ratio")
+      double minAreaPct) {
+    return ConcaveHull.concaveHullByArea(geom, minAreaPct);
+  }
+  
+  public static double concaveHullLenGuess(Geometry geom) {
+    return ConcaveHull.uniformEdgeLength(geom);
+  }
 }

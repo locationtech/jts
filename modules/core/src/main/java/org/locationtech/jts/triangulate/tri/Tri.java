@@ -19,6 +19,7 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.geom.Triangle;
 import org.locationtech.jts.io.WKTWriter;
 import org.locationtech.jts.util.Assert;
 
@@ -244,6 +245,24 @@ public class Tri {
     } else if ( tri2 != null && tri2 == triOld ) {
       tri2 = triNew;
     }
+  }
+  
+  /**
+   * Removes this triangle from a triangulation.
+   * All adjacent references and the references to this
+   * Tri in the adjacent Tris are set to <code>null</code.
+   */
+  public void remove() {
+    remove(0);
+    remove(1);
+    remove(2);
+  }
+
+  private void remove(int index) {
+    Tri adj = getAdjacent(index);
+    if (adj == null) return;
+    adj.setTri(adj.getIndex(this), null);
+    setTri(index, null);
   }
   
   /**
@@ -526,6 +545,24 @@ public class Tri {
     double midX = (p0.getX() + p1.getX()) / 2;
     double midY = (p0.getY() + p1.getY()) / 2;
     return new Coordinate(midX, midY);
+  }
+  
+  /**
+   * Gets the area of the triangle.
+   * 
+   * @return the area of the triangle
+   */
+  public double getArea() {
+    return Triangle.area(p0, p1, p2);
+  }
+  
+  /**
+   * Gets the length of the perimeter of the triangle.
+   * 
+   * @return the length of the perimeter
+   */
+  public double getLength() {
+    return Triangle.length(p0, p1, p2);
   }
   
   /**
