@@ -11,7 +11,9 @@
  */
 package org.locationtech.jts.algorithm.hull;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
 import java.util.PriorityQueue;
 
@@ -19,6 +21,7 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.geom.Triangle;
 import org.locationtech.jts.operation.overlayng.CoverageUnion;
 import org.locationtech.jts.triangulate.DelaunayTriangulationBuilder;
 import org.locationtech.jts.triangulate.quadedge.QuadEdge;
@@ -38,9 +41,14 @@ import org.locationtech.jts.triangulate.tri.TriangulationBuilder;
  * <li><b>Maximum Area Ratio</b> - the ratio of the concave hull area to the convex hull area 
  * will be no larger than this value
  * </ul>
- * Usually only a single criteria will be specified, or both may be provided.
- * In addition, the computed hull is always a single connected Polygon with no holes.
- * This may cause the target criteria to not hold in the result hull.
+ * Usually only a single criteria is specified, but both may be provided.
+ * <p>
+ * The computed hull is always a single connected Polygon.
+ * This constraint may cause the concave hull to not fully meet the target criteria.
+ * <p>
+ * Optionally the concave hull can be allowed to contain holes.
+ * Note that this may be substantially slower than not permitting holes,
+ * and it can produce results of low quality.
  * 
  * @author mdavis
  *
@@ -74,8 +82,13 @@ public class ConcaveHull
    * @return the concave hull
    */
   public static Geometry concaveHullByLength(Geometry geom, double maxLength) {
+    return concaveHullByLength(geom, maxLength, false);
+  }
+  
+  public static Geometry concaveHullByLength(Geometry geom, double maxLength, boolean isHolesAllowed) {
     ConcaveHull hull = new ConcaveHull(geom);
     hull.setMaximumEdgeLength(maxLength);
+    hull.setHolesAllowed(isHolesAllowed);
     return hull.getHull();
   }
   
@@ -96,6 +109,7 @@ public class ConcaveHull
   private Geometry inputGeometry;
   private double maxEdgeLength = 0.0;
   private double maxAreaRatio = 0.0; 
+  private boolean isHolesAllowed = false;
   private GeometryFactory geomFactory;
 
 
@@ -137,6 +151,15 @@ public class ConcaveHull
   }
   
   /**
+   * Sets whether holes are allowed in the concave hull polygon.
+   * 
+   * @param isHolesAllowed true if holes are allowed in the result
+   */
+  public void setHolesAllowed(boolean isHolesAllowed) {
+    this.isHolesAllowed = isHolesAllowed;
+  }
+  
+  /**
    * Gets the computed concave hull.
    * 
    * @return the concave hull
@@ -153,12 +176,8 @@ public class ConcaveHull
     double areaConvex = Tri.area(triList);
     double areaConcave = areaConvex;
     
-    PriorityQueue<HullTri> queue = new PriorityQueue<HullTri>();
-    for (HullTri tri : triList) {
-      if (isBorder(tri)) 
-        addTri(tri, queue);
-    }
-    // erode non-connecting tris in order of decreasing size
+    PriorityQueue<HullTri> queue = initQueue(triList);
+    // remove tris in order of decreasing size (edge length)
     while (! queue.isEmpty()) {
       if (isBelowAreaThreshold(areaConcave, areaConvex))
         break;
@@ -168,29 +187,39 @@ public class ConcaveHull
       if (isBelowLengthThreshold(tri)) 
         break;
       
-      if (isRemovable(tri)) {
+      if (isRemovable(tri, triList)) {
         //-- the non-null adjacents are now on the border
         HullTri adj0 = (HullTri) tri.getAdjacent(0);
         HullTri adj1 = (HullTri) tri.getAdjacent(1);
         HullTri adj2 = (HullTri) tri.getAdjacent(2);
-        //-- remove tri to ensure adjacents are on border when added
+        
+        //-- remove tri
         tri.remove();
         triList.remove(tri);
         areaConcave -= tri.getArea();
         
-        addTri(adj0, queue);
-        addTri(adj1, queue);
-        addTri(adj2, queue);
+        //-- if holes not allowed, add new border adjacents to queue
+        if (! isHolesAllowed) {
+          addBorderTri(adj0, queue);
+          addBorderTri(adj1, queue);
+          addBorderTri(adj2, queue);
+        }
       }
     }
   }
 
-  private boolean isBelowAreaThreshold(double areaConcave, double areaConvex) {
-    return areaConcave / areaConvex <= maxAreaRatio;
-  }
-
-  private boolean isBelowLengthThreshold(Tri tri) {
-    return lengthOfBorder(tri) < maxEdgeLength;
+  private PriorityQueue<HullTri> initQueue(List<HullTri> triList) {
+    PriorityQueue<HullTri> queue = new PriorityQueue<HullTri>();
+    for (HullTri tri : triList) {
+      if (! isHolesAllowed) {
+        //-- add only border triangles which could be eroded
+        // (if tri has only 1 adjacent it can't be removed because that would isolate a vertex)
+        if (tri.numAdjacent() != 2)
+          continue;
+      }
+      queue.add(tri);
+    }
+    return queue;
   }
 
   /**
@@ -201,10 +230,25 @@ public class ConcaveHull
    * @param tri the Tri to add
    * @param queue the priority queue
    */
-  private void addTri(HullTri tri, PriorityQueue<HullTri> queue) {
+  private void addBorderTri(HullTri tri, PriorityQueue<HullTri> queue) {
     if (tri == null) return;
     if (tri.numAdjacent() != 2) return;
     queue.add(tri);
+  }
+    
+  private boolean isBelowAreaThreshold(double areaConcave, double areaConvex) {
+    return areaConcave / areaConvex <= maxAreaRatio;
+  }
+
+  private boolean isBelowLengthThreshold(HullTri tri) {
+    double len = 0;
+    if (isHolesAllowed) {
+      len = tri.lengthOfLongestEdge();
+    }
+    else {
+      len = tri.lengthOfBorder();
+    }
+    return len < maxEdgeLength;
   }
 
   /**
@@ -212,9 +256,20 @@ public class ConcaveHull
    * the connectivity of the hull.
    * 
    * @param tri the Tri to test
+   * @param triList 
    * @return true if the Tri can be removed
    */
-  private static boolean isRemovable(Tri tri) {
+  private boolean isRemovable(HullTri tri, List<HullTri> triList) {
+    if (isHolesAllowed) {
+      /**
+       * Don't remove if that would separate a single vertex
+       */
+      if (hasVertexSingleAdjacent(tri, triList))
+        return false;
+      return HullTri.isConnected(triList, tri);
+    }
+    
+    //-- compute removable for no holes allowed
     int numAdj = tri.numAdjacent();
     /**
      * Tri must have exactly 2 adjacent tris.
@@ -229,6 +284,42 @@ public class ConcaveHull
     return ! isConnecting(tri);
   }
 
+  private static boolean hasVertexSingleAdjacent(HullTri tri, List<HullTri> triList) {
+    for (int i = 0; i < 3; i++) {
+      if (degree(tri.getCoordinate(i), triList) <= 1)
+        return true;
+    }
+    return false;
+  }
+
+  /**
+   * The degree of a Tri vertex is the number of tris containing it.
+   * This must be done by searching the entire subdivision, 
+   * since the containing tris may not be adjacent or edge-connected. 
+   * 
+   * @param v the vertex coordinate
+   * @param triList the tri subdivision
+   * @return the degree of the vertex
+   */
+  private static int degree(Coordinate v, List<HullTri> triList) {
+    int degree = 0;
+    for (HullTri tri : triList) {
+      for (int i = 0; i < 3; i++) {
+        if (v.equals2D(tri.getCoordinate(i)))
+          degree++;
+      }
+    }
+    return degree;
+  }
+
+  /**
+   * Tests if a tri is the only one connecting its 2 adjacents.
+   * Assumes that the tri is on the border of the tri subdivision
+   * and that the subdivision does not contain holes
+   * 
+   * @param tri the tri to test
+   * @return true if the tri is the only connection
+   */
   private static boolean isConnecting(Tri tri) {
     int adj2Index = adjacent2VertexIndex(tri);
     boolean isInterior = isInteriorVertex(tri, adj2Index);
@@ -263,37 +354,51 @@ public class ConcaveHull
     if (tri.hasAdjacent(2) && tri.hasAdjacent(0)) return 0;
     return -1;
   }
-
-  private static boolean isBorder(Tri tri) {
-    return tri.getAdjacent(0) == null
-        || tri.getAdjacent(1) == null
-        || tri.getAdjacent(2) == null;
-  }
-
-  private static double lengthOfBorder(Tri tri) {
-    double len = 0.0;
-    for (int i = 0; i < 3; i++) {
-      if (! tri.hasAdjacent(i)) {
-        len += tri.getCoordinate(i).distance(tri.getCoordinate(Tri.next(i)));
-      }
-    }
-    return len;
-  }
   
   private static class HullTri extends Tri 
       implements Comparable<HullTri> 
   {
     private double size;
+    private boolean isMarked = false;
     
     public HullTri(Coordinate p0, Coordinate p1, Coordinate p2) {
       super(p0, p1, p2);
-      this.size = lengthOfBorder(this);
+      //this.size = lengthOfBorder(this);
+      this.size = Triangle.longestSideLength(p0, p1, p2);
     }
 
     public double getSize() {
       return size;
     }
+    
+    public boolean isMarked() {
+      return isMarked;
+    }
+    
+    public void setMarked(boolean isMarked) {
+      this.isMarked = isMarked;
+    }
 
+    public boolean isBorder() {
+      return getAdjacent(0) == null
+          || getAdjacent(1) == null
+          || getAdjacent(2) == null;
+    }
+    
+    public double lengthOfLongestEdge() {
+      return Triangle.longestSideLength(p0, p1, p2);
+    }
+    
+    private double lengthOfBorder() {
+      double len = 0.0;
+      for (int i = 0; i < 3; i++) {
+        if (! hasAdjacent(i)) {
+          len += getCoordinate(i).distance(getCoordinate(Tri.next(i)));
+        }
+      }
+      return len;
+    }
+    
     /**
      * PriorityQueues sort in ascending order.
      * To sort with the largest at the head,
@@ -305,14 +410,53 @@ public class ConcaveHull
       return -Double.compare(size, o.size);
     }
     
-    private static double lengthOfBorder(Tri tri) {
-      double len = 0.0;
-      for (int i = 0; i < 3; i++) {
-        if (! tri.hasAdjacent(i)) {
-          len += tri.getCoordinate(i).distance(tri.getCoordinate(Tri.next(i)));
+    public static boolean isConnected(List<HullTri> triList, HullTri exceptTri) {
+      if (triList.size() == 0) return false;
+      clearMarks(triList);
+      HullTri triStart = findTri(triList, exceptTri);
+      if (triStart == null) return false;
+      markConnected(triStart, exceptTri);
+      exceptTri.setMarked(true);
+      return isAllMarked(triList);
+    }
+    
+    public static void clearMarks(List<HullTri> triList) {
+      for (HullTri tri : triList) {
+        tri.setMarked(false);
+      }
+    }
+    
+    public static HullTri findTri(List<HullTri> triList, Tri exceptTri) {
+      for (HullTri tri : triList) {
+        if (tri != exceptTri) return tri;
+      }
+      return null;
+    }
+    
+    public static boolean isAllMarked(List<HullTri> triList) {
+      for (HullTri tri : triList) {
+        if (! tri.isMarked())
+          return false;
+      }
+      return true;
+    }
+    
+    public static void markConnected(HullTri triStart, Tri exceptTri) {
+      Deque<HullTri> queue = new ArrayDeque<HullTri>();
+      queue.add(triStart);
+      while (! queue.isEmpty()) {
+        HullTri tri = queue.pop();
+        tri.setMarked(true);
+        for (int i = 0; i < 3; i++) {
+          HullTri adj = (HullTri) tri.getAdjacent(i);
+          //-- don't connect thru this tri
+          if (adj == exceptTri)
+            continue;
+          if (adj != null && ! adj.isMarked() ) {
+            queue.add(adj);
+          }
         }
       }
-      return len;
     }
   }
   

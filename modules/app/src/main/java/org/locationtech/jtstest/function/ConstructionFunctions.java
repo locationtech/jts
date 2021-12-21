@@ -137,6 +137,12 @@ public class ConstructionFunctions {
     return ConcaveHull.concaveHullByLength(geom, maxLen);
   }
   
+  public static Geometry concaveHullByLenWithHoles(Geometry geom, 
+      @Metadata(title="Max edge length")
+      double maxLen) {
+    return ConcaveHull.concaveHullByLength(geom, maxLen, true);
+  }
+  
   public static Geometry concaveHullByArea(Geometry geom, 
       @Metadata(title="Max area ratio")
       double minAreaPct) {

@@ -99,17 +99,17 @@ public class Tri {
     return new Tri(pts[0], pts[1], pts[2]);
   }
   
-  private Coordinate p0;
-  private Coordinate p1;
-  private Coordinate p2;
+  protected Coordinate p0;
+  protected Coordinate p1;
+  protected Coordinate p2;
   
   /**
    * triN is the adjacent triangle across the edge pN - pNN.
    * pNN is the next vertex CW from pN.
    */
-  private Tri tri0;
-  private Tri tri1;
-  private Tri tri2;
+  protected Tri tri0;
+  protected Tri tri1;
+  protected Tri tri2;
 
   /**
    * Creates a triangle with the given vertices.
