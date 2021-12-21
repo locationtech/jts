@@ -216,6 +216,7 @@ public class ConcaveHull
         // (if tri has only 1 adjacent it can't be removed because that would isolate a vertex)
         if (tri.numAdjacent() != 2)
           continue;
+        tri.setSizeToBorder();
       }
       queue.add(tri);
     }
@@ -233,6 +234,7 @@ public class ConcaveHull
   private void addBorderTri(HullTri tri, PriorityQueue<HullTri> queue) {
     if (tri == null) return;
     if (tri.numAdjacent() != 2) return;
+    tri.setSizeToBorder();
     queue.add(tri);
   }
     
@@ -363,12 +365,20 @@ public class ConcaveHull
     
     public HullTri(Coordinate p0, Coordinate p1, Coordinate p2) {
       super(p0, p1, p2);
-      //this.size = lengthOfBorder(this);
-      this.size = Triangle.longestSideLength(p0, p1, p2);
+      this.size = lengthOfLongestEdge();
     }
 
     public double getSize() {
       return size;
+    }
+    
+    /**
+     * Sets the size to be the length of the border edges.
+     * This is used when constructing hull without holes,
+     * by erosion from the subdivision border.
+     */
+    public void setSizeToBorder() {
+      size = lengthOfBorder();
     }
     
     public boolean isMarked() {
