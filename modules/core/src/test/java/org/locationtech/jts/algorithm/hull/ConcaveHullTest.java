@@ -24,6 +24,11 @@ public class ConcaveHullTest extends GeometryTestCase {
 
   public ConcaveHullTest(String name) { super(name); }
   
+  public void testLength3() {
+    checkHullByLength("MULTIPOINT ((10 10), (90 10), (30 70))", 
+       70, "POLYGON ((10 10, 30 70, 90 10, 10 10))" );
+  }
+
   public void testLengthSimple() {
     checkHullByLength("MULTIPOINT ((10 10), (90 10), (30 70), (70 70), (50 60))", 
        70, "POLYGON ((30 70, 70 70, 90 10, 50 60, 10 10, 30 70))" );

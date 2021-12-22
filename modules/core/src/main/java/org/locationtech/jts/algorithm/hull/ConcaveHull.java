@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.PriorityQueue;
 
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateList;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Polygon;
@@ -29,6 +30,7 @@ import org.locationtech.jts.triangulate.quadedge.QuadEdgeSubdivision;
 import org.locationtech.jts.triangulate.quadedge.TriangleVisitor;
 import org.locationtech.jts.triangulate.tri.Tri;
 import org.locationtech.jts.triangulate.tri.TriangulationBuilder;
+import org.locationtech.jts.util.Assert;
 
 /**
  * Constructs a concave hull of a set of points.
@@ -167,7 +169,7 @@ public class ConcaveHull
   public Geometry getHull() {
     List<HullTri> triList = createDelaunayTriangulation(inputGeometry);
     computeHull(triList);
-    Geometry hull = toPolygonal(triList, geomFactory);
+    Geometry hull = toPolygon(triList, geomFactory);
     return hull;
   }
 
@@ -296,11 +298,11 @@ public class ConcaveHull
 
   /**
    * The degree of a Tri vertex is the number of tris containing it.
-   * This must be done by searching the entire subdivision, 
+   * This must be done by searching the entire triangulation, 
    * since the containing tris may not be adjacent or edge-connected. 
    * 
-   * @param v the vertex coordinate
-   * @param triList the tri subdivision
+   * @param v a vertex coordinate
+   * @param triList a triangulation
    * @return the degree of the vertex
    */
   private static int degree(Coordinate v, List<HullTri> triList) {
@@ -316,8 +318,8 @@ public class ConcaveHull
 
   /**
    * Tests if a tri is the only one connecting its 2 adjacents.
-   * Assumes that the tri is on the border of the tri subdivision
-   * and that the subdivision does not contain holes
+   * Assumes that the tri is on the border of the triangulation
+   * and that the triangulation does not contain holes
    * 
    * @param tri the tri to test
    * @return true if the tri is the only connection
@@ -375,7 +377,7 @@ public class ConcaveHull
     /**
      * Sets the size to be the length of the border edges.
      * This is used when constructing hull without holes,
-     * by erosion from the subdivision border.
+     * by erosion from the triangulation border.
      */
     public void setSizeToBorder() {
       size = lengthOfBorder();
@@ -390,9 +392,48 @@ public class ConcaveHull
     }
 
     public boolean isBorder() {
-      return getAdjacent(0) == null
-          || getAdjacent(1) == null
-          || getAdjacent(2) == null;
+      return isBorder(0) || isBorder(1) || isBorder(2);
+    }
+    
+    public boolean isBorder(int index) {
+      return ! hasAdjacent(index);
+    }
+    
+    public int borderIndex() {
+      if (isBorder(0)) return 0;
+      if (isBorder(1)) return 1;
+      if (isBorder(2)) return 2;
+      return -1;
+    }
+    
+    /**
+     * Gets the most CCW border edge index.
+     * This assumes there is at least one non-border edge.
+     * 
+     * @return the CCW border edge index
+     */
+    public int borderIndexCCW() {
+      int index = borderIndex();
+      int prevIndex = prev(index);
+      if (isBorder(prevIndex)) {
+        return prevIndex;
+      }
+      return index;
+    }
+    
+    /**
+     * Gets the most CW border edge index.
+     * This assumes there is at least one non-border edge.
+     * 
+     * @return the CW border edge index
+     */
+    public int borderIndexCW() {
+      int index = borderIndex();
+      int nextIndex = next(index);
+      if (isBorder(nextIndex)) {
+        return nextIndex;
+      }
+      return index;
     }
     
     public double lengthOfLongestEdge() {
@@ -409,6 +450,22 @@ public class ConcaveHull
       return len;
     }
     
+    public HullTri nextBorderTri() {
+      HullTri tri = this;
+      //-- start at first non-border edge CW
+      int index = next(borderIndexCW());
+      //-- scan CCW around vertex for next border tri
+      do {
+        HullTri adjTri = (HullTri) tri.getAdjacent(index);
+        if (adjTri == this)
+          throw new IllegalStateException("No outgoing border edge found");
+        index = next(adjTri.getIndex(tri));
+        tri = adjTri;
+      }
+      while (! tri.isBorder(index));
+      return (tri);
+    }
+
     /**
      * PriorityQueues sort in ascending order.
      * To sort with the largest at the head,
@@ -468,6 +525,7 @@ public class ConcaveHull
         }
       }
     }
+
   }
   
   private static List<HullTri> createDelaunayTriangulation(Geometry geom) {
@@ -477,16 +535,6 @@ public class ConcaveHull
     QuadEdgeSubdivision subdiv = dt.getSubdivision();
     List<HullTri> triList = toTris(subdiv);
     return triList;
-  }
-
-  private static Geometry toPolygonal(List<? extends Tri> triList, GeometryFactory geomFactory) {
-    //TODO: make this more efficient by tracing border
-    List<Polygon> polys = new ArrayList<Polygon>();
-    for (Tri tri : triList) {
-      Polygon poly = tri.toPolygon(geomFactory);
-      polys.add(poly);
-    }
-    return CoverageUnion.union(geomFactory.buildGeometry(polys));
   }
   
   private static List<HullTri> toTris(QuadEdgeSubdivision subdiv) {
@@ -507,7 +555,13 @@ public class ConcaveHull
       Coordinate p0 = triEdges[0].orig().getCoordinate();
       Coordinate p1 = triEdges[1].orig().getCoordinate();
       Coordinate p2 = triEdges[2].orig().getCoordinate();
-      HullTri tri = new HullTri(p0, p1, p2);
+      HullTri tri;
+      if (Triangle.isCCW(p0, p1, p2)) {
+        tri = new HullTri(p0, p2, p1);
+      }
+      else {
+        tri = new HullTri(p0, p1, p2);
+      }
       triList.add(tri);
     }
     
@@ -516,5 +570,68 @@ public class ConcaveHull
     }
   }
 
+  private Geometry toPolygon(List<HullTri> triList, GeometryFactory geomFactory) {
+    if (! isHolesAllowed) {
+      return extractPolygon(triList, geomFactory);
+    }
+    //-- in case holes are present use union (slower but handles holes)
+    return union(triList, geomFactory);
+  }
 
+  private Geometry extractPolygon(List<HullTri> triList, GeometryFactory geomFactory) {
+    if (triList.size() == 1) {
+      Tri tri = triList.get(0);
+      return tri.toPolygon(geomFactory);
+    }
+    Coordinate[] pts = traceBorder(triList);
+    return geomFactory.createPolygon(pts);
+  }
+
+  private static Geometry union(List<? extends Tri> triList, GeometryFactory geomFactory) {
+    List<Polygon> polys = new ArrayList<Polygon>();
+    for (Tri tri : triList) {
+      Polygon poly = tri.toPolygon(geomFactory);
+      polys.add(poly);
+    }
+    return CoverageUnion.union(geomFactory.buildGeometry(polys));
+  }
+  
+  /**
+   * Extracts the coordinates along the border of a triangulation,
+   * by tracing CW around the border triangles.
+   * Assumption: there are at least 2 tris, they are connected,
+   * and there are no holes.
+   * So each tri has at least one non-border edge, and there is only one border.
+   * 
+   * @param triList the triangulation
+   * @return the border of the triangulation
+   */
+  private static Coordinate[] traceBorder(List<HullTri> triList) {
+    HullTri triStart = findBorderTri(triList);
+    CoordinateList coordList = new CoordinateList();
+    HullTri tri = triStart;
+    do {
+      int borderIndex = tri.borderIndexCCW();
+      //-- add border vertex
+      coordList.add(tri.getCoordinate(borderIndex), false);
+      int nextIndex = Tri.next(borderIndex);
+      //-- if next edge is also border, add it and move to next
+      if (tri.isBorder(nextIndex)) {
+        coordList.add(tri.getCoordinate(nextIndex), false);
+        borderIndex = nextIndex;
+      }
+      //-- find next border tri CCW around non-border edge
+      tri = tri.nextBorderTri();
+    } while (tri != triStart);
+    coordList.closeRing();
+    return coordList.toCoordinateArray();
+  }
+  
+  public static HullTri findBorderTri(List<HullTri> triList) {
+    for (HullTri tri : triList) {
+      if (tri.isBorder()) return tri;
+    }
+    Assert.shouldNeverReachHere("No border triangles found");
+    return null;
+  }
 }
