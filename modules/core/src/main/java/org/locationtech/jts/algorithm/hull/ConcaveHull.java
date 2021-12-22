@@ -39,20 +39,24 @@ import org.locationtech.jts.util.Assert;
  * The target criteria are:
  * <ul>
  * <li><b>Maximum Edge Length</b> - the length of the longest edge of the hull will be no larger
- * than this value
+ * than this value.
+ * <li><b>Maximum Edge Length Factor</b> - this determines the Maximum Edge Length 
+ * as a fraction of the length difference between the longest and shortest edges in the Delaunay Triangulation.
+ * It is a way of normalizing the Maximum Edge Length to make it scale-independent.
  * <li><b>Maximum Area Ratio</b> - the ratio of the concave hull area to the convex hull area 
- * will be no larger than this value
+ * will be no larger than this value.
  * </ul>
  * Usually only a single criteria is specified, but both may be provided.
  * <p>
- * The computed hull is always a single connected Polygon.
- * This constraint may cause the concave hull to not fully meet the target criteria.
+ * The computed hull is always a single connected {@link Polygon}
+ * (unless it is degenerate, in which case it will be a {@link Point} or a {@link LineString}).
+ * This constraint may cause the concave hull to fail to meet the target criteria.
  * <p>
  * Optionally the concave hull can be allowed to contain holes.
- * Note that this may be substantially slower than not permitting holes,
+ * Note that this may result in substantially slower computation,
  * and it can produce results of low quality.
  * 
- * @author mdavis
+ * @author Martin Davis
  *
  */
 public class ConcaveHull 
@@ -69,7 +73,7 @@ public class ConcaveHull
    * @param geom a geometry
    * @return the approximate uniform grid length
    */
-  public static double uniformEdgeLength(Geometry geom) {
+  public static double uniformGridEdgeLength(Geometry geom) {
     double areaCH = geom.convexHull().getArea();
     int numPts = geom.getNumPoints();
     return Math.sqrt(areaCH / numPts);
@@ -87,6 +91,33 @@ public class ConcaveHull
     return concaveHullByLength(geom, maxLength, false);
   }
   
+  /**
+   * Computes the concave hull of the vertices in a geometry
+   * using the target criteria of maximum edge length factor.
+   * The edge length factor is a fraction of the length delta
+   * between the longest and shortest edges 
+   * in the Delaunay Triangulation of the input points. 
+   * 
+   * @param geom the input geometry
+   * @param lengthFactor the target edge length factor
+   * @return the concave hull
+   */
+  public static Geometry concaveHullByLengthFactor(Geometry geom, double lengthFactor) {
+    ConcaveHull hull = new ConcaveHull(geom);
+    hull.setMaximumEdgeLengthFactor(lengthFactor);
+    return hull.getHull();
+  }
+  
+  /**
+   * Computes the concave hull of the vertices in a geometry
+   * using the target criteria of maximum edge length,
+   * and optionally allowing holes.
+   * 
+   * @param geom the input geometry
+   * @param maxLength the target maximum edge length
+   * @param isHolesAllowed whether holes are allowed in the result
+   * @return the concave hull
+   */
   public static Geometry concaveHullByLength(Geometry geom, double maxLength, boolean isHolesAllowed) {
     ConcaveHull hull = new ConcaveHull(geom);
     hull.setMaximumEdgeLength(maxLength);
@@ -110,11 +141,17 @@ public class ConcaveHull
   
   private Geometry inputGeometry;
   private double maxEdgeLength = 0.0;
+  private double maxEdgeLengthFactor = -1;
   private double maxAreaRatio = 0.0; 
   private boolean isHolesAllowed = false;
   private GeometryFactory geomFactory;
 
 
+  /**
+   * Creates a new instance for a given geometry.
+   * 
+   * @param geom the input geometry
+   */
   public ConcaveHull(Geometry geom) {
     this.inputGeometry = geom;
     this.geomFactory = geom.getFactory();
@@ -124,17 +161,35 @@ public class ConcaveHull
    * Sets the target maximum edge length for the concave hull.
    * A value of 0.0 produces a concave hull of minimum area
    * that is still connected.
-   * The {@link #uniformEdgeLength(Geometry)} may be used as
+   * The {@link #uniformGridEdgeLength(Geometry)} may be used as
    * the basis for estimating an appropriate target maximum edge length.
    * 
    * @param edgeLength a non-negative length
    * 
-   * @see #uniformEdgeLength(Geometry)
+   * @see #uniformGridEdgeLength(Geometry)
    */
   public void setMaximumEdgeLength(double edgeLength) {
     if (edgeLength < 0)
       throw new IllegalArgumentException("Edge length must be non-negative");
     this.maxEdgeLength = edgeLength;
+    maxEdgeLengthFactor = -1;
+  }
+  
+  /**
+   * Sets the target maximum edge length factor for the concave hull.
+   * The edge length factor is a fraction of the length delta
+   * between the longest and shortest edges 
+   * in the Delaunay Triangulation of the input points. 
+   * A value of 1.0 produces the convex hull. 
+   * A value of 0.0 produces a concave hull of minimum area
+   * that is still connected.
+   * 
+   * @param edgeLengthFactor a length factor value between 0 and 1
+   */
+  public void setMaximumEdgeLengthFactor(double edgeLengthFactor) {
+    if (edgeLengthFactor < 0 || edgeLengthFactor > 1)
+      throw new IllegalArgumentException("Edge length ratio must be in range [0,1]e");
+    this.maxEdgeLengthFactor = edgeLengthFactor;
   }
   
   /**
@@ -167,10 +222,37 @@ public class ConcaveHull
    * @return the concave hull
    */
   public Geometry getHull() {
+    if (inputGeometry.isEmpty()) {
+      return geomFactory.createPolygon();
+    }
     List<HullTri> triList = createDelaunayTriangulation(inputGeometry);
+    if (maxEdgeLengthFactor >= 0) {
+      maxEdgeLength = computeTargetEdgeLength(triList, maxEdgeLengthFactor);
+    }
+    if (triList.isEmpty())
+      return inputGeometry.convexHull();
     computeHull(triList);
     Geometry hull = toPolygon(triList, geomFactory);
     return hull;
+  }
+
+  private static double computeTargetEdgeLength(List<? extends Tri> triList, 
+      double edgeLengthFactor) {
+    if (edgeLengthFactor == 0) return 0;
+    double maxEdgeLen = -1;
+    double minEdgeLen = -1;
+    for (Tri tri : triList) {
+      for (int i = 0; i < 3; i++) {
+        double len = tri.getCoordinate(i).distance(tri.getCoordinate(Tri.next(i)));
+        if (len > maxEdgeLen) 
+          maxEdgeLen = len;
+        if (minEdgeLen < 0 || len < minEdgeLen)
+          minEdgeLen = len;
+      }
+    }
+    //-- ensure all edges are included
+    if (edgeLengthFactor == 1) return 2 * maxEdgeLen;
+    return edgeLengthFactor * (maxEdgeLen - minEdgeLen) + minEdgeLen;
   }
 
   private void computeHull(List<HullTri> triList) {
@@ -525,7 +607,6 @@ public class ConcaveHull
         }
       }
     }
-
   }
   
   private static List<HullTri> createDelaunayTriangulation(Geometry geom) {

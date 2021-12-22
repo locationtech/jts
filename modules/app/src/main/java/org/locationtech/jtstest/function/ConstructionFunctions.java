@@ -137,6 +137,12 @@ public class ConstructionFunctions {
     return ConcaveHull.concaveHullByLength(geom, maxLen);
   }
   
+  public static Geometry concaveHullByLenRatio(Geometry geom, 
+      @Metadata(title="Max edge length ratio")
+      double maxLen) {
+    return ConcaveHull.concaveHullByLengthFactor(geom, maxLen);
+  }
+  
   public static Geometry concaveHullByLenWithHoles(Geometry geom, 
       @Metadata(title="Max edge length")
       double maxLen) {
@@ -150,6 +156,6 @@ public class ConstructionFunctions {
   }
   
   public static double concaveHullLenGuess(Geometry geom) {
-    return ConcaveHull.uniformEdgeLength(geom);
+    return ConcaveHull.uniformGridEdgeLength(geom);
   }
 }
