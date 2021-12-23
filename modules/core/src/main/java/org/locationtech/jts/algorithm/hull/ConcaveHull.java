@@ -34,8 +34,9 @@ import org.locationtech.jts.util.Assert;
 
 /**
  * Constructs a concave hull of a set of points.
- * The hull is constructed by eroding the Delaunay Triangulation of the points
- * until specified target criteria are reached.
+ * The hull is constructed by eroding the longest edges 
+ * of the Delaunay Triangulation of the points
+ * until certain target criteria are reached.
  * The target criteria are:
  * <ul>
  * <li><b>Maximum Edge Length</b> - the length of the longest edge of the hull will be no larger
@@ -47,6 +48,9 @@ import org.locationtech.jts.util.Assert;
  * will be no larger than this value.
  * </ul>
  * Usually only a single criteria is specified, but both may be provided.
+ * The preferred criteria is the <b>Maximum Edge Length Factor</b>, since it is 
+ * scale-independent, and local (so that no assumption needs to be made about the 
+ * total amount of concavity present).
  * <p>
  * The computed hull is always a single connected {@link Polygon}
  * (unless it is degenerate, in which case it will be a {@link Point} or a {@link LineString}).
@@ -94,7 +98,7 @@ public class ConcaveHull
   /**
    * Computes the concave hull of the vertices in a geometry
    * using the target criteria of maximum edge length factor.
-   * The edge length factor is a fraction of the length delta
+   * The edge length factor is a fraction of the length difference
    * between the longest and shortest edges 
    * in the Delaunay Triangulation of the input points. 
    * 
@@ -159,9 +163,15 @@ public class ConcaveHull
   
   /**
    * Sets the target maximum edge length for the concave hull.
-   * A value of 0.0 produces a concave hull of minimum area
+   * The length value must be zero or greater.
+   * <ul>
+   * <li>The value 0.0 produces the concave hull of smallest area
    * that is still connected.
-   * The {@link #uniformGridEdgeLength(Geometry)} may be used as
+   * <li>Larger values produce less concave results.
+   * A value equal or greater than the longest Delaunay Triangulation edge length
+   * produces the convex hull.
+   * </ul>
+   * The {@link #uniformGridEdgeLength(Geometry)} value may be used as
    * the basis for estimating an appropriate target maximum edge length.
    * 
    * @param edgeLength a non-negative length
@@ -177,12 +187,15 @@ public class ConcaveHull
   
   /**
    * Sets the target maximum edge length factor for the concave hull.
-   * The edge length factor is a fraction of the length delta
+   * The edge length factor is a fraction of the length difference
    * between the longest and shortest edges 
-   * in the Delaunay Triangulation of the input points. 
-   * A value of 1.0 produces the convex hull. 
-   * A value of 0.0 produces a concave hull of minimum area
+   * in the Delaunay Triangulation of the input points.
+   * It is a value in the range 0 to 1. 
+   * <ul>
+   * <li>The value 0.0 produces a concave hull of minimum area
    * that is still connected.
+   * <li>The value 1.0 produces the convex hull.
+   * <ul> 
    * 
    * @param edgeLengthFactor a length factor value between 0 and 1
    */
@@ -194,10 +207,13 @@ public class ConcaveHull
   
   /**
    * Sets the target maximum concave hull area as a ratio of the convex hull area.
-   * A value of 1.0 produces the convex hull 
-   * (unless a maximum edge length is also specified).
-   * A value of 0.0 produces a concave hull with the smallest area
+   * It is a value in the range 0 to 1. 
+   * <ul>
+   * <li>The value 0.0 produces a concave hull with the smallest area
    * that is still connected.
+   * <li>The value 1.0 produces the convex hull 
+   * (unless a maximum edge length is also specified).
+   * </ul>
    * 
    * @param areaRatio a ratio value between 0 and 1
    */
