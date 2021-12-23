@@ -39,11 +39,12 @@ import org.locationtech.jts.util.Assert;
  * until certain target criteria are reached.
  * The target criteria are:
  * <ul>
- * <li><b>Maximum Edge Length</b> - the length of the longest edge of the hull will be no larger
+ * <li><b>Maximum Edge Length</b> - the length of the longest edge of the hull is no larger
  * than this value.
- * <li><b>Maximum Edge Length Factor</b> - this determines the Maximum Edge Length 
- * as a fraction of the length difference between the longest and shortest edges in the Delaunay Triangulation.
- * It is a way of normalizing the Maximum Edge Length to make it scale-independent.
+ * <li><b>Maximum Edge Length Factor</b> - determine the Maximum Edge Length 
+ * as a fraction of the difference between the longest and shortest edge lengths 
+ * in the Delaunay Triangulation.
+ * This normalizes the <b>Maximum Edge Length</b> to be scale-independent.
  * <li><b>Maximum Area Ratio</b> - the ratio of the concave hull area to the convex hull area 
  * will be no larger than this value.
  * </ul>
@@ -51,6 +52,10 @@ import org.locationtech.jts.util.Assert;
  * The preferred criteria is the <b>Maximum Edge Length Factor</b>, since it is 
  * scale-independent, and local (so that no assumption needs to be made about the 
  * total amount of concavity present).
+ * Other length criteria can be used by setting the Maximum Edge Length.
+ * For example, use a length relative  to the longest edge length
+ * in the Minimum Spanning Tree of the point set.
+ * Or, use a length derived from the {@link #uniformGridEdgeLength(Geometry)} value.
  * <p>
  * The computed hull is always a single connected {@link Polygon}
  * (unless it is degenerate, in which case it will be a {@link Point} or a {@link LineString}).
@@ -187,8 +192,8 @@ public class ConcaveHull
   
   /**
    * Sets the target maximum edge length factor for the concave hull.
-   * The edge length factor is a fraction of the length difference
-   * between the longest and shortest edges 
+   * The edge length factor is a fraction of the difference
+   * between the longest and shortest edge lengths 
    * in the Delaunay Triangulation of the input points.
    * It is a value in the range 0 to 1. 
    * <ul>
