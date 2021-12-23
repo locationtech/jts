@@ -34,7 +34,7 @@ import org.locationtech.jts.util.Assert;
 
 /**
  * Constructs a concave hull of a set of points.
- * The hull is constructed by eroding the longest edges 
+ * The hull is constructed by removing the longest outer edges 
  * of the Delaunay Triangulation of the points
  * until certain target criteria are reached.
  * The target criteria are:
