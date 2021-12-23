@@ -132,25 +132,25 @@ public class ConstructionFunctions {
   }
  
   public static Geometry concaveHullByLen(Geometry geom, 
-      @Metadata(title="Max edge length")
+      @Metadata(title="Length")
       double maxLen) {
     return ConcaveHull.concaveHullByLength(geom, maxLen);
   }
   
-  public static Geometry concaveHullByLenRatio(Geometry geom, 
-      @Metadata(title="Max edge length ratio")
+  public static Geometry concaveHullByLenFactor(Geometry geom, 
+      @Metadata(title="Length factor")
       double maxLen) {
     return ConcaveHull.concaveHullByLengthFactor(geom, maxLen);
   }
   
   public static Geometry concaveHullByLenWithHoles(Geometry geom, 
-      @Metadata(title="Max edge length")
+      @Metadata(title="Length")
       double maxLen) {
     return ConcaveHull.concaveHullByLength(geom, maxLen, true);
   }
   
   public static Geometry concaveHullByArea(Geometry geom, 
-      @Metadata(title="Max area ratio")
+      @Metadata(title="Area ratio")
       double minAreaPct) {
     return ConcaveHull.concaveHullByArea(geom, minAreaPct);
   }
