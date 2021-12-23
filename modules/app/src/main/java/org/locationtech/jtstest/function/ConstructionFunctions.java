@@ -158,4 +158,17 @@ public class ConstructionFunctions {
   public static double concaveHullLenGuess(Geometry geom) {
     return ConcaveHull.uniformGridEdgeLength(geom);
   }
+  
+  /**
+   * A concavity measure defined in terms of perimeter length.
+   * As defined by Park & Oh, 2012
+   * 
+   * @param geom
+   * @return
+   */
+  public static double concavity(Geometry geom) {
+    double convexLen = geom.convexHull().getLength();
+    return (geom.getLength() - convexLen) / convexLen;
+  }
+  
 }
