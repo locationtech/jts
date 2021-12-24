@@ -11,10 +11,10 @@
  */
 package org.locationtech.jts.algorithm.hull;
 
-import org.locationtech.jts.algorithm.Angle;
+import java.util.PriorityQueue;
+
 import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.CoordinateList;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -29,8 +29,6 @@ import org.locationtech.jts.triangulate.polygon.VertexSequencePackedRtree;
  */
 public class PolygonConcaveHull {
   
-  private static final int NO_VERTEX_INDEX = -1;
-
   public static Geometry hull(Geometry geom, double vertexCountFraction) {
     Geometry geomNorm = geom.norm();
     Coordinate[] pts = geomNorm.getCoordinates();
@@ -45,13 +43,7 @@ public class PolygonConcaveHull {
    */
   private final Coordinate[] vertex;
   
-  private final int[] vertexNext;
-  private int vertexSize;
-  // first available vertex index
-  private int vertexFirst;
-  
-  // indices for current corner
-  private int[] cornerIndex;
+  private VertexRing vertexList;
   
   /**
    * Indexing vertices improves ear intersection testing performance a lot.
@@ -61,22 +53,16 @@ public class PolygonConcaveHull {
 
   private int targetVertexCount;
 
+  private PriorityQueue<HullCorner> cornerQueue;
+
   /**
    * Creates a new PolygonConcaveHull instance.
    * 
    * @param polyShell the polygon vertices to process
    */
   public PolygonConcaveHull(Coordinate[] polyShell, double vertexSizeFraction) {
-    this.vertex = polyShell;
-    
-    // init working storage
-    vertexSize = vertex.length - 1;
-    vertexNext = createNextLinks(vertexSize);
-    vertexFirst = 0;
-    
-    vertexCoordIndex = new VertexSequencePackedRtree(vertex);
-    
-    targetVertexCount = (int) (vertexSize * vertexSizeFraction);
+    this.vertex = polyShell; 
+    targetVertexCount = (int) ((polyShell.length - 1) * vertexSizeFraction);
   }
 
   public Geometry getResult() {
@@ -84,262 +70,269 @@ public class PolygonConcaveHull {
     return toGeometry();
   }
   
-  private static int[] createNextLinks(int size) {
-    int[] next = new int[size];
-    for (int i = 0; i < size; i++) {
-      next[i] = i + 1;
+  private void init() {
+/*
+    vertexSize = vertex.length - 1;
+    vertexNext = createNextLinks(vertexSize);
+    vertexPrev = createPrevLinks(vertexSize);
+    vertexFirst = 0;
+  */  
+    vertexList = new VertexRing(vertex);
+    vertexCoordIndex = new VertexSequencePackedRtree(vertex);
+    
+    cornerQueue = new PriorityQueue<HullCorner>();
+    for (int i = 0; i < vertex.length - 1; i++) {
+      addCorner(i, cornerQueue);
     }
-    next[size - 1] = 0;
-    return next;
+  }
+
+  private void addCorner(int i, PriorityQueue<HullCorner> cornerQueue) {
+    if (vertexList.isConvex(i)) 
+      return;
+    //-- corner is concave or flat - both can be removed
+    HullCorner corner = new HullCorner(i, 
+        vertexList.prev(i),
+        vertexList.next(i),
+        vertexList.area(i));
+    cornerQueue.add(corner);
   }
   
   public void compute() {    
-   
-    initCornerIndex();
-    Coordinate[] corner = new Coordinate[3];
-    fetchCorner(corner);
+    init();
     
-    /**
-     * Scan continuously around vertex ring, 
-     * until all ears have been found.
-     */
-    while (vertexSize > targetVertexCount) {
+    while (vertexList.size() > targetVertexCount && ! cornerQueue.isEmpty()) {
+      HullCorner corner = cornerQueue.poll();
+      //System.out.println(corner.toLineString(vertexList));
+      //-- a corner in the queue may no longer be present due to other removal
+      if (vertexList.isRemoved(corner))
+        continue;
+
       /**
-       * Non-convex corner- remove if flat, or skip
-       * (a concave corner will turn into a convex corner
-       * after enough ears are removed)
+       * Concave corner - remove it if safe.
        */
-      if (! isConcave(corner)) {
+      if ( isRemovable(corner) ) {
+        removeCorner(corner, cornerQueue);
       }
-      /**
-       * Concave corner - check if it is a valid ear
-       */
-      else if ( isConcave(corner) && isValidEar(cornerIndex[1], corner) ) {
-        removeCorner();
-      }
-      
-      /**
-       * Skip to next corner.
-       * This is done even after an ear is removed, 
-       * since that creates fewer skinny triangles.
-       */
-      nextCorner(corner);
     }
   }
   
-  private boolean isValidEar(int cornerIndex, Coordinate[] corner) {
-    int intApexIndex = findIntersectingVertex(cornerIndex, corner);
-    //--- no intersections found
-    if (intApexIndex == NO_VERTEX_INDEX)
-      return true;
-    /*
-    //TODO: make this work
-    //--- check for duplicate corner apex vertex
-    if ( vertex[intApexIndex].equals2D(corner[1]) ) {
-      //--- a duplicate corner vertex requires a full scan
-      return isValidEarScan(cornerIndex, corner);
+  private void removeCorner(HullCorner corner, PriorityQueue<HullCorner> cornerQueue) {
+    int index = corner.getIndex();
+    int prev = vertexList.prev(index);
+    int next = vertexList.next(index);
+    remove(vertexCoordIndex, vertexList.getCoordinate(index));
+    vertexList.remove(index);
+    addCorner(prev, cornerQueue);
+    addCorner(next, cornerQueue);
+  }
+
+  private void remove(VertexSequencePackedRtree vertexIndex, Coordinate p) {
+    int[] result = vertexIndex.query(new Envelope(p, p));
+    if (result.length != 1) {
+      throw new IllegalStateException("duplicate or no coordinates found during removal");
     }
-    */
-    return false;
+    vertexIndex.remove(result[0]);
+  }
+
+  private boolean isRemovable(HullCorner corner) {
+    return ! hasIntersectingVertex(corner);
   }
 
   /**
    * Finds another vertex intersecting the corner triangle, if any.
    * Uses the vertex spatial index for efficiency.
-   * <p>
-   * Also finds any vertex which is a duplicate of the corner apex vertex,
-   * which then requires a full scan of the vertices to confirm ear is valid. 
-   * This is usually a rare situation, so has little impact on performance.
    * 
    * @param cornerIndex the index of the corner apex vertex
    * @param corner the corner vertices
    * @return the index of an intersecting or duplicate vertex, or {@link #NO_VERTEX_INDEX} if none
    */
-  private int findIntersectingVertex(int cornerIndex, Coordinate[] corner) {
-    Envelope cornerEnv = envelope(corner);
+  private boolean hasIntersectingVertex(HullCorner corner) {
+    Envelope cornerEnv = corner.envelope(vertexList);
     int[] result = vertexCoordIndex.query(cornerEnv);
     
-    int dupApexIndex = NO_VERTEX_INDEX;
-    //--- check for duplicate vertices
     for (int i = 0; i < result.length; i++) {
       int vertIndex = result[i];
-      
-      if (vertIndex == cornerIndex 
-          || vertIndex == vertex.length - 1
-          || isRemoved(vertIndex)) 
+      if (corner.isVertex(vertIndex))
         continue;
       
-      Coordinate v = vertex[vertIndex];
-      /**
-       * If another vertex at the corner is found,
-       * need to do a full scan to check the incident segments.
-       * This happens when the polygon ring self-intersects,
-       * usually due to hold joining.
-       * But only report this if no properly intersecting vertex is found,
-       * for efficiency.
-       */
-      if ( v.equals2D(corner[1]) ) {
-        dupApexIndex = vertIndex;
-      }
-      //--- don't need to check other corner vertices 
-      else if ( v.equals2D(corner[0]) || v.equals2D(corner[2]) ) {
-        continue;
-      }
-      //--- this is a properly intersecting vertex
-      else if (Triangle.intersects(corner[0], corner[1], corner[2], v) )
-        return vertIndex;
+      Coordinate v = vertexList.getCoordinate(vertIndex);
+
+      //--- does corner contain vertex?
+      if (corner.intersects(v, vertexList))
+        return true;
     }
-    if (dupApexIndex != NO_VERTEX_INDEX) {
-      return dupApexIndex;
-    }
-    return NO_VERTEX_INDEX;
-  }
-
-  /**
-   * Scan all vertices in current ring to check if any are duplicates
-   * of the corner apex vertex, and if so whether the corner ear
-   * intersects the adjacent segments and thus is invalid.
-   * 
-   * @param cornerIndex the index of the corner apex
-   * @param corner the corner vertices
-   * @return true if the corner ia a valid ear
-   */
-  private boolean isValidEarScan(int cornerIndex, Coordinate[] corner) {
-    double cornerAngle = Angle.angleBetweenOriented(corner[0], corner[1], corner[2]);
-    
-    int currIndex = nextIndex(vertexFirst);
-    int prevIndex = vertexFirst;
-    Coordinate vPrev = vertex[prevIndex];
-    for (int i = 0; i < vertexSize; i++) {
-      Coordinate v = vertex[currIndex];
-      /**
-       * Because of hole-joining vertices can occur more than once.
-       * If vertex is same as corner[1],
-       * check whether either adjacent edge lies inside the ear corner.
-       * If so the ear is invalid.
-       */
-      if ( currIndex != cornerIndex 
-          && v.equals2D(corner[1]) ) {
-        Coordinate vNext = vertex[nextIndex(currIndex)];
-        
-        //TODO: for robustness use segment orientation instead
-        double aOut = Angle.angleBetweenOriented(corner[0], corner[1], vNext);
-        double aIn = Angle.angleBetweenOriented(corner[0], corner[1], vPrev);
-        if ( aOut > 0 && aOut < cornerAngle ) {
-          return false;
-        }
-        if ( aIn > 0 && aIn < cornerAngle ) {
-          return false;
-        }
-        if ( aOut == 0 && aIn == cornerAngle ) {
-          return false;
-        }
-      }
-
-      //--- move to next vertex
-      vPrev = v;
-      prevIndex = currIndex;
-      currIndex = nextIndex(currIndex);
-    }
-    return true;
-  }
-  
-  private static Envelope envelope(Coordinate[] corner) {
-    Envelope cornerEnv = new Envelope(corner[0], corner[1]);
-    cornerEnv.expandToInclude(corner[2]);
-    return cornerEnv;
-  }
-
-  /**
-   * Remove the corner apex vertex and update the candidate corner location.
-   */
-  private void removeCorner() {
-    int cornerApexIndex = cornerIndex[1];
-    if ( vertexFirst ==  cornerApexIndex) {
-      vertexFirst = vertexNext[cornerApexIndex];
-    }
-    vertexNext[cornerIndex[0]] = vertexNext[cornerApexIndex];
-    vertexCoordIndex.remove(cornerApexIndex);
-    vertexNext[cornerApexIndex] = NO_VERTEX_INDEX;
-    vertexSize--;
-    //-- adjust following corner indexes
-    cornerIndex[1] = nextIndex(cornerIndex[0]);
-    cornerIndex[2] = nextIndex(cornerIndex[1]);
-  }
-
-  private boolean isRemoved(int vertexIndex) {
-    return NO_VERTEX_INDEX == vertexNext[vertexIndex];
-  }
-  
-  private void initCornerIndex() {
-    cornerIndex = new int[3];
-    cornerIndex[0] = 0;
-    cornerIndex[1] = 1;
-    cornerIndex[2] = 2;
-  }
-  
-  /**
-   * Fetch the corner vertices from the indices.
-   * 
-   * @param corner an array for the corner vertices
-   */
-  private void fetchCorner(Coordinate[] cornerVertex) {
-    cornerVertex[0] = vertex[cornerIndex[0]]; 
-    cornerVertex[1] = vertex[cornerIndex[1]]; 
-    cornerVertex[2] = vertex[cornerIndex[2]]; 
-  }
-
-  /**
-   * Move to next corner.
-   */
-  private void nextCorner(Coordinate[] cornerVertex) {
-    if ( vertexSize < 3 ) {
-      return;
-    }
-    cornerIndex[0] = nextIndex(cornerIndex[0]);
-    cornerIndex[1] = nextIndex(cornerIndex[0]);
-    cornerIndex[2] = nextIndex(cornerIndex[1]);
-    fetchCorner(cornerVertex);
-  }
-  
-  /**
-   * Get the index of the next available shell coordinate starting from the given
-   * index.
-   * 
-   * @param index candidate position
-   * @return index of the next available shell coordinate
-   */
-  private int nextIndex(int index) {
-    return vertexNext[index];
-  }
-
-  private static boolean isConvex(Coordinate[] pts) {
-    return Orientation.CLOCKWISE == Orientation.index(pts[0], pts[1], pts[2]);
-  }
-  
-  private static boolean isConcave(Coordinate[] pts) {
-    return Orientation.COUNTERCLOCKWISE == Orientation.index(pts[0], pts[1], pts[2]);
-  }
-  
-  private static boolean isFlat(Coordinate[] pts) {
-    return Orientation.COLLINEAR == Orientation.index(pts[0], pts[1], pts[2]);
-  }
-  
-  private static boolean hasRepeatedPoint(Coordinate[] pts) {
-    return pts[1].equals2D(pts[0]) || pts[1].equals2D(pts[2]);
+    return false;
   }
   
   public Polygon toGeometry() {
     GeometryFactory fact = new GeometryFactory();
-    CoordinateList coordList = new CoordinateList();
-    int index = vertexFirst;
-    for (int i = 0; i < vertexSize; i++) {
-      Coordinate v = vertex[index];
-      index = nextIndex(index);
-      // if (i < shellCoordAvailable.length && shellCoordAvailable.get(i))
-      coordList.add(v, true);
+    Coordinate[] coords = vertexList.getCoordinates();
+    return fact.createPolygon(fact.createLinearRing(coords));
+  }
+  
+  private static class VertexRing {
+    
+    private static final int NO_VERTEX_INDEX = -1;
+
+    private final Coordinate[] vertex;
+    
+    private int[] next = null;
+    private int[] prev = null;
+    private int size;
+    
+    public VertexRing(Coordinate[] pts) {
+      vertex = pts;
+      size = pts.length - 1;
+      next = createNextLinks(size);
+      prev = createPrevLinks(size);
     }
-    coordList.closeRing();
-    return fact.createPolygon(fact.createLinearRing(coordList.toCoordinateArray()));
+
+    public int size() {
+      return size;
+    }
+
+    public Coordinate getCoordinate(int index) {
+      return vertex[index];
+    }
+
+    private static int[] createNextLinks(int size) {
+      int[] next = new int[size];
+      for (int i = 0; i < size; i++) {
+        next[i] = i + 1;
+      }
+      next[size - 1] = 0;
+      return next;
+    }
+    
+    private static int[] createPrevLinks(int size) {
+      int[] prev = new int[size];
+      for (int i = 0; i < size; i++) {
+        prev[i] = i - 1;
+      }
+      prev[0] = size - 1;
+      return prev;
+    }
+    
+    public boolean isConvex(int index) {
+      Coordinate pp = vertex[prev[index]];
+      Coordinate p = vertex[index];
+      Coordinate pn = vertex[next[index]];
+      return Orientation.CLOCKWISE == Orientation.index(pp, p, pn);
+    }
+
+    public int next(int i) {
+      return next[i];
+    }
+
+    public int prev(int i) {
+      return prev[i];
+    }
+
+    public void remove(int index) {
+      vertex[index] = null;
+      int iprev = prev[index];
+      int inext = next[index];
+      next[iprev] = inext;
+      prev[inext] = iprev;
+      prev[index] = NO_VERTEX_INDEX;
+      next[index] = NO_VERTEX_INDEX;
+      size--;
+    }
+    
+    public boolean isRemoved(int index) {
+      return vertex[index] == null;
+    }
+
+    public boolean isRemoved(HullCorner corner) {
+      return isCornerRemoved(corner.getIndex(), corner.getPrev(), corner.getNext());
+    }
+    
+    public boolean isCornerRemoved(int index, int iprev, int inext) {
+      return prev[index] != iprev
+          || next[index] != inext;
+    }
+    
+    public double area(int index) {
+      Coordinate pp = vertex[prev[index]];
+      Coordinate p = vertex[index];
+      Coordinate pn = vertex[next[index]];
+      return Triangle.area(pp,  p,  pn);
+    }
+    
+    public Coordinate[] getCoordinates() {
+      Coordinate[] coords = new Coordinate[size + 1];
+      int index = 0;
+      for (Coordinate v : vertex) {
+        if (v != null) {
+          coords[index++] = v;
+        }
+      }
+      return coords;
+    }
+  }
+  private static class HullCorner implements Comparable<HullCorner> {
+    private int index;
+    private int prev;
+    private int next;
+    private double area;
+
+    public HullCorner(int i, int prev, int next, double area) {
+      this.index = i;
+      this.prev = prev;
+      this.next = next;
+      this.area = area;
+    }
+
+    public boolean isVertex(int index) {
+      return index == this.index
+          || index == prev
+          || index == next;
+    }
+
+    public int getNext() {
+      return next;
+    }
+
+    public int getPrev() {
+      return prev;
+    }
+
+    public int getIndex() {
+      return index;
+    }
+    
+    @Override
+    public int compareTo(HullCorner o) {
+      return Double.compare(area, o.area);
+    }
+    
+    public Envelope envelope(VertexRing vertexList) {
+      Coordinate pp = vertexList.getCoordinate(prev);
+      Coordinate p = vertexList.getCoordinate(index);
+      Coordinate pn = vertexList.getCoordinate(next);
+      Envelope env = new Envelope(pp, pn);
+      env.expandToInclude(p);
+      return env;
+    }
+    
+    public boolean intersects(Coordinate v, VertexRing vertexList) {
+      Coordinate pp = vertexList.getCoordinate(prev);
+      Coordinate p = vertexList.getCoordinate(index);
+      Coordinate pn = vertexList.getCoordinate(next);
+      return Triangle.intersects(pp, p, pn, v);
+    }
+    
+    public Geometry toLineString(VertexRing vertexList) {
+      Coordinate pp = vertexList.getCoordinate(prev);
+      Coordinate p = vertexList.getCoordinate(index);
+      Coordinate pn = vertexList.getCoordinate(next);
+      return (new GeometryFactory()).createLineString(
+          new Coordinate[] { safeCoord(pp), safeCoord(p), safeCoord(pn) });
+    }
+
+    private static Coordinate safeCoord(Coordinate p) {
+      if (p ==null) return new Coordinate(Double.NaN, Double.NaN);
+      return p;
+    }
   }
 }
