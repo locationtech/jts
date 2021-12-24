@@ -9,7 +9,7 @@
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
  */
-package org.locationtech.jts.hull;
+package org.locationtech.jts.algorithm.hull;
 
 import org.locationtech.jts.algorithm.Angle;
 import org.locationtech.jts.algorithm.Orientation;
