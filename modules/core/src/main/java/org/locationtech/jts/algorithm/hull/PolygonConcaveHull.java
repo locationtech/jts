@@ -16,6 +16,7 @@ import java.util.PriorityQueue;
 import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateArrays;
+import org.locationtech.jts.geom.CoordinateList;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -31,8 +32,7 @@ import org.locationtech.jts.triangulate.polygon.VertexSequencePackedRtree;
 public class PolygonConcaveHull {
   
   public static Geometry hull(Geometry geom, double vertexCountFraction) {
-    Geometry geomNorm = geom.norm();
-    Coordinate[] pts = geomNorm.getCoordinates();
+    Coordinate[] pts = geom.getCoordinates();
     PolygonConcaveHull hull = new PolygonConcaveHull(pts, vertexCountFraction);
     return hull.getResult();
   }
@@ -102,12 +102,13 @@ public class PolygonConcaveHull {
     init(vertex);
     
     while (! cornerQueue.isEmpty() 
-        && vertexList.size() > targetVertexCount) {
+        && vertexList.size() > targetVertexCount
+        && vertexList.size() > 3) {
       Corner corner = cornerQueue.poll();
-      //System.out.println(corner.toLineString(vertexList));
       //-- a corner may no longer be valid due to removal of adjacent corners
       if (vertexList.isRemoved(corner))
         continue;
+      //System.out.println(corner.toLineString(vertexList));
       /**
        * Concave/Flat corner - remove it if safe.
        */
@@ -133,12 +134,11 @@ public class PolygonConcaveHull {
   }
 
   /**
-   * Finds another vertex intersecting the corner triangle, if any.
+   * Tests if any other current vertices intersect the corner triangle.
    * Uses the vertex spatial index for efficiency.
    * 
-   * @param cornerIndex the index of the corner apex vertex
    * @param corner the corner vertices
-   * @return the index of an intersecting or duplicate vertex, or {@link #NO_VERTEX_INDEX} if none
+   * @return true if there is an intersecting vertex
    */
   private boolean hasIntersectingVertex(Corner corner) {
     Envelope cornerEnv = corner.envelope(vertexList);
@@ -146,8 +146,8 @@ public class PolygonConcaveHull {
     
     for (int i = 0; i < result.length; i++) {
       int vertIndex = result[i];
-      //-- skip last duplicate vertex
-      if (vertIndex >= vertexList.size())
+      //-- skip if already removed
+      if (! vertexList.hasVertex(vertIndex))
         continue;
       //-- skip vertices of corner
       if (corner.isVertex(vertIndex))
@@ -164,7 +164,7 @@ public class PolygonConcaveHull {
   public Polygon toGeometry() {
     GeometryFactory fact = new GeometryFactory();
     Coordinate[] coords = vertexList.getCoordinates();
-    coords = closeRing(coords);
+    //coords = closeRing(coords);
     return fact.createPolygon(fact.createLinearRing(coords));
   }
   
@@ -242,6 +242,10 @@ public class PolygonConcaveHull {
       return prev[i];
     }
 
+    public boolean hasVertex(int index) {
+      return index < prev.length 
+          && prev[index] != NO_VERTEX_INDEX;
+    }
     public double area(int index) {
       Coordinate pp = vertex[prev[index]];
       Coordinate p = vertex[index];
@@ -270,14 +274,15 @@ public class PolygonConcaveHull {
     }
     
     public Coordinate[] getCoordinates() {
-      Coordinate[] coords = new Coordinate[size + 1];
-      int index = 0;
-      for (Coordinate v : vertex) {
+      CoordinateList coords = new CoordinateList();
+      for (int i = 0; i < vertex.length - 1; i++) {
+        Coordinate v = vertex[i];
         if (v != null) {
-          coords[index++] = v.copy();
+          coords.add(v.copy(), false);
         }
       }
-      return coords;
+      coords.closeRing();
+      return coords.toCoordinateArray();
     }
   }
   
