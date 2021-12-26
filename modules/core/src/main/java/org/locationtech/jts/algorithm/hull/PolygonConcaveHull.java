@@ -43,7 +43,7 @@ public class PolygonConcaveHull {
    * the vertices forming the angle are in CW orientation.
    */
   private final Coordinate[] vertex;
-  private VertexRing vertexList;
+  private VertexRing vertexRing;
   
   /**
    * Indexing vertices improves corner intersection testing performance.
@@ -77,24 +77,24 @@ public class PolygonConcaveHull {
       CoordinateArrays.reverse(vertex);
     }
     
-    vertexList = new VertexRing(vertex);
+    vertexRing = new VertexRing(vertex);
     vertexIndex = new VertexSequencePackedRtree(vertex);
     
     cornerQueue = new PriorityQueue<Corner>();
-    for (int i = 0; i < vertexList.size(); i++) {
+    for (int i = 0; i < vertexRing.size(); i++) {
       addCorner(i, cornerQueue);
     }
   }
 
   private void addCorner(int i, PriorityQueue<Corner> cornerQueue) {
     //-- convex corners are left untouched
-    if (vertexList.isConvex(i)) 
+    if (vertexRing.isConvex(i)) 
       return;
     //-- corner is concave or flat - both can be removed
     Corner corner = new Corner(i, 
-        vertexList.prev(i),
-        vertexList.next(i),
-        vertexList.area(i));
+        vertexRing.prev(i),
+        vertexRing.next(i),
+        vertexRing.area(i));
     cornerQueue.add(corner);
   }
   
@@ -102,11 +102,11 @@ public class PolygonConcaveHull {
     init(vertex);
     
     while (! cornerQueue.isEmpty() 
-        && vertexList.size() > targetVertexCount
-        && vertexList.size() > 3) {
+        && vertexRing.size() > targetVertexCount
+        && vertexRing.size() > 3) {
       Corner corner = cornerQueue.poll();
       //-- a corner may no longer be valid due to removal of adjacent corners
-      if (vertexList.isRemoved(corner))
+      if (vertexRing.isRemoved(corner))
         continue;
       //System.out.println(corner.toLineString(vertexList));
       /**
@@ -120,9 +120,9 @@ public class PolygonConcaveHull {
   
   private void removeCorner(Corner corner, PriorityQueue<Corner> cornerQueue) {
     int index = corner.getIndex();
-    int prev = vertexList.prev(index);
-    int next = vertexList.next(index);
-    vertexList.remove(index);
+    int prev = vertexRing.prev(index);
+    int next = vertexRing.next(index);
+    vertexRing.remove(index);
     vertexIndex.remove(index);
     //-- potentially add the new corners created
     addCorner(prev, cornerQueue);
@@ -141,21 +141,21 @@ public class PolygonConcaveHull {
    * @return true if there is an intersecting vertex
    */
   private boolean hasIntersectingVertex(Corner corner) {
-    Envelope cornerEnv = corner.envelope(vertexList);
+    Envelope cornerEnv = corner.envelope(vertexRing);
     int[] result = vertexIndex.query(cornerEnv);
     
     for (int i = 0; i < result.length; i++) {
       int vertIndex = result[i];
       //-- skip if already removed
-      if (! vertexList.hasVertex(vertIndex))
+      if (! vertexRing.hasVertex(vertIndex))
         continue;
       //-- skip vertices of corner
       if (corner.isVertex(vertIndex))
         continue;
       
-      Coordinate v = vertexList.getCoordinate(vertIndex);
+      Coordinate v = vertexRing.getCoordinate(vertIndex);
       //--- does corner triangle contain vertex?
-      if (corner.intersects(v, vertexList))
+      if (corner.intersects(v, vertexRing))
         return true;
     }
     return false;
@@ -163,26 +163,8 @@ public class PolygonConcaveHull {
   
   public Polygon toGeometry() {
     GeometryFactory fact = new GeometryFactory();
-    Coordinate[] coords = vertexList.getCoordinates();
-    //coords = closeRing(coords);
+    Coordinate[] coords = vertexRing.getCoordinates();
     return fact.createPolygon(fact.createLinearRing(coords));
-  }
-  
-  private Coordinate[] closeRing(Coordinate[] coords) {
-    if (coords[0].equals2D(coords[coords.length - 1]))
-      return coords;
-    Coordinate[] coordsClose = new Coordinate[coords.length + 1];
-    copy(coords, 0, coordsClose, 0, coords.length);
-    coordsClose[coordsClose.length - 1] = coordsClose[0].copy();
-    return coordsClose;
-  }
-
-  private void copy(Coordinate[] coords, int start, Coordinate[] coords2, int start2, int length) {
-    int end = start + length;
-    int i2 = start2;
-    for (int i = start; i < end; i++) {
-      coords2[i2++] = coords[i];
-    }
   }
 
   private static class VertexRing {
@@ -254,7 +236,6 @@ public class PolygonConcaveHull {
     }
     
     public void remove(int index) {
-      vertex[index] = null;
       int iprev = prev[index];
       int inext = next[index];
       next[iprev] = inext;
@@ -276,9 +257,8 @@ public class PolygonConcaveHull {
     public Coordinate[] getCoordinates() {
       CoordinateList coords = new CoordinateList();
       for (int i = 0; i < vertex.length - 1; i++) {
-        Coordinate v = vertex[i];
-        if (v != null) {
-          coords.add(v.copy(), false);
+        if (prev[i] != NO_VERTEX_INDEX) {
+          coords.add(vertex[i].copy(), false);
         }
       }
       coords.closeRing();
