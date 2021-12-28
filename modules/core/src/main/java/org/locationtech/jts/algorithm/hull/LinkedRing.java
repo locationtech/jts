@@ -11,10 +11,8 @@
  */
 package org.locationtech.jts.algorithm.hull;
 
-import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateList;
-import org.locationtech.jts.geom.Triangle;
 
 class LinkedRing {
   
