@@ -16,15 +16,15 @@ import org.locationtech.jts.geom.CoordinateList;
 
 class LinkedRing {
   
-  private static final int NO_VERTEX_INDEX = -1;
+  private static final int NO_COORD_INDEX = -1;
 
-  private final Coordinate[] vertex;
+  private final Coordinate[] coord;
   private int[] next = null;
   private int[] prev = null;
   private int size;
   
   public LinkedRing(Coordinate[] pts) {
-    vertex = pts;
+    coord = pts;
     size = pts.length - 1;
     next = createNextLinks(size);
     prev = createPrevLinks(size);
@@ -62,18 +62,20 @@ class LinkedRing {
   }
   
   public Coordinate getCoordinate(int index) {
-    return vertex[index];
+    return coord[index];
   }
 
   public Coordinate prevCoordinate(int index) {
-    return vertex[prev(index)];
+    return coord[prev(index)];
   }
 
   public Coordinate nextCoordinate(int index) {
-    return vertex[next(index)];
-  }  public boolean hasVertex(int index) {
-    return index < prev.length 
-        && prev[index] != NO_VERTEX_INDEX;
+    return coord[next(index)];
+  }  
+  
+  public boolean hasCoordinate(int index) {
+    return index >= 0 && index < prev.length 
+        && prev[index] != NO_COORD_INDEX;
   }
   
   public void remove(int index) {
@@ -81,16 +83,16 @@ class LinkedRing {
     int inext = next[index];
     next[iprev] = inext;
     prev[inext] = iprev;
-    prev[index] = NO_VERTEX_INDEX;
-    next[index] = NO_VERTEX_INDEX;
+    prev[index] = NO_COORD_INDEX;
+    next[index] = NO_COORD_INDEX;
     size--;
   }
   
   public Coordinate[] getCoordinates() {
     CoordinateList coords = new CoordinateList();
-    for (int i = 0; i < vertex.length - 1; i++) {
-      if (prev[i] != NO_VERTEX_INDEX) {
-        coords.add(vertex[i].copy(), false);
+    for (int i = 0; i < coord.length - 1; i++) {
+      if (prev[i] != NO_COORD_INDEX) {
+        coords.add(coord[i].copy(), false);
       }
     }
     coords.closeRing();
