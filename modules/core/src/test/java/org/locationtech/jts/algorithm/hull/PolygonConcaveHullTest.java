@@ -41,7 +41,7 @@ public class PolygonConcaveHullTest extends GeometryTestCase {
 
   public void testInnerHull() {
     checkHull("POLYGON ((11 14, 2 31, 18 29, 25 17, 38 16, 29 5, 19 11, 11 0, 0 10, 11 14))", 
-        0.5, "POLYGON ((10 10, 10 90, 90 90, 90 10, 10 10))");
+        -0.5, "POLYGON ((2 31, 18 29, 29 5, 19 11, 2 31))");
   }
 
   private void checkHull(String wkt, double vertexCountFraction, String wktExpected) {

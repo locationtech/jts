@@ -19,6 +19,7 @@ import org.locationtech.jts.geom.CoordinateArrays;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.Triangle;
 import org.locationtech.jts.triangulate.polygon.VertexSequencePackedRtree;
@@ -61,7 +62,10 @@ public class PolygonConcaveHull {
    */
   public PolygonConcaveHull(Coordinate[] polyShell, double vertexSizeFraction) {
     this.vertex = polyShell; 
-    targetVertexCount = (int) ((polyShell.length - 1) * vertexSizeFraction);
+    targetVertexCount = (int) ((polyShell.length - 1) * Math.abs(vertexSizeFraction));
+    boolean isOuter = vertexSizeFraction >= 0;
+    init(polyShell, isOuter);
+
   }
 
   public Geometry getResult() {
@@ -69,9 +73,14 @@ public class PolygonConcaveHull {
     return toGeometry();
   }
   
-  private void init(Coordinate[] ring) { 
-    //-- ensure ring is CW
-    if (Orientation.isCCW(ring)) {
+  private void init(Coordinate[] ring, boolean isOuter) { 
+    /**
+     * Ensure ring is oriented according to outer/inner:
+     * - outer, CW
+     * - inner: CCW 
+     */
+    boolean orientCW = isOuter;
+    if (orientCW == Orientation.isCCW(ring)) {
       ring = ring.clone();
       CoordinateArrays.reverse(ring);
     }
@@ -87,19 +96,32 @@ public class PolygonConcaveHull {
 
   private void addCorner(int i, PriorityQueue<Corner> cornerQueue) {
     //-- convex corners are left untouched
-    if (vertexRing.isConvex(i)) 
+    if (isConvex(vertexRing, i)) 
       return;
     //-- corner is concave or flat - both can be removed
     Corner corner = new Corner(i, 
         vertexRing.prev(i),
         vertexRing.next(i),
-        vertexRing.area(i));
+        area(vertexRing, i));
     cornerQueue.add(corner);
   }
   
-  public void compute() {    
-    init(vertex);
-    
+  
+  public static boolean isConvex(LinkedRing vertexRing, int index) {
+    Coordinate pp = vertexRing.prevCoordinate(index);
+    Coordinate p = vertexRing.getCoordinate(index);
+    Coordinate pn = vertexRing.nextCoordinate(index);
+    return Orientation.CLOCKWISE == Orientation.index(pp, p, pn);
+  }
+
+  public static double area(LinkedRing vertexRing, int index) {
+    Coordinate pp = vertexRing.prevCoordinate(index);
+    Coordinate p = vertexRing.getCoordinate(index);
+    Coordinate pn = vertexRing.nextCoordinate(index);
+    return Triangle.area(pp, p, pn);
+  }
+  
+  public void compute() {        
     while (! cornerQueue.isEmpty() 
         && vertexRing.size() > targetVertexCount
         && vertexRing.size() > 3) {
@@ -185,14 +207,6 @@ public class PolygonConcaveHull {
           || index == next;
     }
 
-    public int getNext() {
-      return next;
-    }
-
-    public int getPrev() {
-      return prev;
-    }
-
     public int getIndex() {
       return index;
     }
@@ -222,7 +236,7 @@ public class PolygonConcaveHull {
       return ring.prev(index) != prev || ring.next(index) != next;
     }
     
-    public Geometry toLineString(LinkedRing ring) {
+    public LineString toLineString(LinkedRing ring) {
       Coordinate pp = ring.getCoordinate(prev);
       Coordinate p = ring.getCoordinate(index);
       Coordinate pn = ring.getCoordinate(next);

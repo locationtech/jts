@@ -32,14 +32,6 @@ class LinkedRing {
     prev = createPrevLinks(size);
   }
 
-  public int size() {
-    return size;
-  }
-
-  public Coordinate getCoordinate(int index) {
-    return vertex[index];
-  }
-
   private static int[] createNextLinks(int size) {
     int[] next = new int[size];
     for (int i = 0; i < size; i++) {
@@ -58,12 +50,10 @@ class LinkedRing {
     return prev;
   }
   
-  public boolean isConvex(int index) {
-    Coordinate pp = vertex[prev[index]];
-    Coordinate p = vertex[index];
-    Coordinate pn = vertex[next[index]];
-    return Orientation.CLOCKWISE == Orientation.index(pp, p, pn);
+  public int size() {
+    return size;
   }
+
 
   public int next(int i) {
     return next[i];
@@ -72,16 +62,20 @@ class LinkedRing {
   public int prev(int i) {
     return prev[i];
   }
+  
+  public Coordinate getCoordinate(int index) {
+    return vertex[index];
+  }
 
-  public boolean hasVertex(int index) {
+  public Coordinate prevCoordinate(int index) {
+    return vertex[prev(index)];
+  }
+
+  public Coordinate nextCoordinate(int index) {
+    return vertex[next(index)];
+  }  public boolean hasVertex(int index) {
     return index < prev.length 
         && prev[index] != NO_VERTEX_INDEX;
-  }
-  public double area(int index) {
-    Coordinate pp = vertex[prev[index]];
-    Coordinate p = vertex[index];
-    Coordinate pn = vertex[next[index]];
-    return Triangle.area(pp,  p,  pn);
   }
   
   public void remove(int index) {
