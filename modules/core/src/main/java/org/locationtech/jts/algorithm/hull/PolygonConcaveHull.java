@@ -11,8 +11,11 @@
  */
 package org.locationtech.jts.algorithm.hull;
 
-import org.locationtech.jts.geom.Coordinate;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.Polygon;
 
@@ -28,30 +31,64 @@ public class PolygonConcaveHull {
     return hull.getResult();
   }
 
-  private int targetVertexCount;
-  private boolean isOuter;
   private Geometry inputGeom;
+  private boolean isOuter;
   private double vertexCountFraction;
+  private GeometryFactory geomFactory;
 
   /**
    * Creates a new PolygonConcaveHull instance.
    * 
-   * @param poly the polygon vertices to process
+   * @param inputGeom the polygonal geometry to process
+   * @param vertexCountFraction the fraction of number of vertices to target
    */
   public PolygonConcaveHull(Geometry inputGeom, double vertexCountFraction) {
     this.inputGeom = inputGeom; 
-    isOuter = vertexCountFraction >= 0;
+    this.geomFactory = inputGeom.getFactory();
+    this.isOuter = vertexCountFraction >= 0;
     this.vertexCountFraction = Math.abs(vertexCountFraction); 
   }
 
   public Geometry getResult() {
     Polygon poly = (Polygon) inputGeom;
-    LinearRing ring = poly.getExteriorRing();
-    Coordinate[] pts = ring.getCoordinates();
-    targetVertexCount = (int) ((pts.length - 1) * vertexCountFraction);
+    List<RingConcaveHull> polyHulls = initPolygon(poly);
+    Polygon hull = hullPolygon(poly, polyHulls);
+    return hull;
+  }
 
-    Coordinate[] hullPts =  RingConcaveHull.hull(pts, isOuter, targetVertexCount);
-    return inputGeom.getFactory().createPolygon(hullPts);
+  private List<RingConcaveHull> initPolygon(Polygon poly) {
+    List<RingConcaveHull> rchList = new ArrayList<RingConcaveHull>();
+    if (poly.isEmpty()) 
+      return rchList;
+    
+    rchList.add( createRingHull( poly.getExteriorRing(), isOuter));
+    for (int i = 0; i < poly.getNumInteriorRing(); i++) {
+      //Assert: interior ring is not empty
+      rchList.add( createRingHull( poly.getInteriorRingN(i), ! isOuter));
+    }
+    return rchList;
+  }
+  
+  private RingConcaveHull createRingHull(LinearRing ring, boolean isOuter) {
+    int targetVertexCount = (int) Math.ceil(vertexCountFraction * (ring.getNumPoints() - 1));
+    RingConcaveHull ringHull = new RingConcaveHull(ring, isOuter, targetVertexCount);
+    return ringHull;
+  }
+
+  private Polygon hullPolygon(Polygon poly, List<RingConcaveHull> polyHulls) {
+    if (poly.isEmpty()) 
+      return geomFactory.createPolygon();
+    
+    int ringIndex = 0;
+    LinearRing resultShell = polyHulls.get(ringIndex++).getHull();
+    List<LinearRing> holeHulls = new ArrayList<LinearRing>();
+    for (int i = 0; i < poly.getNumInteriorRing(); i++) {
+      LinearRing hullHole = polyHulls.get(ringIndex++).getHull();
+      //TODO: handle empty
+      holeHulls.add(hullHole);
+    }
+    LinearRing[] resultHoles = GeometryFactory.toLinearRingArray(holeHulls);
+    return geomFactory.createPolygon(resultShell, resultHoles);
   }
   
 }

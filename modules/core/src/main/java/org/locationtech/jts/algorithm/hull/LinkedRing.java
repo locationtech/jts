@@ -52,7 +52,6 @@ class LinkedRing {
     return size;
   }
 
-
   public int next(int i) {
     return next[i];
   }

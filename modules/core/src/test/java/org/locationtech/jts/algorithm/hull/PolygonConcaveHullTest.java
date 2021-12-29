@@ -30,18 +30,23 @@ public class PolygonConcaveHullTest extends GeometryTestCase {
   }
 
   public void testZGore() {
-    checkHull("POLYGON ((10 90, 40 60, 20 40, 40 20, 70 50, 40 30, 30 40, 59.5 69, 60 70, 50 90, 90 90, 90 10, 10 10, 10 90))", 
-        0.7, "POLYGON ((10 10, 10 90, 40 60, 20 40, 30 40, 60 70, 50 90, 90 90, 90 10, 10 10))");
+    checkHull("POLYGON ((10 90, 40 60, 20 40, 40 20, 70 50, 40 30, 30 40, 60 70, 50 90, 90 90, 90 10, 10 10, 10 90))", 
+        0.5, "POLYGON ((10 10, 10 90, 40 60, 50 90, 90 90, 90 10, 10 10))");
   }
 
   public void testFlat() {
     checkHull("POLYGON ((10 10, 10 90, 90 90, 90 50, 90 10, 50 10, 10 10))", 
-        0.7, "POLYGON ((10 10, 10 90, 90 90, 90 10, 10 10))");
+        0.6, "POLYGON ((10 10, 10 90, 90 90, 90 10, 10 10))");
   }
 
   public void testInnerHull() {
     checkHull("POLYGON ((11 14, 2 31, 18 29, 25 17, 38 16, 29 5, 19 11, 11 0, 0 10, 11 14))", 
-        -0.5, "POLYGON ((2 31, 18 29, 29 5, 19 11, 2 31))");
+        -0.4, "POLYGON ((2 31, 18 29, 29 5, 19 11, 2 31))");
+  }
+
+  public void testOuterWithHole() {
+    checkHull("POLYGON ((50 100, 30 70, 0 50, 30 30, 50 0, 70 30, 100 50, 70 70, 50 100), (50 75, 40 50, 10 50, 36 35, 50 5, 65 35, 90 50, 60 60, 50 75))", 
+        0.1, "POLYGON ((50 100, 100 50, 50 0, 0 50, 50 100), (36 35, 50 5, 60 60, 36 35))");
   }
 
   private void checkHull(String wkt, double vertexCountFraction, String wktExpected) {

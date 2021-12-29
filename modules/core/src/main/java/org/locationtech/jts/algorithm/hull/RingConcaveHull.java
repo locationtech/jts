@@ -19,6 +19,7 @@ import org.locationtech.jts.geom.CoordinateArrays;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.Triangle;
 import org.locationtech.jts.triangulate.polygon.VertexSequencePackedRtree;
@@ -30,7 +31,7 @@ import org.locationtech.jts.triangulate.polygon.VertexSequencePackedRtree;
  */
 class RingConcaveHull {
   
-  public static Coordinate[] hull(Coordinate[] ring, boolean isOuter, int targetVertexCount) {
+  public static LinearRing hull(LinearRing ring, boolean isOuter, int targetVertexCount) {
     RingConcaveHull hull = new RingConcaveHull(ring, isOuter, targetVertexCount);
     return hull.getHull();
   }
@@ -52,25 +53,30 @@ class RingConcaveHull {
   private int targetVertexCount;
 
   private PriorityQueue<Corner> cornerQueue;
+  private LinearRing ring;
 
   /**
    * Creates a new PolygonConcaveHull instance.
    * 
    * @param polyShell the polygon vertices to process
    */
-  private RingConcaveHull(Coordinate[] ring, boolean isOuter, int targetVertexCount) {
-    this.vertex = ring; 
+  public RingConcaveHull(LinearRing ring, boolean isOuter, int targetVertexCount) {
+    this.ring = ring; 
+    this.vertex = ring.getCoordinates();
     this.targetVertexCount = targetVertexCount;
     init(vertex, isOuter);
 
   }
 
-  private Coordinate[] getHull() {
+  public LinearRing getHull() {
     compute();
-    return vertexRing.getCoordinates();
+    Coordinate[] hullPts = vertexRing.getCoordinates();
+    return ring.getFactory().createLinearRing(hullPts);
   }
   
-  private void init(Coordinate[] ring, boolean isOuter) { 
+  private void init(Coordinate[] ring, boolean isOuter) {
+    //-- must clone ring array since VertexSequencePackedRtree removes from it
+    ring = ring.clone();
     /**
      * Ensure ring is oriented according to outer/inner:
      * - outer, CW
@@ -78,7 +84,6 @@ class RingConcaveHull {
      */
     boolean orientCW = isOuter;
     if (orientCW == Orientation.isCCW(ring)) {
-      ring = ring.clone();
       CoordinateArrays.reverse(ring);
     }
     
