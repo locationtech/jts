@@ -715,11 +715,11 @@ public class ConcaveHull
     do {
       int borderIndex = tri.borderIndexCCW();
       //-- add border vertex
-      coordList.add(tri.getCoordinate(borderIndex), false);
+      coordList.add(tri.getCoordinate(borderIndex).copy(), false);
       int nextIndex = Tri.next(borderIndex);
       //-- if next edge is also border, add it and move to next
       if (tri.isBorder(nextIndex)) {
-        coordList.add(tri.getCoordinate(nextIndex), false);
+        coordList.add(tri.getCoordinate(nextIndex).copy(), false);
         borderIndex = nextIndex;
       }
       //-- find next border tri CCW around non-border edge
