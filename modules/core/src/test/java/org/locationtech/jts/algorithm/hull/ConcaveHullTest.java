@@ -86,6 +86,11 @@ public class ConcaveHullTest extends GeometryTestCase {
        1, "POLYGON ((10 10, 10 90, 90 90, 90 60, 90 10, 10 10))" );
   }
 
+  public void testLengthFactorXYZChevronP5() {
+    checkHullByLengthFactorXYZ("MULTIPOINT Z ((10 10 1), (90 10 2), (30 70 3), (70 70 4), (50 60 5))", 
+       0.5, "POLYGON Z ((30 70 3, 70 70 4, 90 10 2, 50 60 5, 10 10 1, 30 70 3))" );
+  }
+  
   //------------------------------------------------
   
   public void testLengthHolesCircle() {
@@ -122,6 +127,13 @@ public class ConcaveHullTest extends GeometryTestCase {
     Geometry actual = ConcaveHull.concaveHullByLengthFactor(geom, threshold);
     Geometry expected = read(wktExpected);
     checkEqual(expected, actual);
+  }
+  
+  private void checkHullByLengthFactorXYZ(String wkt, double threshold, String wktExpected) {
+    Geometry geom = read(wkt);
+    Geometry actual = ConcaveHull.concaveHullByLengthFactor(geom, threshold);
+    Geometry expected = read(wktExpected);
+    checkEqualXYZ(expected, actual);
   }
   
   private void checkHullByLength(String wkt, double threshold, String wktExpected) {
