@@ -52,7 +52,7 @@ public class PolygonConcaveHull {
   public Geometry getResult() {
     Polygon poly = (Polygon) inputGeom;
     List<RingConcaveHull> polyHulls = initPolygon(poly);
-    Polygon hull = hullPolygon(poly, polyHulls);
+    Polygon hull = polygonHull(poly, polyHulls);
     return hull;
   }
 
@@ -75,20 +75,20 @@ public class PolygonConcaveHull {
     return ringHull;
   }
 
-  private Polygon hullPolygon(Polygon poly, List<RingConcaveHull> polyHulls) {
+  private Polygon polygonHull(Polygon poly, List<RingConcaveHull> polyHulls) {
     if (poly.isEmpty()) 
       return geomFactory.createPolygon();
     
     int ringIndex = 0;
-    LinearRing resultShell = polyHulls.get(ringIndex++).getHull();
+    LinearRing shellHull = polyHulls.get(ringIndex++).getHull();
     List<LinearRing> holeHulls = new ArrayList<LinearRing>();
     for (int i = 0; i < poly.getNumInteriorRing(); i++) {
-      LinearRing hullHole = polyHulls.get(ringIndex++).getHull();
+      LinearRing hull = polyHulls.get(ringIndex++).getHull();
       //TODO: handle empty
-      holeHulls.add(hullHole);
+      holeHulls.add(hull);
     }
     LinearRing[] resultHoles = GeometryFactory.toLinearRingArray(holeHulls);
-    return geomFactory.createPolygon(resultShell, resultHoles);
+    return geomFactory.createPolygon(shellHull, resultHoles);
   }
   
 }
