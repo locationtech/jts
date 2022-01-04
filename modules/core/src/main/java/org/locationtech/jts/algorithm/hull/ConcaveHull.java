@@ -44,10 +44,12 @@ import org.locationtech.jts.util.Assert;
  * than this value.
  * <li><b>Maximum Edge Length Ratio</b> - determine the Maximum Edge Length 
  * as a fraction of the difference between the longest and shortest edge lengths 
- * in the Delaunay Triangulation.
- * This normalizes the <b>Maximum Edge Length</b> to be scale-independent.
+ * in the Delaunay Triangulation.  
+ * This normalizes the <b>Maximum Edge Length</b> to be scale-free.
+ * A value of 1 produces the convex hull; a value of 0 produces maximum concaveness.
  * <li><b>Maximum Area Ratio</b> - the ratio of the concave hull area to the convex hull area 
- * will be no larger than this value.
+ * will be no larger than this value. 
+ * A value of 1 produces the convex hull; a value of 0 produces maximum concaveness.
  * </ul>
  * The preferred criterium is the <b>Maximum Edge Length Ratio</b>, since it is 
  * scale-free and local (so that no assumption needs to be made about the 
