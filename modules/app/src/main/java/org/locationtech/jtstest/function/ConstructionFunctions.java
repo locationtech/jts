@@ -166,13 +166,21 @@ public class ConstructionFunctions {
   }
   
   /**
-   * A concavity measure defined in terms of perimeter length.
-   * As defined by Park & Oh, 2012
+   * A concaveness measure defined in terms of the perimeter length
+   * relative to the convex hull perimeter.
+   * <pre>
+   * C = ( P(geom) - P(CH) ) / P(CH)
+   * </pre>
+   * Concaveness values are >= 0.  
+   * A convex polygon has C = 0. 
+   * A higher concaveness indicates a more concave polygon.
+   * <p>
+   * Originally defined by Park & Oh, 2012.
    * 
-   * @param geom
-   * @return
+   * @param geom a polygonal geometry
+   * @return the concaveness measure of the geometry
    */
-  public static double concavity(Geometry geom) {
+  public static double concaveness(Geometry geom) {
     double convexLen = geom.convexHull().getLength();
     return (geom.getLength() - convexLen) / convexLen;
   }
