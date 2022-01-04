@@ -143,16 +143,16 @@ public class ConstructionFunctions {
     return ConcaveHull.concaveHullByLength(geom, maxLen, true);
   }
   
-  public static Geometry concaveHullByLenFactor(Geometry geom, 
-      @Metadata(title="Length factor")
+  public static Geometry concaveHullByLenRatio(Geometry geom, 
+      @Metadata(title="Length Ratio")
       double maxLen) {
-    return ConcaveHull.concaveHullByLengthFactor(geom, maxLen);
+    return ConcaveHull.concaveHullByLengthRatio(geom, maxLen);
   }
   
-  public static Geometry concaveHullWithHolesByLenFactor(Geometry geom, 
-      @Metadata(title="Length factor")
+  public static Geometry concaveHullWithHolesByLenRatio(Geometry geom, 
+      @Metadata(title="Length Ratio")
       double maxLen) {
-    return ConcaveHull.concaveHullByLengthFactor(geom, maxLen, true);
+    return ConcaveHull.concaveHullByLengthRatio(geom, maxLen, true);
   }
   
   public static Geometry concaveHullByArea(Geometry geom, 

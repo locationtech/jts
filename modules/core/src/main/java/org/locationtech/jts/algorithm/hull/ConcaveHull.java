@@ -36,21 +36,21 @@ import org.locationtech.jts.util.Assert;
  * Constructs a concave hull of a set of points.
  * The hull is constructed by removing the longest outer edges 
  * of the Delaunay Triangulation of the points
- * until certain target criteria are reached.
+ * until a target criterium is reached.
+ * <p>
  * The target criteria are:
  * <ul>
  * <li><b>Maximum Edge Length</b> - the length of the longest edge of the hull is no larger
  * than this value.
- * <li><b>Maximum Edge Length Factor</b> - determine the Maximum Edge Length 
+ * <li><b>Maximum Edge Length Ratio</b> - determine the Maximum Edge Length 
  * as a fraction of the difference between the longest and shortest edge lengths 
  * in the Delaunay Triangulation.
  * This normalizes the <b>Maximum Edge Length</b> to be scale-independent.
  * <li><b>Maximum Area Ratio</b> - the ratio of the concave hull area to the convex hull area 
  * will be no larger than this value.
  * </ul>
- * Usually only a single criteria is specified, but both may be provided.
- * The preferred criteria is the <b>Maximum Edge Length Factor</b>, since it is 
- * scale-independent, and local (so that no assumption needs to be made about the 
+ * The preferred criterium is the <b>Maximum Edge Length Ratio</b>, since it is 
+ * scale-free and local (so that no assumption needs to be made about the 
  * total amount of concavity present).
  * Other length criteria can be used by setting the Maximum Edge Length.
  * For example, use a length relative  to the longest edge length
@@ -63,7 +63,7 @@ import org.locationtech.jts.util.Assert;
  * <p>
  * Optionally the concave hull can be allowed to contain holes.
  * Note that this may result in substantially slower computation,
- * and it can produce results of low quality.
+ * and it can produce results of lower quality.
  * 
  * @author Martin Davis
  *
@@ -119,17 +119,17 @@ public class ConcaveHull
   
   /**
    * Computes the concave hull of the vertices in a geometry
-   * using the target criteria of maximum edge length factor.
-   * The edge length factor is a fraction of the length difference
+   * using the target criteria of maximum edge length ratio.
+   * The edge length ratio is a fraction of the length difference
    * between the longest and shortest edges 
    * in the Delaunay Triangulation of the input points. 
    * 
    * @param geom the input geometry
-   * @param lengthFactor the target edge length factor
+   * @param lengthRatio the target edge length factor
    * @return the concave hull
    */
-  public static Geometry concaveHullByLengthFactor(Geometry geom, double lengthFactor) {
-    return concaveHullByLengthFactor(geom, lengthFactor, false);
+  public static Geometry concaveHullByLengthRatio(Geometry geom, double lengthRatio) {
+    return concaveHullByLengthRatio(geom, lengthRatio, false);
   }
   
   /**
@@ -145,9 +145,9 @@ public class ConcaveHull
    * @param isHolesAllowed whether holes are allowed in the result
    * @return the concave hull
    */
-  public static Geometry concaveHullByLengthFactor(Geometry geom, double lengthFactor, boolean isHolesAllowed) {
+  public static Geometry concaveHullByLengthRatio(Geometry geom, double lengthRatio, boolean isHolesAllowed) {
     ConcaveHull hull = new ConcaveHull(geom);
-    hull.setMaximumEdgeLengthFactor(lengthFactor);
+    hull.setMaximumEdgeLengthRatio(lengthRatio);
     hull.setHolesAllowed(isHolesAllowed);
     return hull.getHull();
   }
@@ -168,7 +168,7 @@ public class ConcaveHull
   
   private Geometry inputGeometry;
   private double maxEdgeLength = 0.0;
-  private double maxEdgeLengthFactor = -1;
+  private double maxEdgeLengthRatio = -1;
   private double maxAreaRatio = 0.0; 
   private boolean isHolesAllowed = false;
   private GeometryFactory geomFactory;
@@ -205,12 +205,12 @@ public class ConcaveHull
     if (edgeLength < 0)
       throw new IllegalArgumentException("Edge length must be non-negative");
     this.maxEdgeLength = edgeLength;
-    maxEdgeLengthFactor = -1;
+    maxEdgeLengthRatio = -1;
   }
   
   /**
-   * Sets the target maximum edge length factor for the concave hull.
-   * The edge length factor is a fraction of the difference
+   * Sets the target maximum edge length ratio for the concave hull.
+   * The edge length ratio is a fraction of the difference
    * between the longest and shortest edge lengths 
    * in the Delaunay Triangulation of the input points.
    * It is a value in the range 0 to 1. 
@@ -220,12 +220,12 @@ public class ConcaveHull
    * <li>The value 1.0 produces the convex hull.
    * <ul> 
    * 
-   * @param edgeLengthFactor a length factor value between 0 and 1
+   * @param edgeLengthRatio a length factor value between 0 and 1
    */
-  public void setMaximumEdgeLengthFactor(double edgeLengthFactor) {
-    if (edgeLengthFactor < 0 || edgeLengthFactor > 1)
+  public void setMaximumEdgeLengthRatio(double edgeLengthRatio) {
+    if (edgeLengthRatio < 0 || edgeLengthRatio > 1)
       throw new IllegalArgumentException("Edge length ratio must be in range [0,1]e");
-    this.maxEdgeLengthFactor = edgeLengthFactor;
+    this.maxEdgeLengthRatio = edgeLengthRatio;
   }
   
   /**
@@ -265,8 +265,8 @@ public class ConcaveHull
       return geomFactory.createPolygon();
     }
     List<HullTri> triList = createDelaunayTriangulation(inputGeometry);
-    if (maxEdgeLengthFactor >= 0) {
-      maxEdgeLength = computeTargetEdgeLength(triList, maxEdgeLengthFactor);
+    if (maxEdgeLengthRatio >= 0) {
+      maxEdgeLength = computeTargetEdgeLength(triList, maxEdgeLengthRatio);
     }
     if (triList.isEmpty())
       return inputGeometry.convexHull();
@@ -276,8 +276,8 @@ public class ConcaveHull
   }
 
   private static double computeTargetEdgeLength(List<? extends Tri> triList, 
-      double edgeLengthFactor) {
-    if (edgeLengthFactor == 0) return 0;
+      double edgeLengthRatio) {
+    if (edgeLengthRatio == 0) return 0;
     double maxEdgeLen = -1;
     double minEdgeLen = -1;
     for (Tri tri : triList) {
@@ -289,9 +289,11 @@ public class ConcaveHull
           minEdgeLen = len;
       }
     }
-    //-- ensure all edges are included
-    if (edgeLengthFactor == 1) return 2 * maxEdgeLen;
-    return edgeLengthFactor * (maxEdgeLen - minEdgeLen) + minEdgeLen;
+    //-- if ratio = 1 ensure all edges are included
+    if (edgeLengthRatio == 1) 
+      return 2 * maxEdgeLen;
+    
+    return edgeLengthRatio * (maxEdgeLen - minEdgeLen) + minEdgeLen;
   }
 
   private void computeHull(List<HullTri> triList) {

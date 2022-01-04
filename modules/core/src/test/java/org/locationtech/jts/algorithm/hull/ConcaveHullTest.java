@@ -72,22 +72,22 @@ public class ConcaveHullTest extends GeometryTestCase {
   //------------------------------------------------
 
   public void testLengthFactorZero() {
-    checkHullByLengthFactor("MULTIPOINT ((10 90), (10 10), (90 10), (90 90), (40 40), (60 30), (30 70), (40 60), (60 50), (60 72), (47 66), (90 60))", 
+    checkHullByLengthRatio("MULTIPOINT ((10 90), (10 10), (90 10), (90 90), (40 40), (60 30), (30 70), (40 60), (60 50), (60 72), (47 66), (90 60))", 
        0, "POLYGON ((30 70, 10 90, 60 72, 90 90, 90 60, 90 10, 60 30, 10 10, 40 40, 60 50, 47 66, 40 60, 30 70))" );
   }
 
   public void testLengthFactorP5() {
-    checkHullByLengthFactor("MULTIPOINT ((10 90), (10 10), (90 10), (90 90), (40 40), (60 30), (30 70), (40 60), (60 50), (60 72), (47 66), (90 60))", 
+    checkHullByLengthRatio("MULTIPOINT ((10 90), (10 10), (90 10), (90 90), (40 40), (60 30), (30 70), (40 60), (60 50), (60 72), (47 66), (90 60))", 
        0.5, "POLYGON ((30 70, 10 90, 60 72, 90 90, 90 60, 90 10, 60 30, 10 10, 40 40, 30 70))" );
   }
 
   public void testLengthFactorOne() {
-    checkHullByLengthFactor("MULTIPOINT ((10 90), (10 10), (90 10), (90 90), (40 40), (60 30), (30 70), (40 60), (60 50), (60 72), (47 66), (90 60))", 
+    checkHullByLengthRatio("MULTIPOINT ((10 90), (10 10), (90 10), (90 90), (40 40), (60 30), (30 70), (40 60), (60 50), (60 72), (47 66), (90 60))", 
        1, "POLYGON ((10 10, 10 90, 90 90, 90 60, 90 10, 10 10))" );
   }
 
   public void testLengthFactorXYZChevronP5() {
-    checkHullByLengthFactorXYZ("MULTIPOINT Z ((10 10 1), (90 10 2), (30 70 3), (70 70 4), (50 60 5))", 
+    checkHullByLengthRatioXYZ("MULTIPOINT Z ((10 10 1), (90 10 2), (30 70 3), (70 70 4), (50 60 5))", 
        0.5, "POLYGON Z ((30 70 3, 70 70 4, 90 10 2, 50 60 5, 10 10 1, 30 70 3))" );
   }
   
@@ -122,16 +122,16 @@ public class ConcaveHullTest extends GeometryTestCase {
 
   //==========================================================================
   
-  private void checkHullByLengthFactor(String wkt, double threshold, String wktExpected) {
+  private void checkHullByLengthRatio(String wkt, double threshold, String wktExpected) {
     Geometry geom = read(wkt);
-    Geometry actual = ConcaveHull.concaveHullByLengthFactor(geom, threshold);
+    Geometry actual = ConcaveHull.concaveHullByLengthRatio(geom, threshold);
     Geometry expected = read(wktExpected);
     checkEqual(expected, actual);
   }
   
-  private void checkHullByLengthFactorXYZ(String wkt, double threshold, String wktExpected) {
+  private void checkHullByLengthRatioXYZ(String wkt, double threshold, String wktExpected) {
     Geometry geom = read(wkt);
-    Geometry actual = ConcaveHull.concaveHullByLengthFactor(geom, threshold);
+    Geometry actual = ConcaveHull.concaveHullByLengthRatio(geom, threshold);
     Geometry expected = read(wktExpected);
     checkEqualXYZ(expected, actual);
   }
