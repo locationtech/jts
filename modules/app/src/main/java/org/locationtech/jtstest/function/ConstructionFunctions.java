@@ -150,7 +150,7 @@ public class ConstructionFunctions {
   }
   
   public static Geometry concaveHullWithHolesByLenFactor(Geometry geom, 
-      @Metadata(title="Length")
+      @Metadata(title="Length factor")
       double maxLen) {
     return ConcaveHull.concaveHullByLengthFactor(geom, maxLen, true);
   }
