@@ -102,23 +102,6 @@ public class ConcaveHull
   
   /**
    * Computes the concave hull of the vertices in a geometry
-   * using the target criteria of maximum edge length factor.
-   * The edge length factor is a fraction of the length difference
-   * between the longest and shortest edges 
-   * in the Delaunay Triangulation of the input points. 
-   * 
-   * @param geom the input geometry
-   * @param lengthFactor the target edge length factor
-   * @return the concave hull
-   */
-  public static Geometry concaveHullByLengthFactor(Geometry geom, double lengthFactor) {
-    ConcaveHull hull = new ConcaveHull(geom);
-    hull.setMaximumEdgeLengthFactor(lengthFactor);
-    return hull.getHull();
-  }
-  
-  /**
-   * Computes the concave hull of the vertices in a geometry
    * using the target criteria of maximum edge length,
    * and optionally allowing holes.
    * 
@@ -130,6 +113,41 @@ public class ConcaveHull
   public static Geometry concaveHullByLength(Geometry geom, double maxLength, boolean isHolesAllowed) {
     ConcaveHull hull = new ConcaveHull(geom);
     hull.setMaximumEdgeLength(maxLength);
+    hull.setHolesAllowed(isHolesAllowed);
+    return hull.getHull();
+  }
+  
+  /**
+   * Computes the concave hull of the vertices in a geometry
+   * using the target criteria of maximum edge length factor.
+   * The edge length factor is a fraction of the length difference
+   * between the longest and shortest edges 
+   * in the Delaunay Triangulation of the input points. 
+   * 
+   * @param geom the input geometry
+   * @param lengthFactor the target edge length factor
+   * @return the concave hull
+   */
+  public static Geometry concaveHullByLengthFactor(Geometry geom, double lengthFactor) {
+    return concaveHullByLengthFactor(geom, lengthFactor, false);
+  }
+  
+  /**
+   * Computes the concave hull of the vertices in a geometry
+   * using the target criteria of maximum edge length factor,
+   * and optionally allowing holes.
+   * The edge length factor is a fraction of the length difference
+   * between the longest and shortest edges 
+   * in the Delaunay Triangulation of the input points. 
+   * 
+   * @param geom the input geometry
+   * @param maxLength the target maximum edge length
+   * @param isHolesAllowed whether holes are allowed in the result
+   * @return the concave hull
+   */
+  public static Geometry concaveHullByLengthFactor(Geometry geom, double lengthFactor, boolean isHolesAllowed) {
+    ConcaveHull hull = new ConcaveHull(geom);
+    hull.setMaximumEdgeLengthFactor(lengthFactor);
     hull.setHolesAllowed(isHolesAllowed);
     return hull.getHull();
   }
@@ -573,10 +591,22 @@ public class ConcaveHull
      * PriorityQueues sort in ascending order.
      * To sort with the largest at the head,
      * smaller sizes must compare as greater than larger sizes.
-     * (i.e. the normal numeric comparison is reversed)
+     * (i.e. the normal numeric comparison is reversed).
+     * If the sizes are identical (which should be an infrequent case),
+     * the areas are compared, with larger areas sorting before smaller.
+     * (The rationale is that larger areas indicate an area of lower point density,
+     * which is more likely to be in the exterior of the computed shape.)
+     * This improves the determinism of the queue ordering. 
      */
     @Override
     public int compareTo(HullTri o) {
+      /**
+       * If size is identical compare areas to ensure a (more) deterministic ordering.
+       * Larger areas sort before smaller ones.
+       */
+      if (size == o.size) {
+        return -Double.compare(this.getArea(), o.getArea());
+      }
       return -Double.compare(size, o.size);
     }
     
