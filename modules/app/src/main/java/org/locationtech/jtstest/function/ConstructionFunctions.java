@@ -16,6 +16,7 @@ import org.locationtech.jts.algorithm.MinimumBoundingCircle;
 import org.locationtech.jts.algorithm.MinimumDiameter;
 import org.locationtech.jts.algorithm.construct.LargestEmptyCircle;
 import org.locationtech.jts.algorithm.construct.MaximumInscribedCircle;
+import org.locationtech.jts.algorithm.hull.ConcaveHull;
 import org.locationtech.jts.densify.Densifier;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
@@ -130,4 +131,58 @@ public class ConstructionFunctions {
     return radiusLine.getFactory().createPolygon(circlePts);
   }
  
+  public static Geometry concaveHullByLen(Geometry geom, 
+      @Metadata(title="Length")
+      double maxLen) {
+    return ConcaveHull.concaveHullByLength(geom, maxLen);
+  }
+  
+  public static Geometry concaveHullWithHolesByLen(Geometry geom, 
+      @Metadata(title="Length")
+      double maxLen) {
+    return ConcaveHull.concaveHullByLength(geom, maxLen, true);
+  }
+  
+  public static Geometry concaveHullByLenFactor(Geometry geom, 
+      @Metadata(title="Length factor")
+      double maxLen) {
+    return ConcaveHull.concaveHullByLengthFactor(geom, maxLen);
+  }
+  
+  public static Geometry concaveHullWithHolesByLenFactor(Geometry geom, 
+      @Metadata(title="Length factor")
+      double maxLen) {
+    return ConcaveHull.concaveHullByLengthFactor(geom, maxLen, true);
+  }
+  
+  public static Geometry concaveHullByArea(Geometry geom, 
+      @Metadata(title="Area ratio")
+      double minAreaPct) {
+    return ConcaveHull.concaveHullByArea(geom, minAreaPct);
+  }
+  
+  public static double concaveHullLenGuess(Geometry geom) {
+    return ConcaveHull.uniformGridEdgeLength(geom);
+  }
+  
+  /**
+   * A concaveness measure defined in terms of the perimeter length
+   * relative to the convex hull perimeter.
+   * <pre>
+   * C = ( P(geom) - P(CH) ) / P(CH)
+   * </pre>
+   * Concaveness values are >= 0.  
+   * A convex polygon has C = 0. 
+   * A higher concaveness indicates a more concave polygon.
+   * <p>
+   * Originally defined by Park & Oh, 2012.
+   * 
+   * @param geom a polygonal geometry
+   * @return the concaveness measure of the geometry
+   */
+  public static double concaveness(Geometry geom) {
+    double convexLen = geom.convexHull().getLength();
+    return (geom.getLength() - convexLen) / convexLen;
+  }
+  
 }

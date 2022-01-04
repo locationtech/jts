@@ -291,6 +291,19 @@ public class Triangle
   }
 
   /**
+   * Compute the length of the perimeter of a triangle
+   * 
+   * @param a a vertex of the triangle
+   * @param b a vertex of the triangle
+   * @param c a vertex of the triangle
+   * @return the length of the triangle perimeter
+   */
+  public static double length(Coordinate a, Coordinate b, Coordinate c)
+  {
+    return a.distance(b) + b.distance(c) + c.distance(a);
+  }
+  
+  /**
    * Computes the length of the longest side of a triangle
    * 
    * @param a
@@ -430,7 +443,7 @@ public class Triangle
 
     return area3D;
   }
-
+  
   /**
    * Computes the Z-value (elevation) of an XY point on a three-dimensional
    * plane defined by a triangle whose vertices have Z-values. The defining
@@ -563,6 +576,16 @@ public class Triangle
     return centroid(p0, p1, p2);
   }
 
+  /**
+   * Computes the length of the perimeter of this triangle.
+   * 
+   * @return the length of the perimeter
+   */
+  public double length()
+  {
+    return length(p0, p1, p2);
+  }
+  
   /**
    * Computes the length of the longest side of this triangle
    * 

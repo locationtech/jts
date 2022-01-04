@@ -19,6 +19,7 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.geom.Triangle;
 import org.locationtech.jts.io.WKTWriter;
 import org.locationtech.jts.util.Assert;
 
@@ -49,6 +50,20 @@ public class Tri {
     return geomFact.createGeometryCollection(geoms);
   }
 
+  /**
+   * Computes the area of a set of Tris.
+   * 
+   * @param triList a set of Tris
+   * @return the total area of the triangles
+   */
+  public static double area(List<? extends Tri> triList) {
+    double area = 0;
+    for (Tri tri : triList) {
+      area += tri.getArea();
+    }
+    return area;
+  }
+  
   /**
    * Validates a list of Tris.
    * 
@@ -84,17 +99,17 @@ public class Tri {
     return new Tri(pts[0], pts[1], pts[2]);
   }
   
-  private Coordinate p0;
-  private Coordinate p1;
-  private Coordinate p2;
+  protected Coordinate p0;
+  protected Coordinate p1;
+  protected Coordinate p2;
   
   /**
    * triN is the adjacent triangle across the edge pN - pNN.
    * pNN is the next vertex CW from pN.
    */
-  private Tri tri0;
-  private Tri tri1;
-  private Tri tri2;
+  protected Tri tri0;
+  protected Tri tri1;
+  protected Tri tri2;
 
   /**
    * Creates a triangle with the given vertices.
@@ -244,6 +259,24 @@ public class Tri {
     } else if ( tri2 != null && tri2 == triOld ) {
       tri2 = triNew;
     }
+  }
+  
+  /**
+   * Removes this triangle from a triangulation.
+   * All adjacent references and the references to this
+   * Tri in the adjacent Tris are set to <code>null</code.
+   */
+  public void remove() {
+    remove(0);
+    remove(1);
+    remove(2);
+  }
+
+  private void remove(int index) {
+    Tri adj = getAdjacent(index);
+    if (adj == null) return;
+    adj.setTri(adj.getIndex(this), null);
+    setTri(index, null);
   }
   
   /**
@@ -526,6 +559,24 @@ public class Tri {
     double midX = (p0.getX() + p1.getX()) / 2;
     double midY = (p0.getY() + p1.getY()) / 2;
     return new Coordinate(midX, midY);
+  }
+  
+  /**
+   * Gets the area of the triangle.
+   * 
+   * @return the area of the triangle
+   */
+  public double getArea() {
+    return Triangle.area(p0, p1, p2);
+  }
+  
+  /**
+   * Gets the length of the perimeter of the triangle.
+   * 
+   * @return the length of the perimeter
+   */
+  public double getLength() {
+    return Triangle.length(p0, p1, p2);
   }
   
   /**
