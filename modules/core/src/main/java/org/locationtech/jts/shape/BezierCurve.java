@@ -9,17 +9,16 @@
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
  */
-package org.locationtech.jts.algorithm.construct;
-
-import java.util.ArrayList;
-import java.util.List;
+package org.locationtech.jts.shape;
 
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateList;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.io.WKTWriter;
 
 /**
  * Creates a curved line or polygon using Bezier Curves
@@ -33,7 +32,7 @@ public class BezierCurve {
    * defined by the segments of the input.
    * 
    * @param geom the geometry defining the curve
-   * @param alpha roundness parameter (0 = linear, 1 = round, 2 = distorted)
+   * @param alpha curviness parameter (0 = linear, 1 = round, 2 = distorted)
    * @return
    */
   public static Geometry bezierCurve(Geometry geom, double alpha) {
@@ -55,7 +54,7 @@ public class BezierCurve {
    * Creates a new Bezier Curve instance.
    *
    * @param geom geometry defining curve
-   * @param alpha roundness parameter (0 = linear, 1 = round, 2 = distorted)
+   * @param alpha curviness parameter (0 = linear, 1 = round, 2 = distorted)
    */
   BezierCurve(Geometry geom, double alpha) {
     this.inputGeom = geom;
@@ -77,60 +76,51 @@ public class BezierCurve {
   
   private LineString bezierLine(LineString ls) {
     Coordinate[] coords = ls.getCoordinates();
-
     Coordinate[][] control = controlPoints(coords, false, alpha);
-
     final int N = coords.length;
-    List<Coordinate> curvePts = new ArrayList<Coordinate>();
+    CoordinateList curvePts = new CoordinateList();
     for (int i = 0; i < N - 1; i++) {
-      double len = coords[i].distance(coords[i + 1]);
-      if ( len < minSegmentLength ) {
-        // segment too short - copy input coordinate
-        curvePts.add(new Coordinate(coords[i]));
-
-      } else {
-        cubicBezier(coords[i], coords[i + 1], control[i][1], control[i + 1][0],
-            interpolationParam, bezierCurvePts);
-
-        int copyN = i < N - 1 ? bezierCurvePts.length - 1 : bezierCurvePts.length;
-        for (int k = 0; k < copyN; k++) {
-          curvePts.add(bezierCurvePts[k]);
-        }
-      }
+      addCurve(coords[i], coords[i + 1], control[i][1], control[i + 1][0], curvePts);
     }
-    curvePts.add(coords[N - 1]);
-    return geomFactory.createLineString(curvePts.toArray(new Coordinate[0]));
+    curvePts.add(coords[N - 1], false);
+    return geomFactory.createLineString(curvePts.toCoordinateArray());
   }
 
-  private Polygon bezierPolygon(Polygon poly) {
-    Coordinate[] coords = poly.getExteriorRing().getCoordinates();
+  private LinearRing bezierRing(LinearRing ring) {
+    Coordinate[] coords = ring.getCoordinates();
+    Coordinate[][] control = controlPoints(coords, true, alpha);
+    CoordinateList curvePts = new CoordinateList();
     final int N = coords.length - 1; 
-
-    Coordinate[][] controlPoints = controlPoints(coords, true, alpha);
-    List<Coordinate> curvePts = new ArrayList<Coordinate>();
     for (int i = 0; i < N; i++) {
       int next = (i + 1) % N;
-
-      double len = coords[i].distance(coords[next]);
-      if ( len < minSegmentLength ) {
-        // segment too short - copy input coordinate
-        curvePts.add(new Coordinate(coords[i]));
-
-      } else {
-        cubicBezier(coords[i], coords[next], controlPoints[i][1], controlPoints[next][0],
-            interpolationParam, bezierCurvePts);
-
-        int copyN = i < N - 1 ? bezierCurvePts.length - 1 : bezierCurvePts.length;
-        for (int k = 0; k < copyN; k++) {
-          curvePts.add(bezierCurvePts[k]);
-        }
-      }
+      addCurve(coords[i], coords[next], control[i][1], control[next][0], curvePts);
     }
+    curvePts.closeRing();
 
-    LinearRing shell = geomFactory.createLinearRing(curvePts.toArray(new Coordinate[0]));
+    return geomFactory.createLinearRing(curvePts.toCoordinateArray());
+  }
+  
+  private Polygon bezierPolygon(Polygon poly) {
+    LinearRing shell = bezierRing(poly.getExteriorRing());
     return geomFactory.createPolygon(shell, null);
   }
   
+  private void addCurve(Coordinate p0, Coordinate p1,
+      Coordinate ctrl0, Coordinate crtl1,
+      CoordinateList curvePts) {
+    double len = p0.distance(p1);
+    if ( len < minSegmentLength ) {
+      // segment too short - copy input coordinate
+      curvePts.add(new Coordinate(p0));
+
+    } else {
+      cubicBezier(p0, p1, ctrl0, crtl1,
+          interpolationParam, bezierCurvePts);
+      for (int i = 0; i < bezierCurvePts.length - 1; i++) {
+        curvePts.add(bezierCurvePts[i], false);
+      }
+    }
+  }
   
   private Coordinate[][] controlPoints(Coordinate[] coords, boolean isRing, double alpha) {
     final int N = isRing ? coords.length - 1 : coords.length;
@@ -175,13 +165,12 @@ public class BezierCurve {
       ctrl[i][1] = new Coordinate(
           a1 * (v1.x - mid1x + xdelta) + mid1x - xdelta,
           a1 * (v1.y - mid1y + ydelta) + mid1y - ydelta);
-      //System.out.println(WKTWriter.toLineString(v[1], ctrl[i][0]));
-      //System.out.println(WKTWriter.toLineString(v[1], ctrl[i][1]));
+      //System.out.println(WKTWriter.toLineString(v1, ctrl[i][0]));
+      //System.out.println(WKTWriter.toLineString(v1, ctrl[i][1]));
     }
     /**
-     * For a line, 
-     * use mirrored control points for start and end vertex,
-     * to produce a symmetric curve for the first and last segments.
+     * For a line, produce a symmetric curve for the first and last segments
+     * by using mirrored control points for start and end vertex,
      */
     if (! isRing) {
       ctrl[0][1] = mirrorControlPoint(ctrl[1][0], coords[1], coords[0]);

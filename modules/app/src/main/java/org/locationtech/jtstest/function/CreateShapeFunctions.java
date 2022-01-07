@@ -21,6 +21,7 @@ import org.locationtech.jts.algorithm.Angle;
 import org.locationtech.jts.awt.*;
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.geom.util.*;
+import org.locationtech.jts.shape.BezierCurve;
 import org.locationtech.jts.util.GeometricShapeFactory;
 import org.locationtech.jtstest.geomfunction.Metadata;
 
@@ -332,5 +333,12 @@ public class CreateShapeFunctions {
       pts[i] = pt;
     }
     return pts;
+  }
+  
+  @Metadata(description="Construct a Bezier curve of a line or polygon")
+  public static Geometry bezierCurve(Geometry geom, 
+      @Metadata(title="Alpha (curveness)")
+      double alpha) {
+    return BezierCurve.bezierCurve(geom, alpha);
   }
 }
