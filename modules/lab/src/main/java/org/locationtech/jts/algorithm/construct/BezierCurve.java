@@ -1,4 +1,3 @@
-package org.locationtech.jts.algorithm.construct;
 /*
  * Copyright (c) 2021 Martin Davis.
  *
@@ -10,6 +9,8 @@ package org.locationtech.jts.algorithm.construct;
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
  */
+package org.locationtech.jts.algorithm.construct;
+
 import java.util.ArrayList;
 import java.util.List;
 
