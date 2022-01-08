@@ -226,7 +226,7 @@ public class ConcaveHull
    */
   public void setMaximumEdgeLengthRatio(double edgeLengthRatio) {
     if (edgeLengthRatio < 0 || edgeLengthRatio > 1)
-      throw new IllegalArgumentException("Edge length ratio must be in range [0,1]e");
+      throw new IllegalArgumentException("Edge length ratio must be in range [0,1]");
     this.maxEdgeLengthRatio = edgeLengthRatio;
   }
   
