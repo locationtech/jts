@@ -89,6 +89,12 @@ class HullTri extends Tri
     triList.remove(this);
   }
   
+  public boolean isRemoved() {
+    boolean hasAdjacent = hasAdjacent(0) 
+        || hasAdjacent(1) || hasAdjacent(2);
+    return ! hasAdjacent;
+  }
+  
   /**
    * Tests if a tri vertex is interior.
    * A vertex of a triangle is interior if it 
@@ -318,4 +324,5 @@ class HullTri extends Tri
       }
     }
   }
+
 }

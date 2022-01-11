@@ -11,6 +11,8 @@
  */
 package org.locationtech.jts.algorithm.hull;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.PriorityQueue;
 
@@ -296,6 +298,8 @@ public class ConcaveHull
     return edgeLengthRatio * (maxEdgeLen - minEdgeLen) + minEdgeLen;
   }
 
+  //------------------------------------------------
+
   /**
    * Forms the concave hull using area ratio as the target criteria.
    * <p>
@@ -311,7 +315,7 @@ public class ConcaveHull
     double areaConvex = HullTri.area(triList);
     double areaConcave = areaConvex;
     
-    PriorityQueue<HullTri> queue = initQueueBorder(triList);
+    PriorityQueue<HullTri> queue = createBorderQueue(triList);
     // remove tris in order of decreasing size (edge length)
     while (! queue.isEmpty()) {
       if (isBelowAreaThreshold(areaConcave, areaConvex))
@@ -338,8 +342,39 @@ public class ConcaveHull
     }
   }
   
+  private boolean isRemovableByArea(HullTri tri, List<HullTri> triList) {
+    if (isHolesAllowed) {
+      return isRemovableByAreaWithHoles(tri, triList);
+    }
+    return isRemovableNoHoles(tri);
+  }
+  
+  private boolean isRemovableByAreaWithHoles(HullTri tri, List<HullTri> triList) {
+    /**
+     * Can't remove if that would separate a single vertex
+     */
+    if (tri.hasVertexSingleAdjacent(triList))
+      return false;
+    /**
+     * This test is slow for large input
+     */
+    if (! HullTri.isConnected(triList, tri)) 
+       return false;
+    /**
+     * If tri touches boundary at a single vertex, it can't be removed
+     * because that might disconnect the triangulation interior.
+     */
+    return ! tri.hasBoundaryTouch();
+  }
+  
+  private boolean isBelowAreaThreshold(double areaConcave, double areaConvex) {
+    return areaConcave / areaConvex <= maxAreaRatio;
+  }
+  
+  //------------------------------------------------
+  
   private void computeHullByLength(List<HullTri> triList) {
-    PriorityQueue<HullTri> queue = initQueueBorder(triList);
+    PriorityQueue<HullTri> queue = createBorderQueue(triList);
     // remove tris in order of decreasing size (edge length)
     while (! queue.isEmpty()) {
       HullTri tri = queue.poll();
@@ -362,23 +397,8 @@ public class ConcaveHull
       }
     }
   }
-
-  private void computeHullHoles(List<HullTri> triList) {
-    PriorityQueue<HullTri> queue = initQueueAll(triList);
-    // remove tris in order of decreasing size (edge length)
-    while (! queue.isEmpty()) {
-      HullTri tri = queue.poll();
-      
-      if (isBelowLengthThreshold(tri)) 
-        break;
-      
-      if (isRemovableWithHoles(tri, triList, false)) {        
-        tri.remove(triList);
-      }
-    }
-  }
   
-  private PriorityQueue<HullTri> initQueueBorder(List<HullTri> triList) {
+  private PriorityQueue<HullTri> createBorderQueue(List<HullTri> triList) {
     PriorityQueue<HullTri> queue = new PriorityQueue<HullTri>();
     for (HullTri tri : triList) {
       //-- add only border triangles which could be eroded
@@ -386,14 +406,6 @@ public class ConcaveHull
       if (tri.numAdjacent() != 2)
         continue;
       tri.setSizeToBoundary();
-      queue.add(tri);
-    }
-    return queue;
-  }
-  
-  private PriorityQueue<HullTri> initQueueAll(List<HullTri> triList) {
-    PriorityQueue<HullTri> queue = new PriorityQueue<HullTri>();
-    for (HullTri tri : triList) {
       queue.add(tri);
     }
     return queue;
@@ -413,42 +425,68 @@ public class ConcaveHull
     tri.setSizeToBoundary();
     queue.add(tri);
   }
-    
-  private boolean isBelowAreaThreshold(double areaConcave, double areaConvex) {
-    return areaConcave / areaConvex <= maxAreaRatio;
-  }
 
   private boolean isBelowLengthThreshold(HullTri tri) {
-    double len = 0;
-    if (isHolesAllowed) {
-      len = tri.lengthOfLongestEdge();
-    }
-    else {
-      len = tri.lengthOfBoundary();
-    }
-    return len < maxEdgeLength;
+    return tri.lengthOfBoundary() < maxEdgeLength;
   }
-
+  
+  private void computeHullHoles(List<HullTri> triList) {
+    List<HullTri> candidateHoles = findCandidateHoles(triList, maxEdgeLength);
+    // remove tris in order of decreasing size (edge length)
+    for (HullTri tri : candidateHoles) {
+      if (tri.isRemoved() 
+          || tri.isBorder() 
+          || tri.hasBoundaryTouch())
+        continue;
+      removeHole(tri, triList);
+    }
+  }
+  
+  private static List<HullTri> findCandidateHoles(List<HullTri> triList, double minSize) {
+    List<HullTri> sorted = new ArrayList<HullTri>();
+    for (HullTri tri : triList) {
+      if (tri.getSize() >= minSize 
+          && ! tri.isBorder()
+          && ! tri.hasBoundaryTouch()) {
+        sorted.add(tri);
+      }
+    }
+    sorted.sort(null);
+    Collections.reverse(sorted);
+    return sorted;
+  }
+  
   /**
-   * Tests whether a Tri can be removed while preserving 
-   * the connectivity of the hull.
-   * 
-   * @param tri the Tri to test
+   * Erodes a hole starting at the given triangle, 
+   * and eroding all adjacent trianges with boundary edge length > maxEdgeLen.
    * @param triList 
-   * @return true if the Tri can be removed
+   * 
+   * @param tri
    */
-  private boolean isRemovable(HullTri tri, List<HullTri> triList) {
-    if (isHolesAllowed) {
-      return isRemovableWithHoles(tri, triList, false);
+  private void removeHole(HullTri triSeed, List<HullTri> triList) {
+    PriorityQueue<HullTri> queue = new PriorityQueue<HullTri>();
+    queue.add(triSeed);
+    
+    while (! queue.isEmpty()) {
+      HullTri tri = queue.poll();
+      
+      if (tri != triSeed && isBelowLengthThreshold(tri)) 
+        break;
+      
+      if (tri == triSeed || isRemovableHole(tri)) {
+        //-- the non-null adjacents are now on the border
+        HullTri adj0 = (HullTri) tri.getAdjacent(0);
+        HullTri adj1 = (HullTri) tri.getAdjacent(1);
+        HullTri adj2 = (HullTri) tri.getAdjacent(2);
+        
+        tri.remove(triList);
+        
+        //-- add new border adjacents to queue
+        addBorderTri(adj0, queue);
+        addBorderTri(adj1, queue);
+        addBorderTri(adj2, queue);
+      }
     }
-    return isRemovableNoHoles(tri);
-  }
-
-  private boolean isRemovableByArea(HullTri tri, List<HullTri> triList) {
-    if (isHolesAllowed) {
-      return isRemovableWithHoles(tri, triList, true);
-    }
-    return isRemovableNoHoles(tri);
   }
   
   private boolean isRemovableNoHoles(HullTri tri) {
@@ -466,20 +504,12 @@ public class ConcaveHull
      */
     return ! tri.isConnecting();
   }
-
-  private boolean isRemovableWithHoles(HullTri tri, List<HullTri> triList, boolean isConnectedRequired) {
-    /**
-     * Can't remove if that would separate a single vertex
-     */
-    if (tri.hasVertexSingleAdjacent(triList))
-      return false;
-    if (isConnectedRequired && ! HullTri.isConnected(triList, tri)) 
-       return false;
-    /**
-     * If tri touches boundary at a single vertex, it can't be removed
-     * because that might disconnect the triangulation interior.
-     */
-    return ! tri.hasBoundaryTouch();
+  
+  private boolean isRemovableHole(HullTri tri) {
+    if (tri == null) return false;
+    if (tri.numAdjacent() != 2) return false;
+    if (tri.hasBoundaryTouch()) return false;
+    return true;
   }
   
   private Geometry toGeometry(List<HullTri> triList, GeometryFactory geomFactory) {
