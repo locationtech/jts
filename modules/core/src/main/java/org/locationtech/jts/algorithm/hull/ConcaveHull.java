@@ -12,7 +12,6 @@
 package org.locationtech.jts.algorithm.hull;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.PriorityQueue;
 
@@ -44,7 +43,7 @@ import org.locationtech.jts.geom.Polygon;
  * The preferred criterium is the <b>Maximum Edge Length Ratio</b>, since it is 
  * scale-free and local (so that no assumption needs to be made about the 
  * total amount of concavity present).
- * Other length criteria can be used by setting the Maximum Edge Length.
+ * Other length criteria can be used by setting the Maximum Edge Length directly.
  * For example, use a length relative  to the longest edge length
  * in the Minimum Spanning Tree of the point set.
  * Or, use a length derived from the {@link #uniformGridEdgeLength(Geometry)} value.
@@ -54,8 +53,8 @@ import org.locationtech.jts.geom.Polygon;
  * This constraint may cause the concave hull to fail to meet the target criteria.
  * <p>
  * Optionally the concave hull can be allowed to contain holes.
- * Note that this may result in substantially slower computation,
- * and it can produce results of lower quality.
+ * Note that when using the area-based criterium 
+ * this may result in substantially slower computation.
  * 
  * @author Martin Davis
  *
