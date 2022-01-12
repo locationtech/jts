@@ -67,6 +67,11 @@ class HullTri extends Tri
     return ! hasAdjacent();
   }
   
+  /**
+   * Gets an index of a boundary edge, if there is one.
+   * 
+   * @return a boundary edge index, or -1
+   */
   public int boundaryIndex() {
     if (isBoundary(0)) return 0;
     if (isBoundary(1)) return 1;
@@ -120,6 +125,11 @@ class HullTri extends Tri
     return ! isInterior;
   }
   
+  /**
+   * Gets the index of a vertex which is adjacent to two other tris (if any).
+   * 
+   * @return the vertex index, or -1
+   */
   public int adjacent2VertexIndex() {
     if (hasAdjacent(0) && hasAdjacent(1)) return 1;
     if (hasAdjacent(1) && hasAdjacent(2)) return 2;
@@ -128,20 +138,19 @@ class HullTri extends Tri
   }
   
   /**
-   * Tests whether some vertex of a Tri
-   * is not adjacent to any other Tris
-   * (i.e. has degree = 1).
+   * Tests whether some vertex of this Tri has degree = 1.
+   * In this case it is not in any other Tris.
    * 
    * @param tri
    * @param triList
-   * @return
+   * @return true if a vertex has degree 1
    */
-  public boolean hasVertexSingleAdjacent(List<HullTri> triList) {
+  public int isolatedVertexIndex(List<HullTri> triList) {
     for (int i = 0; i < 3; i++) {
       if (degree(i, triList) <= 1)
-        return true;
+        return i;
     }
-    return false;
+    return -1;
   }
   
   public double lengthOfLongestEdge() {
@@ -189,24 +198,18 @@ class HullTri extends Tri
    */
   public boolean hasBoundaryTouch() {
     for (int i = 0; i < 3; i++) {
-      if (isBoundaryTouchVertex(i))
+      if (isBoundaryTouch(i))
         return true;
     }
     return false;
   }
   
-  private boolean isBoundaryTouchVertex(int index) {
+  private boolean isBoundaryTouch(int index) {
     //-- If vertex is in a boundary edge it is not a touch
     if (isBoundary(index)) return false;
-    if (isBoundary(HullTri.prev(index))) return false;
+    if (isBoundary(prev(index))) return false;
     //-- if vertex is not in interior it is on boundary
     return ! isInteriorVertex(index);
-  }
-  
-  public static void clearMarks(List<HullTri> triList) {
-    for (HullTri tri : triList) {
-      tri.setMarked(false);
-    }
   }
   
   public static HullTri findTri(List<HullTri> triList, Tri exceptTri) {
@@ -222,6 +225,12 @@ class HullTri extends Tri
         return false;
     }
     return true;
+  }
+  
+  public static void clearMarks(List<HullTri> triList) {
+    for (HullTri tri : triList) {
+      tri.setMarked(false);
+    }
   }
   
   public static void markConnected(HullTri triStart, Tri exceptTri) {

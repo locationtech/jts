@@ -349,7 +349,7 @@ public class ConcaveHull
     /**
      * Can't remove if that would separate a single vertex
      */
-    if (tri.hasVertexSingleAdjacent(triList))
+    if (tri.isolatedVertexIndex(triList) != -1)
       return false;
     /**
      * This test is slow for large input.
