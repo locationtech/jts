@@ -139,7 +139,7 @@ class HullTriangulation
         boundaryIndex = nextIndex;
       }
       //-- find next border tri CCW around non-boundary edge
-      tri = tri.nextBorderTri();
+      tri = nextBorderTri(tri);
     } while (tri != triStart);
     coordList.closeRing();
     return coordList.toCoordinateArray();
@@ -151,5 +151,21 @@ class HullTriangulation
     }
     Assert.shouldNeverReachHere("No border triangles found");
     return null;
+  }
+  
+  public static HullTri nextBorderTri(HullTri triStart) {
+    HullTri tri = triStart;
+    //-- start at first non-border edge CW
+    int index = Tri.next(tri.boundaryIndexCW());
+    //-- scan CCW around vertex for next border tri
+    do {
+      HullTri adjTri = (HullTri) tri.getAdjacent(index);
+      if (adjTri == tri)
+        throw new IllegalStateException("No outgoing border edge found");
+      index = Tri.next(adjTri.getIndex(tri));
+      tri = adjTri;
+    }
+    while (! tri.isBoundary(index));
+    return (tri);
   }
 }

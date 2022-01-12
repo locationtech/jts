@@ -62,73 +62,9 @@ class HullTri extends Tri
   public void setMarked(boolean isMarked) {
     this.isMarked = isMarked;
   }
-
-  /**
-   * Computes the degree of a Tri vertex, which is the number of tris containing it.
-   * This must be done by searching the entire triangulation, 
-   * since the containing tris may not be adjacent or edge-connected. 
-   * 
-   * @param index the vertex index
-   * @param triList a triangulation
-   * @return the degree of the vertex
-   */
-  public int degree(int index, List<HullTri> triList) {
-    Coordinate v = getCoordinate(index);
-    int degree = 0;
-    for (HullTri tri : triList) {
-      for (int i = 0; i < 3; i++) {
-        if (v.equals2D(tri.getCoordinate(i)))
-          degree++;
-      }
-    }
-    return degree;
-  }
-  
-  public void remove(List<HullTri> triList) {
-    remove();
-    triList.remove(this);
-  }
   
   public boolean isRemoved() {
-    boolean hasAdjacent = hasAdjacent(0) 
-        || hasAdjacent(1) || hasAdjacent(2);
-    return ! hasAdjacent;
-  }
-  
-  /**
-   * Tests if a tri vertex is interior.
-   * A vertex of a triangle is interior if it 
-   * is fully surrounded by triangles.
-   * 
-   * @param index the vertex index
-   * @return true if the vertex is interior
-   */
-  public boolean isInteriorVertex(int index) {
-    Tri curr = this;
-    int currIndex = index;
-    do {
-      Tri adj = curr.getAdjacent(currIndex);
-      if (adj == null) return false;
-      int adjIndex = adj.getIndex(curr);
-      curr = adj;
-      currIndex = Tri.next(adjIndex);
-    }
-    while (curr != this);
-    return true;
-  }
-  
-  /**
-   * Tests if a tri contains a boundary edge.
-   * In this case it is consideted to be on the border of the triangulation.
-   * 
-   * @return true if the tri is on the border of the triangulation
-   */
-  public boolean isBorder() {
-    return isBoundary(0) || isBoundary(1) || isBoundary(2);
-  }
-  
-  public boolean isBoundary(int index) {
-    return ! hasAdjacent(index);
+    return ! hasAdjacent();
   }
   
   public int boundaryIndex() {
@@ -221,22 +157,6 @@ class HullTri extends Tri
     }
     return len;
   }
-  
-  public HullTri nextBorderTri() {
-    HullTri tri = this;
-    //-- start at first non-border edge CW
-    int index = next(boundaryIndexCW());
-    //-- scan CCW around vertex for next border tri
-    do {
-      HullTri adjTri = (HullTri) tri.getAdjacent(index);
-      if (adjTri == this)
-        throw new IllegalStateException("No outgoing border edge found");
-      index = next(adjTri.getIndex(tri));
-      tri = adjTri;
-    }
-    while (! tri.isBoundary(index));
-    return (tri);
-  }
 
   /**
    * PriorityQueues sort in ascending order.
@@ -261,16 +181,12 @@ class HullTri extends Tri
     return -Double.compare(size, o.size);
   }
   
-  public static boolean isConnected(List<HullTri> triList, HullTri exceptTri) {
-    if (triList.size() == 0) return false;
-    clearMarks(triList);
-    HullTri triStart = findTri(triList, exceptTri);
-    if (triStart == null) return false;
-    markConnected(triStart, exceptTri);
-    exceptTri.setMarked(true);
-    return isAllMarked(triList);
-  }
-  
+  /**
+   * Tests if this tri has a vertex which is in the boundary,
+   * but not in a boundary edge.
+   * 
+   * @return true if the tri touches the boundary at a vertex
+   */
   public boolean hasBoundaryTouch() {
     for (int i = 0; i < 3; i++) {
       if (isBoundaryTouchVertex(i))
@@ -283,6 +199,7 @@ class HullTri extends Tri
     //-- If vertex is in a boundary edge it is not a touch
     if (isBoundary(index)) return false;
     if (isBoundary(HullTri.prev(index))) return false;
+    //-- if vertex is not in interior it is on boundary
     return ! isInteriorVertex(index);
   }
   
@@ -325,4 +242,21 @@ class HullTri extends Tri
     }
   }
 
+  /**
+   * Tests if a triangulation is edge-connected, if a triangle is removed.
+   * NOTE: this is a relatively slow operation.
+   * 
+   * @param triList the triangulation
+   * @param removedTri the triangle to remove
+   * @return true if the triangulation is still connnected
+   */
+  public static boolean isConnected(List<HullTri> triList, HullTri removedTri) {
+    if (triList.size() == 0) return false;
+    clearMarks(triList);
+    HullTri triStart = findTri(triList, removedTri);
+    if (triStart == null) return false;
+    markConnected(triStart, removedTri);
+    removedTri.setMarked(true);
+    return isAllMarked(triList);
+  }
 }

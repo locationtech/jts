@@ -267,11 +267,7 @@ public class ConcaveHull
       computeHullByArea(triList);
     }
     else {
-      computeHullByLength(triList);
-      if (isHolesAllowed) {
-        computeHullHoles(triList);
-      }
-      
+      computeHullByLength(triList);    
     }
     Geometry hull = toGeometry(triList, geomFactory);
     return hull;
@@ -346,7 +342,7 @@ public class ConcaveHull
     if (isHolesAllowed) {
       return isRemovableByAreaWithHoles(tri, triList);
     }
-    return isRemovableNoHoles(tri);
+    return isRemovableBorder(tri);
   }
   
   private boolean isRemovableByAreaWithHoles(HullTri tri, List<HullTri> triList) {
@@ -356,7 +352,8 @@ public class ConcaveHull
     if (tri.hasVertexSingleAdjacent(triList))
       return false;
     /**
-     * This test is slow for large input
+     * This test is slow for large input.
+     * It could be omitted if a disconnected result was allowed.
      */
     if (! HullTri.isConnected(triList, tri)) 
        return false;
@@ -373,7 +370,24 @@ public class ConcaveHull
   
   //------------------------------------------------
   
+  /**
+   * Computes the concave hull using edge length as the target criteria.
+   * The erosion is done in two phases: first the border, then any
+   * internal holes (if required).
+   * This allows an fast connection check to be used
+   * when eroding holes,
+   * which makes this much more efficient than the area-based algorithm.
+   * 
+   * @param triList
+   */
   private void computeHullByLength(List<HullTri> triList) {
+    computeHullBorder(triList);
+    if (isHolesAllowed) {
+      computeHullHoles(triList);
+    }
+  }
+  
+  private void computeHullBorder(List<HullTri> triList) {
     PriorityQueue<HullTri> queue = createBorderQueue(triList);
     // remove tris in order of decreasing size (edge length)
     while (! queue.isEmpty()) {
@@ -382,7 +396,7 @@ public class ConcaveHull
       if (isBelowLengthThreshold(tri)) 
         break;
       
-      if (isRemovableNoHoles(tri)) {
+      if (isRemovableBorder(tri)) {
         //-- the non-null adjacents are now on the border
         HullTri adj0 = (HullTri) tri.getAdjacent(0);
         HullTri adj1 = (HullTri) tri.getAdjacent(1);
@@ -442,38 +456,50 @@ public class ConcaveHull
     }
   }
   
-  private static List<HullTri> findCandidateHoles(List<HullTri> triList, double minSize) {
-    List<HullTri> sorted = new ArrayList<HullTri>();
+  /**
+   * Finds tris which may be the start of holes.
+   * Only tris which have a long enough edge and which do not touch the current hull
+   * boundary are included.
+   * This avoids the risk of disconnecting the result polygon.
+   * The list is sorted in decreasing order of edge length.
+   * 
+   * @param triList
+   * @param minEdgeLen minimum length of edges to consider
+   * @return
+   */
+  private static List<HullTri> findCandidateHoles(List<HullTri> triList, double minEdgeLen) {
+    List<HullTri> candidates = new ArrayList<HullTri>();
     for (HullTri tri : triList) {
-      if (tri.getSize() >= minSize 
-          && ! tri.isBorder()
-          && ! tri.hasBoundaryTouch()) {
-        sorted.add(tri);
+      if (tri.getSize() < minEdgeLen) continue;
+      boolean isTouchingBoundary = tri.isBorder() || tri.hasBoundaryTouch();
+      if (! isTouchingBoundary) {
+        candidates.add(tri);
       }
     }
-    sorted.sort(null);
-    Collections.reverse(sorted);
-    return sorted;
+    // sort by HullTri comparator - longest edge length first
+    candidates.sort(null);
+    return candidates;
   }
   
   /**
    * Erodes a hole starting at the given triangle, 
-   * and eroding all adjacent trianges with boundary edge length > maxEdgeLen.
-   * @param triList 
+   * and eroding all adjacent triangles with boundary edge length > maxEdgeLen.
    * 
-   * @param tri
+   * @param triHole triangle which is part of hole
+   * @param triList the current triangulation
+   * 
    */
-  private void removeHole(HullTri triSeed, List<HullTri> triList) {
+  private void removeHole(HullTri triHole, List<HullTri> triList) {
     PriorityQueue<HullTri> queue = new PriorityQueue<HullTri>();
-    queue.add(triSeed);
+    queue.add(triHole);
     
     while (! queue.isEmpty()) {
       HullTri tri = queue.poll();
       
-      if (tri != triSeed && isBelowLengthThreshold(tri)) 
+      if (tri != triHole && isBelowLengthThreshold(tri)) 
         break;
       
-      if (tri == triSeed || isRemovableHole(tri)) {
+      if (tri == triHole || isRemovableHole(tri)) {
         //-- the non-null adjacents are now on the border
         HullTri adj0 = (HullTri) tri.getAdjacent(0);
         HullTri adj1 = (HullTri) tri.getAdjacent(1);
@@ -489,15 +515,13 @@ public class ConcaveHull
     }
   }
   
-  private boolean isRemovableNoHoles(HullTri tri) {
-    //-- compute removable for no holes allowed
-    int numAdj = tri.numAdjacent();
+  private boolean isRemovableBorder(HullTri tri) {
     /**
      * Tri must have exactly 2 adjacent tris.
      * If it it has only 0 or 1 adjacent then removal would remove a vertex.
      * If it has 3 adjacent then it is not on border.
      */
-    if (numAdj != 2) return false;
+    if (tri.numAdjacent() != 2) return false;
     /**
      * The tri cannot be removed if it is connecting, because
      * this would create more than one result polygon.
@@ -506,10 +530,18 @@ public class ConcaveHull
   }
   
   private boolean isRemovableHole(HullTri tri) {
-    if (tri == null) return false;
+    /**
+     * Tri must have exactly 2 adjacent tris.
+     * If it it has only 0 or 1 adjacent then removal would remove a vertex.
+     * If it has 3 adjacent then it is not connected to hole.
+     */
     if (tri.numAdjacent() != 2) return false;
-    if (tri.hasBoundaryTouch()) return false;
-    return true;
+    /**
+     * Ensure removal does not disconnect hull area.
+     * This is a fast but strict check, which ensure holes and boundary
+     * do not touch at single points.
+     */
+    return ! tri.hasBoundaryTouch();
   }
   
   private Geometry toGeometry(List<HullTri> triList, GeometryFactory geomFactory) {
