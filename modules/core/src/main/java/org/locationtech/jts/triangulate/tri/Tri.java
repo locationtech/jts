@@ -28,8 +28,12 @@ import org.locationtech.jts.util.Assert;
  * Contains three vertices, and links to adjacent Tris for each edge.
  * Tris are constructed independently, and if needed linked
  * into a triangulation using {@link TriangulationBuilder}.
+ * <p>
+ * An edge of a Tri in a triangulation is called a boundary edge
+ * if it has no adjacent triangle.
+ * The set of Tris containing boundary edges are called the triangulation border. 
  * 
- * @author mdavis
+ * @author Martin Davis
  *
  */
 public class Tri {
@@ -262,6 +266,38 @@ public class Tri {
   }
   
   /**
+   * Computes the degree of a Tri vertex, which is the number of tris containing it.
+   * This must be done by searching the entire triangulation, 
+   * since the containing tris may not be adjacent or edge-connected. 
+   * 
+   * @param index the vertex index
+   * @param triList the triangulation
+   * @return the degree of the vertex
+   */
+  public int degree(int index, List<? extends Tri> triList) {
+    Coordinate v = getCoordinate(index);
+    int degree = 0;
+    for (Tri tri : triList) {
+      for (int i = 0; i < 3; i++) {
+        if (v.equals2D(tri.getCoordinate(i)))
+          degree++;
+      }
+    }
+    return degree;
+  }
+  
+  /**
+   * Removes this tri from the triangulation containing it.
+   * All links between the tri and adjacent ones are nulled.
+   * 
+   * @param triList the triangulation
+   */
+  public void remove(List<? extends Tri> triList) {
+    remove();
+    triList.remove(this);
+  }
+  
+  /**
    * Removes this triangle from a triangulation.
    * All adjacent references and the references to this
    * Tri in the adjacent Tris are set to <code>null</code.
@@ -458,6 +494,16 @@ public class Tri {
   }
 
   /**
+   * Tests if this tri has any adjacent tris.
+   * 
+   * @return true if there is at least one adjacent tri
+   */
+  public boolean hasAdjacent() {
+    return hasAdjacent(0) 
+        || hasAdjacent(1) || hasAdjacent(2);
+  }
+  
+  /**
    * Tests if there is an adjacent triangle to an edge.
    * 
    * @param index the edge index
@@ -495,6 +541,48 @@ public class Tri {
     return num;
   }
 
+  /**
+   * Tests if a tri vertex is interior.
+   * A vertex of a triangle is interior if it 
+   * is fully surrounded by other triangles.
+   * 
+   * @param index the vertex index
+   * @return true if the vertex is interior
+   */
+  public boolean isInteriorVertex(int index) {
+    Tri curr = this;
+    int currIndex = index;
+    do {
+      Tri adj = curr.getAdjacent(currIndex);
+      if (adj == null) return false;
+      int adjIndex = adj.getIndex(curr);
+      curr = adj;
+      currIndex = Tri.next(adjIndex);
+    }
+    while (curr != this);
+    return true;
+  }
+  
+  /**
+   * Tests if a tri contains a boundary edge,
+   * and thus on the border of the triangulation containing it.
+   * 
+   * @return true if the tri is on the border of the triangulation
+   */
+  public boolean isBorder() {
+    return isBoundary(0) || isBoundary(1) || isBoundary(2);
+  }
+  
+  /**
+   * Tests if an edge is on the boundary of a triangulation.
+   * 
+   * @param index index of an edge
+   * @return true if the edge is on the boundary
+   */
+  public boolean isBoundary(int index) {
+    return ! hasAdjacent(index);
+  }
+  
   /**
    * Computes the vertex or edge index which is the next one
    * (clockwise) around the triangle.
