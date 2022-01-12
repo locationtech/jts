@@ -347,7 +347,7 @@ public class ConcaveHull
   
   private boolean isRemovableByAreaWithHoles(HullTri tri, List<HullTri> triList) {
     /**
-     * Can't remove if that would separate a single vertex
+     * Can't remove if that would separate a vertex from the hull
      */
     if (tri.isolatedVertexIndex(triList) != -1)
       return false;
