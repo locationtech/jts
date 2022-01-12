@@ -404,7 +404,7 @@ public class ConcaveHull
         
         tri.remove(triList);
         
-        //-- add new border adjacents to queue
+        //-- add border adjacents to queue
         addBorderTri(adj0, queue);
         addBorderTri(adj1, queue);
         addBorderTri(adj2, queue);
@@ -427,11 +427,12 @@ public class ConcaveHull
 
   /**
    * Adds a Tri to the queue.
-   * Only add tris with a single border edge.
-   * The ordering size is the length of the border edge.
+   * Only add tris with a single border edge,
+   * sice otherwise that would risk isolating a vertex.
+   * Sets the ordering size to the length of the border edge.
    * 
    * @param tri the Tri to add
-   * @param queue the priority queue
+   * @param queue the priority queue to add to
    */
   private void addBorderTri(HullTri tri, PriorityQueue<HullTri> queue) {
     if (tri == null) return;
@@ -452,7 +453,7 @@ public class ConcaveHull
           || tri.isBorder() 
           || tri.hasBoundaryTouch())
         continue;
-      removeHole(tri, triList);
+      removeHole(triList, tri);
     }
   }
   
@@ -482,14 +483,12 @@ public class ConcaveHull
   }
   
   /**
-   * Erodes a hole starting at the given triangle, 
-   * and eroding all adjacent triangles with boundary edge length > maxEdgeLen.
-   * 
-   * @param triHole triangle which is part of hole
-   * @param triList the current triangulation
-   * 
+   * Erodes a hole starting at a given triangle, 
+   * and eroding all adjacent triangles with boundary edge length above target.
+   * @param triList the triangulation
+   * @param triHole triangle which is a hole
    */
-  private void removeHole(HullTri triHole, List<HullTri> triList) {
+  private void removeHole(List<HullTri> triList, HullTri triHole) {
     PriorityQueue<HullTri> queue = new PriorityQueue<HullTri>();
     queue.add(triHole);
     
@@ -507,7 +506,7 @@ public class ConcaveHull
         
         tri.remove(triList);
         
-        //-- add new border adjacents to queue
+        //-- add border adjacents to queue
         addBorderTri(adj0, queue);
         addBorderTri(adj1, queue);
         addBorderTri(adj2, queue);
@@ -517,7 +516,7 @@ public class ConcaveHull
   
   private boolean isRemovableBorder(HullTri tri) {
     /**
-     * Tri must have exactly 2 adjacent tris.
+     * Tri must have exactly 2 adjacent tris (i.e. a single boundary edge).
      * If it it has only 0 or 1 adjacent then removal would remove a vertex.
      * If it has 3 adjacent then it is not on border.
      */
@@ -531,15 +530,17 @@ public class ConcaveHull
   
   private boolean isRemovableHole(HullTri tri) {
     /**
-     * Tri must have exactly 2 adjacent tris.
+     * Tri must have exactly 2 adjacent tris (i.e. a single boundary edge).
      * If it it has only 0 or 1 adjacent then removal would remove a vertex.
      * If it has 3 adjacent then it is not connected to hole.
      */
     if (tri.numAdjacent() != 2) return false;
     /**
      * Ensure removal does not disconnect hull area.
-     * This is a fast but strict check, which ensure holes and boundary
+     * This is a fast check which ensure holes and boundary
      * do not touch at single points.
+     * (But it is slightly over-strict, since it prevents
+     * any touching holes.)
      */
     return ! tri.hasBoundaryTouch();
   }
