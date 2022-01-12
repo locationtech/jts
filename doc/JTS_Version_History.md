@@ -46,6 +46,7 @@ Distributions for older JTS versions can be obtained at the
 * Fix `MaximumInscribedCircle` to avoid infinite-looping on flat collapsed input (#807)
 * Add OverlayNG result area heuristic check (#812)
 * Fix the buffer generated for Mitred Joins (#818)
+* Fix WKTReader to produce correct XY coordinate dimension for POLYGON EMPTY (#828)
 
 # Version 1.18.2
 
