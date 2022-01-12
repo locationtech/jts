@@ -34,6 +34,7 @@ Distributions for older JTS versions can be obtained at the
 * Make `QuadTree` thread-safe (#792)
 * Allow specifying a fixed `PrecisionModel` via grid size (#804)
 * Add `OffsetCurve` class (#810, #816)
+* Add `ConcaveHull` class for points (#823, #829)
 
 ### Bug Fixes
 
