@@ -25,7 +25,7 @@ import org.locationtech.jts.geom.Polygon;
  * Constructs a concave hull of a set of points.
  * The hull is constructed by removing the longest outer edges 
  * of the Delaunay Triangulation of the points
- * until a target criterium is reached.
+ * until a target criterion is reached.
  * <p>
  * The target criteria are:
  * <ul>
@@ -40,9 +40,9 @@ import org.locationtech.jts.geom.Polygon;
  * will be no larger than this value. 
  * A value of 1 produces the convex hull; a value of 0 produces maximum concaveness.
  * </ul>
- * The preferred criterium is the <b>Maximum Edge Length Ratio</b>, since it is 
+ * The preferred criterion is the <b>Maximum Edge Length Ratio</b>, since it is 
  * scale-free and local (so that no assumption needs to be made about the 
- * total amount of concavity present).
+ * total amount of concaveness present).
  * Other length criteria can be used by setting the Maximum Edge Length directly.
  * For example, use a length relative  to the longest edge length
  * in the Minimum Spanning Tree of the point set.
@@ -50,10 +50,10 @@ import org.locationtech.jts.geom.Polygon;
  * <p>
  * The computed hull is always a single connected {@link Polygon}
  * (unless it is degenerate, in which case it will be a {@link Point} or a {@link LineString}).
- * This constraint may cause the concave hull to fail to meet the target criteria.
+ * This constraint may cause the concave hull to fail to meet the target criterion.
  * <p>
  * Optionally the concave hull can be allowed to contain holes.
- * Note that when using the area-based criterium 
+ * Note that when using the area-based criterion 
  * this may result in substantially slower computation.
  * 
  * @author Martin Davis
@@ -81,7 +81,7 @@ public class ConcaveHull
   
   /**
    * Computes the concave hull of the vertices in a geometry
-   * using the target criteria of maximum edge length.
+   * using the target criterion of maximum edge length.
    * 
    * @param geom the input geometry
    * @param maxLength the target maximum edge length
@@ -93,7 +93,7 @@ public class ConcaveHull
   
   /**
    * Computes the concave hull of the vertices in a geometry
-   * using the target criteria of maximum edge length,
+   * using the target criterion of maximum edge length,
    * and optionally allowing holes.
    * 
    * @param geom the input geometry
@@ -110,7 +110,7 @@ public class ConcaveHull
   
   /**
    * Computes the concave hull of the vertices in a geometry
-   * using the target criteria of maximum edge length ratio.
+   * using the target criterion of maximum edge length ratio.
    * The edge length ratio is a fraction of the length difference
    * between the longest and shortest edges 
    * in the Delaunay Triangulation of the input points. 
@@ -125,7 +125,7 @@ public class ConcaveHull
   
   /**
    * Computes the concave hull of the vertices in a geometry
-   * using the target criteria of maximum edge length factor,
+   * using the target criterion of maximum edge length factor,
    * and optionally allowing holes.
    * The edge length factor is a fraction of the length difference
    * between the longest and shortest edges 
@@ -145,7 +145,7 @@ public class ConcaveHull
   
   /**
    * Computes the concave hull of the vertices in a geometry
-   * using the target criteria of maximum area ratio.
+   * using the target criterion of maximum area ratio.
    * 
    * @param geom the input geometry
    * @param areaRatio the target maximum area ratio
@@ -296,9 +296,9 @@ public class ConcaveHull
   //------------------------------------------------
 
   /**
-   * Forms the concave hull using area ratio as the target criteria.
+   * Forms the concave hull using area ratio as the target criterion.
    * <p>
-   * When area is used as the criteria, the boundary and holes
+   * When area is used as the criterion, the boundary and holes
    * must be eroded together, since the area is affected by both.
    * This means that result connectivity has to be checked after 
    * every triangle removal, which is very slow.
@@ -306,7 +306,7 @@ public class ConcaveHull
    * @param triList
    */
   private void computeHullByArea(List<HullTri> triList) {
-    //-- used if area is the threshold criteria
+    //-- used if area is the threshold criterion
     double areaConvex = HullTri.area(triList);
     double areaConcave = areaConvex;
     
@@ -370,7 +370,7 @@ public class ConcaveHull
   //------------------------------------------------
   
   /**
-   * Computes the concave hull using edge length as the target criteria.
+   * Computes the concave hull using edge length as the target criterion.
    * The erosion is done in two phases: first the border, then any
    * internal holes (if required).
    * This allows an fast connection check to be used
