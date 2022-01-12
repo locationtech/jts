@@ -55,7 +55,16 @@ import org.locationtech.jts.util.AssertionFailedException;
  *
  *  The <code>WKTReader</code> converts all input numbers to the precise
  *  internal representation.
- *
+ *  <p>
+ * As of version 1.15, JTS can read (but not write) WKT syntax
+ * which specifies coordinate dimension Z, M or ZM as modifiers (e.g. POINT Z)
+ * or in the name of the geometry type (e.g. LINESTRINGZM).
+ * If the coordinate dimension is specified it will be set in the created geometry.
+ * If the coordinate dimension is not specified, the default behaviour is to 
+ * create XYZ geometry (this is backwards compatible with older JTS versions).  
+ * This can be altered to create XY geometry by
+ * calling {@link #setIsOldJtsCoordinateSyntaxAllowed(boolean)}.
+ * 
  * <h3>Notes:</h3>
  * <ul>
  * <li>Keywords are case-insensitive.
@@ -64,17 +73,11 @@ import org.locationtech.jts.util.AssertionFailedException;
  * numbers to floating point.  This means it supports the Java
  * syntax for floating point literals (including scientific notation).
  * </ul>
- *
  * <h3>Syntax</h3>
  * The following syntax specification describes the version of Well-Known Text
  * supported by JTS.
  * (The specification uses a syntax language similar to that used in
  * the C and Java language specifications.)
- * <p>
- * As of version 1.15, JTS can read (but not write) WKT Strings including Z, M or ZM
- * in the name of the geometry type (ex. POINT Z, LINESTRINGZM).
- * Note that it only makes the reader more flexible, but JTS could already read
- * 3D coordinates from WKT String and still can't read 4D coordinates.
  *
  * <blockquote><pre>
  * <i>WKTGeometry:</i> one of<i>
@@ -118,7 +121,7 @@ import org.locationtech.jts.util.AssertionFailedException;
  *         | <b>EMPTY</b>
  *
  * <i>Coordinate:
- *         Number Number Number<sub>opt</sub></i>
+ *         Number Number Number<sub>opt</sub> Number<sub>opt</sub></i>
  *
  * <i>Number:</i> A Java-style floating-point number (including <tt>NaN</tt>, with arbitrary case)
  *
@@ -325,14 +328,20 @@ public class WKTReader
   private CoordinateSequence getCoordinateSequence(StreamTokenizer tokenizer, EnumSet<Ordinate> ordinateFlags)
           throws IOException, ParseException {
     if (getNextEmptyOrOpener(tokenizer).equals(WKTConstants.EMPTY))
-      return this.csFactory.create(0, toDimension(ordinateFlags), ordinateFlags.contains(Ordinate.M) ? 1 : 0);
+      return createCoordinateSequenceEmpty(ordinateFlags);
     
     ArrayList coordinates = new ArrayList();
     do {
       coordinates.add(getCoordinate(tokenizer, ordinateFlags, false));
     } while (getNextCloserOrComma(tokenizer).equals(COMMA));
 
-    return mergeSequences(coordinates, ordinateFlags);  }
+    return mergeSequences(coordinates, ordinateFlags);  
+  }
+
+  private CoordinateSequence createCoordinateSequenceEmpty(EnumSet<Ordinate> ordinateFlags)
+      throws IOException, ParseException {
+    return csFactory.create(0, toDimension(ordinateFlags), ordinateFlags.contains(Ordinate.M) ? 1 : 0);
+  }
 
   /**
    * Reads a <code>CoordinateSequence</Code> from a stream using the given {@link StreamTokenizer}
@@ -948,7 +957,7 @@ S  */
   private Polygon readPolygonText(StreamTokenizer tokenizer, EnumSet<Ordinate> ordinateFlags) throws IOException, ParseException {
     String nextToken = getNextEmptyOrOpener(tokenizer);
     if (nextToken.equals(WKTConstants.EMPTY)) {
-        return geometryFactory.createPolygon();
+        return geometryFactory.createPolygon(createCoordinateSequenceEmpty(ordinateFlags));
     }
     ArrayList holes = new ArrayList();
     LinearRing shell = readLinearRingText(tokenizer, ordinateFlags);

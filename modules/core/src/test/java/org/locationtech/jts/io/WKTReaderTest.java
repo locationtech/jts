@@ -418,6 +418,27 @@ public class WKTReaderTest extends GeometryTestCase {
     assertTrue(gc3.isEmpty());
   }
 
+  public void testEmptyLineDimOldSyntax() throws ParseException {
+    WKTReader wktReader = new WKTReader();
+    LineString geom = (LineString) wktReader.read("LINESTRING EMPTY");
+    int dim = geom.getCoordinateSequence().getDimension();
+    checkCSDim(geom.getCoordinateSequence(), 3);
+  }
+  
+  public void testEmptyLineDim() throws ParseException {
+    WKTReader wktReader = new WKTReader();
+    wktReader.setIsOldJtsCoordinateSyntaxAllowed(false);
+    LineString geom = (LineString) wktReader.read("LINESTRING EMPTY");
+    checkCSDim(geom.getCoordinateSequence(), 2);
+  }
+  
+  public void testEmptyPolygonDim() throws ParseException {
+    WKTReader wktReader = new WKTReader();
+    wktReader.setIsOldJtsCoordinateSyntaxAllowed(false);
+    Polygon geom = (Polygon) wktReader.read("POLYGON EMPTY");
+    checkCSDim(geom.getExteriorRing().getCoordinateSequence(), 2);
+  }
+  
   public void testNaN() throws Exception {
 
     // arrange
@@ -473,6 +494,11 @@ public class WKTReaderTest extends GeometryTestCase {
     if (geom instanceof GeometryCollection) {
       assertTrue(geom.getNumGeometries() == 0);
     }
+  }
+  
+  private void checkCSDim(CoordinateSequence cs, int expectedCoordDim) {
+    int dim = cs.getDimension();
+    assertEquals(expectedCoordDim, dim);
   }
   
   private static CoordinateSequence[] createSequences(EnumSet<Ordinate> ordinateFlags, double[][] xyarray) {
