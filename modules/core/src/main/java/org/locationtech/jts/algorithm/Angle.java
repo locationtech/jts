@@ -180,6 +180,24 @@ import org.locationtech.jts.geom.Coordinate;
 			return angDel - PI_TIMES_2;
 		return angDel;
   }
+  
+  /**
+   * Computes the angle of the unoriented bisector 
+   * of the smallest angle between two vectors.
+   * The computed angle will be in the range (-Pi, Pi].
+   * 
+   * @param tip1 the tip of v1
+   * @param tail the tail of each vector
+   * @param tip2 the tip of v2
+   * @return the angle of the bisector between v1 and v2
+   */
+  public static double bisector(Coordinate tip1, Coordinate tail,
+      Coordinate tip2)
+  {
+    double angDel = angleBetweenOriented(tip1, tail, tip2);
+    double angBi = angle(tail, tip1) + angDel / 2;
+    return normalize(angBi);
+  }
 
   /**
 	 * Computes the interior angle between two segments of a ring. The ring is
@@ -299,5 +317,19 @@ import org.locationtech.jts.geom.Coordinate;
     }
 
     return delAngle;
+  }
+  
+  /**
+   * Projects a point by a given angle and distance.
+   * 
+   * @param p the point to project
+   * @param angle the angle at which to project
+   * @param dist the distance to project
+   * @return the projected point
+   */
+  public static Coordinate project(Coordinate p, double angle, double dist) {
+    double x = p.getX() + dist * Math.cos(angle);
+    double y = p.getY() + dist * Math.sin(angle);
+    return new Coordinate(x, y);
   }
 }

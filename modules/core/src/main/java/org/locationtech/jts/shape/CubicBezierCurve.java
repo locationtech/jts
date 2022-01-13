@@ -11,6 +11,7 @@
  */
 package org.locationtech.jts.shape;
 
+import org.locationtech.jts.algorithm.Angle;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateList;
 import org.locationtech.jts.geom.Geometry;
@@ -18,21 +19,27 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.Polygon;
-import org.locationtech.jts.io.WKTWriter;
+import org.locationtech.jts.geom.util.GeometryMapper;
 
 /**
- * Creates a curved line or polygon using Bezier Curves
- * defined by the segments of the input.
- * 
+ * Creates a curved geometry by replacing the segments
+ * of the input with Cubic Bezier Curves.
+ * The Bezier control points are determined from the segments of the geometry
+ * and the alpha control parameter.
+ * The Bezier Curves are created to be C2-continuous (smooth) 
+ * at each input vertex.
+ * <p>
+ * The result is not guaranteed to be valid, since large alpha values
+ * may cause self-intersections.
  */
 public class CubicBezierCurve {
 
   /**
-   * Creates a curved line or polygon using Bezier Curves
+   * Creates a curved geometry using Cubic Bezier Curves
    * defined by the segments of the input.
    * 
    * @param geom the geometry defining the curve
-   * @param alpha curviness parameter (0 = linear, 1 = round, 2 = distorted)
+   * @param alpha curviness parameter (0 is linear, 1 is round, >1 is increasingly distorted)
    * @return
    */
   public static Geometry bezierCurve(Geometry geom, double alpha) {
@@ -41,7 +48,7 @@ public class CubicBezierCurve {
   }
   
   private double minSegmentLength = 0.0;
-  private int numVerticesPerSegment = 10;
+  private int numVerticesPerSegment = 16;
 
   private Geometry inputGeom;
   private double alpha;
@@ -51,27 +58,41 @@ public class CubicBezierCurve {
   private CubicBezierInterpolationParam[] interpolationParam;
 
   /**
-   * Creates a new Bezier Curve instance.
+   * Creates a new instance.
    *
    * @param geom geometry defining curve
    * @param alpha curviness parameter (0 = linear, 1 = round, 2 = distorted)
    */
   CubicBezierCurve(Geometry geom, double alpha) {
     this.inputGeom = geom;
-    if ( alpha < 0.0 ) alpha = 0;
+    //if ( alpha < 0.0 ) alpha = 0;
     this.alpha = alpha;
     this.geomFactory = geom.getFactory();
   }
 
+  /**
+   * Gets the computed Bezier curve geometry.
+   * 
+   * @return the curved geometry
+   */
   public Geometry getResult() {
     bezierCurvePts = new Coordinate[numVerticesPerSegment];
     interpolationParam = CubicBezierInterpolationParam.compute(numVerticesPerSegment);
 
-    if (inputGeom instanceof LineString)
-      return bezierLine((LineString) inputGeom);
-    if (inputGeom instanceof Polygon)
-      return bezierPolygon((Polygon) inputGeom);
-    return null;
+    return GeometryMapper.flatMap(inputGeom, 1, new GeometryMapper.MapOp() {
+      
+      @Override
+      public Geometry map(Geometry geom) {
+        if (geom instanceof LineString) {
+          return bezierLine((LineString) geom);
+        }
+        if (geom instanceof Polygon ) {
+          return bezierPolygon((Polygon) geom);
+        } 
+        //-- Points
+        return geom.copy();
+      }
+    });
   }
   
   private LineString bezierLine(LineString ls) {
@@ -102,7 +123,14 @@ public class CubicBezierCurve {
   
   private Polygon bezierPolygon(Polygon poly) {
     LinearRing shell = bezierRing(poly.getExteriorRing());
-    return geomFactory.createPolygon(shell, null);
+    LinearRing[] holes = null;
+    if (poly.getNumInteriorRing() > 0) {
+      holes = new LinearRing[poly.getNumInteriorRing()];
+      for (int i = 0; i < poly.getNumInteriorRing(); i++) {
+        holes[i] = bezierRing(poly.getInteriorRingN(i));
+      }
+    }
+    return geomFactory.createPolygon(shell, holes);
   }
   
   private void addCurve(Coordinate p0, Coordinate p1,
@@ -122,61 +150,105 @@ public class CubicBezierCurve {
     }
   }
   
+  //-- makes curve at right-angle corners roughly circular
+  private static final double CIRCLE_LEN_FACTOR = 3.0 / 8.0;
+  
+  /**
+   * Creates control points for each vertex of curve.
+   * The control points are collinear with each vertex, 
+   * thus providing C1-continuity.
+   * By default the control vectors are the same length, 
+   * which provides C2-continuity (same curvature on each
+   * side of vertex.
+   * The alpha parameter controls the length of the control vectors.
+   * Alpha = 0 makes the vectors zero-length, and hence flattens the curves.
+   * Alpha = 1 makes the curve at right angles roughly circular.
+   * Alpha > 1 starts to distort the curve and may introduce self-intersections
+   * 
+   * @param coords
+   * @param isRing
+   * @param alpha determines the curviness
+   * @return
+   */
   private Coordinate[][] controlPoints(Coordinate[] coords, boolean isRing, double alpha) {
     final int N = isRing ? coords.length - 1 : coords.length;
-    double a1 = 1 - alpha;
     Coordinate[][] ctrl = new Coordinate[N][2];
 
-    Coordinate v1 = coords[0];
-    Coordinate v2 = coords[1];
+    Coordinate v0 = coords[0];
+    Coordinate v1 = coords[1];
+    Coordinate v2 = coords[2];
     if (isRing) {
-      v1 = coords[N - 1];
-      v2 = coords[0];
+      v0 = coords[N - 1];
+      v1 = coords[0];
+      v1 = coords[1];
     }
     
-    double mid1x = (v1.x + v2.x) / 2.0;
-    double mid1y = (v1.y + v2.y) / 2.0;
-    double len1 = v1.distance(v2);
-
     final int start = isRing ? 0 : 1; 
-    final int end = isRing ? N : N-1; 
+    final int end = isRing ? N : N - 1; 
     for (int i = start; i < end; i++) {
+      int iprev = i == 0 ? N - 1 : i - 1;
+      v0 = coords[iprev];
       v1 = coords[i];
       v2 = coords[i + 1];
 
-      double mid0x = mid1x;
-      double mid0y = mid1y;
-      mid1x = (v1.x + v2.x) / 2.0;
-      mid1y = (v1.y + v2.y) / 2.0;
-
-      double len0 = len1;
-      len1 = v1.distance(v2);
-
-      double p = len0 / (len0 + len1);
-      double anchorx = mid0x + p * (mid1x - mid0x);
-      double anchory = mid0y + p * (mid1y - mid0y);
-      double xdelta = anchorx - v1.x;
-      double ydelta = anchory - v1.y;
-
-      ctrl[i][0] = new Coordinate(
-          a1 * (v1.x - mid0x + xdelta) + mid0x - xdelta,
-          a1 * (v1.y - mid0y + ydelta) + mid0y - ydelta);
-
-      ctrl[i][1] = new Coordinate(
-          a1 * (v1.x - mid1x + xdelta) + mid1x - xdelta,
-          a1 * (v1.y - mid1y + ydelta) + mid1y - ydelta);
-      //System.out.println(WKTWriter.toLineString(v1, ctrl[i][0]));
-      //System.out.println(WKTWriter.toLineString(v1, ctrl[i][1]));
+      double interiorAng = Angle.angleBetweenOriented(v0, v1, v2);
+      double orient = Math.signum(interiorAng);
+      double angBisect = Angle.bisector(v0, v1, v2);
+      double ang0 = angBisect - orient * Angle.PI_OVER_2;
+      double ang1 = angBisect + orient * Angle.PI_OVER_2;
+      
+      double len0 = v1.distance(v0);
+      double len1 = v1.distance(v2);
+      double lenBase = Math.min(len0, len1);
+      double intAngAbs = Math.abs(interiorAng);
+      
+      //-- make acute corners sharper by shortening tangent
+      double sharpnessFactor = intAngAbs >= Angle.PI_OVER_2 ? 1 : intAngAbs / Angle.PI_OVER_2;
+      
+      double len = alpha * CIRCLE_LEN_FACTOR * sharpnessFactor * lenBase;
+      
+      Coordinate cv0 = Angle.project(v1, ang0, len);
+      Coordinate cv1 = Angle.project(v1, ang1, len);
+      ctrl[i][0] = cv0;
+      ctrl[i][1] = cv1;
+      
+      //System.out.println(WKTWriter.toLineString(v1, cv0));
+      //System.out.println(WKTWriter.toLineString(v1, cv1));
     }
-    /**
-     * For a line, produce a symmetric curve for the first and last segments
-     * by using mirrored control points for start and end vertex,
-     */
     if (! isRing) {
-      ctrl[0][1] = mirrorControlPoint(ctrl[1][0], coords[1], coords[0]);
-      ctrl[N - 1][0] = mirrorControlPoint(ctrl[N - 2][1], coords[N - 1], coords[N - 2]);
+      setLineEndControlPoints(coords, ctrl);
     }
     return ctrl;
+  }
+
+  /**
+   * Sets the end control points for a line.
+   * Produce a symmetric curve for the first and last segments
+   * by using mirrored control points for start and end vertex.
+   * 
+   * @param coords
+   * @param ctrl
+   */
+  private void setLineEndControlPoints(Coordinate[] coords, Coordinate[][] ctrl) {
+    int N = coords.length;
+    ctrl[0][1] = mirrorControlPoint(ctrl[1][0], coords[1], coords[0]);
+    ctrl[N - 1][0] = mirrorControlPoint(ctrl[N - 2][1], coords[N - 1], coords[N - 2]);
+  }
+
+  /**
+   * Creates a control point aimed at the control point at the opposite end of the segment.
+   * 
+   * Produces overly flat results, so not used currently.
+   * 
+   * @param c
+   * @param p1
+   * @param p0
+   * @return
+   */
+  private static Coordinate aimedControlPoint(Coordinate c, Coordinate p1, Coordinate p0) {
+    double len = p1.distance(c);
+    double ang = Angle.angle(p0, p1);
+    return Angle.project(p0, ang, len);
   }
 
   private static Coordinate mirrorControlPoint(Coordinate c, Coordinate p0, Coordinate p1) {

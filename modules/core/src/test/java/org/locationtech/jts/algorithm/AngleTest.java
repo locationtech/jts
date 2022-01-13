@@ -40,24 +40,24 @@ public class AngleTest extends TestCase {
 
   public void testAngle()
   {
-		assertEquals(Angle.angle(new Coordinate(10,0)), 0.0, TOLERANCE);
-		assertEquals(Angle.angle(new Coordinate(10,10)), Math.PI/4, TOLERANCE);
-		assertEquals(Angle.angle(new Coordinate(0,10)), Math.PI/2, TOLERANCE);
-		assertEquals(Angle.angle(new Coordinate(-10,10)), 0.75*Math.PI, TOLERANCE);
-		assertEquals(Angle.angle(new Coordinate(-10,0)), Math.PI, TOLERANCE);
-		assertEquals(Angle.angle(new Coordinate(-10,-0.1)), -3.131592986903128, TOLERANCE);
-		assertEquals(Angle.angle(new Coordinate(-10,-10)), -0.75*Math.PI, TOLERANCE);
+		assertEquals(Angle.angle(p(10,0)), 0.0, TOLERANCE);
+		assertEquals(Angle.angle(p(10,10)), Math.PI/4, TOLERANCE);
+		assertEquals(Angle.angle(p(0,10)), Math.PI/2, TOLERANCE);
+		assertEquals(Angle.angle(p(-10,10)), 0.75*Math.PI, TOLERANCE);
+		assertEquals(Angle.angle(p(-10,0)), Math.PI, TOLERANCE);
+		assertEquals(Angle.angle(p(-10,-0.1)), -3.131592986903128, TOLERANCE);
+		assertEquals(Angle.angle(p(-10,-10)), -0.75*Math.PI, TOLERANCE);
   }
   
   public void testIsAcute()
   {
-  	assertEquals(Angle.isAcute(new Coordinate(10,0), new Coordinate(0,0), new Coordinate(5,10)), true);
-  	assertEquals(Angle.isAcute(new Coordinate(10,0), new Coordinate(0,0), new Coordinate(5,-10)), true);
+  	assertEquals(Angle.isAcute(p(10,0), p(0,0), p(5,10)), true);
+  	assertEquals(Angle.isAcute(p(10,0), p(0,0), p(5,-10)), true);
   	// angle of 0
-  	assertEquals(Angle.isAcute(new Coordinate(10,0), new Coordinate(0,0), new Coordinate(10,0)), true);
+  	assertEquals(Angle.isAcute(p(10,0), p(0,0), p(10,0)), true);
   	
-  	assertEquals(Angle.isAcute(new Coordinate(10,0), new Coordinate(0,0), new Coordinate(-5,10)), false);
-  	assertEquals(Angle.isAcute(new Coordinate(10,0), new Coordinate(0,0), new Coordinate(-5,-10)), false);
+  	assertEquals(Angle.isAcute(p(10,0), p(0,0), p(-5,10)), false);
+  	assertEquals(Angle.isAcute(p(10,0), p(0,0), p(-5,-10)), false);
   }
   
   public void testNormalizePositive()
@@ -103,9 +103,9 @@ public class AngleTest extends TestCase {
   }
 
   public void testInteriorAngle() {
-		Coordinate p1 = new CoordinateXY(1, 2);
-		Coordinate p2 = new CoordinateXY(3, 2);
-		Coordinate p3 = new CoordinateXY(2, 1);
+		Coordinate p1 = p(1, 2);
+		Coordinate p2 = p(3, 2);
+		Coordinate p3 = p(2, 1);
 
 		// Tests all interior angles of a triangle "POLYGON ((1 2, 3 2, 2 1, 1 2))"
 		assertEquals(45, Math.toDegrees(Angle.interiorAngle(p1, p2, p3)), 0.01);
@@ -147,5 +147,19 @@ public class AngleTest extends TestCase {
 					0.01
 			);
 		}
+  }
+  
+  public void testAngleBisector() {
+    assertEquals(45,    Math.toDegrees( Angle.bisector(p(0,1), p(0,0), p(1,0))), 0.01);
+    assertEquals(22.5,  Math.toDegrees( Angle.bisector(p(1,1), p(0,0), p(1,0))), 0.01);
+    assertEquals(67.5,    Math.toDegrees( Angle.bisector(p(-1,1), p(0,0), p(1,0))), 0.01);
+    assertEquals(-45,   Math.toDegrees( Angle.bisector(p(0,-1), p(0,0), p(1,0))), 0.01);
+    assertEquals(180,    Math.toDegrees( Angle.bisector(p(-1,-1), p(0,0), p(-1,1))), 0.01);
+    
+    assertEquals(45, Math.toDegrees(Angle.bisector(p(13,10), p(10,10), p(10,20))), 0.01);
+  }
+  
+  private static Coordinate p(double x, double y) {
+    return new Coordinate(x, y);
   }
 }
