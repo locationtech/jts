@@ -25,7 +25,7 @@ import org.locationtech.jts.io.WKTWriter;
  * defined by the segments of the input.
  * 
  */
-public class BezierCurve {
+public class CubicBezierCurve {
 
   /**
    * Creates a curved line or polygon using Bezier Curves
@@ -36,7 +36,7 @@ public class BezierCurve {
    * @return
    */
   public static Geometry bezierCurve(Geometry geom, double alpha) {
-    BezierCurve curve = new BezierCurve(geom, alpha);
+    CubicBezierCurve curve = new CubicBezierCurve(geom, alpha);
     return curve.getResult();
   }
   
@@ -56,7 +56,7 @@ public class BezierCurve {
    * @param geom geometry defining curve
    * @param alpha curviness parameter (0 = linear, 1 = round, 2 = distorted)
    */
-  BezierCurve(Geometry geom, double alpha) {
+  CubicBezierCurve(Geometry geom, double alpha) {
     this.inputGeom = geom;
     if ( alpha < 0.0 ) alpha = 0;
     this.alpha = alpha;
