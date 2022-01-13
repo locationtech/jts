@@ -335,8 +335,8 @@ public class CreateShapeFunctions {
     return pts;
   }
   
-  @Metadata(description="Construct a Bezier curve of a line or polygon")
-  public static Geometry bezierCurve(Geometry geom, 
+  @Metadata(description="Construct a cubic Bezier curve of a line or polygon")
+  public static Geometry cubicBezierCurve(Geometry geom, 
       @Metadata(title="Alpha (curveness)")
       double alpha) {
     return CubicBezierCurve.bezierCurve(geom, alpha);
