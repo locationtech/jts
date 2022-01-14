@@ -155,12 +155,6 @@ public class ConstructionFunctions {
     return ConcaveHull.concaveHullByLengthRatio(geom, maxLen, true);
   }
   
-  public static Geometry concaveHullByArea(Geometry geom, 
-      @Metadata(title="Area ratio")
-      double minAreaPct) {
-    return ConcaveHull.concaveHullByArea(geom, minAreaPct);
-  }
-  
   public static double concaveHullLenGuess(Geometry geom) {
     return ConcaveHull.uniformGridEdgeLength(geom);
   }

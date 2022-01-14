@@ -36,9 +36,6 @@ import org.locationtech.jts.geom.Polygon;
  * in the Delaunay Triangulation.  
  * This normalizes the <b>Maximum Edge Length</b> to be scale-free.
  * A value of 1 produces the convex hull; a value of 0 produces maximum concaveness.
- * <li><b>Maximum Area Ratio</b> - the ratio of the concave hull area to the convex hull area 
- * will be no larger than this value. 
- * A value of 1 produces the convex hull; a value of 0 produces maximum concaveness.
  * </ul>
  * The preferred criterion is the <b>Maximum Edge Length Ratio</b>, since it is 
  * scale-free and local (so that no assumption needs to be made about the 
@@ -143,24 +140,9 @@ public class ConcaveHull
     return hull.getHull();
   }
   
-  /**
-   * Computes the concave hull of the vertices in a geometry
-   * using the target criterion of maximum area ratio.
-   * 
-   * @param geom the input geometry
-   * @param areaRatio the target maximum area ratio
-   * @return the concave hull
-   */
-  public static Geometry concaveHullByArea(Geometry geom, double areaRatio) {
-    ConcaveHull hull = new ConcaveHull(geom);
-    hull.setMaximumAreaRatio(areaRatio);
-    return hull.getHull();
-  }
-  
   private Geometry inputGeometry;
   private double maxEdgeLength = 0.0;
   private double maxEdgeLengthRatio = -1;
-  private double maxAreaRatio = -1; 
   private boolean isHolesAllowed = false;
   private GeometryFactory geomFactory;
 
@@ -220,24 +202,6 @@ public class ConcaveHull
   }
   
   /**
-   * Sets the target maximum concave hull area as a ratio of the convex hull area.
-   * It is a value in the range 0 to 1. 
-   * <ul>
-   * <li>The value 0.0 produces a concave hull with the smallest area
-   * that is still connected.
-   * <li>The value 1.0 produces the convex hull 
-   * (unless a maximum edge length is also specified).
-   * </ul>
-   * 
-   * @param areaRatio a ratio value between 0 and 1
-   */
-  public void setMaximumAreaRatio(double areaRatio) {
-    if (areaRatio < 0 || areaRatio > 1)
-      throw new IllegalArgumentException("Area ratio must be in range [0,1]");
-    this.maxAreaRatio = areaRatio;
-  }
-  
-  /**
    * Sets whether holes are allowed in the concave hull polygon.
    * 
    * @param isHolesAllowed true if holes are allowed in the result
@@ -262,12 +226,8 @@ public class ConcaveHull
     if (triList.isEmpty())
       return inputGeometry.convexHull();
     
-    if (maxAreaRatio >= 0) {
-      computeHullByArea(triList);
-    }
-    else {
-      computeHullByLength(triList);    
-    }
+    computeHull(triList);    
+
     Geometry hull = toGeometry(triList, geomFactory);
     return hull;
   }
@@ -292,82 +252,6 @@ public class ConcaveHull
     
     return edgeLengthRatio * (maxEdgeLen - minEdgeLen) + minEdgeLen;
   }
-
-  //------------------------------------------------
-
-  /**
-   * Forms the concave hull using area ratio as the target criterion.
-   * <p>
-   * When area is used as the criterion, the boundary and holes
-   * must be eroded together, since the area is affected by both.
-   * This means that result connectivity has to be checked after 
-   * every triangle removal, which is very slow.
-   * 
-   * @param triList
-   */
-  private void computeHullByArea(List<HullTri> triList) {
-    //-- used if area is the threshold criterion
-    double areaConvex = HullTri.area(triList);
-    double areaConcave = areaConvex;
-    
-    PriorityQueue<HullTri> queue = createBorderQueue(triList);
-    // remove tris in order of decreasing size (edge length)
-    while (! queue.isEmpty()) {
-      if (isBelowAreaThreshold(areaConcave, areaConvex))
-        break;
-
-      HullTri tri = queue.poll();
-      
-      if (isRemovableByArea(tri, triList)) {
-        //-- the non-null adjacents are now on the border
-        HullTri adj0 = (HullTri) tri.getAdjacent(0);
-        HullTri adj1 = (HullTri) tri.getAdjacent(1);
-        HullTri adj2 = (HullTri) tri.getAdjacent(2);
-        
-        tri.remove(triList);
-        areaConcave -= tri.getArea();
-        
-        //-- if holes not allowed, add new border adjacents to queue
-        if (! isHolesAllowed) {
-          addBorderTri(adj0, queue);
-          addBorderTri(adj1, queue);
-          addBorderTri(adj2, queue);
-        }
-      }
-    }
-  }
-  
-  private boolean isRemovableByArea(HullTri tri, List<HullTri> triList) {
-    if (isHolesAllowed) {
-      return isRemovableByAreaWithHoles(tri, triList);
-    }
-    return isRemovableBorder(tri);
-  }
-  
-  private boolean isRemovableByAreaWithHoles(HullTri tri, List<HullTri> triList) {
-    /**
-     * Can't remove if that would separate a vertex from the hull
-     */
-    if (tri.isolatedVertexIndex(triList) != -1)
-      return false;
-    /**
-     * This test is slow for large input.
-     * It could be omitted if a disconnected result was allowed.
-     */
-    if (! HullTri.isConnected(triList, tri)) 
-       return false;
-    /**
-     * If tri touches boundary at a single vertex, it can't be removed
-     * because that might disconnect the triangulation interior.
-     */
-    return ! tri.hasBoundaryTouch();
-  }
-  
-  private boolean isBelowAreaThreshold(double areaConcave, double areaConvex) {
-    return areaConcave / areaConvex <= maxAreaRatio;
-  }
-  
-  //------------------------------------------------
   
   /**
    * Computes the concave hull using edge length as the target criterion.
@@ -379,7 +263,7 @@ public class ConcaveHull
    * 
    * @param triList
    */
-  private void computeHullByLength(List<HullTri> triList) {
+  private void computeHull(List<HullTri> triList) {
     computeHullBorder(triList);
     if (isHolesAllowed) {
       computeHullHoles(triList);
