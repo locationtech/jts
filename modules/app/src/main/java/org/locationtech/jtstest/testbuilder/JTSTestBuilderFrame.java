@@ -434,14 +434,14 @@ public class JTSTestBuilderFrame extends JFrame
     //---- Input tabs
     inputTabbedPane.setTabPlacement(JTabbedPane.LEFT);
     inputTabbedPane.add(testListPanel, AppStrings.TAB_LABEL_CASES);
+    inputTabbedPane.add(layerListPanel, AppStrings.TAB_LABEL_LAYERS);
     inputTabbedPane.add(wktPanel,  AppStrings.TAB_LABEL_INPUT);
     inputTabbedPane.add(resultWKTPanel, AppStrings.TAB_LABEL_RESULT);
     inputTabbedPane.add(resultValuePanel, AppStrings.TAB_LABEL_VALUE);
-    inputTabbedPane.add(commandPanel,  AppStrings.TAB_LABEL_COMMAND);
     inputTabbedPane.add(inspectPanel,  AppStrings.TAB_LABEL_INSPECT);
     inputTabbedPane.add(statsPanel, AppStrings.TAB_LABEL_STATS);
     inputTabbedPane.add(logPanel, AppStrings.TAB_LABEL_LOG);
-    inputTabbedPane.add(layerListPanel, AppStrings.TAB_LABEL_LAYERS);
+    inputTabbedPane.add(commandPanel,  AppStrings.TAB_LABEL_COMMAND);
     inputTabbedPane.setSelectedIndex(1);
     inputTabbedPane.addChangeListener(new ChangeListener() {
       public void stateChanged(ChangeEvent e)

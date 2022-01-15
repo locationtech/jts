@@ -38,6 +38,7 @@ import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
 
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jtstest.testbuilder.geom.GeometryUtil;
 import org.locationtech.jtstest.testbuilder.io.IOUtil;
 import org.locationtech.jtstest.testbuilder.model.DisplayParameters;
 import org.locationtech.jtstest.testbuilder.model.GeometryEditModel;
@@ -373,11 +374,11 @@ public class WKTPanel extends JPanel
       switch (geomIndex) {
       case 0: 
         aTextArea.setText(txt);
-        aLabel.setToolTipText(shortForm);
+        aLabel.setToolTipText(GeometryUtil.structureSummary(g));
         break;
       case 1: 
         bTextArea.setText(txt); 
-        bLabel.setToolTipText(shortForm);
+        bLabel.setToolTipText(GeometryUtil.structureSummary(g));
         break;
       }
     }

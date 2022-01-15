@@ -20,6 +20,7 @@ public class GeometryUtil {
   public static String structureSummary(Geometry g)
   {
     String structure = "";
+    if (g == null) return "";
     if (g instanceof Polygon) {
       int nHoles = ((Polygon) g).getNumInteriorRing();
       if (nHoles > 0) structure = nHoles + " holes, " ;
