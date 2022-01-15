@@ -141,6 +141,7 @@ public class GeometryEditModel
 
   public static String toStringVeryLarge(Geometry g)
   {
+    if (g == null) return "";
     return "[[ " + GeometryUtil.structureSummary(g) + " ]]";
   }
   

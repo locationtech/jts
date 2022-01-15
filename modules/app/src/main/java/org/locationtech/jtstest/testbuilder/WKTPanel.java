@@ -361,17 +361,24 @@ public class WKTPanel extends JPanel
 
     public void setText(Geometry g, int geomIndex)
     {
+      String shortForm = GeometryEditModel.toStringVeryLarge(g);
       String txt = null;
       if (g == null)
         txt = "";
       else if (g.getNumPoints() > DisplayParameters.MAX_DISPLAY_POINTS)
-        txt = GeometryEditModel.toStringVeryLarge(g);
+        txt = shortForm;
       else
         txt = GeometryEditModel.getText(g, GeometryType.WELLKNOWNTEXT);
       
       switch (geomIndex) {
-      case 0: aTextArea.setText(txt); break;
-      case 1: bTextArea.setText(txt); break;
+      case 0: 
+        aTextArea.setText(txt);
+        aLabel.setToolTipText(shortForm);
+        break;
+      case 1: 
+        bTextArea.setText(txt); 
+        bLabel.setToolTipText(shortForm);
+        break;
       }
     }
     
