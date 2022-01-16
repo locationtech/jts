@@ -150,6 +150,7 @@ public class GeometryEditModel
 
   public Geometry getResult() {
 //    return result;
+    if (testCase == null) return null;
     return testCase.getResult();
   }
 
@@ -160,6 +161,7 @@ public class GeometryEditModel
   
   public Geometry getGeometry(int i)
   {
+    if (testCase == null) return null;
     return testCase.getGeometry(i);
   }
   

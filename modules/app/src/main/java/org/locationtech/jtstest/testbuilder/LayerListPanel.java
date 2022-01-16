@@ -307,6 +307,10 @@ class LayerItemPanel extends JPanel {
     self = this;
   }
 
+  public String getToolTipText(MouseEvent e) {
+    return layer.getNameInfo();
+  }
+  
   public Layer getLayer() {
     return layer;
   }
@@ -414,19 +418,30 @@ class LayerItemPanel extends JPanel {
 }
 
 
-class LayerStyleSwatchControl {
+class LayerStyleSwatchControl extends JPanel {
 
-  public static JPanel create(Layer layer) {
-    JPanel ctl = new JPanel();
-    Dimension dim = new Dimension(16,16);
-    ctl.setMinimumSize(dim);
-    ctl.setPreferredSize(dim);
-    ctl.setMaximumSize(dim);
-    ctl.setOpaque(true);
+  public static LayerStyleSwatchControl create(Layer layer) {
+    LayerStyleSwatchControl ctl = new LayerStyleSwatchControl(layer);
     //update(ctl, layer);  
     return ctl;
   }
+  
+  private Layer layer;
 
+  public LayerStyleSwatchControl(Layer layer) {
+    this.layer = layer;
+    Dimension dim = new Dimension(16,16);
+    setMinimumSize(dim);
+    setPreferredSize(dim);
+    setMaximumSize(dim);
+    setOpaque(true);
+    setToolTipText(layer.getName()); 
+  }
+
+  public String getToolTipText(MouseEvent e) {
+    return layer.getNameInfo();
+  }
+  
   public static void update(JPanel ctl, Layer layer) {
     
     Color fillClr = Color.WHITE;

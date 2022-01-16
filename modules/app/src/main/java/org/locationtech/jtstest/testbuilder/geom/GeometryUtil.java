@@ -23,7 +23,7 @@ public class GeometryUtil {
     if (g == null) return "";
     if (g instanceof Polygon) {
       int nHoles = ((Polygon) g).getNumInteriorRing();
-      if (nHoles > 0) structure = nHoles + " holes, " ;
+      if (nHoles > 0) structure = nHoles + (nHoles > 1 ? " holes, " : " hole, ");
     }
     String size = "";
     if (g instanceof GeometryCollection)
