@@ -12,6 +12,7 @@
 package org.locationtech.jtstest.testbuilder;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -88,6 +89,7 @@ extends JPanel implements FunctionPanel
   BorderLayout borderLayout1 = new BorderLayout();
   BorderLayout borderLayout2 = new BorderLayout();
 
+  JPanel panelFunction = new JPanel();
   JPanel panelParam = new JPanel();
   JPanel panelExec = new JPanel();
   JPanel panelExecMeta = new JPanel();
@@ -143,7 +145,7 @@ extends JPanel implements FunctionPanel
     geomFuncPanel.populate(JTSTestBuilder.getFunctionRegistry().getCategorizedGeometryFunctions());
 
     panelParam.setLayout(gridLayout2);
-    gridLayout2.setRows(6);
+    gridLayout2.setRows(5);
     gridLayout2.setColumns(2);
     panelExec.setLayout(new FlowLayout());
     panelExecParam.setLayout(borderLayout2);
@@ -152,8 +154,9 @@ extends JPanel implements FunctionPanel
     lblFunction.setHorizontalAlignment(SwingConstants.RIGHT);
     lblFunction.setBorder(LABEL_BORDER);//top,left,bottom,right
     
-    lblFunctionName.setHorizontalAlignment(SwingConstants.LEFT);
-    lblFunctionName.setFont(new java.awt.Font("Dialog", Font.BOLD, 12));
+    lblFunctionName.setHorizontalAlignment(SwingConstants.CENTER);
+    lblFunctionName.setFont(new java.awt.Font("Dialog", Font.PLAIN, 14));
+    lblFunctionName.setForeground(Color.BLUE);
     
     lblDistance.setText("Distance");
     
@@ -180,8 +183,8 @@ extends JPanel implements FunctionPanel
     initLabels(paramLabel);
 
 
-    panelParam.add(lblFunction);
-    panelParam.add(lblFunctionName);
+    //panelParam.add(lblFunction);
+    //panelParam.add(lblFunctionName);
     panelParam.add(lblDistance);
     panelParam.add(txtDistance);
     panelParam.add(lblQuadSegs);
@@ -193,6 +196,10 @@ extends JPanel implements FunctionPanel
     panelParam.add(lblMitreLimit);
     panelParam.add(txtMitreLimit);
 
+    panelFunction.setLayout(new BorderLayout());
+    panelFunction.add(lblFunctionName, BorderLayout.NORTH);
+    panelFunction.add(panelParam, BorderLayout.CENTER);
+    
     cbExecEachA.setToolTipText("Compute for each A geometry element");
     cbExecEachA.setText("Each A");
     
@@ -270,7 +277,7 @@ extends JPanel implements FunctionPanel
     panelExecControl.add(panelExecHolder);
     panelExecControl.add(panelExecMeta);
     
-    panelExecParam.add(panelParam, BorderLayout.CENTER);
+    panelExecParam.add(panelFunction, BorderLayout.CENTER);
     panelExecParam.add(panelExecControl, BorderLayout.SOUTH);
     
     this.add(geomFuncPanel, BorderLayout.CENTER);
