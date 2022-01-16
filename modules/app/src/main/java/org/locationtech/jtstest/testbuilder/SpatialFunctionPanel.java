@@ -154,9 +154,10 @@ extends JPanel implements FunctionPanel
     lblFunction.setHorizontalAlignment(SwingConstants.RIGHT);
     lblFunction.setBorder(LABEL_BORDER);//top,left,bottom,right
     
-    lblFunctionName.setHorizontalAlignment(SwingConstants.CENTER);
+    lblFunctionName.setHorizontalAlignment(SwingConstants.LEFT);
     lblFunctionName.setFont(new java.awt.Font("Dialog", Font.PLAIN, 14));
     lblFunctionName.setForeground(Color.BLUE);
+    lblFunctionName.setBorder(new EmptyBorder(0,10,2,0));
     
     lblDistance.setText("Distance");
     
