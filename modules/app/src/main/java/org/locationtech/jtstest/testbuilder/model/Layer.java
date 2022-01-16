@@ -51,6 +51,12 @@ public class Layer
       + "  --  " + GeometryUtil.metricsSummary(geomCont.getGeometry()); 
   }
   
+  public String getNameSummary() {
+    if (geomCont.getGeometry() == null) return getName();
+    return getName()
+      + "   " + GeometryUtil.structureSummary(geomCont.getGeometry()); 
+  }
+  
   public void setEnabled(boolean isEnabled)
   {
     this.isEnabled = isEnabled;

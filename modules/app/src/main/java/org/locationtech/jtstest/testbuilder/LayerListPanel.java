@@ -352,7 +352,7 @@ class LayerItemPanel extends JPanel {
     checkbox.setOpaque(false);
 
     
-    lblName = new JLabel(layer.getName());
+    lblName = new LayerName(layer);
     lblName.setAlignmentX(Component.LEFT_ALIGNMENT);
     lblName.setMinimumSize(new Dimension(100,12));
     lblName.setPreferredSize(new Dimension(100,12));
@@ -417,6 +417,19 @@ class LayerItemPanel extends JPanel {
 
 }
 
+class LayerName extends JLabel {
+  private Layer layer;
+
+  public LayerName(Layer layer) {
+    super(layer.getName());
+    this.layer = layer;
+    setToolTipText(layer.getName()); 
+  }
+
+  public String getToolTipText(MouseEvent e) {
+    return layer.getNameSummary();
+  }
+}
 
 class LayerStyleSwatchControl extends JPanel {
 
@@ -439,7 +452,7 @@ class LayerStyleSwatchControl extends JPanel {
   }
 
   public String getToolTipText(MouseEvent e) {
-    return layer.getNameInfo();
+    return layer.getNameSummary();
   }
   
   public static void update(JPanel ctl, Layer layer) {
