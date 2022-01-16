@@ -21,6 +21,8 @@ import javax.swing.JTextArea;
 
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jtstest.testbuilder.geom.GeometryUtil;
+import org.locationtech.jtstest.testbuilder.model.Layer;
+import org.locationtech.jtstest.testbuilder.model.LayerList;
 import org.locationtech.jtstest.testbuilder.model.TestBuilderModel;
 
 
@@ -67,13 +69,21 @@ extends JPanel
   {
     StringBuffer buf = new StringBuffer();
 
-    writeGeomStats("A", tbModel.getCurrentCase().getGeometry(0), buf);
-    writeGeomStats("B", tbModel.getCurrentCase().getGeometry(1), buf);
-    writeGeomStats("Result", tbModel.getCurrentCase().getResult(), buf);
-    
+    writeGeomStats(JTSTestBuilder.model().getLayers(), buf);
+    buf.append("\n-------------\n\n");
+    writeGeomStats(JTSTestBuilder.model().getLayersTop(), buf);
+    writeGeomStats(JTSTestBuilder.model().getLayersBase(), buf);
+
     setString(buf.toString());
   }
   
+  private void writeGeomStats(LayerList lyrList, StringBuffer buf) {
+    for (int i = 0; i < lyrList.size(); i++) {
+      Layer lyr = lyrList.getLayer(i);
+      writeGeomStats(lyr.getName(), lyr.getGeometry(), buf);
+    }
+  }
+
   private void writeGeomStats(String label,
       Geometry g, StringBuffer buf)
   {
