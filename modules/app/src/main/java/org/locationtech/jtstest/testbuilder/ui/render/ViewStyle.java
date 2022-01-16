@@ -30,6 +30,7 @@ public class ViewStyle {
   private boolean isLegendEnabled = false;
   private boolean isLegendBorderEnabled = true;
   private boolean isLegendStatsEnabled;
+  private boolean isLegendMetricsEnabled;
   private Color legendFillClr = Color.WHITE;
   
   private boolean isTitleEnabled = false;
@@ -41,6 +42,7 @@ public class ViewStyle {
 
   private boolean isBorderEnabled;
   private Color borderClr = Color.GRAY;
+
 
   public ViewStyle() {
     
@@ -135,6 +137,14 @@ public class ViewStyle {
   
   public boolean isLegendStatsEnabled() {
     return isLegendStatsEnabled;
+  }
+
+  public void setLegendMetricsEnabled(boolean isEabled) {
+    this.isLegendMetricsEnabled = isEabled;
+  }
+  
+  public boolean isLegendMetricsEnabled() {
+    return isLegendMetricsEnabled;
   }
 
 }

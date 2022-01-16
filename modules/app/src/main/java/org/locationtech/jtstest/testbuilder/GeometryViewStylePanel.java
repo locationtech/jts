@@ -37,6 +37,7 @@ public class GeometryViewStylePanel extends LabelComponentsPanel {
   private JPanel ctlBorderClr;
   private JPanel ctlLegendFillClr;
   private JCheckBox cbLegendStats;
+  private JCheckBox cbLegendMetrics;
 
   public GeometryViewStylePanel() {
     try {
@@ -110,7 +111,15 @@ public class GeometryViewStylePanel extends LabelComponentsPanel {
       public void actionPerformed(ActionEvent e) {
         updateView();      }
     });
-    addRow("Legend", cbLegend, ctlLegendFillClr, "Border", cbLegendBorder, "Stats", cbLegendStats );
+    cbLegendMetrics = new JCheckBox();
+    cbLegendMetrics.setSelected(viewStyle.isLegendStatsEnabled());
+    cbLegendMetrics.setAlignmentX(Component.LEFT_ALIGNMENT);
+    cbLegendMetrics.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        updateView();      }
+    });
+    addRow("Legend", cbLegend, ctlLegendFillClr, "Border", cbLegendBorder,
+        "Stats", cbLegendStats, "Metrics", cbLegendMetrics );
     
     cbViewBorder = new JCheckBox();
     cbViewBorder.setSelected(viewStyle.isBorderEnabled());
@@ -164,6 +173,7 @@ public class GeometryViewStylePanel extends LabelComponentsPanel {
     viewStyle.setLegendEnabled(cbLegend.isSelected());
     viewStyle.setLegendBorderEnabled(cbLegendBorder.isSelected());
     viewStyle.setLegendStatsEnabled(cbLegendStats.isSelected());
+    viewStyle.setLegendMetricsEnabled(cbLegendMetrics.isSelected());
     viewStyle.setLegendFill(ctlLegendFillClr.getBackground());
     
     JTSTestBuilder.controller().setViewStyle(viewStyle);

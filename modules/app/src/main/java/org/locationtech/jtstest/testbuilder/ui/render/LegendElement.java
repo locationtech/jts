@@ -43,10 +43,12 @@ public class LegendElement {
 
   private boolean isBorderEnabled;
   private boolean isStatsEnabled = false;
+  private boolean isMetricsEnabled = false;
 
   private Color borderColor;
 
   private Color fillClr = Color.WHITE;
+
 
   public LegendElement(Viewport viewport) {
     this.viewport = viewport;
@@ -58,6 +60,10 @@ public class LegendElement {
   
   public void setStatsEnabled(boolean isEnabled) {
     this.isStatsEnabled = isEnabled;
+  }
+  
+  public void setMetricsEnabled(boolean isEnabled) {
+    this.isMetricsEnabled = isEnabled;
   }
   
   public void setBorder(int borderSize) {
@@ -109,6 +115,9 @@ public class LegendElement {
     String desc = layer.getName();
     if (isStatsEnabled) {
       desc += " -- " + GeometryUtil.structureSummary(layer.getGeometry());
+    }
+    if (isMetricsEnabled) {
+      desc += "  - " + GeometryUtil.metricsSummary(layer.getGeometry());
     }
     return desc;
   }

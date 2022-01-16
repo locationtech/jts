@@ -627,6 +627,7 @@ public class GeometryEditPanel extends JPanel
       if (viewStyle.isLegendEnabled()) {
         legendElement.setBorderEnabled(viewStyle.isLegendBorderEnabled());
         legendElement.setStatsEnabled(viewStyle.isLegendStatsEnabled());
+        legendElement.setMetricsEnabled(viewStyle.isLegendMetricsEnabled());
         legendElement.setBorderColor(viewStyle.getBorderColor());
         legendElement.setFill(viewStyle.getLegendFill());
         legendElement.paint(tbModel.getLayersLegend(), g2);
