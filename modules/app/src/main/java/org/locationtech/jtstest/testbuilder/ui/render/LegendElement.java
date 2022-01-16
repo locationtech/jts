@@ -36,9 +36,13 @@ public class LegendElement {
   private static final int SWATCH_MARGIN = 6;
   
   private static final int DEFAULT_FONT_SIZE = 12;
+  private static final int STAT_FONT_SIZE = 10;
+
+  private static final int DESC_INDENT = 6;
 
   private Viewport viewport;
-  private Font font = new Font(FontGlyphReader.FONT_SANSERIF, Font.PLAIN, DEFAULT_FONT_SIZE);
+  private Font font = new Font(FontGlyphReader.FONT_SANSERIF, Font.BOLD, DEFAULT_FONT_SIZE);
+  private Font fontDesc = new Font(FontGlyphReader.FONT_SANSERIF, Font.ITALIC, STAT_FONT_SIZE);
   private int borderSize = 1;
 
   private boolean isBorderEnabled;
@@ -86,40 +90,57 @@ public class LegendElement {
     drawEntries(layerList, box, g);
   }
 
+  private boolean hasDesc() {
+    return isStatsEnabled || isMetricsEnabled;
+  }
+
+  private int lineHeight() {
+    return DEFAULT_FONT_SIZE + 6 + (hasDesc() ? DEFAULT_FONT_SIZE : 0 );
+  }
+  
   private void drawEntries(List<Layer> layerList, Rectangle box, Graphics2D g) {
     g.setFont(font);
 
     int nameX = box.x + BOX_MARGIN + SWATCH_SIZE + SWATCH_MARGIN;
-    // have to account for width of outline
-    int baseY = box.y + BOX_MARGIN - 2 * borderSize;
-    int lineHeight = DEFAULT_FONT_SIZE + 4;
+    // have to account for width of border
+    int topY = box.y + BOX_MARGIN + borderSize;
+    
     int n = layerList.size();
     for (int i = 0; i < n; i++) {
       // draw layer name
-      int nameY = baseY + (i + 1) * lineHeight;
-      drawEntry(layerList.get(i), nameX, nameY, g);
+      int entryTopY = topY + i * lineHeight();
+      drawEntry(layerList.get(i), nameX, entryTopY, g);
     }
   }
 
-  private void drawEntry(Layer layer, int nameX, int nameY, Graphics2D g) {
-    String name = getDescription(layer);
+  private void drawEntry(Layer layer, int nameX, int topY, Graphics2D g) {
     g.setPaint(NAME_CLR);
-    g.drawString(name, nameX, nameY);
+    g.setFont(font);
+    g.drawString(getName(layer), nameX, topY + DEFAULT_FONT_SIZE );
+    if (hasDesc()) {
+      g.setFont(fontDesc);
+      g.drawString(getDescription(layer), nameX + DESC_INDENT, topY + DEFAULT_FONT_SIZE + STAT_FONT_SIZE + 3);
+    }
     
     int swatchX = nameX - SWATCH_SIZE - SWATCH_MARGIN;
-    int swatchY = nameY - DEFAULT_FONT_SIZE + 2;
+    int swatchY = topY + 2;
     drawSwatch(layer, swatchX, swatchY, g);
   }
 
   private String getDescription(Layer layer) {
-    String desc = layer.getName();
+    String desc = "";
     if (isStatsEnabled) {
-      desc += " -- " + GeometryUtil.structureSummary(layer.getGeometry());
+      desc += GeometryUtil.structureSummary(layer.getGeometry());
     }
     if (isMetricsEnabled) {
-      desc += "  - " + GeometryUtil.metricsSummary(layer.getGeometry());
+      if (desc.length() > 0) desc += " / ";
+      desc += GeometryUtil.metricsSummary(layer.getGeometry());
     }
     return desc;
+  }
+
+  private String getName(Layer layer) {
+    return layer.getName();
   }
 
   private void drawSwatch(Layer layer, int x, int y, Graphics2D g) {
@@ -151,21 +172,21 @@ public class LegendElement {
     g.fill(box);
     
     //--- paint Line
-    float lineWidth = layer.getGeometryStyle().getStrokeWidth();
-    if (layer.getGeometryStyle().getStrokeWidth() > 3)
-      lineWidth = 3;
-    
-    Stroke strokeBox = new BasicStroke(lineWidth, // Width of stroke
-        BasicStroke.CAP_BUTT,  // End cap style
-        BasicStroke.JOIN_MITER, // Join style
-        10,                  // Miter limit
-        null, // Dash pattern
-        0);                   // Dash phase 
-    g.setStroke(strokeBox);
-    
-    Color lineClr = layer.getGeometryStyle().getLineColor();
-    g.setPaint(lineClr);
-    g.draw(box);
+    if (layer.getGeometryStyle().isStroked()) {
+      float lineWidth = layer.getGeometryStyle().getStrokeWidth();
+      if (layer.getGeometryStyle().getStrokeWidth() > 3)
+        lineWidth = 3;
+     Stroke strokeBox = new BasicStroke(lineWidth, // Width of stroke
+          BasicStroke.CAP_BUTT,  // End cap style
+          BasicStroke.JOIN_MITER, // Join style
+          10,                  // Miter limit
+          null, // Dash pattern
+          0);                   // Dash phase 
+      g.setStroke(strokeBox);
+      Color lineClr = layer.getGeometryStyle().getLineColor();
+      g.setPaint(lineClr);
+      g.draw(box);    
+    }
   }
 
   private void drawSwatchLine(Layer layer, int x, int y, Graphics2D g) {
@@ -226,8 +247,7 @@ public class LegendElement {
   private Rectangle computeBox(List<Layer> layerList, Graphics2D g) {
     int width = entryWidth(layerList, g) + 2 * BOX_MARGIN + SWATCH_SIZE + SWATCH_MARGIN;
     
-    int lineHeight = DEFAULT_FONT_SIZE + 4;
-    int height = layerList.size() * lineHeight + 2 * BOX_MARGIN;
+    int height = layerList.size() * lineHeight() + 2 * BOX_MARGIN;
     
     int viewHeight = (int) viewport.getHeightInView();
     int viewWidth = (int) viewport.getWidthInView();
@@ -241,13 +261,20 @@ public class LegendElement {
   private int entryWidth(List<Layer> layerList, Graphics2D g2) {
     int width = 0;
     for (Layer layer : layerList) {
-      String s = getDescription(layer);
+      String s = getName(layer);
       int nameWidth = (int) g2.getFontMetrics().getStringBounds(s, g2).getWidth();
       if (nameWidth > width) 
         width = nameWidth;
+      if (hasDesc()) {
+        String s2 = getDescription(layer);
+        int statWidth = DESC_INDENT + (int) fontDesc.getStringBounds(s2, g2.getFontRenderContext()).getWidth();
+        if (statWidth > width) 
+          width = statWidth;
+      }
     }
     return width;
   }
+
 
 
 
