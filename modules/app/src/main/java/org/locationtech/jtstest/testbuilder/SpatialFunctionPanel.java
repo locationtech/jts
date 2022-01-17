@@ -20,6 +20,8 @@ import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
@@ -128,6 +130,7 @@ extends JPanel implements FunctionPanel
   
   private GeometryFunction currentFunc = null;
   private Stopwatch timer;
+  private Map<GeometryFunction, String> funcParamMap = new HashMap<GeometryFunction, String>();
   
   public SpatialFunctionPanel() {
     try {
@@ -372,17 +375,30 @@ extends JPanel implements FunctionPanel
 
   private void functionChanged(GeometryFunction func)
   {
+    saveParameter(currentFunc);
     currentFunc = func;
     lblFunctionName.setText(func.getName());
     lblFunctionName.setToolTipText( GeometryFunctionRegistry.functionDescriptionHTML(func) );
     
     updateParameters(func, paramComp, paramLabel);
-    
+    recallParameter(func);
+
     execButton.setEnabled(true);
     execToNewButton.setEnabled(true); 
     cbExecAuto.setSelected(false);
   }
+
+  private void recallParameter(GeometryFunction func) {
+    if (! funcParamMap.containsKey(func)) return;
+    String val = funcParamMap.get(func);
+    txtDistance.setText(val);
+  }
   
+  private void saveParameter(GeometryFunction func) {
+    String val = SwingUtil.value(txtDistance);
+    funcParamMap.put(func, val);
+  }
+
   static void updateParameters(GeometryFunction func, JComponent[] paramComp, JLabel[] paramLabel) {
     int numNonGeomParams = numNonGeomParams(func);
     int indexOffset = BaseGeometryFunction.firstScalarParamIndex(func);
@@ -390,7 +406,7 @@ extends JPanel implements FunctionPanel
       boolean isUsed = numNonGeomParams > i;
       if (isUsed) {
         paramLabel[i].setText(func.getParameterNames()[i+indexOffset]);
-      }      
+      } 
       paramComp[i].setVisible(isUsed);
       paramLabel[i].setVisible(isUsed);
       SpatialFunctionPanel.setToolTipText(paramComp[i], func, i);      
