@@ -30,7 +30,7 @@ public class LegendElement {
   
   private static final Color NAME_CLR = Color.BLACK;
   
-  private static final int BOX_OFFSET = 1;
+  private static final int BOX_OFFSET = 4;
   private static final int BOX_MARGIN = 8;
   private static final int SWATCH_SIZE = 10;
   private static final int SWATCH_MARGIN = 6;
