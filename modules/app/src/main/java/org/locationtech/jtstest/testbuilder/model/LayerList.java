@@ -44,23 +44,23 @@ public class LayerList
   public static final int LYR_B = 1;
   public static final int LYR_RESULT = 2;
   
-  private List<Layer> layer = new ArrayList<Layer>();
+  private List<Layer> layers = new ArrayList<Layer>();
   
   public LayerList() 
   {
   }
 
   void initFixed() {
-    layer.add(new Layer("A"));
-    layer.add(new Layer("B"));
-    layer.add(new Layer("Result"));
+    layers.add(new Layer("A"));
+    layers.add(new Layer("B"));
+    layers.add(new Layer("Result"));
   }
   
-  public int size() { return layer.size(); }
+  public int size() { return layers.size(); }
   
   public Layer getLayer(int i)
   { 
-    return layer.get(i);
+    return layers.get(i);
   }
   
   /**
@@ -131,53 +131,54 @@ public class LayerList
 
   public Layer copy(Layer focusLayer) {
     Layer lyr = new Layer(focusLayer);
-    layer.add(lyr);
+    layers.add(lyr);
     return lyr;
   }
 
   public void remove(Layer lyr) {
-    layer.remove(lyr);
+    layers.remove(lyr);
   }
 
   public boolean contains(Layer lyr) {
-    return layer.contains(lyr);
+    return layers.contains(lyr);
   }
 
   public boolean isTop(Layer lyr) {
-    if (layer.isEmpty()) return false;
-    return layer.get(0) == lyr;
+    if (layers.isEmpty()) return false;
+    return layers.get(0) == lyr;
   }
 
   public boolean isBottom(Layer lyr) {
-    if (layer.isEmpty()) return false;
-    return layer.get(layer.size() - 1) == lyr;
+    if (layers.isEmpty()) return false;
+    return layers.get(layers.size() - 1) == lyr;
   }
 
   public void addTop(Layer lyr) {
-    layer.add(0, lyr);
+    layers.add(0, lyr);
   }
   
   public void addBottom(Layer lyr) {
-    layer.add(lyr);
+    layers.add(lyr);
   }
   
   public void add(LayerList lyrList) {
-    layer.addAll(lyrList.layer);
+    layers.addAll(lyrList.layers);
   }
   
   public void moveUp(Layer lyr) {
-    int i = layer.indexOf(lyr);
+    int i = layers.indexOf(lyr);
     if (i <= 0) return;
-    Layer tmp = layer.get(i-1);
-    layer.set(i-1, lyr);
-    layer.set(i, tmp);
+    Layer tmp = layers.get(i-1);
+    layers.set(i-1, lyr);
+    layers.set(i, tmp);
   }
 
   public void moveDown(Layer lyr) {
-    int i = layer.indexOf(lyr);
-    if (i >= layer.size() - 1) return;
-    Layer tmp = layer.get(i+1);
-    layer.set(i+1, lyr);
-    layer.set(i, tmp);
+    int i = layers.indexOf(lyr);
+    if (i < 0) return;
+    if (i >= layers.size() - 1) return;
+    Layer tmp = layers.get(i+1);
+    layers.set(i+1, lyr);
+    layers.set(i, tmp);
   }
 }
