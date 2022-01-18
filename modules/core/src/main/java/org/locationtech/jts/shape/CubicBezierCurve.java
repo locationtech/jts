@@ -20,6 +20,7 @@ import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.util.GeometryMapper;
+import org.locationtech.jts.io.WKTWriter;
 
 /**
  * Creates a curved geometry by replacing the segments
@@ -35,15 +36,31 @@ import org.locationtech.jts.geom.util.GeometryMapper;
 public class CubicBezierCurve {
 
   /**
-   * Creates a curved geometry using Cubic Bezier Curves
+   * Creates a geometry using linearized Cubic Bezier Curves
    * defined by the segments of the input.
    * 
    * @param geom the geometry defining the curve
-   * @param alpha curviness parameter (0 is linear, 1 is round, >1 is increasingly distorted)
-   * @return
+   * @param alpha curviness parameter (0 is linear, 1 is round, >1 is increasingly curved)
+   * @return the curved geometry
    */
   public static Geometry bezierCurve(Geometry geom, double alpha) {
     CubicBezierCurve curve = new CubicBezierCurve(geom, alpha);
+    return curve.getResult();
+  }
+  
+  /**
+   * Creates a geometry using linearized Cubic Bezier Curves
+   * defined by the segments of the input, with a skew factor
+   * affecting the shape at each vertex.
+   * 
+   * @param geom the geometry defining the curve
+   * @param alpha curviness parameter (0 is linear, 1 is round, >1 is increasingly curved)
+   * @param skew the skew parameter (0 is none, positive skews towards longer side, negative towards shorter
+   * @return  the curved geometry
+   */
+  public static Geometry bezierCurve(Geometry geom, double alpha, double skew) {
+    CubicBezierCurve curve = new CubicBezierCurve(geom, alpha);
+    curve.setSkew(skew);
     return curve.getResult();
   }
   
@@ -52,6 +69,7 @@ public class CubicBezierCurve {
 
   private Geometry inputGeom;
   private double alpha;
+  private double skewFactor = 0;;
   private final GeometryFactory geomFactory;
   
   private Coordinate[] bezierCurvePts;
@@ -70,6 +88,16 @@ public class CubicBezierCurve {
     this.geomFactory = geom.getFactory();
   }
 
+  /**
+   * Sets a skew factor influencing the shape of the curve corners.
+   * 0 is no skew, positive skews towards longer edges, negative skews towards shorter.
+   * 
+   * @param skewFactor the skew factor
+   */
+  public void setSkew(double skewFactor) {
+    this.skewFactor  = skewFactor;
+  }
+  
   /**
    * Gets the computed Bezier curve geometry.
    * 
@@ -197,23 +225,37 @@ public class CubicBezierCurve {
       double ang0 = angBisect - orient * Angle.PI_OVER_2;
       double ang1 = angBisect + orient * Angle.PI_OVER_2;
       
-      double len0 = v1.distance(v0);
-      double len1 = v1.distance(v2);
-      double lenBase = Math.min(len0, len1);
+      double dist0 = v1.distance(v0);
+      double dist1 = v1.distance(v2);
+      double lenBase = Math.min(dist0, dist1);
+      
       double intAngAbs = Math.abs(interiorAng);
       
-      //-- make acute corners sharper by shortening tangent
+      //-- make acute corners sharper by shortening tangent vectors
       double sharpnessFactor = intAngAbs >= Angle.PI_OVER_2 ? 1 : intAngAbs / Angle.PI_OVER_2;
       
       double len = alpha * CIRCLE_LEN_FACTOR * sharpnessFactor * lenBase;
-      
-      Coordinate cv0 = Angle.project(v1, ang0, len);
-      Coordinate cv1 = Angle.project(v1, ang1, len);
-      ctrl[i][0] = cv0;
-      ctrl[i][1] = cv1;
-      
-      //System.out.println(WKTWriter.toLineString(v1, cv0));
-      //System.out.println(WKTWriter.toLineString(v1, cv1));
+      double stretch0 = 1;
+      double stretch1 = 1;
+      if (skewFactor != 0) {
+        double stretch = Math.abs(dist0 - dist1) / Math.max(dist0, dist1);
+        int skewIndex = dist0 > dist1 ? 0 : 1;
+        if (skewFactor < 0) skewIndex = 1 - skewIndex;
+        if (skewIndex == 0) {
+          stretch0 += Math.abs(skewFactor) * stretch; 
+        }
+        else {
+          stretch1 += Math.abs(skewFactor) * stretch; 
+        }
+      }
+      Coordinate ctl0 = Angle.project(v1, ang0, stretch0 * len);
+      Coordinate ctl1 = Angle.project(v1, ang1, stretch1 * len);
+
+      ctrl[i][0] = ctl0;
+      ctrl[i][1] = ctl1;
+     
+      //System.out.println(WKTWriter.toLineString(v1, ctl0));
+      //System.out.println(WKTWriter.toLineString(v1, ctl1));
     }
     if (! isRing) {
       setLineEndControlPoints(coords, ctrl);
