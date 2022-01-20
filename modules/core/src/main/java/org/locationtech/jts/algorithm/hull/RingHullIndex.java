@@ -18,6 +18,7 @@ import org.locationtech.jts.geom.Envelope;
 
 class RingHullIndex {
 
+  //TODO: use a proper spatial index
   List<RingConcaveHull> hulls = new ArrayList<RingConcaveHull>();
   
   public void add(RingConcaveHull ringHull) {

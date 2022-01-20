@@ -32,12 +32,8 @@ import org.locationtech.jts.triangulate.polygon.VertexSequencePackedRtree;
  */
 class RingConcaveHull {
   
-  public static LinearRing hull(LinearRing ring, boolean isOuter, int targetVertexCount) {
-    RingConcaveHull hull = new RingConcaveHull(ring, isOuter, targetVertexCount);
-    return hull.getHull();
-  }
-  
   private LinearRing inputRing;
+  private int targetVertexCount;
 
   /**
    * The polygon vertices are provided in CW orientation. 
@@ -53,14 +49,12 @@ class RingConcaveHull {
    */
   private VertexSequencePackedRtree vertexIndex;
 
-  private int targetVertexCount;
-
   private PriorityQueue<Corner> cornerQueue;
 
   /**
-   * Creates a new PolygonConcaveHull instance.
+   * Creates a new RingConcaveHull instance.
    * 
-   * @param polyShell the polygon vertices to process
+   * @param ring the ring vertices to process
    */
   public RingConcaveHull(LinearRing ring, boolean isOuter, int targetVertexCount) {
     this.inputRing = ring; 
@@ -75,10 +69,6 @@ class RingConcaveHull {
   
   public VertexSequencePackedRtree getVertexIndex() {
     return vertexIndex;
-  }
-  
-  public LinearRing getHull() {
-    return getHull(null);
   }
   
   public LinearRing getHull(RingHullIndex hullIndex) {
@@ -122,7 +112,6 @@ class RingConcaveHull {
         area(vertexRing, i));
     cornerQueue.add(corner);
   }
-  
   
   public static boolean isConvex(LinkedRing vertexRing, int index) {
     Coordinate pp = vertexRing.prevCoordinate(index);
@@ -168,14 +157,9 @@ class RingConcaveHull {
   }
 
   private boolean isRemovable(Corner corner, RingHullIndex hullIndex) {
+    // Assert: hull index always contains this hull (as well as possibly others)
     Envelope cornerEnv = corner.envelope(vertexRing);
-    //-- always check current ring (it may not be in index)
-    if (hasIntersectingVertex(corner, cornerEnv, this)) 
-      return false;
-    if (hullIndex == null)
-      return true;
     for (RingConcaveHull hull : hullIndex.query(cornerEnv)) {
-      if (hull == this) continue;
       if (hasIntersectingVertex(corner, cornerEnv, hull)) 
         return false;
     }
@@ -183,12 +167,12 @@ class RingConcaveHull {
   }
 
   /**
-   * Tests if any other current vertices intersect the corner triangle.
+   * Tests if any vertices in a hull intersect the corner triangle.
    * Uses the vertex spatial index for efficiency.
    * 
    * @param corner the corner vertices
-   * @param vertexRing 
-   * @param vertexIndex2 
+   * @param cornerEnv the envelope of the corner
+   * @param hull the hull to test
    * @return true if there is an intersecting vertex
    */
   private boolean hasIntersectingVertex(Corner corner, Envelope cornerEnv, 
@@ -196,9 +180,6 @@ class RingConcaveHull {
     int[] result = hull.query(cornerEnv);
     for (int i = 0; i < result.length; i++) {
       int index = result[i];
-      //-- skip if already removed
-      //if (! hull.hasCoordinate(index))
-      //  continue;
       //-- skip vertices of corner
       if (hull == this && corner.isVertex(index))
         continue;

@@ -19,16 +19,28 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.geom.Polygonal;
 
 /**
+ * Computes concave hulls which respect the boundaries of polygonal geometry.
+ * Both outer and inner concave hulls can be produced.
  * 
  * @author Martin Davis
  *
  */
 public class PolygonConcaveHull {
   
-  public static Geometry hull(Geometry poly, double vertexCountFraction) {
-    PolygonConcaveHull hull = new PolygonConcaveHull(poly, vertexCountFraction);
+  /**
+   * Computes a boundary-respecting concave hull of a polygonal geometry.
+   * An outer hull is computed if the parameter is positive, 
+   * an inner hull is computed if it is negative.
+   * 
+   * @param geom the polygonal geometry to process
+   * @param vertexCountFraction the parameter controlling the detail of the result
+   * @return a concave hull geometry
+   */
+  public static Geometry hull(Geometry geom, double vertexCountFraction) {
+    PolygonConcaveHull hull = new PolygonConcaveHull(geom, vertexCountFraction);
     return hull.getResult();
   }
 
@@ -36,6 +48,7 @@ public class PolygonConcaveHull {
   private boolean isOuter;
   private double vertexCountFraction;
   private GeometryFactory geomFactory;
+  
   /**
    * Creates a new PolygonConcaveHull instance.
    * 
@@ -47,8 +60,16 @@ public class PolygonConcaveHull {
     this.geomFactory = inputGeom.getFactory();
     this.isOuter = vertexCountFraction >= 0;
     this.vertexCountFraction = Math.abs(vertexCountFraction); 
+    if (! (inputGeom instanceof Polygonal)) {
+      throw new IllegalArgumentException("Input geometry must be polygonal");
+    }
   }
 
+  /**
+   * Gets the result polygonal concave hull geometry.
+   * 
+   * @return the polygonal geometry for the concave hull
+   */
   public Geometry getResult() {
     if (inputGeom instanceof MultiPolygon) {
       if (isOuter && inputGeom.getNumGeometries() > 1) {
