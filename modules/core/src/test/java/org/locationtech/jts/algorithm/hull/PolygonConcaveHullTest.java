@@ -49,11 +49,17 @@ public class PolygonConcaveHullTest extends GeometryTestCase {
         0.1, "POLYGON ((50 100, 100 50, 50 0, 0 50, 50 100), (36 35, 50 5, 60 60, 36 35))");
   }
 
+  public void testInnerWithHoles() {
+    checkHull("POLYGON ((70 300, 237 395, 145 296, 251 295, 320 40, 190 20, 60 60, 100 180, 70 300), (90 270, 100 220, 128 255, 180 270, 90 270), (110 160, 90 80, 180 90, 150 100, 110 160), (250 210, 160 200, 224 185, 250 160, 250 210))", 
+        -0.1, "POLYGON ((70 300, 100 180, 60 60, 320 40, 251 295, 145 296, 70 300), (90 270, 180 270, 100 220, 90 270), (110 160, 180 90, 90 80, 110 160), (250 210, 250 160, 160 200, 250 210))");
+  }
+
   private void checkHull(String wkt, double vertexCountFraction, String wktExpected) {
     Geometry geom = read(wkt);
     Geometry actual = PolygonConcaveHull.hull(geom, vertexCountFraction);
     //System.out.println(actual);
     Geometry expected = read(wktExpected);
+    assertTrue(actual.isValid());
     checkEqual(expected, actual);
   }
 }

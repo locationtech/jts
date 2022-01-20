@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Martin Davis.
+ * Copyright (c) 2022 Martin Davis.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -17,6 +17,7 @@ import java.util.List;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LinearRing;
+import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Polygon;
 
 /**
@@ -35,7 +36,6 @@ public class PolygonConcaveHull {
   private boolean isOuter;
   private double vertexCountFraction;
   private GeometryFactory geomFactory;
-
   /**
    * Creates a new PolygonConcaveHull instance.
    * 
@@ -50,40 +50,86 @@ public class PolygonConcaveHull {
   }
 
   public Geometry getResult() {
-    Polygon poly = (Polygon) inputGeom;
-    List<RingConcaveHull> polyHulls = initPolygon(poly);
-    Polygon hull = polygonHull(poly, polyHulls);
+    if (inputGeom instanceof MultiPolygon) {
+      if (isOuter && inputGeom.getNumGeometries() > 1) {
+        return computeMultiPolygonAll((MultiPolygon) inputGeom);
+      }
+      return computeMultiPolygonEach((MultiPolygon) inputGeom);
+    }
+    else if (inputGeom instanceof Polygon) {
+      return computePolygon((Polygon) inputGeom);
+    }
+    throw new IllegalArgumentException("Input must be polygonal");
+  }
+
+  private Geometry computeMultiPolygonAll(MultiPolygon multiPoly) {
+    RingHullIndex hullIndex = new RingHullIndex();
+    int nPoly = multiPoly.getNumGeometries();
+    @SuppressWarnings("unchecked")
+    List<RingConcaveHull>[] polyHulls = (List<RingConcaveHull>[]) new ArrayList[nPoly];
+
+    for (int i = 0 ; i < multiPoly.getNumGeometries(); i++) {
+      Polygon poly = (Polygon) multiPoly.getGeometryN(i);
+      List<RingConcaveHull> ringHulls = initPolygon(poly, hullIndex);
+      polyHulls[i] = ringHulls;
+    }
+    
+    List<Polygon> polys = new ArrayList<Polygon>();
+    for (int i = 0 ; i < multiPoly.getNumGeometries(); i++) {
+      Polygon poly = (Polygon) multiPoly.getGeometryN(i);
+      Polygon hull = polygonHull(poly, polyHulls[i], hullIndex);
+      polys.add(hull);
+    }
+    return geomFactory.createMultiPolygon(GeometryFactory.toPolygonArray(polys));
+  }
+
+  private Geometry computeMultiPolygonEach(MultiPolygon multiPoly) {
+    List<Polygon> polys = new ArrayList<Polygon>();
+    for (int i = 0 ; i < multiPoly.getNumGeometries(); i++) {
+      Polygon poly = (Polygon) multiPoly.getGeometryN(i);
+      Polygon hull = computePolygon(poly);
+      polys.add(hull);
+    }
+    return geomFactory.createMultiPolygon(GeometryFactory.toPolygonArray(polys));
+  }
+
+  private Polygon computePolygon(Polygon poly) {
+    RingHullIndex hullIndex = null;
+    if (! isOuter) hullIndex = new RingHullIndex();
+    List<RingConcaveHull> ringHulls = initPolygon(poly, hullIndex);
+    Polygon hull = polygonHull(poly, ringHulls, hullIndex);
     return hull;
   }
 
-  private List<RingConcaveHull> initPolygon(Polygon poly) {
+  private List<RingConcaveHull> initPolygon(Polygon poly, RingHullIndex hullIndex) {
     List<RingConcaveHull> rchList = new ArrayList<RingConcaveHull>();
     if (poly.isEmpty()) 
       return rchList;
     
-    rchList.add( createRingHull( poly.getExteriorRing(), isOuter));
+    rchList.add( createRingHull( poly.getExteriorRing(), isOuter, hullIndex));
     for (int i = 0; i < poly.getNumInteriorRing(); i++) {
       //Assert: interior ring is not empty
-      rchList.add( createRingHull( poly.getInteriorRingN(i), ! isOuter));
+      rchList.add( createRingHull( poly.getInteriorRingN(i), ! isOuter, hullIndex));
     }
     return rchList;
   }
   
-  private RingConcaveHull createRingHull(LinearRing ring, boolean isOuter) {
+  private RingConcaveHull createRingHull(LinearRing ring, boolean isOuter, RingHullIndex hullIndex) {
     int targetVertexCount = (int) Math.ceil(vertexCountFraction * (ring.getNumPoints() - 1));
     RingConcaveHull ringHull = new RingConcaveHull(ring, isOuter, targetVertexCount);
+    if (hullIndex != null) hullIndex.add(ringHull);
     return ringHull;
   }
 
-  private Polygon polygonHull(Polygon poly, List<RingConcaveHull> polyHulls) {
+  private Polygon polygonHull(Polygon poly, List<RingConcaveHull> ringHulls, RingHullIndex hullIndex) {
     if (poly.isEmpty()) 
       return geomFactory.createPolygon();
     
     int ringIndex = 0;
-    LinearRing shellHull = polyHulls.get(ringIndex++).getHull();
+    LinearRing shellHull = ringHulls.get(ringIndex++).getHull(hullIndex);
     List<LinearRing> holeHulls = new ArrayList<LinearRing>();
     for (int i = 0; i < poly.getNumInteriorRing(); i++) {
-      LinearRing hull = polyHulls.get(ringIndex++).getHull();
+      LinearRing hull = ringHulls.get(ringIndex++).getHull(hullIndex);
       //TODO: handle empty
       holeHulls.add(hull);
     }
