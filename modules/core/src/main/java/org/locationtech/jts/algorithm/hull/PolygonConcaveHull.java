@@ -72,10 +72,13 @@ public class PolygonConcaveHull {
    */
   public Geometry getResult() {
     if (inputGeom instanceof MultiPolygon) {
-      if (isOuter && inputGeom.getNumGeometries() > 1) {
+      boolean isOverlapPossible = isOuter && inputGeom.getNumGeometries() > 1;
+      if (isOverlapPossible) {
         return computeMultiPolygonAll((MultiPolygon) inputGeom);
       }
-      return computeMultiPolygonEach((MultiPolygon) inputGeom);
+      else {
+        return computeMultiPolygonEach((MultiPolygon) inputGeom);
+      }
     }
     else if (inputGeom instanceof Polygon) {
       return computePolygon((Polygon) inputGeom);
@@ -83,6 +86,13 @@ public class PolygonConcaveHull {
     throw new IllegalArgumentException("Input must be polygonal");
   }
 
+  /**
+   * Computes hulls for MultiPolygon elements for 
+   * the cases where hulls might overlap.
+   * 
+   * @param multiPoly the MultiPolygon to process
+   * @return the concave hull geometry
+   */
   private Geometry computeMultiPolygonAll(MultiPolygon multiPoly) {
     RingHullIndex hullIndex = new RingHullIndex();
     int nPoly = multiPoly.getNumGeometries();
@@ -116,7 +126,8 @@ public class PolygonConcaveHull {
 
   private Polygon computePolygon(Polygon poly) {
     RingHullIndex hullIndex = null;
-    if (! isOuter) hullIndex = new RingHullIndex();
+    boolean isOverlapPossible = ! isOuter && poly.getNumInteriorRing() > 0;
+    if (isOverlapPossible) hullIndex = new RingHullIndex();
     List<RingConcaveHull> ringHulls = initPolygon(poly, hullIndex);
     Polygon hull = polygonHull(poly, ringHulls, hullIndex);
     return hull;

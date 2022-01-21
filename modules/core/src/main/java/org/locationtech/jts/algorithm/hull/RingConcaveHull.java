@@ -157,9 +157,17 @@ class RingConcaveHull {
   }
 
   private boolean isRemovable(Corner corner, RingHullIndex hullIndex) {
-    // Assert: hull index always contains this hull (as well as possibly others)
     Envelope cornerEnv = corner.envelope(vertexRing);
+    if (hasIntersectingVertex(corner, cornerEnv, this))
+      return false;
+    //-- no other rings to check
+    if (hullIndex == null) 
+      return true;
+    //-- check other rings for intersections
     for (RingConcaveHull hull : hullIndex.query(cornerEnv)) {
+      //-- this hull was already checked above
+      if (hull == this)
+        continue;
       if (hasIntersectingVertex(corner, cornerEnv, hull)) 
         return false;
     }
