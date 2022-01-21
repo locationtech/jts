@@ -24,6 +24,9 @@ import org.locationtech.jts.geom.Polygonal;
 /**
  * Computes concave hulls which respect the boundaries of polygonal geometry.
  * Both outer and inner concave hulls can be produced.
+ * Polygons with holes and MultiPolygons are supported. 
+ * The algorithm ensures that the generated hulls will not 
+ * contain any self-intersections or overlaps and are thus valid.
  * 
  * @author Martin Davis
  *
@@ -72,6 +75,12 @@ public class PolygonConcaveHull {
    */
   public Geometry getResult() {
     if (inputGeom instanceof MultiPolygon) {
+      /**
+       * Only outer hulls where there is more than one polygon
+       * can potentially overlap.
+       * Shell hulls could overlap adjacent shells or holes containing them; 
+       * hole hulls could overlap contained shells.
+       */
       boolean isOverlapPossible = isOuter && inputGeom.getNumGeometries() > 1;
       if (isOverlapPossible) {
         return computeMultiPolygonAll((MultiPolygon) inputGeom);
@@ -126,24 +135,36 @@ public class PolygonConcaveHull {
 
   private Polygon computePolygon(Polygon poly) {
     RingHullIndex hullIndex = null;
+    /**
+     * For a single polygon overlaps are only possible for inner hulls
+     * and where holes are present.
+     */
     boolean isOverlapPossible = ! isOuter && poly.getNumInteriorRing() > 0;
     if (isOverlapPossible) hullIndex = new RingHullIndex();
-    List<RingConcaveHull> ringHulls = initPolygon(poly, hullIndex);
-    Polygon hull = polygonHull(poly, ringHulls, hullIndex);
+    List<RingConcaveHull> hulls = initPolygon(poly, hullIndex);
+    Polygon hull = polygonHull(poly, hulls, hullIndex);
     return hull;
   }
 
+  /**
+   * Create all ring hulls for the rings of a polygon, 
+   * so that all are in the hull index if required.
+   * 
+   * @param poly the polygon being processed
+   * @param hullIndex the hull index if present, or null
+   * @return the list of ring hulls
+   */
   private List<RingConcaveHull> initPolygon(Polygon poly, RingHullIndex hullIndex) {
-    List<RingConcaveHull> rchList = new ArrayList<RingConcaveHull>();
+    List<RingConcaveHull> hulls = new ArrayList<RingConcaveHull>();
     if (poly.isEmpty()) 
-      return rchList;
+      return hulls;
     
-    rchList.add( createRingHull( poly.getExteriorRing(), isOuter, hullIndex));
+    hulls.add( createRingHull( poly.getExteriorRing(), isOuter, hullIndex));
     for (int i = 0; i < poly.getNumInteriorRing(); i++) {
       //Assert: interior ring is not empty
-      rchList.add( createRingHull( poly.getInteriorRingN(i), ! isOuter, hullIndex));
+      hulls.add( createRingHull( poly.getInteriorRingN(i), ! isOuter, hullIndex));
     }
-    return rchList;
+    return hulls;
   }
   
   private RingConcaveHull createRingHull(LinearRing ring, boolean isOuter, RingHullIndex hullIndex) {
