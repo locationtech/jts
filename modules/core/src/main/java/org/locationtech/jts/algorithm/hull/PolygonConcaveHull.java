@@ -54,6 +54,8 @@ public class PolygonConcaveHull {
   
   /**
    * Creates a new PolygonConcaveHull instance.
+   * An outer hull is computed if the parameter is positive, 
+   * an inner hull is computed if it is negative.
    * 
    * @param inputGeom the polygonal geometry to process
    * @param vertexCountFraction the fraction of number of vertices to target
@@ -189,5 +191,4 @@ public class PolygonConcaveHull {
     LinearRing[] resultHoles = GeometryFactory.toLinearRingArray(holeHulls);
     return geomFactory.createPolygon(shellHull, resultHoles);
   }
-  
 }
