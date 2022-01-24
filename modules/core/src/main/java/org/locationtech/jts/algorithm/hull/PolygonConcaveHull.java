@@ -24,9 +24,19 @@ import org.locationtech.jts.geom.Polygonal;
 /**
  * Computes concave hulls which respect the boundaries of polygonal geometry.
  * Both outer and inner concave hulls can be produced.
+ * Outer hulls always contain the input geometry.
+ * Inner hulls are always within the input geometry.
  * Polygons with holes and MultiPolygons are supported. 
+ * <p>
+ * The shape of the computed concave hull is determined by a target parameter.
+ * The target criterion is the fraction of vertices contained in the hull. 
+ * A value of 1 produces the original geometry.
+ * A fraction of 0 produces the convex hull (for an outer hull) 
+ * or a triangle (for an inner hull). 
+ * <p>
  * The algorithm ensures that the generated hulls will not 
- * contain any self-intersections or overlaps and are thus valid.
+ * contain any self-intersections or overlaps, so the polygonal result is always valid.
+ * The result has the same structure as the input.
  * 
  * @author Martin Davis
  *
@@ -34,12 +44,14 @@ import org.locationtech.jts.geom.Polygonal;
 public class PolygonConcaveHull {
   
   /**
-   * Computes a boundary-respecting concave hull of a polygonal geometry.
+   * Computes a boundary-respecting concave hull of a polygonal geometry,
+   * with hull shape determined by a target parameter of fractional 
+   * vertex count.
    * An outer hull is computed if the parameter is positive, 
    * an inner hull is computed if it is negative.
    * 
    * @param geom the polygonal geometry to process
-   * @param vertexCountFraction the fraction of number of vertices to target
+   * @param vertexCountFraction the target fraction of number of vertices
    * @return a concave hull geometry
    */
   public static Geometry hull(Geometry geom, double vertexCountFraction) {
