@@ -73,7 +73,7 @@ public class CubicBezierCurve {
   private final GeometryFactory geomFactory;
   
   private Coordinate[] bezierCurvePts;
-  private CubicBezierInterpolationParam[] interpolationParam;
+  private double[][] interpolationParam;
 
   /**
    * Creates a new instance.
@@ -105,7 +105,7 @@ public class CubicBezierCurve {
    */
   public Geometry getResult() {
     bezierCurvePts = new Coordinate[numVerticesPerSegment];
-    interpolationParam = CubicBezierInterpolationParam.compute(numVerticesPerSegment);
+    interpolationParam = computeIterpolationParameters(numVerticesPerSegment);
 
     return GeometryMapper.flatMap(inputGeom, 1, new GeometryMapper.MapOp() {
       
@@ -178,7 +178,7 @@ public class CubicBezierCurve {
     }
   }
   
-  //-- makes curve at right-angle corners roughly circular
+  //-- chosen to make curve at right-angle corners roughly circular
   private static final double CIRCLE_LEN_FACTOR = 3.0 / 8.0;
   
   /**
@@ -320,60 +320,53 @@ public class CubicBezierCurve {
   /**
    * Calculates vertices along a cubic Bezier curve.
    * 
-   * @param start start point
-   * @param end   end point
+   * @param p0 start point
+   * @param p1   end point
    * @param ctrl1 first control point
    * @param ctrl2 second control point
-   * @param ip interpolation parameters
+   * @param param interpolation parameters
    * @param curve array to hold generated points
    */
-  private void cubicBezier(final Coordinate start, 
-      final Coordinate end, final Coordinate ctrl1, 
-      final Coordinate ctrl2, CubicBezierInterpolationParam[] ip, Coordinate[] curve) {
+  private void cubicBezier(final Coordinate p0, 
+      final Coordinate p1, final Coordinate ctrl1, 
+      final Coordinate ctrl2, double[][] param, 
+      Coordinate[] curve) {
 
     int n = curve.length;
-    curve[0] = new Coordinate(start);
-    curve[n - 1] = new Coordinate(end);
+    curve[0] = new Coordinate(p0);
+    curve[n - 1] = new Coordinate(p1);
 
     for (int i = 1; i < n - 1; i++) {
       Coordinate c = new Coordinate();
-
-      c.x = ip[i].t[0] * start.x + ip[i].t[1] * ctrl1.x + ip[i].t[2] * ctrl2.x + ip[i].t[3] * end.x;
-      c.x /= ip[i].tsum;
-      c.y = ip[i].t[0] * start.y + ip[i].t[1] * ctrl1.y + ip[i].t[2] * ctrl2.y + ip[i].t[3] * end.y;
-      c.y /= ip[i].tsum;
+      double sum = param[i][0] + param[i][1] +param[i][2] +param[i][3];
+      c.x = param[i][0] * p0.x + param[i][1] * ctrl1.x + param[i][2] * ctrl2.x + param[i][3] * p1.x;
+      c.x /= sum;
+      c.y = param[i][0] * p0.y + param[i][1] * ctrl1.y + param[i][2] * ctrl2.y + param[i][3] * p1.y;
+      c.y /= sum;
 
       curve[i] = c;
     }
   }
 
-  private static final class CubicBezierInterpolationParam {
-    double[] t = new double[4];
-    double tsum;
-    
-    /**
-     * Gets the interpolation parameters for a Bezier curve approximated by the
-     * given number of vertices.
-     *
-     * @param n number of vertices
-     * @return array of {@code InterpPoint} objects holding the parameter values
-     */
-    private static CubicBezierInterpolationParam[] compute(int n) {
-      CubicBezierInterpolationParam[] param = new CubicBezierInterpolationParam[n];
+  /**
+   * Gets the interpolation parameters for a Bezier curve approximated by a
+   * given number of vertices.
+   *
+   * @param n number of vertices
+   * @return array of double[4] holding the parameter values
+   */
+  private static double[][] computeIterpolationParameters(int n) {
+    double[][] param = new double[n][4];
+    for (int i = 0; i < n; i++) {
+      double t = (double) i / (n - 1);
+      double tc = 1.0 - t;
 
-      for (int i = 0; i < n; i++) {
-        double t = (double) i / (n - 1);
-        double tc = 1.0 - t;
-
-        param[i] = new CubicBezierInterpolationParam();
-        param[i].t[0] = tc * tc * tc;
-        param[i].t[1] = 3.0 * tc * tc * t;
-        param[i].t[2] = 3.0 * tc * t * t;
-        param[i].t[3] = t * t * t;
-        param[i].tsum = param[i].t[0] + param[i].t[1] + param[i].t[2] + param[i].t[3];
-      }
-      return param;
+      param[i][0] = tc * tc * tc;
+      param[i][1] = 3.0 * tc * tc * t;
+      param[i][2] = 3.0 * tc * t * t;
+      param[i][3] = t * t * t;
     }
+    return param;
   }
   
 }
