@@ -13,7 +13,7 @@ package org.locationtech.jts.triangulate.polygon;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
-import org.locationtech.jts.triangulate.polygon.VertexSequencePackedRtree;
+import org.locationtech.jts.index.VertexSequencePackedRtree;
 
 import junit.framework.TestCase;
 import junit.textui.TestRunner;

@@ -23,7 +23,7 @@ import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.Triangle;
-import org.locationtech.jts.triangulate.polygon.VertexSequencePackedRtree;
+import org.locationtech.jts.index.VertexSequencePackedRtree;
 
 /**
  * 

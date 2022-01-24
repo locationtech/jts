@@ -22,6 +22,7 @@ import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.Triangle;
+import org.locationtech.jts.index.VertexSequencePackedRtree;
 import org.locationtech.jts.io.WKTWriter;
 import org.locationtech.jts.triangulate.tri.Tri;
 
