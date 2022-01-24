@@ -78,8 +78,6 @@ class RingConcaveHull {
   }
   
   private void init(Coordinate[] ring, boolean isOuter) {
-    //-- must clone ring array since VertexSequencePackedRtree removes from it
-    ring = ring.clone();
     /**
      * Ensure ring is oriented according to outer/inner:
      * - outer, CW
@@ -87,6 +85,7 @@ class RingConcaveHull {
      */
     boolean orientCW = isOuter;
     if (orientCW == Orientation.isCCW(ring)) {
+      ring = ring.clone();
       CoordinateArrays.reverse(ring);
     }
     
