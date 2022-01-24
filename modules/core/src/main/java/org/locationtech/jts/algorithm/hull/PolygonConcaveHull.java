@@ -39,7 +39,7 @@ public class PolygonConcaveHull {
    * an inner hull is computed if it is negative.
    * 
    * @param geom the polygonal geometry to process
-   * @param vertexCountFraction the parameter controlling the detail of the result
+   * @param vertexCountFraction the fraction of number of vertices to target
    * @return a concave hull geometry
    */
   public static Geometry hull(Geometry geom, double vertexCountFraction) {
