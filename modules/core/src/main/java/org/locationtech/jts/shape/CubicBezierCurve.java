@@ -125,27 +125,15 @@ public class CubicBezierCurve {
   
   private LineString bezierLine(LineString ls) {
     Coordinate[] coords = ls.getCoordinates();
-    Coordinate[][] control = controlPoints(coords, false, alpha);
-    final int N = coords.length;
-    CoordinateList curvePts = new CoordinateList();
-    for (int i = 0; i < N - 1; i++) {
-      addCurve(coords[i], coords[i + 1], control[i][1], control[i + 1][0], curvePts);
-    }
-    curvePts.add(coords[N - 1], false);
+    CoordinateList curvePts = bezierCurve(coords, false);
+    curvePts.add(coords[coords.length - 1].copy(), false);
     return geomFactory.createLineString(curvePts.toCoordinateArray());
   }
 
   private LinearRing bezierRing(LinearRing ring) {
     Coordinate[] coords = ring.getCoordinates();
-    Coordinate[][] control = controlPoints(coords, true, alpha);
-    CoordinateList curvePts = new CoordinateList();
-    final int N = coords.length - 1; 
-    for (int i = 0; i < N; i++) {
-      int next = (i + 1) % N;
-      addCurve(coords[i], coords[next], control[i][1], control[next][0], curvePts);
-    }
+    CoordinateList curvePts = bezierCurve(coords, true);
     curvePts.closeRing();
-
     return geomFactory.createLinearRing(curvePts.toCoordinateArray());
   }
   
@@ -159,6 +147,16 @@ public class CubicBezierCurve {
       }
     }
     return geomFactory.createPolygon(shell, holes);
+  }
+  
+  private CoordinateList bezierCurve(Coordinate[] coords, boolean isRing) {
+    Coordinate[] control = controlPoints(coords, false, alpha, skewFactor);
+    CoordinateList curvePts = new CoordinateList();
+    for (int i = 0; i < coords.length - 1; i++) {
+      int ctrlIndex = 2 * i;
+      addCurve(coords[i], coords[i + 1], control[ctrlIndex], control[ctrlIndex + 1], curvePts);
+    }
+    return curvePts;
   }
   
   private void addCurve(Coordinate p0, Coordinate p1,
@@ -191,33 +189,32 @@ public class CubicBezierCurve {
    * The alpha parameter controls the length of the control vectors.
    * Alpha = 0 makes the vectors zero-length, and hence flattens the curves.
    * Alpha = 1 makes the curve at right angles roughly circular.
-   * Alpha > 1 starts to distort the curve and may introduce self-intersections
+   * Alpha > 1 starts to distort the curve and may introduce self-intersections.
+   * <p>
+   * The control point array contains a pair of coordinates for each input segment.
    * 
    * @param coords
    * @param isRing
    * @param alpha determines the curviness
-   * @return
+   * @return the control point array
    */
-  private Coordinate[][] controlPoints(Coordinate[] coords, boolean isRing, double alpha) {
-    final int N = isRing ? coords.length - 1 : coords.length;
-    Coordinate[][] ctrl = new Coordinate[N][2];
-
-    Coordinate v0 = coords[0];
-    Coordinate v1 = coords[1];
-    Coordinate v2 = coords[2];
+  private Coordinate[] controlPoints(Coordinate[] coords, boolean isRing, double alpha, double skew) {
+    int N = coords.length;
+    int start = 1; 
+    int end = N - 1;
     if (isRing) {
-      v0 = coords[N - 1];
-      v1 = coords[0];
-      v1 = coords[1];
+      N = coords.length - 1;
+      start = 0;
+      end = N;
     }
     
-    final int start = isRing ? 0 : 1; 
-    final int end = isRing ? N : N - 1; 
+    int nControl = 2 * coords.length - 2;
+    Coordinate[] ctrl = new Coordinate[nControl];
     for (int i = start; i < end; i++) {
       int iprev = i == 0 ? N - 1 : i - 1;
-      v0 = coords[iprev];
-      v1 = coords[i];
-      v2 = coords[i + 1];
+      Coordinate v0 = coords[iprev];
+      Coordinate v1 = coords[i];
+      Coordinate v2 = coords[i + 1];
 
       double interiorAng = Angle.angleBetweenOriented(v0, v1, v2);
       double orient = Math.signum(interiorAng);
@@ -237,22 +234,25 @@ public class CubicBezierCurve {
       double len = alpha * CIRCLE_LEN_FACTOR * sharpnessFactor * lenBase;
       double stretch0 = 1;
       double stretch1 = 1;
-      if (skewFactor != 0) {
+      if (skew != 0) {
         double stretch = Math.abs(dist0 - dist1) / Math.max(dist0, dist1);
         int skewIndex = dist0 > dist1 ? 0 : 1;
-        if (skewFactor < 0) skewIndex = 1 - skewIndex;
+        if (skew < 0) skewIndex = 1 - skewIndex;
         if (skewIndex == 0) {
-          stretch0 += Math.abs(skewFactor) * stretch; 
+          stretch0 += Math.abs(skew) * stretch; 
         }
         else {
-          stretch1 += Math.abs(skewFactor) * stretch; 
+          stretch1 += Math.abs(skew) * stretch; 
         }
       }
       Coordinate ctl0 = Angle.project(v1, ang0, stretch0 * len);
       Coordinate ctl1 = Angle.project(v1, ang1, stretch1 * len);
 
-      ctrl[i][0] = ctl0;
-      ctrl[i][1] = ctl1;
+      int index = 2 * i - 1;
+      // for a ring case the first control point is for last segment
+      int i0 = index < 0 ? nControl - 1 : index;
+      ctrl[i0] = ctl0;
+      ctrl[index + 1] = ctl1;
      
       //System.out.println(WKTWriter.toLineString(v1, ctl0));
       //System.out.println(WKTWriter.toLineString(v1, ctl1));
@@ -271,10 +271,11 @@ public class CubicBezierCurve {
    * @param coords
    * @param ctrl
    */
-  private void setLineEndControlPoints(Coordinate[] coords, Coordinate[][] ctrl) {
-    int N = coords.length;
-    ctrl[0][1] = mirrorControlPoint(ctrl[1][0], coords[1], coords[0]);
-    ctrl[N - 1][0] = mirrorControlPoint(ctrl[N - 2][1], coords[N - 1], coords[N - 2]);
+  private void setLineEndControlPoints(Coordinate[] coords, Coordinate[] ctrl) {
+    int N = ctrl.length;
+    ctrl[0] = mirrorControlPoint(ctrl[1], coords[1], coords[0]);
+    ctrl[N - 1] = mirrorControlPoint(ctrl[N - 2], 
+        coords[coords.length - 1], coords[coords.length - 2]);
   }
 
   /**
