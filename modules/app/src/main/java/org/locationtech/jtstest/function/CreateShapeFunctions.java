@@ -336,14 +336,14 @@ public class CreateShapeFunctions {
   }
   
   @Metadata(description="Construct a geometry using cubic Bezier curves")
-  public static Geometry bezier(Geometry geom, 
+  public static Geometry bezierCurve(Geometry geom, 
       @Metadata(title="Alpha (curveness)")
       double alpha) {
     return CubicBezierCurve.bezierCurve(geom, alpha);
   }
   
   @Metadata(description="Construct a geometry using cubic Bezier curves with a skew")
-  public static Geometry bezierSkew(Geometry geom, 
+  public static Geometry bezierCurveSkew(Geometry geom, 
       @Metadata(title="Alpha (curveness)")
       double alpha,
     @Metadata(title="Skew factor")

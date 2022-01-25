@@ -37,10 +37,11 @@ public class CubicBezierCurve {
 
   /**
    * Creates a geometry using linearized Cubic Bezier Curves
-   * defined by the segments of the input.
+   * defined by the segments of the input and a parameter
+   * controlling how curved the result should be.
    * 
    * @param geom the geometry defining the curve
-   * @param alpha curviness parameter (0 is linear, 1 is round, >1 is increasingly curved)
+   * @param alpha curvedness parameter (0 is linear, 1 is round, >1 is increasingly curved)
    * @return the curved geometry
    */
   public static Geometry bezierCurve(Geometry geom, double alpha) {
@@ -50,11 +51,12 @@ public class CubicBezierCurve {
   
   /**
    * Creates a geometry using linearized Cubic Bezier Curves
-   * defined by the segments of the input, with a skew factor
-   * affecting the shape at each vertex.
+   * defined by the segments of the input and a parameter
+   * controlling how curved the result should be, with a skew factor
+   * affecting the curve shape at each vertex.
    * 
    * @param geom the geometry defining the curve
-   * @param alpha curviness parameter (0 is linear, 1 is round, >1 is increasingly curved)
+   * @param alpha curvedness parameter (0 is linear, 1 is round, >1 is increasingly curved)
    * @param skew the skew parameter (0 is none, positive skews towards longer side, negative towards shorter
    * @return  the curved geometry
    */
@@ -73,7 +75,7 @@ public class CubicBezierCurve {
   private final GeometryFactory geomFactory;
   
   private Coordinate[] bezierCurvePts;
-  private CubicBezierInterpolationParam[] interpolationParam;
+  private double[][] interpolationParam;
 
   /**
    * Creates a new instance.
@@ -105,7 +107,7 @@ public class CubicBezierCurve {
    */
   public Geometry getResult() {
     bezierCurvePts = new Coordinate[numVerticesPerSegment];
-    interpolationParam = CubicBezierInterpolationParam.compute(numVerticesPerSegment);
+    interpolationParam = computeIterpolationParameters(numVerticesPerSegment);
 
     return GeometryMapper.flatMap(inputGeom, 1, new GeometryMapper.MapOp() {
       
@@ -125,27 +127,15 @@ public class CubicBezierCurve {
   
   private LineString bezierLine(LineString ls) {
     Coordinate[] coords = ls.getCoordinates();
-    Coordinate[][] control = controlPoints(coords, false, alpha);
-    final int N = coords.length;
-    CoordinateList curvePts = new CoordinateList();
-    for (int i = 0; i < N - 1; i++) {
-      addCurve(coords[i], coords[i + 1], control[i][1], control[i + 1][0], curvePts);
-    }
-    curvePts.add(coords[N - 1], false);
+    CoordinateList curvePts = bezierCurve(coords, false);
+    curvePts.add(coords[coords.length - 1].copy(), false);
     return geomFactory.createLineString(curvePts.toCoordinateArray());
   }
 
   private LinearRing bezierRing(LinearRing ring) {
     Coordinate[] coords = ring.getCoordinates();
-    Coordinate[][] control = controlPoints(coords, true, alpha);
-    CoordinateList curvePts = new CoordinateList();
-    final int N = coords.length - 1; 
-    for (int i = 0; i < N; i++) {
-      int next = (i + 1) % N;
-      addCurve(coords[i], coords[next], control[i][1], control[next][0], curvePts);
-    }
+    CoordinateList curvePts = bezierCurve(coords, true);
     curvePts.closeRing();
-
     return geomFactory.createLinearRing(curvePts.toCoordinateArray());
   }
   
@@ -159,6 +149,16 @@ public class CubicBezierCurve {
       }
     }
     return geomFactory.createPolygon(shell, holes);
+  }
+  
+  private CoordinateList bezierCurve(Coordinate[] coords, boolean isRing) {
+    Coordinate[] control = controlPoints(coords, false, alpha, skewFactor);
+    CoordinateList curvePts = new CoordinateList();
+    for (int i = 0; i < coords.length - 1; i++) {
+      int ctrlIndex = 2 * i;
+      addCurve(coords[i], coords[i + 1], control[ctrlIndex], control[ctrlIndex + 1], curvePts);
+    }
+    return curvePts;
   }
   
   private void addCurve(Coordinate p0, Coordinate p1,
@@ -178,7 +178,7 @@ public class CubicBezierCurve {
     }
   }
   
-  //-- makes curve at right-angle corners roughly circular
+  //-- chosen to make curve at right-angle corners roughly circular
   private static final double CIRCLE_LEN_FACTOR = 3.0 / 8.0;
   
   /**
@@ -191,33 +191,32 @@ public class CubicBezierCurve {
    * The alpha parameter controls the length of the control vectors.
    * Alpha = 0 makes the vectors zero-length, and hence flattens the curves.
    * Alpha = 1 makes the curve at right angles roughly circular.
-   * Alpha > 1 starts to distort the curve and may introduce self-intersections
+   * Alpha > 1 starts to distort the curve and may introduce self-intersections.
+   * <p>
+   * The control point array contains a pair of coordinates for each input segment.
    * 
    * @param coords
    * @param isRing
    * @param alpha determines the curviness
-   * @return
+   * @return the control point array
    */
-  private Coordinate[][] controlPoints(Coordinate[] coords, boolean isRing, double alpha) {
-    final int N = isRing ? coords.length - 1 : coords.length;
-    Coordinate[][] ctrl = new Coordinate[N][2];
-
-    Coordinate v0 = coords[0];
-    Coordinate v1 = coords[1];
-    Coordinate v2 = coords[2];
+  private Coordinate[] controlPoints(Coordinate[] coords, boolean isRing, double alpha, double skew) {
+    int N = coords.length;
+    int start = 1; 
+    int end = N - 1;
     if (isRing) {
-      v0 = coords[N - 1];
-      v1 = coords[0];
-      v1 = coords[1];
+      N = coords.length - 1;
+      start = 0;
+      end = N;
     }
     
-    final int start = isRing ? 0 : 1; 
-    final int end = isRing ? N : N - 1; 
+    int nControl = 2 * coords.length - 2;
+    Coordinate[] ctrl = new Coordinate[nControl];
     for (int i = start; i < end; i++) {
       int iprev = i == 0 ? N - 1 : i - 1;
-      v0 = coords[iprev];
-      v1 = coords[i];
-      v2 = coords[i + 1];
+      Coordinate v0 = coords[iprev];
+      Coordinate v1 = coords[i];
+      Coordinate v2 = coords[i + 1];
 
       double interiorAng = Angle.angleBetweenOriented(v0, v1, v2);
       double orient = Math.signum(interiorAng);
@@ -237,22 +236,25 @@ public class CubicBezierCurve {
       double len = alpha * CIRCLE_LEN_FACTOR * sharpnessFactor * lenBase;
       double stretch0 = 1;
       double stretch1 = 1;
-      if (skewFactor != 0) {
+      if (skew != 0) {
         double stretch = Math.abs(dist0 - dist1) / Math.max(dist0, dist1);
         int skewIndex = dist0 > dist1 ? 0 : 1;
-        if (skewFactor < 0) skewIndex = 1 - skewIndex;
+        if (skew < 0) skewIndex = 1 - skewIndex;
         if (skewIndex == 0) {
-          stretch0 += Math.abs(skewFactor) * stretch; 
+          stretch0 += Math.abs(skew) * stretch; 
         }
         else {
-          stretch1 += Math.abs(skewFactor) * stretch; 
+          stretch1 += Math.abs(skew) * stretch; 
         }
       }
       Coordinate ctl0 = Angle.project(v1, ang0, stretch0 * len);
       Coordinate ctl1 = Angle.project(v1, ang1, stretch1 * len);
 
-      ctrl[i][0] = ctl0;
-      ctrl[i][1] = ctl1;
+      int index = 2 * i - 1;
+      // for a ring case the first control point is for last segment
+      int i0 = index < 0 ? nControl - 1 : index;
+      ctrl[i0] = ctl0;
+      ctrl[index + 1] = ctl1;
      
       //System.out.println(WKTWriter.toLineString(v1, ctl0));
       //System.out.println(WKTWriter.toLineString(v1, ctl1));
@@ -271,10 +273,11 @@ public class CubicBezierCurve {
    * @param coords
    * @param ctrl
    */
-  private void setLineEndControlPoints(Coordinate[] coords, Coordinate[][] ctrl) {
-    int N = coords.length;
-    ctrl[0][1] = mirrorControlPoint(ctrl[1][0], coords[1], coords[0]);
-    ctrl[N - 1][0] = mirrorControlPoint(ctrl[N - 2][1], coords[N - 1], coords[N - 2]);
+  private void setLineEndControlPoints(Coordinate[] coords, Coordinate[] ctrl) {
+    int N = ctrl.length;
+    ctrl[0] = mirrorControlPoint(ctrl[1], coords[1], coords[0]);
+    ctrl[N - 1] = mirrorControlPoint(ctrl[N - 2], 
+        coords[coords.length - 1], coords[coords.length - 2]);
   }
 
   /**
@@ -320,60 +323,53 @@ public class CubicBezierCurve {
   /**
    * Calculates vertices along a cubic Bezier curve.
    * 
-   * @param start start point
-   * @param end   end point
+   * @param p0 start point
+   * @param p1   end point
    * @param ctrl1 first control point
    * @param ctrl2 second control point
-   * @param ip interpolation parameters
+   * @param param interpolation parameters
    * @param curve array to hold generated points
    */
-  private void cubicBezier(final Coordinate start, 
-      final Coordinate end, final Coordinate ctrl1, 
-      final Coordinate ctrl2, CubicBezierInterpolationParam[] ip, Coordinate[] curve) {
+  private void cubicBezier(final Coordinate p0, 
+      final Coordinate p1, final Coordinate ctrl1, 
+      final Coordinate ctrl2, double[][] param, 
+      Coordinate[] curve) {
 
     int n = curve.length;
-    curve[0] = new Coordinate(start);
-    curve[n - 1] = new Coordinate(end);
+    curve[0] = new Coordinate(p0);
+    curve[n - 1] = new Coordinate(p1);
 
     for (int i = 1; i < n - 1; i++) {
       Coordinate c = new Coordinate();
-
-      c.x = ip[i].t[0] * start.x + ip[i].t[1] * ctrl1.x + ip[i].t[2] * ctrl2.x + ip[i].t[3] * end.x;
-      c.x /= ip[i].tsum;
-      c.y = ip[i].t[0] * start.y + ip[i].t[1] * ctrl1.y + ip[i].t[2] * ctrl2.y + ip[i].t[3] * end.y;
-      c.y /= ip[i].tsum;
+      double sum = param[i][0] + param[i][1] +param[i][2] +param[i][3];
+      c.x = param[i][0] * p0.x + param[i][1] * ctrl1.x + param[i][2] * ctrl2.x + param[i][3] * p1.x;
+      c.x /= sum;
+      c.y = param[i][0] * p0.y + param[i][1] * ctrl1.y + param[i][2] * ctrl2.y + param[i][3] * p1.y;
+      c.y /= sum;
 
       curve[i] = c;
     }
   }
 
-  private static final class CubicBezierInterpolationParam {
-    double[] t = new double[4];
-    double tsum;
-    
-    /**
-     * Gets the interpolation parameters for a Bezier curve approximated by the
-     * given number of vertices.
-     *
-     * @param n number of vertices
-     * @return array of {@code InterpPoint} objects holding the parameter values
-     */
-    private static CubicBezierInterpolationParam[] compute(int n) {
-      CubicBezierInterpolationParam[] param = new CubicBezierInterpolationParam[n];
+  /**
+   * Gets the interpolation parameters for a Bezier curve approximated by a
+   * given number of vertices.
+   *
+   * @param n number of vertices
+   * @return array of double[4] holding the parameter values
+   */
+  private static double[][] computeIterpolationParameters(int n) {
+    double[][] param = new double[n][4];
+    for (int i = 0; i < n; i++) {
+      double t = (double) i / (n - 1);
+      double tc = 1.0 - t;
 
-      for (int i = 0; i < n; i++) {
-        double t = (double) i / (n - 1);
-        double tc = 1.0 - t;
-
-        param[i] = new CubicBezierInterpolationParam();
-        param[i].t[0] = tc * tc * tc;
-        param[i].t[1] = 3.0 * tc * tc * t;
-        param[i].t[2] = 3.0 * tc * t * t;
-        param[i].t[3] = t * t * t;
-        param[i].tsum = param[i].t[0] + param[i].t[1] + param[i].t[2] + param[i].t[3];
-      }
-      return param;
+      param[i][0] = tc * tc * tc;
+      param[i][1] = 3.0 * tc * tc * t;
+      param[i][2] = 3.0 * tc * t * t;
+      param[i][3] = t * t * t;
     }
+    return param;
   }
   
 }
