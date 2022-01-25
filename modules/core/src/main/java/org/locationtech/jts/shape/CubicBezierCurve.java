@@ -37,10 +37,11 @@ public class CubicBezierCurve {
 
   /**
    * Creates a geometry using linearized Cubic Bezier Curves
-   * defined by the segments of the input.
+   * defined by the segments of the input and a parameter
+   * controlling how curved the result should be.
    * 
    * @param geom the geometry defining the curve
-   * @param alpha curviness parameter (0 is linear, 1 is round, >1 is increasingly curved)
+   * @param alpha curvedness parameter (0 is linear, 1 is round, >1 is increasingly curved)
    * @return the curved geometry
    */
   public static Geometry bezierCurve(Geometry geom, double alpha) {
@@ -50,11 +51,12 @@ public class CubicBezierCurve {
   
   /**
    * Creates a geometry using linearized Cubic Bezier Curves
-   * defined by the segments of the input, with a skew factor
-   * affecting the shape at each vertex.
+   * defined by the segments of the input and a parameter
+   * controlling how curved the result should be, with a skew factor
+   * affecting the curve shape at each vertex.
    * 
    * @param geom the geometry defining the curve
-   * @param alpha curviness parameter (0 is linear, 1 is round, >1 is increasingly curved)
+   * @param alpha curvedness parameter (0 is linear, 1 is round, >1 is increasingly curved)
    * @param skew the skew parameter (0 is none, positive skews towards longer side, negative towards shorter
    * @return  the curved geometry
    */
