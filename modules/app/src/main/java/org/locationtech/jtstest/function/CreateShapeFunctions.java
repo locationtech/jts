@@ -350,4 +350,9 @@ public class CreateShapeFunctions {
     double skew) {
     return CubicBezierCurve.bezierCurve(geom, alpha, skew);
   }
+  
+  @Metadata(description="Construct a geometry using cubic Bezier curves with control points")
+  public static Geometry bezierCurveControl(Geometry geom, Geometry controlPoints) {
+    return CubicBezierCurve.bezierCurve(geom, controlPoints);
+  }
 }

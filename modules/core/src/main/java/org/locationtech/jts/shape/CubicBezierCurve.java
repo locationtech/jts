@@ -26,9 +26,12 @@ import org.locationtech.jts.io.WKTWriter;
  * Creates a curved geometry by replacing the segments
  * of the input with Cubic Bezier Curves.
  * The Bezier control points are determined from the segments of the geometry
- * and the alpha control parameter.
+ * and the alpha control parameter controlling curvedness, and
+ * the optional skew parameter controlling the shape of the curve at vertices.
  * The Bezier Curves are created to be C2-continuous (smooth) 
  * at each input vertex.
+ * <p>
+ * Alternatively, the Bezier control points can be supplied explicitly.
  * <p>
  * The result is not guaranteed to be valid, since large alpha values
  * may cause self-intersections.
@@ -36,13 +39,13 @@ import org.locationtech.jts.io.WKTWriter;
 public class CubicBezierCurve {
 
   /**
-   * Creates a geometry using linearized Cubic Bezier Curves
+   * Creates a geometry of linearized Cubic Bezier Curves
    * defined by the segments of the input and a parameter
    * controlling how curved the result should be.
    * 
    * @param geom the geometry defining the curve
    * @param alpha curvedness parameter (0 is linear, 1 is round, >1 is increasingly curved)
-   * @return the curved geometry
+   * @return the linearized curved geometry
    */
   public static Geometry bezierCurve(Geometry geom, double alpha) {
     CubicBezierCurve curve = new CubicBezierCurve(geom, alpha);
@@ -50,7 +53,7 @@ public class CubicBezierCurve {
   }
   
   /**
-   * Creates a geometry using linearized Cubic Bezier Curves
+   * Creates a geometry of linearized Cubic Bezier Curves
    * defined by the segments of the input and a parameter
    * controlling how curved the result should be, with a skew factor
    * affecting the curve shape at each vertex.
@@ -58,11 +61,30 @@ public class CubicBezierCurve {
    * @param geom the geometry defining the curve
    * @param alpha curvedness parameter (0 is linear, 1 is round, >1 is increasingly curved)
    * @param skew the skew parameter (0 is none, positive skews towards longer side, negative towards shorter
-   * @return  the curved geometry
+   * @return the linearized curved geometry
    */
   public static Geometry bezierCurve(Geometry geom, double alpha, double skew) {
-    CubicBezierCurve curve = new CubicBezierCurve(geom, alpha);
-    curve.setSkew(skew);
+    CubicBezierCurve curve = new CubicBezierCurve(geom, alpha, skew);
+    return curve.getResult();
+  }
+  
+  /**
+   * Creates a geometry of linearized Cubic Bezier Curves
+   * defined by the segments of the input
+   * and a list (or lists) of control points.
+   * <p>
+   * Typically the control point geometry 
+   * is a {@link LineString} or {@link MultiLineString}
+   * containing an element for each line or ring in the input geometry.
+   * The list of control points for each linear element must contain two 
+   * vertices for each segment (and thus <code>2 * npts - 2</code>).
+   * 
+   * @param geom the geometry defining the curve
+   * @param controlPoints a geometry containing the control point elements.
+   * @return the linearized curved geometry
+   */
+  public static Geometry bezierCurve(Geometry geom, Geometry controlPoints) {
+    CubicBezierCurve curve = new CubicBezierCurve(geom, controlPoints);
     return curve.getResult();
   }
   
@@ -70,40 +92,68 @@ public class CubicBezierCurve {
   private int numVerticesPerSegment = 16;
 
   private Geometry inputGeom;
-  private double alpha;
-  private double skewFactor = 0;;
+  private double alpha =-1;
+  private double skew = 0;
+  private Geometry controlPoints = null;
   private final GeometryFactory geomFactory;
   
   private Coordinate[] bezierCurvePts;
   private double[][] interpolationParam;
+  private int controlPointIndex = 0;
 
   /**
-   * Creates a new instance.
+   * Creates a new instance producing a Bezier curve defined by a geometry
+   * and an alpha curvedness value.
    *
    * @param geom geometry defining curve
-   * @param alpha curviness parameter (0 = linear, 1 = round, 2 = distorted)
+   * @param alpha curvedness parameter (0 = linear, 1 = round, 2 = distorted)
    */
   CubicBezierCurve(Geometry geom, double alpha) {
     this.inputGeom = geom;
-    //if ( alpha < 0.0 ) alpha = 0;
-    this.alpha = alpha;
     this.geomFactory = geom.getFactory();
+    if ( alpha < 0.0 ) alpha = 0;
+    this.alpha = alpha;
   }
 
   /**
-   * Sets a skew factor influencing the shape of the curve corners.
-   * 0 is no skew, positive skews towards longer edges, negative skews towards shorter.
+   * Creates a new instance producing a Bezier curve defined by a geometry,
+   * an alpha curvedness value, and a skew factor.
    * 
-   * @param skewFactor the skew factor
+   * @param geom geometry defining curve
+   * @param alpha curvedness parameter (0 is linear, 1 is round, >1 is increasingly curved)
+   * @param skew the skew parameter (0 is none, positive skews towards longer side, negative towards shorter
    */
-  public void setSkew(double skewFactor) {
-    this.skewFactor  = skewFactor;
+  CubicBezierCurve(Geometry geom, double alpha, double skew) {
+    this.inputGeom = geom;
+    this.geomFactory = geom.getFactory();
+    if ( alpha < 0.0 ) alpha = 0;
+    this.alpha = alpha;
+    this.skew  = skew;
   }
   
   /**
-   * Gets the computed Bezier curve geometry.
+   * Creates a new instance producing a Bezier curve defined by a geometry,
+   * and a list (or lists) of control points.
+   * <p>
+   * Typically the control point geometry 
+   * is a {@link LineString} or {@link MultiLineString}
+   * containing an element for each line or ring in the input geometry.
+   * The list of control points for each linear element must contain two 
+   * vertices for each segment (and thus <code>2 * npts - 2</code>).
    * 
-   * @return the curved geometry
+   * @param geom geometry defining curve
+   * @param controlPoints the geometry containing the control points
+   */
+  CubicBezierCurve(Geometry geom, Geometry controlPoints) {
+    this.inputGeom = geom;
+    this.geomFactory = geom.getFactory();
+    this.controlPoints = controlPoints;
+  }
+  
+  /**
+   * Gets the computed linearized Bezier curve geometry.
+   * 
+   * @return a linearized curved geometry
    */
   public Geometry getResult() {
     bezierCurvePts = new Coordinate[numVerticesPerSegment];
@@ -152,7 +202,7 @@ public class CubicBezierCurve {
   }
   
   private CoordinateList bezierCurve(Coordinate[] coords, boolean isRing) {
-    Coordinate[] control = controlPoints(coords, false, alpha, skewFactor);
+    Coordinate[] control = controlPoints(coords, isRing);
     CoordinateList curvePts = new CoordinateList();
     for (int i = 0; i < coords.length - 1; i++) {
       int ctrlIndex = 2 * i;
@@ -161,6 +211,27 @@ public class CubicBezierCurve {
     return curvePts;
   }
   
+  private Coordinate[] controlPoints(Coordinate[] coords, boolean isRing) {
+    if (controlPoints != null) {
+      if (controlPointIndex >= controlPoints.getNumGeometries()) {
+        throw new IllegalArgumentException("Too few control point elements");
+      }
+      Geometry ctrlPtsGeom = controlPoints.getGeometryN(controlPointIndex++);
+      Coordinate[] ctrlPts = ctrlPtsGeom.getCoordinates();
+      
+      int expectedNum1 = 2 * coords.length - 2;
+      int expectedNum2 = isRing ? coords.length - 1 : coords.length;
+      if (expectedNum1 != ctrlPts.length && expectedNum2 != ctrlPts.length) {
+        throw new IllegalArgumentException(
+            String.format("Wrong number of control points for element %d - expected %d or %d, found %d",
+                controlPointIndex-1, expectedNum1, expectedNum2, ctrlPts.length
+                  ));
+      }
+      return ctrlPts;
+    }
+    return controlPoints(coords, isRing, alpha, skew);
+  }
+
   private void addCurve(Coordinate p0, Coordinate p1,
       Coordinate ctrl0, Coordinate crtl1,
       CoordinateList curvePts) {
