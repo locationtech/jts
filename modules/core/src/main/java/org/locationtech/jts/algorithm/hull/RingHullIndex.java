@@ -19,15 +19,15 @@ import org.locationtech.jts.geom.Envelope;
 class RingHullIndex {
 
   //TODO: use a proper spatial index
-  List<RingConcaveHull> hulls = new ArrayList<RingConcaveHull>();
+  List<RingHull> hulls = new ArrayList<RingHull>();
   
-  public void add(RingConcaveHull ringHull) {
+  public void add(RingHull ringHull) {
     hulls.add(ringHull);
   }
   
-  public List<RingConcaveHull> query(Envelope queryEnv) {
-    List<RingConcaveHull> result = new ArrayList<RingConcaveHull>();
-    for (RingConcaveHull hull : hulls) {
+  public List<RingHull> query(Envelope queryEnv) {
+    List<RingHull> result = new ArrayList<RingHull>();
+    for (RingHull hull : hulls) {
       Envelope envHull = hull.getEnvelope();
       if (queryEnv.intersects(envHull)) {
         result.add(hull);

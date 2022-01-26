@@ -22,11 +22,13 @@ import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.Polygonal;
 
 /**
- * Computes concave hulls which respect the boundaries of polygonal geometry.
- * Both outer and inner concave hulls can be produced.
- * Outer hulls always contain the input geometry.
- * Inner hulls are always within the input geometry.
+ * Computes hulls which respect the boundaries of polygonal geometry.
+ * Both outer and inner hulls can be produced.
+ * Outer hulls contain the input geometry.
+ * Inner hulls are within the input geometry.
  * Polygons with holes and MultiPolygons are supported. 
+ * Hulls are usually concave if the input is, 
+ * except for extremal values of the target parameter.
  * <p>
  * The shape of the computed concave hull is determined by a target parameter.
  * The target criterion is the fraction of vertices contained in the hull. 
@@ -34,17 +36,17 @@ import org.locationtech.jts.geom.Polygonal;
  * A fraction of 0 produces the convex hull (for an outer hull) 
  * or a triangle (for an inner hull). 
  * <p>
- * The algorithm ensures that the generated hulls will not 
+ * The algorithm ensures that computed hulls do not 
  * contain any self-intersections or overlaps, so the polygonal result is always valid.
  * The result has the same structure as the input.
  * 
  * @author Martin Davis
  *
  */
-public class PolygonConcaveHull {
+public class PolygonHull {
   
   /**
-   * Computes a boundary-respecting concave hull of a polygonal geometry,
+   * Computes a boundary-respecting hull of a polygonal geometry,
    * with hull shape determined by a target parameter of fractional 
    * vertex count.
    * An outer hull is computed if the parameter is positive, 
@@ -52,10 +54,10 @@ public class PolygonConcaveHull {
    * 
    * @param geom the polygonal geometry to process
    * @param vertexCountFraction the target fraction of number of vertices
-   * @return a concave hull geometry
+   * @return the hull geometry
    */
   public static Geometry hull(Geometry geom, double vertexCountFraction) {
-    PolygonConcaveHull hull = new PolygonConcaveHull(geom, vertexCountFraction);
+    PolygonHull hull = new PolygonHull(geom, vertexCountFraction);
     return hull.getResult();
   }
 
@@ -65,14 +67,14 @@ public class PolygonConcaveHull {
   private GeometryFactory geomFactory;
   
   /**
-   * Creates a new PolygonConcaveHull instance.
+   * Creates a new instance.
    * An outer hull is computed if the parameter is positive, 
    * an inner hull is computed if it is negative.
    * 
    * @param inputGeom the polygonal geometry to process
    * @param vertexCountFraction the fraction of number of vertices to target
    */
-  public PolygonConcaveHull(Geometry inputGeom, double vertexCountFraction) {
+  public PolygonHull(Geometry inputGeom, double vertexCountFraction) {
     this.inputGeom = inputGeom; 
     this.geomFactory = inputGeom.getFactory();
     this.isOuter = vertexCountFraction >= 0;
@@ -83,9 +85,9 @@ public class PolygonConcaveHull {
   }
 
   /**
-   * Gets the result polygonal concave hull geometry.
+   * Gets the result polygonal hull geometry.
    * 
-   * @return the polygonal geometry for the concave hull
+   * @return the polygonal geometry for the hull
    */
   public Geometry getResult() {
     if (inputGeom instanceof MultiPolygon) {
@@ -114,17 +116,17 @@ public class PolygonConcaveHull {
    * the cases where hulls might overlap.
    * 
    * @param multiPoly the MultiPolygon to process
-   * @return the concave hull geometry
+   * @return the hull geometry
    */
   private Geometry computeMultiPolygonAll(MultiPolygon multiPoly) {
     RingHullIndex hullIndex = new RingHullIndex();
     int nPoly = multiPoly.getNumGeometries();
     @SuppressWarnings("unchecked")
-    List<RingConcaveHull>[] polyHulls = (List<RingConcaveHull>[]) new ArrayList[nPoly];
+    List<RingHull>[] polyHulls = (List<RingHull>[]) new ArrayList[nPoly];
 
     for (int i = 0 ; i < multiPoly.getNumGeometries(); i++) {
       Polygon poly = (Polygon) multiPoly.getGeometryN(i);
-      List<RingConcaveHull> ringHulls = initPolygon(poly, hullIndex);
+      List<RingHull> ringHulls = initPolygon(poly, hullIndex);
       polyHulls[i] = ringHulls;
     }
     
@@ -155,7 +157,7 @@ public class PolygonConcaveHull {
      */
     boolean isOverlapPossible = ! isOuter && poly.getNumInteriorRing() > 0;
     if (isOverlapPossible) hullIndex = new RingHullIndex();
-    List<RingConcaveHull> hulls = initPolygon(poly, hullIndex);
+    List<RingHull> hulls = initPolygon(poly, hullIndex);
     Polygon hull = polygonHull(poly, hulls, hullIndex);
     return hull;
   }
@@ -168,8 +170,8 @@ public class PolygonConcaveHull {
    * @param hullIndex the hull index if present, or null
    * @return the list of ring hulls
    */
-  private List<RingConcaveHull> initPolygon(Polygon poly, RingHullIndex hullIndex) {
-    List<RingConcaveHull> hulls = new ArrayList<RingConcaveHull>();
+  private List<RingHull> initPolygon(Polygon poly, RingHullIndex hullIndex) {
+    List<RingHull> hulls = new ArrayList<RingHull>();
     if (poly.isEmpty()) 
       return hulls;
     
@@ -181,14 +183,14 @@ public class PolygonConcaveHull {
     return hulls;
   }
   
-  private RingConcaveHull createRingHull(LinearRing ring, boolean isOuter, RingHullIndex hullIndex) {
+  private RingHull createRingHull(LinearRing ring, boolean isOuter, RingHullIndex hullIndex) {
     int targetVertexCount = (int) Math.ceil(vertexCountFraction * (ring.getNumPoints() - 1));
-    RingConcaveHull ringHull = new RingConcaveHull(ring, isOuter, targetVertexCount);
+    RingHull ringHull = new RingHull(ring, isOuter, targetVertexCount);
     if (hullIndex != null) hullIndex.add(ringHull);
     return ringHull;
   }
 
-  private Polygon polygonHull(Polygon poly, List<RingConcaveHull> ringHulls, RingHullIndex hullIndex) {
+  private Polygon polygonHull(Polygon poly, List<RingHull> ringHulls, RingHullIndex hullIndex) {
     if (poly.isEmpty()) 
       return geomFactory.createPolygon();
     

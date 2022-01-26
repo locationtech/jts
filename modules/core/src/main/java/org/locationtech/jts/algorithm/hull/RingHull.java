@@ -30,7 +30,7 @@ import org.locationtech.jts.index.VertexSequencePackedRtree;
  * @author Martin Davis
  *
  */
-class RingConcaveHull {
+class RingHull {
   
   private LinearRing inputRing;
   private int targetVertexCount;
@@ -45,18 +45,19 @@ class RingConcaveHull {
   
   /**
    * Indexing vertices improves corner intersection testing performance.
-   * The polyShell vertices are contiguous, so are suitable for an VSPRtree.
+   * The polyShell vertices are contiguous, so are suitable for a
+   * {@link VertexSequencePackedRtree}.
    */
   private VertexSequencePackedRtree vertexIndex;
 
   private PriorityQueue<Corner> cornerQueue;
 
   /**
-   * Creates a new RingConcaveHull instance.
+   * Creates a new instance.
    * 
    * @param ring the ring vertices to process
    */
-  public RingConcaveHull(LinearRing ring, boolean isOuter, int targetVertexCount) {
+  public RingHull(LinearRing ring, boolean isOuter, int targetVertexCount) {
     this.inputRing = ring; 
     this.vertex = ring.getCoordinates();
     this.targetVertexCount = targetVertexCount;
@@ -163,7 +164,7 @@ class RingConcaveHull {
     if (hullIndex == null) 
       return true;
     //-- check other rings for intersections
-    for (RingConcaveHull hull : hullIndex.query(cornerEnv)) {
+    for (RingHull hull : hullIndex.query(cornerEnv)) {
       //-- this hull was already checked above
       if (hull == this)
         continue;
@@ -183,7 +184,7 @@ class RingConcaveHull {
    * @return true if there is an intersecting vertex
    */
   private boolean hasIntersectingVertex(Corner corner, Envelope cornerEnv, 
-      RingConcaveHull hull) {
+      RingHull hull) {
     int[] result = hull.query(cornerEnv);
     for (int i = 0; i < result.length; i++) {
       int index = result[i];

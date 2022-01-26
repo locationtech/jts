@@ -16,25 +16,25 @@ import org.locationtech.jts.geom.Geometry;
 import junit.textui.TestRunner;
 import test.jts.GeometryTestCase;
 
-public class PolygonConcaveHullTest extends GeometryTestCase {
+public class PolygonHullTest extends GeometryTestCase {
   
   public static void main(String args[]) {
-    TestRunner.run(PolygonConcaveHullTest.class);
+    TestRunner.run(PolygonHullTest.class);
   }
 
-  public PolygonConcaveHullTest(String name) { super(name); }
+  public PolygonHullTest(String name) { super(name); }
   
-  public void testSimple() {
+  public void testOuterSimple() {
     checkHull("POLYGON ((30 90, 10 40, 40 10, 70 10, 90 30, 80 80, 70 40, 30 40, 50 50, 60 70, 30 90))", 
         0, "POLYGON ((10 40, 30 90, 80 80, 90 30, 70 10, 40 10, 10 40))");
   }
 
-  public void testZGore() {
+  public void testOuterZGore() {
     checkHull("POLYGON ((10 90, 40 60, 20 40, 40 20, 70 50, 40 30, 30 40, 60 70, 50 90, 90 90, 90 10, 10 10, 10 90))", 
         0.5, "POLYGON ((10 10, 10 90, 40 60, 50 90, 90 90, 90 10, 10 10))");
   }
 
-  public void testFlat() {
+  public void testOuterFlat() {
     checkHull("POLYGON ((10 10, 10 90, 90 90, 90 50, 90 10, 50 10, 10 10))", 
         0.6, "POLYGON ((10 10, 10 90, 90 90, 90 10, 10 10))");
   }
@@ -66,7 +66,7 @@ public class PolygonConcaveHullTest extends GeometryTestCase {
 
   private void checkHull(String wkt, double vertexCountFraction, String wktExpected) {
     Geometry geom = read(wkt);
-    Geometry actual = PolygonConcaveHull.hull(geom, vertexCountFraction);
+    Geometry actual = PolygonHull.hull(geom, vertexCountFraction);
     //System.out.println(actual);
     assertTrue(actual.isValid());
     
