@@ -23,22 +23,25 @@ import org.locationtech.jts.geom.Polygonal;
 
 /**
  * Computes hulls which respect the boundaries of polygonal geometry.
- * Both outer and inner hulls can be produced.
- * Outer hulls contain the input geometry.
- * Inner hulls are within the input geometry.
- * Polygons with holes and MultiPolygons are supported. 
+ * Both outer and inner hulls can be computed.
+ * Outer hulls contain the input geometry and are larger in area.
+ * Inner hulls are within the input geometry and are smaller in area.
+ * In both kinds the hull vertices are a subset of the input vertices.
  * Hulls are usually concave if the input is, 
  * except for extremal values of the target parameter.
+ * Polygons with holes and MultiPolygons are supported. 
  * <p>
  * The shape of the computed concave hull is determined by a target parameter.
  * The target criterion is the fraction of vertices contained in the hull. 
  * A value of 1 produces the original geometry.
  * A fraction of 0 produces the convex hull (for an outer hull) 
  * or a triangle (for an inner hull). 
+ * A positive value computes an outer hull, a negative one computes an inner hull.
  * <p>
  * The algorithm ensures that computed hulls do not 
- * contain any self-intersections or overlaps, so the polygonal result is always valid.
- * The result has the same structure as the input.
+ * contain any self-intersections or overlaps, 
+ * so the resulting polygonal geometry is always valid.
+ * The result has the same geometric type and structure as the input.
  * 
  * @author Martin Davis
  *
