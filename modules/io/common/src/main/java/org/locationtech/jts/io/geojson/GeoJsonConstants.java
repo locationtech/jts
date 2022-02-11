@@ -19,6 +19,8 @@ package org.locationtech.jts.io.geojson;
  */
 public class GeoJsonConstants {
 
+  public static final String NAME_GEOMETRY = "geometry";
+  public static final String NAME_FEATURES = "features";
   public static final String NAME_GEOMETRIES = "geometries";
   public static final String NAME_CRS = "crs";
   public static final String NAME_PROPERTIES = "properties";
@@ -32,5 +34,7 @@ public class GeoJsonConstants {
   public static final String NAME_MULTIPOLYGON = "MultiPolygon";
   public static final String NAME_MULTILINESTRING = "MultiLineString";
   public static final String NAME_MULTIPOINT = "MultiPoint";
+  public static final String NAME_FEATURE = "Feature";
+  public static final String NAME_FEATURECOLLECTION = "FeatureCollection";
 
 }
