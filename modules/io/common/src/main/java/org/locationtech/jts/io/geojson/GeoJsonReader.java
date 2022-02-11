@@ -171,7 +171,7 @@ public class GeoJsonReader {
         result = createFeature(geometryMap, geometryFactory);
 
       } else if (GeoJsonConstants.NAME_FEATURECOLLECTION.equals(type)) {
-          result = createFeatureCollection(geometryMap, geometryFactory);
+        result = createFeatureCollection(geometryMap, geometryFactory);
 
       } else {
         throw new ParseException(
@@ -184,16 +184,16 @@ public class GeoJsonReader {
   }
 
   private Geometry createFeatureCollection(Map<String, Object> geometryMap,
-                                  GeometryFactory geometryFactory) throws ParseException {
+      GeometryFactory geometryFactory) throws ParseException {
     try {
       @SuppressWarnings("unchecked")
       List<Map<String, Object>> features = (List<Map<String, Object>>) geometryMap.get(GeoJsonConstants.NAME_FEATURES);
 
       Geometry[] geometries = new Geometry[features.size()];
       int i = 0;
-        for (Map<String, Object> featureMap : features) {
-          geometries[i] = createFeature(featureMap, geometryFactory);
-          ++i;
+      for (Map<String, Object> featureMap : features) {
+        geometries[i] = createFeature(featureMap, geometryFactory);
+        ++i;
       }
 
       return geometryFactory.createGeometryCollection(geometries);
@@ -203,7 +203,7 @@ public class GeoJsonReader {
   }
 
   private Geometry createFeature(Map<String, Object> geometryMap,
-                                  GeometryFactory geometryFactory) throws ParseException {
+      GeometryFactory geometryFactory) throws ParseException {
     try {
       @SuppressWarnings("unchecked")
       Map<String, Object> innerGeometryMap = (Map<String, Object>) geometryMap.get(GeoJsonConstants.NAME_GEOMETRY);
