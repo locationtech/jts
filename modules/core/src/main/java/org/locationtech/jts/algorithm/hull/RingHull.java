@@ -145,6 +145,14 @@ class RingHull {
     }
   }
   
+  /**
+   * Removes a corner by removing the apex vertex from the ring.
+   * This may create two new corners with apexes
+   * being the other vertices in the corner.
+   * 
+   * @param corner the corner to remove
+   * @param cornerQueue the corner queue
+   */
   private void removeCorner(Corner corner, PriorityQueue<Corner> cornerQueue) {
     int index = corner.getIndex();
     int prev = vertexRing.prev(index);
