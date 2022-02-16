@@ -55,9 +55,6 @@ public class SegmentIntersector
   public int numTests = 0;
 
   private Collection[] bdyNodes;
-  private boolean isDone = false;
-  private boolean isDoneWhenProperInt = false;
-
 
   public SegmentIntersector(LineIntersector li,  boolean includeProper, boolean recordIsolated)
   {
@@ -73,13 +70,9 @@ public class SegmentIntersector
       bdyNodes[0] = bdyNodes0;
       bdyNodes[1] = bdyNodes1;
   }
-
-  public void setIsDoneIfProperInt(boolean isDoneWhenProperInt) {
-	  this.isDoneWhenProperInt = isDoneWhenProperInt;
-  }
   
   public boolean isDone() {
-	  return isDone;
+	  return false;
   }
   /**
    * @return the proper intersection point, or <code>null</code> if none was found
@@ -172,22 +165,27 @@ public class SegmentIntersector
       // only intersection.
       if (! isTrivialIntersection(e0, segIndex0, e1, segIndex1)) {
         hasIntersection = true;
-        if (includeProper || ! li.isProper() ) {
-//Debug.println(li);
+        /**
+         * In certain cases two line segments test as having a proper intersection
+         * via the robust orientation check, but due to roundoff 
+         * the computed intersection point is equal to an endpoint.
+         * If the endpoint is a boundary point
+         * the computed point must be included as a node.
+         * If it is not a boundary point the intersection 
+         * is recorded as properInterior by logic below. 
+         */
+        boolean isBoundaryPt = isBoundaryPoint(li, bdyNodes);
+        boolean isNotProper = ! li.isProper() || isBoundaryPt;
+        if (includeProper || isNotProper ) {
           e0.addIntersections(li, segIndex0, 0);
           e1.addIntersections(li, segIndex1, 1);
         }
         if (li.isProper()) {
           properIntersectionPoint = li.getIntersection(0).copy();
           hasProper = true;
-          if (isDoneWhenProperInt) {
-        	  isDone = true;
-          }
-          if (! isBoundaryPoint(li, bdyNodes))
+          if (! isBoundaryPt)
             hasProperInterior = true;
         }
-        //if (li.isCollinear())
-          //hasCollinear = true;
       }
     }
   }

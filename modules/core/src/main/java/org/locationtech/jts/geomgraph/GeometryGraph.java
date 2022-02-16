@@ -340,7 +340,7 @@ public class GeometryGraph
   {
     insertPoint(argIndex, pt, Location.INTERIOR);
   }
-
+  
   /**
    * Compute self-nodes, taking advantage of the Geometry type to
    * minimize the number of intersection tests.  (E.g. rings are
@@ -352,23 +352,7 @@ public class GeometryGraph
    */
   public SegmentIntersector computeSelfNodes(LineIntersector li, boolean computeRingSelfNodes)
   {
-	  return computeSelfNodes(li, computeRingSelfNodes, false);
-  }
-  
-  /**
-   * Compute self-nodes, taking advantage of the Geometry type to
-   * minimize the number of intersection tests.  (E.g. rings are
-   * not tested for self-intersection, since they are assumed to be valid).
-   * 
-   * @param li the LineIntersector to use
-   * @param computeRingSelfNodes if <code>false</code>, intersection checks are optimized to not test rings for self-intersection
-   * @param isDoneIfProperInt short-circuit the intersection computation if a proper intersection is found
-   * @return the computed SegmentIntersector containing information about the intersections found
-   */
-  public SegmentIntersector computeSelfNodes(LineIntersector li, boolean computeRingSelfNodes, boolean isDoneIfProperInt)
-  {
     SegmentIntersector si = new SegmentIntersector(li, true, false);
-    si.setIsDoneIfProperInt(isDoneIfProperInt);
     EdgeSetIntersector esi = createEdgeSetIntersector();
     // optimize intersection search for valid Polygons and LinearRings
     boolean isRings = parentGeom instanceof LinearRing
