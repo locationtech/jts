@@ -9,3 +9,5 @@ The TestBuilder is a GUI application which allows creating, editing and visualiz
 * Run (with Metal L&F - useful on MacOS)
 
        java -Dswing.defaultlaf=javax.swing.plaf.metal.MetalLookAndFeel -jar modules/app/target/JTSTestBuilder.jar -Xmx2000M
+       
+![](JTSTestuilder.png)
