@@ -167,6 +167,12 @@ public class GeoJsonReader {
       } else if (GeoJsonConstants.NAME_GEOMETRYCOLLECTION.equals(type)) {
         result = createGeometryCollection(geometryMap, geometryFactory);
 
+      } else if (GeoJsonConstants.NAME_FEATURE.equals(type)) {
+        result = createFeature(geometryMap, geometryFactory);
+
+      } else if (GeoJsonConstants.NAME_FEATURECOLLECTION.equals(type)) {
+        result = createFeatureCollection(geometryMap, geometryFactory);
+
       } else {
         throw new ParseException(
             "Could not parse Geometry from GeoJson string.  Unsupported 'type':"
@@ -175,6 +181,36 @@ public class GeoJsonReader {
     }
 
     return result;
+  }
+
+  private Geometry createFeatureCollection(Map<String, Object> geometryMap,
+      GeometryFactory geometryFactory) throws ParseException {
+    try {
+      @SuppressWarnings("unchecked")
+      List<Map<String, Object>> features = (List<Map<String, Object>>) geometryMap.get(GeoJsonConstants.NAME_FEATURES);
+
+      Geometry[] geometries = new Geometry[features.size()];
+      int i = 0;
+      for (Map<String, Object> featureMap : features) {
+        geometries[i] = createFeature(featureMap, geometryFactory);
+        ++i;
+      }
+
+      return geometryFactory.createGeometryCollection(geometries);
+    } catch (RuntimeException e) {
+      throw new ParseException("Could not parse FeatureCollection from GeoJson string.", e);
+    }
+  }
+
+  private Geometry createFeature(Map<String, Object> geometryMap,
+      GeometryFactory geometryFactory) throws ParseException {
+    try {
+      @SuppressWarnings("unchecked")
+      Map<String, Object> innerGeometryMap = (Map<String, Object>) geometryMap.get(GeoJsonConstants.NAME_GEOMETRY);
+      return create(innerGeometryMap, geometryFactory);
+    } catch (RuntimeException e) {
+      throw new ParseException("Could not parse Feature from GeoJson string.", e);
+    }
   }
 
   private Geometry createGeometryCollection(Map<String, Object> geometryMap,
