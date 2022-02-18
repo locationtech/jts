@@ -68,6 +68,11 @@ public class DensifierTest extends GeometryTestCase {
     checkDensifyNoValidate("POLYGON ((10 30, 30 30, 30 10, 10 10, 10 30))", 
         10, "POLYGON ((10 10, 10 20, 10 30, 20 30, 30 30, 30 20, 30 10, 20 10, 10 10))");
   }
+
+  public void testLineDensify3D() {
+    checkDensifyXYZ("POLYGON Z((10 30 10, 30 30 10, 30 10 15, 10 10 10, 10 30 20))",
+            10, "POLYGON Z((10 30 10, 20 30 10, 30 30 10, 30 20 12.5, 30 10 15, 20 10 12.5, 10 10 10, 10 20 15, 10 30 20))");
+  }
   
   public void testDimension2d() {
       GeometryFactory gf = new GeometryFactory();
@@ -96,7 +101,13 @@ public class DensifierTest extends GeometryTestCase {
     Geometry actual = Densifier.densify(geom, distanceTolerance);
     checkEqual(expected, actual, TOLERANCE);
   }
-  
+
+  private void checkDensifyXYZ(String wkt, double distanceTolerance, String wktExpected) {
+    Geometry geom = read(wkt);
+    Geometry expected = read(wktExpected);
+    Geometry actual = Densifier.densify(geom, distanceTolerance);
+    checkEqualXYZ(expected, actual);
+  }
   /**
    * Note: it's hard to construct a geometry which would actually be invalid when densified.
    * This test just checks that the code path executes.

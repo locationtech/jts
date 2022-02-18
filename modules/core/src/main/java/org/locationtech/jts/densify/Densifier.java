@@ -83,7 +83,10 @@ public class Densifier {
 			for (int j = 1; j < densifiedSegCount; j++) {
 				double segFract = (j * densifiedSegLen) / len;
 				Coordinate p = seg.pointAlong(segFract);
-        precModel.makePrecise(p);
+				if(!Double.isNaN(seg.p0.z) && !Double.isNaN(seg.p1.z)) {
+					p.setZ(seg.p0.z + segFract * (seg.p1.z - seg.p0.z));
+				}
+        		precModel.makePrecise(p);
 				coordList.add(p, false);
 			}
 		}
