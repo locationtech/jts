@@ -35,6 +35,7 @@ Distributions for older JTS versions can be obtained at the
 * Allow specifying a fixed `PrecisionModel` via grid size (#804)
 * Add `OffsetCurve` class (#810, #816)
 * Add `ConcaveHull` class for points (#823, #829)
+* Add support for GeoJSON Feature and FeatureCollection types (#837)
 
 ### Bug Fixes
 
