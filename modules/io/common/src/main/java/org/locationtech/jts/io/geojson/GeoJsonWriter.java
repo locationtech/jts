@@ -311,7 +311,7 @@ public class GeoJsonWriter {
 
       if (coordinateSequence.getDimension() > 2 ) {
         double z = coordinateSequence.getOrdinate(i, CoordinateSequence.Z);
-        if (!  Double.isNaN(z)) {
+        if (!Double.isNaN(z)) {
           result.append(",");
           result.append(formatOrdinate(z));
         }
