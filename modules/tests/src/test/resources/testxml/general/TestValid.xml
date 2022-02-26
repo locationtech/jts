@@ -172,6 +172,54 @@ POLYGON ((10 90, 90 90, 90 10, 10 10, 10 90), (40 80, 60 80, 50 50, 40 80), (20 
    </case>
    
    <case>
+      <desc>A - hole touches shell at repeated shell point (valid) </desc>
+      <a>
+POLYGON ((90 10, 10 10, 50 90, 50 90, 90 10), (50 90, 60 30, 40 30, 50 90))
+    </a>
+      <test> <op name="isValid" arg1="A"> true </op>  </test>
+   </case>
+   
+   <case>
+      <desc>A - hole touches shell at repeated shell end point (valid) </desc>
+      <a>
+POLYGON ((90 10, 10 10, 50 90, 90 10, 90 10), (90 10, 40 30, 60 50, 90 10))
+    </a>
+      <test> <op name="isValid" arg1="A"> true </op>  </test>
+   </case>
+   
+   <case>
+      <desc>A - hole touches shell at repeated hole point (valid) </desc>
+      <a>
+POLYGON ((50 90, 10 10, 90 10, 50 90), (60 40, 40 40, 50 90, 50 90, 60 40))
+    </a>
+      <test> <op name="isValid" arg1="A"> true </op>  </test>
+   </case>
+   
+   <case>
+      <desc>A - hole touches shell at repeated hole end point (valid) </desc>
+      <a>
+POLYGON ((50 90, 10 10, 90 10, 50 90), (50 90, 50 90, 60 40, 60 40, 40 40, 50 90))
+    </a>
+      <test> <op name="isValid" arg1="A"> true </op>  </test>
+   </case>
+   
+   <case>
+      <desc>A - hole touches hole at repeated point on hole (valid) </desc>
+      <a>
+POLYGON ((10 90, 90 90, 90 10, 10 10, 10 90), (70 80, 20 50, 80 20, 40 50, 40 50, 70 80), (40 50, 40 50, 70 40, 70 60, 40 50))
+    </a>
+      <test> <op name="isValid" arg1="A"> true </op>  </test>
+   </case>
+   
+   <case>
+      <desc>mA - shell touches shell at repeated point (valid) </desc>
+      <a>
+MULTIPOLYGON (((70 80, 20 50, 80 20, 40 50, 40 50, 70 80)), ((40 50, 40 50, 70 40, 70 60, 40 50)))
+    </a>
+      <test> <op name="isValid" arg1="A"> true </op>  </test>
+   </case>
+   
+   <case>
       <desc>mA - shell inside hole, no touch (valid) </desc>
       <a>
 MULTIPOLYGON (((60 320, 60 80, 300 80, 60 320), 

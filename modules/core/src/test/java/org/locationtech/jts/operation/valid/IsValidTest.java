@@ -156,6 +156,27 @@ public class IsValidTest extends GeometryTestCase {
           "LINEARRING (0 0, 100 100, 100 0, 0 100, 0 0)");
   }
 
+  /**
+   * Tests that repeated points at nodes are handled correctly.
+   * 
+   * See https://github.com/locationtech/jts/issues/843
+   */
+  public void testPolygonHoleWithRepeatedShellPointTouch() {
+    checkValid( "POLYGON ((90 10, 10 10, 50 90, 50 90, 90 10), (50 90, 60 30, 40 30, 50 90))");
+  }
+  
+  public void testPolygonHoleWithRepeatedShellPointTouchMultiple() {
+    checkValid( "POLYGON ((90 10, 10 10, 50 90, 50 90, 50 90, 50 90, 90 10), (50 90, 60 30, 40 30, 50 90))");
+  }
+  
+  public void testPolygonHoleWithRepeatedTouchEndPoint() {
+    checkValid( "POLYGON ((90 10, 10 10, 50 90, 90 10, 90 10), (90 10, 40 30, 60 50, 90 10))");
+  }
+  
+  public void testPolygonHoleWithRepeatedHolePointTouch() {
+    checkValid( "POLYGON ((50 90, 10 10, 90 10, 50 90), (50 90, 50 90, 60 40, 60 40, 40 40, 50 90))");
+  }
+  
   //=============================================
   
   private void checkValid(String wkt) {
