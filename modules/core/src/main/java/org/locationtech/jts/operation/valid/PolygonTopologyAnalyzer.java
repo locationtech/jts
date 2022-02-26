@@ -142,12 +142,6 @@ class PolygonTopologyAnalyzer {
     }
     return prev;
   }  
-
-  private static int ringIndexPrev(Coordinate[] ringPts, int index) {
-    int iPrev = index - 1;
-    if (iPrev < 0) iPrev = ringPts.length - 2;
-    return iPrev;
-  }
   
   /**
    * Finds the ring vertex next from a node point on a ring
@@ -171,10 +165,16 @@ class PolygonTopologyAnalyzer {
     return next;
   }
   
+  private static int ringIndexPrev(Coordinate[] ringPts, int index) {
+    if (index == 0) 
+      return ringPts.length - 2;
+    return index - 1;
+  }
+  
   private static int ringIndexNext(Coordinate[] ringPts, int index) {
-    int iNext = index + 1;
-    if (iNext > ringPts.length - 2) iNext = 0;
-    return iNext;
+    if (index >= ringPts.length - 2) 
+      return 0;
+    return index + 1;
   }
   
   /**
