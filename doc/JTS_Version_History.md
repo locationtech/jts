@@ -52,6 +52,7 @@ Distributions for older JTS versions can be obtained at the
 * Fix the buffers generated for mitred joins (#818)
 * Fix `WKTReader` to produce correct XY coordinate dimension for POLYGON EMPTY (#828)
 * Fix `RelateOp` for a snapped line boundary point (#839)
+* Fix IsValidOp for repeated node points (#845)
 
 # Version 1.18.2
 
