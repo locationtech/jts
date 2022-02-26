@@ -25,11 +25,12 @@ import org.locationtech.jts.index.strtree.STRtree;
 
 /**
  * Tests whether a MultiPolygon has any element polygon
- * nested inside another polygon, using a spatial
+ * improperly nested inside another polygon, using a spatial
  * index to speed up the comparisons.
  * <p>
- * The logic assumes that the polygons do not overlap and have no collinear segments
- * (so they are properly nested, and there are no duplicate rings).
+ * The logic assumes that the polygons do not overlap and have no collinear segments.
+ * So the polygon rings may touch at discrete points,
+ * but they are properly nested, and there are no duplicate rings.
  */
 class IndexedNestedPolygonTester
 {
@@ -75,7 +76,7 @@ class IndexedNestedPolygonTester
   public Coordinate getNestedPoint() { return nestedPt; }
 
   /**
-   * Tests if any polygon is nested (contained) within another polygon.
+   * Tests if any polygon is improperly nested (contained) within another polygon.
    * This is invalid.
    * The nested point will be set to reflect this.
    * @return true if some polygon is nested
@@ -106,6 +107,14 @@ class IndexedNestedPolygonTester
     return false;
   }
   
+  /**
+   * Finds an improperly nested point, if one exists.
+   * 
+   * @param shell the test polygon shell
+   * @param possibleOuterPoly a polygon which may contain it
+   * @param locator the locator for the outer polygon
+   * @return a nested point, if one exists, or null
+   */
   private Coordinate findNestedPoint(LinearRing shell, 
       Polygon possibleOuterPoly, IndexedPointInAreaLocator locator) 
   {    
@@ -119,7 +128,7 @@ class IndexedNestedPolygonTester
       return shellPt0;           
     }
     
-    Coordinate shellPt1 = shell.getCoordinateN(0);
+    Coordinate shellPt1 = shell.getCoordinateN(1);
     int loc1 = locator.locate(shellPt1);
     if (loc1 == Location.EXTERIOR) return null;
     if (loc1 == Location.INTERIOR) {
@@ -131,7 +140,7 @@ class IndexedNestedPolygonTester
      * the polygon.
      * Nesting can be checked via the topology of the incident edges.
      */
-    return findSegmentInPolygon(shell, possibleOuterPoly);
+    return findIncidentSegmentNestedPoint(shell, possibleOuterPoly);
   }
 
   /**
@@ -143,7 +152,7 @@ class IndexedNestedPolygonTester
    * @param poly the polygon to test against
    * @return an interior segment point, or null if the shell is nested correctly
    */
-  private static Coordinate findSegmentInPolygon(LinearRing shell, Polygon poly)
+  private static Coordinate findIncidentSegmentNestedPoint(LinearRing shell, Polygon poly)
   {
     LinearRing polyShell = poly.getExteriorRing();
     if (polyShell.isEmpty()) return null;
