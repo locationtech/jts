@@ -136,7 +136,7 @@ class IndexedNestedPolygonTester
 
   /**
    * Finds a point of a shell segment which lies inside a polygon, if any.
-   * The shell is assume to touch the polyon only at shell vertices, 
+   * The shell is assumed to touch the polygon only at shell vertices, 
    * and does not cross the polygon.
    * 
    * @param shell the shell to test
@@ -148,10 +148,7 @@ class IndexedNestedPolygonTester
     LinearRing polyShell = poly.getExteriorRing();
     if (polyShell.isEmpty()) return null;
     
-    Coordinate shell0 = shell.getCoordinateN(0);
-    Coordinate shell1 = shell.getCoordinateN(1);
-    
-    if (! PolygonTopologyAnalyzer.isSegmentInRing(shell0, shell1, polyShell))
+    if (! PolygonTopologyAnalyzer.isInside(shell, polyShell))
       return null;
 
     /**
@@ -161,7 +158,7 @@ class IndexedNestedPolygonTester
     for (int i = 0; i < poly.getNumInteriorRing(); i++) {
       LinearRing hole = poly.getInteriorRingN(i);
       if (hole.getEnvelopeInternal().covers(shell.getEnvelopeInternal())
-          && PolygonTopologyAnalyzer.isSegmentInRing(shell0, shell1, hole)) {
+          && PolygonTopologyAnalyzer.isInside(shell, hole)) {
         return null;
       }
     }
@@ -170,6 +167,6 @@ class IndexedNestedPolygonTester
      * The shell is contained in the polygon, but is not contained in a hole.
      * This is invalid.
      */
-    return shell0;
+    return shell.getCoordinateN(0);
   } 
 }

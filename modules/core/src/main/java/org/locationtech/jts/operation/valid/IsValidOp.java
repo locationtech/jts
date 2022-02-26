@@ -471,15 +471,16 @@ public class IsValidOp
    */
   private Coordinate findHoleOutsideShellPoint(LinearRing hole, LinearRing shell) {
     Coordinate holePt0 = hole.getCoordinateN(0);
-    Coordinate holePt1 = hole.getCoordinateN(1);
     /**
      * If hole envelope is not covered by shell, it must be outside
      */
     if (! shell.getEnvelopeInternal().covers( hole.getEnvelopeInternal() ))
-        return holePt0;
+      //TODO: find hole pt outside shell env
+      return holePt0;
     
-    if (PolygonTopologyAnalyzer.isSegmentInRing(holePt0, holePt1, shell))
-      return null;    
+    if (PolygonTopologyAnalyzer.isInside(hole, shell))
+      return null;  
+    //TODO: find hole point outside shell
     return holePt0;
   }
   

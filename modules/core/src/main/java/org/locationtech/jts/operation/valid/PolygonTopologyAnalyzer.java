@@ -56,32 +56,47 @@ class PolygonTopologyAnalyzer {
   }
   
   /**
-   * Tests whether a segment p0-p1 is inside or outside a ring.
+   * Tests whether a ring is inside another ring.
    * <p>
    * Preconditions:
    * <ul>
-   * <li>The segment intersects the ring only at the endpoints
-   * <li>One, none or both of the segment endpoints may lie on the ring
-   * <li>The ring does not self-cross, but it may self-touch
+   * <li>The rings do not cross (i.e. the test is wholly inside or outside the target)
+   * <li>The rings may touch (at a point or in a line)
+   * <li>The target ring does not self-cross, but it may self-touch
    * </ul>  
+   * If the start point is properly inside or outside, the provides the result.
+   * Otherwise, the start point is on the target ring, 
+   * and the incident start segment (accounting for repeated points) is
+   * tested for its topology relative to the target ring.
    *  
-   * @param p0 a segment vertex
-   * @param p1 a segment vertex
-   * @param ring the ring to test
-   * @return true if the segment lies inside the ring
+   * @param test the ring to test
+   * @param target the ring to test against
+   * @return true if the test ring lies inside the target ring
    */
-  public static boolean isSegmentInRing(Coordinate p0, Coordinate p1, LinearRing ring) {
-    Coordinate[] ringPts = ring.getCoordinates();
-    int loc = PointLocation.locateInRing(p0, ringPts);
+  public static boolean isInside(LinearRing test, LinearRing target) {
+    Coordinate p0 = test.getCoordinateN(0);
+    Coordinate[] targetPts = target.getCoordinates();
+    int loc = PointLocation.locateInRing(p0, targetPts);
     if (loc == Location.EXTERIOR) return false;
     if (loc == Location.INTERIOR) return true;
     
     /**
-     * The segment point is on the boundary of the ring.
+     * The start point is on the boundary of the ring.
      * Use the topology at the node to check if the segment
      * is inside or outside the ring.
      */
-    return isIncidentSegmentInRing(p0, p1, ringPts);
+    Coordinate p1 = findNonEqualVertex(test, p0);
+    return isIncidentSegmentInRing(p0, p1, targetPts);
+  }
+  
+  private static Coordinate findNonEqualVertex(LinearRing ring, Coordinate p) {
+    int i = 1;
+    Coordinate next = ring.getCoordinateN(i);
+    while (next.equals2D(p) && i < ring.getNumPoints() - 1) {
+      i += 1;
+      next = ring.getCoordinateN(i);
+    }
+    return next;
   }
   
   /**
@@ -96,21 +111,18 @@ class PolygonTopologyAnalyzer {
    * This works for both shells and holes, but the caller must know
    * the ring role.
    * 
-   * @param p0 the first vertex of the segment
+   * @param p0 the touching vertex of the segment
    * @param p1 the second vertex of the segment 
    * @param ringPts the points of the ring
    * @return true if the segment is inside the ring.
    */
-  public static boolean isIncidentSegmentInRing(Coordinate p0, Coordinate p1, Coordinate[] ringPts) {
+  private static boolean isIncidentSegmentInRing(Coordinate p0, Coordinate p1, Coordinate[] ringPts) {
     int index = intersectingSegIndex(ringPts, p0);
     if (index < 0) {
       throw new IllegalArgumentException("Segment vertex does not intersect ring");
     }
-    Coordinate rPrev = ringPts[index];
-    Coordinate rNext = ringPts[index + 1];
-    if (p0.equals2D(ringPts[index])) {
-      rPrev = ringPts[ringIndexPrev(ringPts, index)];
-    }
+    Coordinate rPrev = findRingVertexPrev(ringPts, index, p0);
+    Coordinate rNext = findRingVertexNext(ringPts, index, p0);
     /**
      * If ring orientation is not normalized, flip the corner orientation
      */
@@ -121,6 +133,61 @@ class PolygonTopologyAnalyzer {
       rNext = temp;
     }
     return PolygonNode.isInteriorSegment(p0, rPrev, rNext, p1);
+  }
+
+  /**
+   * Finds the ring vertex previous to a node point on a ring
+   * (which is contained in the index'th segment,
+   * as either the start vertex or an interior point). 
+   * Repeated points are skipped over.
+   * @param ringPts the ring
+   * @param index the index of the segment containing the node
+   * @param node the node point
+   * 
+   * @return the previous ring vertex
+   */
+  private static Coordinate findRingVertexPrev(Coordinate[] ringPts, int index, Coordinate node) {
+    int iPrev = index;
+    Coordinate prev = ringPts[iPrev];
+    while (node.equals2D(prev)) {
+      iPrev = ringIndexPrev(ringPts, iPrev);
+      prev = ringPts[iPrev];
+    }
+    return prev;
+  }  
+
+  private static int ringIndexPrev(Coordinate[] ringPts, int index) {
+    int iPrev = index - 1;
+    if (iPrev < 0) iPrev = ringPts.length - 2;
+    return iPrev;
+  }
+  
+  /**
+   * Finds the ring vertex next from a node point on a ring
+   * (which is contained in the index'th segment,
+   * as either the start vertex or an interior point). 
+   * Repeated points are skipped over.
+   * @param ringPts the ring
+   * @param index the index of the segment containing the node
+   * @param node the node point
+   * 
+   * @return the next ring vertex
+   */
+  private static Coordinate findRingVertexNext(Coordinate[] ringPts, int index, Coordinate node) {
+    //-- safe, since index is always the start of a ring segment
+    int iNext = index + 1;
+    Coordinate next = ringPts[iNext];
+    while (node.equals2D(next)) {
+      iNext = ringIndexNext(ringPts, iNext);
+      next = ringPts[iNext];
+    }
+    return next;
+  }
+  
+  private static int ringIndexNext(Coordinate[] ringPts, int index) {
+    int iNext = index + 1;
+    if (iNext > ringPts.length - 2) iNext = 0;
+    return iNext;
   }
   
   /**
@@ -142,12 +209,6 @@ class PolygonTopologyAnalyzer {
       }
     }
     return -1;
-  }
-
-  private static int ringIndexPrev(Coordinate[] ringPts, int index) {
-    int iPrev = index - 1;
-    if (index == 0) iPrev = ringPts.length - 2;
-    return iPrev;
   }
   
   private boolean isInvertedRingValid;
