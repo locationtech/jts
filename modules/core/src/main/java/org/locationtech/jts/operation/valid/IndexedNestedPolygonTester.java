@@ -148,7 +148,7 @@ class IndexedNestedPolygonTester
     LinearRing polyShell = poly.getExteriorRing();
     if (polyShell.isEmpty()) return null;
     
-    if (! PolygonTopologyAnalyzer.isInside(shell, polyShell))
+    if (! PolygonTopologyAnalyzer.isRingNested(shell, polyShell))
       return null;
 
     /**
@@ -158,7 +158,7 @@ class IndexedNestedPolygonTester
     for (int i = 0; i < poly.getNumInteriorRing(); i++) {
       LinearRing hole = poly.getInteriorRingN(i);
       if (hole.getEnvelopeInternal().covers(shell.getEnvelopeInternal())
-          && PolygonTopologyAnalyzer.isInside(shell, hole)) {
+          && PolygonTopologyAnalyzer.isRingNested(shell, hole)) {
         return null;
       }
     }

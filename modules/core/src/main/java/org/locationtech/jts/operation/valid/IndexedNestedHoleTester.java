@@ -88,11 +88,7 @@ class IndexedNestedHoleTester
         if (! testHole.getEnvelopeInternal().covers( hole.getEnvelopeInternal()) )
           continue;
 
-        /**
-         * Checks nesting via a point-in-polygon test, 
-         * or via the topology of the incident edges.
-         */
-        if (PolygonTopologyAnalyzer.isInside(hole, testHole)) {
+        if (PolygonTopologyAnalyzer.isRingNested(hole, testHole)) {
           //TODO: find a hole point known to be inside
           nestedPt = hole.getCoordinateN(0);
           return true;  

@@ -478,7 +478,7 @@ public class IsValidOp
       //TODO: find hole pt outside shell env
       return holePt0;
     
-    if (PolygonTopologyAnalyzer.isInside(hole, shell))
+    if (PolygonTopologyAnalyzer.isRingNested(hole, shell))
       return null;  
     //TODO: find hole point outside shell
     return holePt0;

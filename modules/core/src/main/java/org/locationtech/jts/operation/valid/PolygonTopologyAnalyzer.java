@@ -43,29 +43,16 @@ import org.locationtech.jts.noding.SegmentString;
 class PolygonTopologyAnalyzer {
   
   /**
-   * Finds a self-intersection (if any) in a {@link LinearRing}.
-   * 
-   * @param ring the ring to analyze
-   * @return a self-intersection point if one exists, or null
-   */
-  public static Coordinate findSelfIntersection(LinearRing ring) {
-    PolygonTopologyAnalyzer ata = new PolygonTopologyAnalyzer(ring, false);
-    if (ata.hasInvalidIntersection())
-      return ata.getInvalidLocation();
-    return null;
-  }
-  
-  /**
-   * Tests whether a ring is inside another ring.
+   * Tests whether a ring is nested inside another ring.
    * <p>
    * Preconditions:
    * <ul>
    * <li>The rings do not cross (i.e. the test is wholly inside or outside the target)
-   * <li>The rings may touch (at a point or in a line)
+   * <li>The rings may touch at discrete points only
    * <li>The target ring does not self-cross, but it may self-touch
    * </ul>  
-   * If the start point is properly inside or outside, the provides the result.
-   * Otherwise, the start point is on the target ring, 
+   * If the test ring start point is properly inside or outside, that provides the result.
+   * Otherwise the start point is on the target ring, 
    * and the incident start segment (accounting for repeated points) is
    * tested for its topology relative to the target ring.
    *  
@@ -73,7 +60,7 @@ class PolygonTopologyAnalyzer {
    * @param target the ring to test against
    * @return true if the test ring lies inside the target ring
    */
-  public static boolean isInside(LinearRing test, LinearRing target) {
+  public static boolean isRingNested(LinearRing test, LinearRing target) {
     Coordinate p0 = test.getCoordinateN(0);
     Coordinate[] targetPts = target.getCoordinates();
     int loc = PointLocation.locateInRing(p0, targetPts);
@@ -209,6 +196,19 @@ class PolygonTopologyAnalyzer {
       }
     }
     return -1;
+  }
+  
+  /**
+   * Finds a self-intersection (if any) in a {@link LinearRing}.
+   * 
+   * @param ring the ring to analyze
+   * @return a self-intersection point if one exists, or null
+   */
+  public static Coordinate findSelfIntersection(LinearRing ring) {
+    PolygonTopologyAnalyzer ata = new PolygonTopologyAnalyzer(ring, false);
+    if (ata.hasInvalidIntersection())
+      return ata.getInvalidLocation();
+    return null;
   }
   
   private boolean isInvertedRingValid;
