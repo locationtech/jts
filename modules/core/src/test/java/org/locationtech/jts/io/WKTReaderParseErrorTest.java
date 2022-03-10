@@ -13,16 +13,13 @@ package org.locationtech.jts.io;
 
 import java.io.IOException;
 
-import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 
 import junit.framework.TestCase;
 import junit.textui.TestRunner;
 
-
-
 /**
- * Tests the {@link WKTReader} with various errors
+ * Tests the {@link WKTReader} with various syntax errors
  */
 public class WKTReaderParseErrorTest
     extends TestCase
@@ -107,7 +104,7 @@ public class WKTReaderParseErrorTest
   {
     boolean threwParseEx = false;
     try {
-      Geometry g = rdr.read(wkt);
+      rdr.read(wkt);
     }
     catch (ParseException ex) {
       //System.out.println(ex.getMessage());
