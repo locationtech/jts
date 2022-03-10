@@ -36,6 +36,13 @@ public class LineString
 	implements Lineal
 {
   private static final long serialVersionUID = 3110669828065365560L;
+  
+  /**
+   * The minimum number of vertices allowed in a valid non-empty linestring.
+   * Empty linestrings with 0 vertices are also valid.
+   */
+  public static final int MINIMUM_VALID_SIZE = 2;
+  
   /**
    *  The points of this <code>LineString</code>.
    */
@@ -77,12 +84,13 @@ public class LineString
     if (points == null) {
       points = getFactory().getCoordinateSequenceFactory().create(new Coordinate[]{});
     }
-    if (points.size() == 1) {
+    if (points.size() > 0 && points.size() < MINIMUM_VALID_SIZE) {
       throw new IllegalArgumentException("Invalid number of points in LineString (found "
-      		+ points.size() + " - must be 0 or >= 2)");
+      		+ points.size() + " - must be 0 or >= " + MINIMUM_VALID_SIZE + ")");
     }
     this.points = points;
   }
+  
   public Coordinate[] getCoordinates() {
     return points.toCoordinateArray();
   }

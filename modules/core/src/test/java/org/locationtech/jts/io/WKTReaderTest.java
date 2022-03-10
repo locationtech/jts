@@ -48,6 +48,7 @@ public class WKTReaderTest extends GeometryTestCase {
   private final WKTReader readerXYZ;
   private final WKTReader readerXYM;
   private final WKTReader readerXYZM;
+  private WKTReader readerXYZCloseRings;
 
   public static void main(String args[]) {
     TestRunner.run(suite());
@@ -66,6 +67,9 @@ public class WKTReaderTest extends GeometryTestCase {
     readerXYZ = getWKTReader(Ordinate.createXYZ(), 1d);
     readerXYM = getWKTReader(Ordinate.createXYM(), 1d);
     readerXYZM = getWKTReader(Ordinate.createXYZM(), 1d);
+    
+    readerXYZCloseRings = getWKTReader(Ordinate.createXYZM(), 1d);
+    readerXYZCloseRings.setFixStructure(true);
   }
 
   public static Test suite() { return new TestSuite(WKTReaderTest.class); }
@@ -478,6 +482,7 @@ public class WKTReaderTest extends GeometryTestCase {
       }
   }
   
+
 
   private void checkCS(CoordinateSequence cs, Geometry geom) {
     assertTrue( isEqual( cs, extractCS(geom)));
