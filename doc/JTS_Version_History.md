@@ -37,7 +37,7 @@ Distributions for older JTS versions can be obtained at the
 * Add `ConcaveHull` class for points (#823, #829)
 * Improve `Densifier` to interpolate Z values (#835)
 * Add support for GeoJSON Feature and FeatureCollection types (#837)
-
+* Add `WKTReader.setFixStructure` to fix WKT input (#848)
 
 ### Bug Fixes
 
