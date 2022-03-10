@@ -421,13 +421,13 @@ S  */
   private CoordinateSequence getCoordinateSequenceOldMultiPoint(StreamTokenizer tokenizer, EnumSet<Ordinate> ordinateFlags)
           throws IOException, ParseException {
 
-    ArrayList coordinates = new ArrayList();
+    List<Coordinate> coordinates = new ArrayList<Coordinate>();
     do {
       coordinates.add(getCoordinate(tokenizer, ordinateFlags, true));
     } while (getNextCloserOrComma(tokenizer).equals(COMMA));
 
-    return mergeSequences(coordinates, ordinateFlags);
-  }
+    Coordinate[] coordArray = coordinates.toArray(new Coordinate[0]);
+    return csFactory.create(coordArray);  }
 
   /**
    * Computes the required dimension based on the given ordinate values.
@@ -447,137 +447,6 @@ S  */
       dimension++;
 
     return dimension;
-  }
-
-  /**
-   * Merges an array of one-coordinate-{@link CoordinateSequence}s into one {@link CoordinateSequence}.
-   *
-   * @param sequences an array of coordinate sequences. Each sequence contains <b>exactly one</b> coordinate.
-   * @param ordinateFlags a bit-mask of required ordinates.
-   * @return a coordinate sequence containing all coordinate
-   */
-  private CoordinateSequence mergeSequences(ArrayList sequences, EnumSet<Ordinate> ordinateFlags) {
-
-    // if the sequences array is empty or null create an empty sequence
-    if (sequences == null || sequences.size() == 0)
-      return csFactory.create(0, toDimension(ordinateFlags));
-
-    if (sequences.size() == 1)
-      return (CoordinateSequence) sequences.get(0);
-
-    EnumSet<Ordinate> mergeOrdinates;
-    if (this.isAllowOldJtsCoordinateSyntax && ordinateFlags.size() == 2) {
-      mergeOrdinates = ordinateFlags.clone();
-      for (int i = 0; i < sequences.size(); i++) {
-        if (((CoordinateSequence)sequences.get(i)).hasZ()) {
-          mergeOrdinates.add(Ordinate.Z);
-          break;
-        }
-      }
-    }
-    else
-      mergeOrdinates = ordinateFlags;
-
-    // create and fill the result sequence
-    CoordinateSequence sequence = this.csFactory.create(sequences.size(), toDimension(mergeOrdinates),
-            mergeOrdinates.contains(Ordinate.M) ? 1 : 0);
-
-    int offsetM = CoordinateSequence.Z + (mergeOrdinates.contains(Ordinate.Z) ? 1 : 0);
-    for (int i = 0; i < sequences.size(); i++) {
-      CoordinateSequence item = (CoordinateSequence)sequences.get(i);
-      sequence.setOrdinate(i, CoordinateSequence.X, item.getOrdinate(0, CoordinateSequence.X));
-      sequence.setOrdinate(i, CoordinateSequence.Y, item.getOrdinate(0, CoordinateSequence.Y));
-      if (mergeOrdinates.contains(Ordinate.Z))
-        sequence.setOrdinate(i, CoordinateSequence.Z, item.getOrdinate(0, CoordinateSequence.Z));
-      if (mergeOrdinates.contains(Ordinate.M))
-        sequence.setOrdinate(i, offsetM, item.getOrdinate(0, offsetM));
-    }
-
-    // return it
-    return sequence;
-  }
-
-  /**
-   * Returns the next array of <code>Coordinate</code>s in the stream.
-   *
-   *@param  tokenizer        tokenizer over a stream of text in Well-known Text
-   *      format. The next element returned by the stream should be L_PAREN (the
-   *      beginning of "(x1 y1, x2 y2, ..., xn yn)") or EMPTY.
-   *@return                  the next array of <code>Coordinate</code>s in the
-   *      stream, or an empty array if EMPTY is the next element returned by
-   *      the stream.
-   *@throws  IOException     if an I/O error occurs
-   *@throws  ParseException  if an unexpected token was encountered
-   *
-   *@deprecated in favor of functions returning {@link CoordinateSequence}s
-   */
-  private Coordinate[] getCoordinates(StreamTokenizer tokenizer) throws IOException, ParseException {
-    String nextToken = getNextEmptyOrOpener(tokenizer);
-    if (nextToken.equals(WKTConstants.EMPTY)) {
-      return new Coordinate[] {};
-    }
-    ArrayList coordinates = new ArrayList();
-    coordinates.add(getPreciseCoordinate(tokenizer));
-    nextToken = getNextCloserOrComma(tokenizer);
-    while (nextToken.equals(COMMA)) {
-      coordinates.add(getPreciseCoordinate(tokenizer));
-      nextToken = getNextCloserOrComma(tokenizer);
-    }
-    Coordinate[] array = new Coordinate[coordinates.size()];
-    return (Coordinate[]) coordinates.toArray(array);
-  }
-
-  /**
-   * Returns the next array of <code>Coordinate</code>s in the stream.
-   *
-   *@param  tokenizer        tokenizer over a stream of text in Well-known Text
-   *      format. The next element returned by the stream should be a number.
-   *@return                  the next array of <code>Coordinate</code>s in the
-   *      stream.
-   *@throws  IOException     if an I/O error occurs
-   *@throws  ParseException  if an unexpected token was encountered
-   *
-   *@deprecated in favor of functions returning {@link CoordinateSequence}s
-   */
-  private Coordinate[] getCoordinatesNoLeftParen(StreamTokenizer tokenizer) throws IOException, ParseException {
-    String nextToken = null;
-    ArrayList coordinates = new ArrayList();
-    coordinates.add(getPreciseCoordinate(tokenizer));
-    nextToken = getNextCloserOrComma(tokenizer);
-    while (nextToken.equals(COMMA)) {
-      coordinates.add(getPreciseCoordinate(tokenizer));
-      nextToken = getNextCloserOrComma(tokenizer);
-    }
-    Coordinate[] array = new Coordinate[coordinates.size()];
-    return (Coordinate[]) coordinates.toArray(array);
-  }
-
-  /**
-   * Returns the next precise <code>Coordinate</code> in the stream.
-   *
-   *@param  tokenizer        tokenizer over a stream of text in Well-known Text
-   *      format. The next element returned by the stream should be a number.
-   *@return                  the next array of <code>Coordinate</code>s in the
-   *      stream.
-   *@throws  IOException     if an I/O error occurs
-   *@throws  ParseException  if an unexpected token was encountered
-   *
-   *@deprecated in favor of functions returning {@link CoordinateSequence}s
-   */
-  private Coordinate getPreciseCoordinate(StreamTokenizer tokenizer)
-      throws IOException, ParseException
-  {
-    Coordinate coord = new Coordinate();
-    coord.x = getNextNumber(tokenizer);
-    coord.y = getNextNumber(tokenizer);
-    if (isNumberNext(tokenizer)) {
-        coord.setZ(getNextNumber(tokenizer));
-    }
-    if (isNumberNext(tokenizer)) {
-      getNextNumber(tokenizer); // ignore M value
-    }
-    precisionModel.makePrecise(coord);
-    return coord;
   }
 
   /**
@@ -987,7 +856,7 @@ S  */
       }
     }
     
-    ArrayList points = new ArrayList();
+    List<Point> points = new ArrayList<Point>();
     Point point = readPointText(tokenizer, ordinateFlags);
     points.add(point);
     nextToken = getNextCloserOrComma(tokenizer);
@@ -1018,7 +887,7 @@ S  */
     if (nextToken.equals(WKTConstants.EMPTY)) {
         return geometryFactory.createPolygon(createCoordinateSequenceEmpty(ordinateFlags));
     }
-    ArrayList holes = new ArrayList();
+    List<LinearRing> holes = new ArrayList<LinearRing>();
     LinearRing shell = readLinearRingText(tokenizer, ordinateFlags);
     nextToken = getNextCloserOrComma(tokenizer);
     while (nextToken.equals(COMMA)) {
@@ -1047,7 +916,7 @@ S  */
       return geometryFactory.createMultiLineString();
     }
 
-    ArrayList lineStrings = new ArrayList();
+    List<LineString> lineStrings = new ArrayList<LineString>();
     do {
       LineString lineString = readLineStringText(tokenizer, ordinateFlags);
       lineStrings.add(lineString);
@@ -1074,7 +943,7 @@ S  */
     if (nextToken.equals(WKTConstants.EMPTY)) {
       return geometryFactory.createMultiPolygon();
     }
-    ArrayList polygons = new ArrayList();
+    List<Polygon> polygons = new ArrayList<Polygon>();
     do {
       Polygon polygon = readPolygonText(tokenizer, ordinateFlags);
       polygons.add(polygon);
@@ -1102,7 +971,7 @@ S  */
     if (nextToken.equals(WKTConstants.EMPTY)) {
       return geometryFactory.createGeometryCollection();
     }
-    ArrayList geometries = new ArrayList();
+    List<Geometry> geometries = new ArrayList<Geometry>();
     do {
       Geometry geometry = readGeometryTaggedText(tokenizer);
       geometries.add(geometry);
