@@ -102,11 +102,6 @@ public class WKTReaderParseErrorTest
     readWithParseException("LINESTRINGABCZM ( 0 0 0 0, 1 1 1 1 )");
   }
 
-  public void testUnclosedPolygon() throws IOException
-  {
-    readWithParseException("POLYGON ((0 0, 1 0, 0 1))");
-  }
-
   private void readWithParseException(String wkt)
       throws IOException
   {
