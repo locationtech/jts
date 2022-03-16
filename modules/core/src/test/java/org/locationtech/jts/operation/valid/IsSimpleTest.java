@@ -98,6 +98,38 @@ public class IsSimpleTest
     checkIsSimple(a, BoundaryNodeRule.ENDPOINT_BOUNDARY_RULE,  true  );
   }
 
+  public void testLineRepeatedStart() {
+    String a = "LINESTRING (100 100, 100 100, 20 20, 200 20, 100 100)";
+
+    // rings are simple under all rules
+    checkIsSimple(a, BoundaryNodeRule.MOD2_BOUNDARY_RULE,      true  );
+    checkIsSimple(a, BoundaryNodeRule.ENDPOINT_BOUNDARY_RULE,  true  );
+  }
+  
+  public void testLineRepeatedEnd() {
+    String a = "LINESTRING (100 100, 20 20, 200 20, 100 100, 100 100)";
+
+    // rings are simple under all rules
+    checkIsSimple(a, BoundaryNodeRule.MOD2_BOUNDARY_RULE,      true  );
+    checkIsSimple(a, BoundaryNodeRule.ENDPOINT_BOUNDARY_RULE,  true  );
+  }
+  
+  public void testLineRepeatedBothEnds() {
+    String a = "LINESTRING (100 100, 100 100, 100 100, 20 20, 200 20, 100 100, 100 100)";
+
+    // rings are simple under all rules
+    checkIsSimple(a, BoundaryNodeRule.MOD2_BOUNDARY_RULE,      true  );
+    checkIsSimple(a, BoundaryNodeRule.ENDPOINT_BOUNDARY_RULE,  true  );
+  }
+  
+  public void testLineRepeatedAll() {
+    String a = "LINESTRING (100 100, 100 100, 100 100)";
+
+    // rings are simple under all rules
+    checkIsSimple(a, BoundaryNodeRule.MOD2_BOUNDARY_RULE,      true  );
+    checkIsSimple(a, BoundaryNodeRule.ENDPOINT_BOUNDARY_RULE,  true  );
+  }
+  
   public void testLinesAll() {
     checkIsSimpleAll("MULTILINESTRING ((10 20, 90 20), (10 30, 90 30), (50 40, 50 10))",
         BoundaryNodeRule.MOD2_BOUNDARY_RULE,

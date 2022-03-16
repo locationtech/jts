@@ -62,6 +62,54 @@
 </case>
 
 <case>
+  <desc>L - simple line - repeated start point</desc>
+  <a>
+    LINESTRING(10 10, 10 10, 20 20)
+  </a>
+<test>
+  <op name="isSimple" arg1="A">
+    true
+  </op>
+</test>
+</case>
+
+<case>
+  <desc>L - simple line - repeated end point</desc>
+  <a>
+    LINESTRING(10 10, 20 20, 20 20)
+  </a>
+<test>
+  <op name="isSimple" arg1="A">
+    true
+  </op>
+</test>
+</case>
+
+<case>
+  <desc>L - simple line - repeated points at both ends</desc>
+  <a>
+    LINESTRING(10 10, 10 10, 20 20, 20 20)
+  </a>
+<test>
+  <op name="isSimple" arg1="A">
+    true
+  </op>
+</test>
+</case>
+
+<case>
+  <desc>L - simple line - zerolength</desc>
+  <a>
+    LINESTRING(10 10, 10 10, 10 10)
+  </a>
+<test>
+  <op name="isSimple" arg1="A">
+    true
+  </op>
+</test>
+</case>
+
+<case>
   <desc>L - non-simple, proper interior intersection</desc>
   <a>
     LINESTRING (20 60, 160 60, 80 160, 80 20)
