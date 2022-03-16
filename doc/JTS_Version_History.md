@@ -53,6 +53,7 @@ Distributions for older JTS versions can be obtained at the
 * Fix `WKTReader` to produce correct XY coordinate dimension for POLYGON EMPTY (#828)
 * Fix `RelateOp` for a snapped line boundary point (#839)
 * Fix IsValidOp for repeated node points (#845)
+* Fix `IsSimpleOp` for repeated endpoints (#851)
 
 # Version 1.18.2
 
