@@ -20,6 +20,7 @@ import org.locationtech.jts.algorithm.BoundaryNodeRule;
 import org.locationtech.jts.algorithm.LineIntersector;
 import org.locationtech.jts.algorithm.RobustLineIntersector;
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateArrays;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryCollection;
 import org.locationtech.jts.geom.LineString;
@@ -43,6 +44,8 @@ import org.locationtech.jts.noding.SegmentString;
  * <li><b>MultiPoint</b> geometries are simple if every point is unique
  * <li><b>LineString</b> geometries are simple if they do not self-intersect at interior points
  * (i.e. points other than the endpoints).
+ * Closed linestrings which intersect only at their endpoints are simple
+ * (i.e. valid <b>LinearRings</b>s.
  * <li><b>MultiLineString</b> geometries are simple if
  * their elements are simple and they intersect only at points
  * which are boundary points of both elements.
@@ -63,7 +66,8 @@ import org.locationtech.jts.noding.SegmentString;
  * <p>
  * Note that under the <tt>Mod-2</tt> rule, closed <tt>LineString</tt>s (rings)
  * have no boundary.
- * This means that an intersection at their endpoints makes the geometry non-simple.
+ * This means that an intersection at the endpoints of
+ * two closed LineStrings makes the geometry non-simple.
  * If it is required to test whether a set of <code>LineString</code>s touch
  * only at their endpoints, use {@link BoundaryNodeRule#ENDPOINT_BOUNDARY_RULE}.
  * For example, this can be used to validate that a collection of lines
@@ -281,12 +285,44 @@ public class IsSimpleOp
     List<SegmentString> segStrings = new ArrayList<SegmentString>();
     for (int i = 0; i < geom.getNumGeometries(); i++) {
       LineString line = (LineString) geom.getGeometryN(i);
-      SegmentString ss = new BasicSegmentString(line.getCoordinates(), null);
-      segStrings.add(ss);
+      Coordinate[] trimPts = trimRepeatedPoints(line.getCoordinates());
+      if (trimPts != null) {
+        SegmentString ss = new BasicSegmentString(trimPts, null);
+        segStrings.add(ss);
+      }
     }
     return segStrings;
   }
 
+  private static Coordinate[] trimRepeatedPoints(Coordinate[] pts) {
+    if (pts.length <= 2)
+      return pts;
+    
+    int len = pts.length;
+    boolean hasRepeatedStart = pts[0].equals2D(pts[1]);
+    boolean hasRepeatedEnd = pts[len - 1].equals2D(pts[len - 2]);
+    if (! hasRepeatedStart && ! hasRepeatedEnd)
+      return pts;
+    
+    //-- trim ends
+    int startIndex = 0;
+    Coordinate startPt = pts[0];
+    while (startIndex < len - 1 && startPt.equals2D(pts[startIndex+1])) {
+      startIndex++;
+    }
+    int endIndex = len-1;
+    Coordinate endPt = pts[endIndex];
+    while (endIndex > 0 && endPt.equals2D(pts[endIndex - 1])) {
+      endIndex--;
+    }
+    //-- are all points identical?
+    if (endIndex - startIndex < 1) {
+      return null;
+    }
+    Coordinate[] trimPts = CoordinateArrays.extract(pts, startIndex, endIndex);
+    return trimPts;
+  }
+  
   private static class NonSimpleIntersectionFinder
   implements SegmentIntersector
   {
