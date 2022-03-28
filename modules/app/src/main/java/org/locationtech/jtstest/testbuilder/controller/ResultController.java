@@ -179,11 +179,6 @@ public class ResultController
     worker.start();
   }
   
-  private void clearFunctionWorker()
-  {
-    
-  }
-  
   private Timer funcTimer;
   private long runMillis = 0;
   private static final int TIMER_DELAY_IN_MILLIS = 10;

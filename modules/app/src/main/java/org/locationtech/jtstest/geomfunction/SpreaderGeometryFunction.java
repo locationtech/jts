@@ -48,11 +48,11 @@ public class SpreaderGeometryFunction implements GeometryFunction {
     return fun.getParameterNames();
   }
 
-  public Class[] getParameterTypes() {
+  public Class<?>[] getParameterTypes() {
     return fun.getParameterTypes();
   }
 
-  public Class getReturnType() {
+  public Class<?> getReturnType() {
     return fun.getReturnType();
   }
 

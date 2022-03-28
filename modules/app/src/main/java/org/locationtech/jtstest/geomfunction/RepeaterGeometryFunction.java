@@ -56,11 +56,11 @@ public class RepeaterGeometryFunction implements GeometryFunction {
     return fun.getParameterNames();
   }
 
-  public Class[] getParameterTypes() {
+  public Class<?>[] getParameterTypes() {
     return fun.getParameterTypes();
   }
 
-  public Class getReturnType() {
+  public Class<?> getReturnType() {
     return fun.getReturnType();
   }
 
@@ -97,20 +97,20 @@ public class RepeaterGeometryFunction implements GeometryFunction {
   public static boolean isRepeatable(GeometryFunction fun) {
     if (! (fun.getReturnType() ==  Geometry.class )) return false;
     
-    Class[] paramType = fun.getParameterTypes();
+    Class<?>[] paramType = fun.getParameterTypes();
     int repeatArgIndex = repeatableArgIndex(fun);
     
     // allow no repeatable arg
     if (paramType.length < repeatArgIndex + 1) return true;
     
-    Class type = paramType[repeatArgIndex];
+    Class<?> type = paramType[repeatArgIndex];
     if (! ClassUtil.isDouble(type)) return false;
     
     return true;
   }
 
   public static boolean hasRepeatableArg(GeometryFunction fun) {
-    Class[] paramType = fun.getParameterTypes();
+    Class<?>[] paramType = fun.getParameterTypes();
     int numParam = paramType.length;
     int numGeomParam = fun.isBinary() ? 1 : 0;
     return numParam > numGeomParam;
@@ -122,7 +122,7 @@ public class RepeaterGeometryFunction implements GeometryFunction {
   }
   
   private Object invokeRepeated(Geometry geom, Object[] args, double argStart) {
-    List results = new ArrayList();
+    List<Geometry> results = new ArrayList<Geometry>();
     int repeatArgIndex = repeatableArgIndex(fun);
     for (int i = 1; i <= count; i++) {
       double val = argStart * i;

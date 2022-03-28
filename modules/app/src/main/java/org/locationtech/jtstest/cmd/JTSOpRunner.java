@@ -536,7 +536,7 @@ public class JTSOpRunner {
   }
   
   private void checkFunctionArgs(GeometryFunction func, List<Geometry> geomB, String[] argList) {
-    Class[] paramTypes = func.getParameterTypes();
+    Class<?>[] paramTypes = func.getParameterTypes();
     int nParam = paramTypes.length;
     
     /*
@@ -619,7 +619,7 @@ class FunctionInvoker {
   }
   
   private Object[] createFunctionArgs(GeometryFunction func, Geometry geomB, String arg1) {
-    Class[] paramTypes = func.getParameterTypes();
+    Class<?>[] paramTypes = func.getParameterTypes();
     Object[] paramVal = new Object[paramTypes.length];
     
     int iparam = 0;

@@ -58,14 +58,14 @@ public interface GeometryFunction
 	 * 
 	 * @return the types
 	 */
-	Class[] getParameterTypes();
+	Class<?>[] getParameterTypes();
 	
 	/**
 	 * Gets the return type of this function
 	 * 
 	 * @return the type of the value returned by this function
 	 */
-	Class getReturnType();
+	Class<?> getReturnType();
 	
 	/**
 	 * Gets a string representing the signature of this function.

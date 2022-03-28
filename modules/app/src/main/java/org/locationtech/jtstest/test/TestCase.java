@@ -33,7 +33,7 @@ public class TestCase implements Testable {
   private Geometry expectedUnion = null;
   private Geometry expectedDifference = null;
   private Geometry expectedSymDifference = null;
-  private Geometry expectedCentroid = null;
+  //private Geometry expectedCentroid = null;
   private IntersectionMatrix im;
   private Geometry[] geom = new Geometry[2];
   private String wkta;
@@ -139,10 +139,6 @@ public class TestCase implements Testable {
 
   public void setExpectedSymDifference(Geometry expectedSymDifference) {
     this.expectedSymDifference = expectedSymDifference;
-  }
-
-  public void setExpectedCentroid(Geometry expectedCentroid) {
-    this.expectedCentroid = expectedCentroid;
   }
 
   public TestCase setExpectedIntersection(String wkt) {
@@ -331,8 +327,8 @@ public class TestCase implements Testable {
   }
 
   void assertEqualsExact(Geometry g1, Geometry g2, String msg) {
-    Geometry g1Clone = (Geometry) g1.clone();
-    Geometry g2Clone = (Geometry) g2.clone();
+    Geometry g1Clone = g1.copy();
+    Geometry g2Clone = g2.copy();
     g1Clone.normalize();
     g2Clone.normalize();
     assertTrue(g1Clone.equalsExact(g2Clone), msg);
