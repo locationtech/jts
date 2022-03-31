@@ -262,8 +262,7 @@ public class HPRtree
       System.out.println(fact.toGeometry(env));
     }
   }
-*/
-  
+
   private static void dumpItems(List<Item> items) {
     GeometryFactory fact = new GeometryFactory();
     for (Item item : items) {
@@ -271,6 +270,7 @@ public class HPRtree
       System.out.println(fact.toGeometry(env));
     }
   }
+  */
 
   private static double[] createBoundsArray(int size) {
     double[] a = new double[4*size];

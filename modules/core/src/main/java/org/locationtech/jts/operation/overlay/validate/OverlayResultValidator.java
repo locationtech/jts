@@ -19,6 +19,7 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Location;
 import org.locationtech.jts.operation.overlay.OverlayOp;
 import org.locationtech.jts.operation.overlay.snap.GeometrySnapper;
+import org.locationtech.jts.util.Debug;
 
 /**
  * Validates that the result of an overlay operation is
@@ -154,7 +155,7 @@ public class OverlayResultValidator
 
   private void reportResult(int overlayOp, int[] location, boolean expectedInterior)
   {
-  	System.out.println(
+  	Debug.println(
   			"Overlay result invalid - A:" + Location.toLocationSymbol(location[0])
   			+ " B:" + Location.toLocationSymbol(location[1])
   			+ " expected:" + (expectedInterior ? 'i' : 'e')

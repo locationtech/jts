@@ -279,36 +279,38 @@ public class TrianglePredicate
    * @param c a vertex of the triangle
    * @param p the point to test
    */
-private static void checkRobustInCircle(Coordinate a, Coordinate b, Coordinate c,
-    Coordinate p) 
-{
-  boolean nonRobustInCircle = isInCircleNonRobust(a, b, c, p);
-  boolean isInCircleDD = TrianglePredicate.isInCircleDDSlow(a, b, c, p);
-  boolean isInCircleCC = TrianglePredicate.isInCircleCC(a, b, c, p);
-
-  Coordinate circumCentre = Triangle.circumcentre(a, b, c);
-  System.out.println("p radius diff a = "
-      + Math.abs(p.distance(circumCentre) - a.distance(circumCentre))
-      / a.distance(circumCentre));
-
-  if (nonRobustInCircle != isInCircleDD || nonRobustInCircle != isInCircleCC) {
-    System.out.println("inCircle robustness failure (double result = "
-        + nonRobustInCircle 
-        + ", DD result = " + isInCircleDD
-        + ", CC result = " + isInCircleCC + ")");
-    System.out.println(WKTWriter.toLineString(new CoordinateArraySequence(
-        new Coordinate[] { a, b, c, p })));
-    System.out.println("Circumcentre = " + WKTWriter.toPoint(circumCentre)
-        + " radius = " + a.distance(circumCentre));
+  /*
+  private static void checkRobustInCircle(Coordinate a, Coordinate b, Coordinate c,
+      Coordinate p) 
+  {
+    boolean nonRobustInCircle = isInCircleNonRobust(a, b, c, p);
+    boolean isInCircleDD = TrianglePredicate.isInCircleDDSlow(a, b, c, p);
+    boolean isInCircleCC = TrianglePredicate.isInCircleCC(a, b, c, p);
+  
+    Coordinate circumCentre = Triangle.circumcentre(a, b, c);
     System.out.println("p radius diff a = "
-        + Math.abs(p.distance(circumCentre)/a.distance(circumCentre) - 1));
-    System.out.println("p radius diff b = "
-        + Math.abs(p.distance(circumCentre)/b.distance(circumCentre) - 1));
-    System.out.println("p radius diff c = "
-        + Math.abs(p.distance(circumCentre)/c.distance(circumCentre) - 1));
-    System.out.println();
+        + Math.abs(p.distance(circumCentre) - a.distance(circumCentre))
+        / a.distance(circumCentre));
+  
+    if (nonRobustInCircle != isInCircleDD || nonRobustInCircle != isInCircleCC) {
+      System.out.println("inCircle robustness failure (double result = "
+          + nonRobustInCircle 
+          + ", DD result = " + isInCircleDD
+          + ", CC result = " + isInCircleCC + ")");
+      System.out.println(WKTWriter.toLineString(new CoordinateArraySequence(
+          new Coordinate[] { a, b, c, p })));
+      System.out.println("Circumcentre = " + WKTWriter.toPoint(circumCentre)
+          + " radius = " + a.distance(circumCentre));
+      System.out.println("p radius diff a = "
+          + Math.abs(p.distance(circumCentre)/a.distance(circumCentre) - 1));
+      System.out.println("p radius diff b = "
+          + Math.abs(p.distance(circumCentre)/b.distance(circumCentre) - 1));
+      System.out.println("p radius diff c = "
+          + Math.abs(p.distance(circumCentre)/c.distance(circumCentre) - 1));
+      System.out.println();
+    }
   }
-}
+*/
 
 
 }

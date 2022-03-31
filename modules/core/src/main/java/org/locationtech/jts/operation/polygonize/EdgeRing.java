@@ -303,19 +303,18 @@ class EdgeRing {
 
   /**
    * Returns this ring as a {@link LinearRing}, or null if an Exception occurs while
-   * creating it (such as a topology problem). Details of problems are written to
-   * standard output.
+   * creating it (such as a topology problem). 
    */
   public LinearRing getRing()
   {
     if (ring != null) return ring;
     getCoordinates();
-    if (ringPts.length < 3) System.out.println(ringPts);
+    //if (ringPts.length < 3) System.out.println(ringPts);
     try {
       ring = factory.createLinearRing(ringPts);
     }
     catch (Exception ex) {
-      System.out.println(ringPts);
+      //System.out.println(ringPts);
     }
     return ring;
   }
