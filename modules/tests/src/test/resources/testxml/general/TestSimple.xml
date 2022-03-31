@@ -110,6 +110,42 @@
 </case>
 
 <case>
+  <desc>L - simple ring - repeated start point</desc>
+  <a>
+    LINESTRING (10 10, 2 2, 20 2, 10 10, 10 10)
+  </a>
+<test>
+  <op name="isSimple" arg1="A">
+    true
+  </op>
+</test>
+</case>
+
+<case>
+  <desc>L - simple ring - repeated end point</desc>
+  <a>
+    LINESTRING (10 10, 10 10, 10 10, 2 2, 20 2, 10 10, 10 10)
+  </a>
+<test>
+  <op name="isSimple" arg1="A">
+    true
+  </op>
+</test>
+</case>
+
+<case>
+  <desc>L - simple ring - repeated all points</desc>
+  <a>
+    LINESTRING (10 10, 10 10, 10 10)
+  </a>
+<test>
+  <op name="isSimple" arg1="A">
+    true
+  </op>
+</test>
+</case>
+
+<case>
   <desc>L - non-simple, proper interior intersection</desc>
   <a>
     LINESTRING (20 60, 160 60, 80 160, 80 20)
