@@ -300,8 +300,8 @@ public class Vertex
         try {
             cc = new Vertex(hcc.getX(), hcc.getY());
         } catch (NotRepresentableException nre) {
-            System.err.println("a: " + a + "  b: " + b + "  c: " + c);
-            System.err.println(nre);
+            //Debug.println("a: " + a + "  b: " + b + "  c: " + c);
+            //Debug.println(nre);
         }
         return cc;
     }
