@@ -24,6 +24,7 @@ import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Location;
 import org.locationtech.jts.geom.Quadrant;
+import org.locationtech.jts.util.Debug;
 
 /**
  * The computation of the <code>IntersectionMatrix</code> relies on the use of a structure
@@ -238,14 +239,6 @@ public class PlanarGraph
       e.print(out);
       e.eiList.print(out);
     }
-  }
-  void debugPrint(Object o)
-  {
-    System.out.print(o);
-  }
-  void debugPrintln(Object o)
-  {
-    System.out.println(o);
   }
 
 }

@@ -274,16 +274,18 @@ public class RobustLineIntersector
     return intPt;
   }
 
+  /*
   private void checkDD(Coordinate p1, Coordinate p2, Coordinate q1,
       Coordinate q2, Coordinate intPt)
   {
     Coordinate intPtDD = CGAlgorithmsDD.intersection(p1, p2, q1, q2);
     boolean isIn = isInSegmentEnvelopes(intPtDD);
-    System.out.println(   "DD in env = " + isIn + "  --------------------- " + intPtDD);
+    Debug.println(   "DD in env = " + isIn + "  --------------------- " + intPtDD);
     if (intPt.distance(intPtDD) > 0.0001) {
-      System.out.println("Distance = " + intPt.distance(intPtDD));
+      Debug.println("Distance = " + intPt.distance(intPtDD));
     }
   }
+  */
   
   /**
    * Computes a segment intersection using homogeneous coordinates.

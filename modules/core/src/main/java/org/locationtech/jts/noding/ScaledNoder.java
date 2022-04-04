@@ -111,10 +111,11 @@ public class ScaledNoder
       pts[i].x = pts[i].x / scaleFactor + offsetX;
       pts[i].y = pts[i].y / scaleFactor + offsetY;
     }
-
+    /*
     if (pts.length == 2 && pts[0].equals2D(pts[1])) {
       System.out.println(pts);
     }
+    */
   }
 
   //private double rescale(double val) { return val / scaleFactor; }

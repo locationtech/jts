@@ -66,11 +66,12 @@ public class UnionInteracting
 		
 //		System.out.println(int0);
 //		System.out.println(int1);
-
+/*
 		if (int0.isEmpty() || int1.isEmpty()) {
 			System.out.println("found empty!");
 //			computeInteracting();
 		}
+		*/
 //		if (! int0.isValid()) {
 			//System.out.println(int0);
 			//throw new RuntimeException("invalid geom!");

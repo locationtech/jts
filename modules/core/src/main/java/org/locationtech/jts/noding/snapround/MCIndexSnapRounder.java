@@ -79,6 +79,7 @@ public class MCIndexSnapRounder
     //checkCorrectness(inputSegmentStrings);
   }
 
+  /*
   private void checkCorrectness(Collection inputSegmentStrings)
   {
     Collection resultSegStrings = NodedSegmentString.getNodedSubstrings(inputSegmentStrings);
@@ -89,7 +90,8 @@ public class MCIndexSnapRounder
       ex.printStackTrace();
     }
   }
-
+*/
+  
   private void snapRound(Collection segStrings, LineIntersector li)
   {
     List intersections = findInteriorIntersections(segStrings, li);

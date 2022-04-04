@@ -374,7 +374,7 @@ public class DirectedEdgeStar
 
   public void print(PrintStream out)
   {
-    System.out.println("DirectedEdgeStar: " + getCoordinate());
+    out.println("DirectedEdgeStar: " + getCoordinate());
     for (Iterator it = iterator(); it.hasNext(); ) {
       DirectedEdge de = (DirectedEdge) it.next();
       out.print("out ");

@@ -128,11 +128,12 @@ public class SnapOverlayOp
     remGeom[1] = cbr.removeCommonBits(geom[1].copy());
     return remGeom;
   }
-  
+  /*
   private void checkValid(Geometry g)
   {
   	if (! g.isValid()) {
   		System.out.println("Snapped geometry is invalid");
   	}
   }
+  */
 }

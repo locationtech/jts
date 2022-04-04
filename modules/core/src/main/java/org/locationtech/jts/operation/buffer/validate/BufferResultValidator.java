@@ -16,6 +16,7 @@ import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.util.Debug;
 
 /**
  * Validates that the result of a buffer operation
@@ -125,7 +126,7 @@ public class BufferResultValidator
   private void report(String checkName)
   {
     if (! VERBOSE) return;
-    System.out.println("Check " + checkName + ": " 
+    Debug.println("Check " + checkName + ": " 
         + (isValid ? "passed" : "FAILED"));
   }
   
