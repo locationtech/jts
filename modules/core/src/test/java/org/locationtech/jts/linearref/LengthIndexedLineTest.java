@@ -167,6 +167,12 @@ public class LengthIndexedLineTest
     assertTrue(Double.isNaN(projPt.getZ() ));
   }
 
+  public void testExtractLineIndexAtEndpointOfTouchingLines()
+  {
+    runIndicesOfThenExtract("MULTILINESTRING((0 0, 0 50), (0 50, 0 100))",
+      "LINESTRING (0 50, 0 60)");
+  }
+
   private void checkExtractLine(String wkt, double start, double end, String expected)
   {
     Geometry linearGeom = read(wkt);

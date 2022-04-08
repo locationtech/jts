@@ -20,6 +20,10 @@ import org.locationtech.jts.geom.Geometry;
  * along a linear {@link Geometry}.
  * Negative lengths are measured in reverse from end of the linear geometry.
  * Out-of-range values are clamped.
+ * <p>
+ * <b>Note:</b><br/>
+ * This class is intended for internal use only, and it
+ * might be made package-private in a future version of this library
  */
 public class LengthLocationMap
 {
@@ -72,7 +76,7 @@ public class LengthLocationMap
     return locater.getLength(loc);
   }
 
-  private Geometry linearGeom;
+  private final Geometry linearGeom;
 
   public LengthLocationMap(Geometry linearGeom)
   {
@@ -129,7 +133,7 @@ public class LengthLocationMap
     LinearIterator it = new LinearIterator(linearGeom);
     while (it.hasNext()) {
 
-      /**
+      /*
        * Special handling is required for the situation when the
        * length references exactly to a component endpoint.
        * In this case, the endpoint location of the current component
@@ -203,7 +207,8 @@ public class LengthLocationMap
         if (loc.getComponentIndex() == it.getComponentIndex()) {
           return totalLength;
         }
-      }      it.next();
+      }
+      it.next();
     }
     return totalLength;
   }
