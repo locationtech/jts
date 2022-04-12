@@ -32,11 +32,11 @@ import org.locationtech.jts.math.MathUtil;
  * The hull construction attempts to minimize the area difference
  * with the input geometry.
  * Hulls are generally concave if the input is.
+ * Computed hulls do not contain any self-intersections or overlaps, 
+ * so the result polygonal geometry is valid.
  * <p>
  * Polygons with holes and MultiPolygons are supported. 
  * The result has the same geometric type and structure as the input.
- * Computed hulls do not contain any self-intersections or overlaps, 
- * so the result polygonal geometry is valid.
  * <p>
  * The number of vertices in the computed hull is determined by a target parameter.
  * Two different parameters are supported:
