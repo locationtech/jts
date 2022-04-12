@@ -41,8 +41,7 @@ import org.locationtech.jts.math.MathUtil;
  * The number of vertices in the computed hull is determined by a target parameter.
  * Two different parameters are supported:
  * <ol>
- * <li><b>Vertex Number fraction:</b> the fraction of number of vertices in the result
- * compared to the input size.
+ * <li><b>Vertex Number fraction:</b> the fraction of the input vertices retained in the result.
  * Value 1 produces the original geometry.
  * Smaller values produce less concave results.
  * For outer hulls, value 0 produces the convex hull (with triangles for any holes).
@@ -62,14 +61,14 @@ public class PolygonHull {
   /**
    * Computes a boundary-respecting hull of a polygonal geometry,
    * with hull shape determined by a target parameter 
-   * specifying the fraction of number of vertices in the result to the input.
+   * specifying the fraction of the input vertices retained in the result.
    * Larger values compute less concave results.
    * A value of 1 produces the convex hull; a value of 0 produces the original geometry.
    * An outer hull is computed if the parameter is positive, 
    * an inner hull is computed if it is negative.
    * 
    * @param geom the polygonal geometry to process
-   * @param vertexNumFraction the target fraction of number of vertices in result
+   * @param vertexNumFraction the target fraction of number of input vertices in result
    * @return the hull geometry
    */
   public static Geometry hull(Geometry geom, double vertexNumFraction) {
@@ -123,11 +122,24 @@ public class PolygonHull {
     }
   }
 
+  /**
+   * Sets the target fraction of input vertices
+   * which are retained in the result.
+   * The value should be in the range [0,1].
+   * 
+   * @param vertexNumFraction a fraction of the number of input vertices 
+   */
   public void setVertexNumFraction(double vertexNumFraction) {
     double frac = MathUtil.clamp(vertexNumFraction, 0, 1);
     this.vertexNumFraction = frac; 
   }
   
+  /**
+   * Sets the target maximum ratio of the change in area of the result to the input area.
+   * The value must be 0 or greater.
+   * 
+   * @param areaDeltaRatio a ratio of the change in area of the result
+   */
   public void setAreaDeltaRatio(double areaDeltaRatio) {
     this.areaDeltaRatio = areaDeltaRatio; 
   }
