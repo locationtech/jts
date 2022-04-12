@@ -73,5 +73,11 @@ public class HullFunctions {
     return PolygonHull.hull(geom, vertexFrac);
   }
   
+  public static Geometry polygonHullByArea(Geometry geom, 
+      @Metadata(title="Area Frac")
+      double areaFrac) {
+    return PolygonHull.hullByAreaDelta(geom, areaFrac);
+  }
+  
 
 }

@@ -33,7 +33,8 @@ import org.locationtech.jts.index.VertexSequencePackedRtree;
 class RingHull {
   
   private LinearRing inputRing;
-  private int targetVertexCount;
+  private int targetVertexNum = -1;
+  private double targetAreaDelta = -1;
 
   /**
    * The polygon vertices are provided in CW orientation. 
@@ -42,6 +43,7 @@ class RingHull {
    */
   private final Coordinate[] vertex;
   private LinkedRing vertexRing;
+  private double areaDelta = 0;
   
   /**
    * Indexing vertices improves corner intersection testing performance.
@@ -57,11 +59,18 @@ class RingHull {
    * 
    * @param ring the ring vertices to process
    */
-  public RingHull(LinearRing ring, boolean isOuter, int targetVertexCount) {
+  public RingHull(LinearRing ring, boolean isOuter) {
     this.inputRing = ring; 
     this.vertex = ring.getCoordinates();
-    this.targetVertexCount = targetVertexCount;
     init(vertex, isOuter);
+  }
+  
+  public void setMinVertexNum(int minVertexNum) {
+    targetVertexNum = minVertexNum;
+  }
+  
+  public void setMaxAreaDelta(double maxAreaDelta) {
+    targetAreaDelta = maxAreaDelta;
   }
   
   public Envelope getEnvelope() {
@@ -129,7 +138,7 @@ class RingHull {
   
   public void compute(RingHullIndex hullIndex) {        
     while (! cornerQueue.isEmpty() 
-        && vertexRing.size() > targetVertexCount
+        && ! isAtTarget()
         && vertexRing.size() > 3) {
       Corner corner = cornerQueue.poll();
       //-- a corner may no longer be valid due to removal of adjacent corners
@@ -144,11 +153,23 @@ class RingHull {
       }
     }
   }
+
+  private boolean isAtTarget() {
+    if (targetVertexNum >= 0) {
+      return vertexRing.size() < targetVertexNum;
+    }
+    if (targetAreaDelta >= 0) {
+      return areaDelta > targetAreaDelta;
+    }
+    //-- no target set
+    return true;
+  }
   
   /**
    * Removes a corner by removing the apex vertex from the ring.
-   * This may create two new corners with apexes
-   * being the other vertices in the corner.
+   * Two new corners are created with apexes
+   * at the other vertices of the corner
+   * (if they are non-convex and thus removable).
    * 
    * @param corner the corner to remove
    * @param cornerQueue the corner queue
@@ -159,6 +180,8 @@ class RingHull {
     int next = vertexRing.next(index);
     vertexRing.remove(index);
     vertexIndex.remove(index);
+    areaDelta += corner.getArea();
+    
     //-- potentially add the new corners created
     addCorner(prev, cornerQueue);
     addCorner(next, cornerQueue);
@@ -257,6 +280,10 @@ class RingHull {
 
     public int getIndex() {
       return index;
+    }
+    
+    public double getArea() {
+      return area;
     }
     
     /**

@@ -14,12 +14,14 @@ package org.locationtech.jts.algorithm.hull;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.locationtech.jts.algorithm.Area;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.Polygonal;
+import org.locationtech.jts.math.MathUtil;
 
 /**
  * Computes hulls which respect the boundaries of polygonal geometry.
@@ -27,23 +29,25 @@ import org.locationtech.jts.geom.Polygonal;
  * Outer hulls contain the input geometry and are larger in area.
  * Inner hulls are contained by the input geometry and are smaller in area.
  * In both the hull vertices are a subset of the input vertices.
- * The vertices are selected in a way which minimizes the area difference
- * between the hull and the input geometry.
- * Hulls are generally concave if the input is, 
- * except for extremal values of the target parameter.
- * Polygons with holes and MultiPolygons are supported. 
+ * The hull construction attempts to minimize the area difference
+ * with the input geometry.
+ * Hulls are generally concave if the input is
+ * for lower magnitude of the input parameter.
+ * Hulls become less concave as the parameter magnitude increases,
+ * and become convex at some input-dependent magnitude.
  * <p>
  * The number of vertices in the computed hull is determined by a target parameter.
  * The target criterion is the fraction of the input vertices included in the hull. 
- * A value of 1 produces the original geometry.
- * A fraction of 0 produces the convex hull (for an outer hull) 
+ * A value of 0 produces the original geometry.
+ * A fraction of 1 produces the convex hull (for an outer hull) 
  * or a triangle (for an inner hull). 
+ * Larger values produce less concave results.
  * A positive value computes an outer hull, a negative one computes an inner hull.
  * <p>
- * The algorithm ensures that computed hulls do not 
- * contain any self-intersections or overlaps, 
- * so the result polygonal geometry is valid.
+ * Polygons with holes and MultiPolygons are supported. 
  * The result has the same geometric type and structure as the input.
+ * Computed hulls do not contain any self-intersections or overlaps, 
+ * so the result polygonal geometry is valid.
  * 
  * @author Martin Davis
  *
@@ -52,43 +56,75 @@ public class PolygonHull {
   
   /**
    * Computes a boundary-respecting hull of a polygonal geometry,
-   * with hull shape determined by a target parameter of fractional 
-   * vertex count.
+   * with hull shape determined by a target parameter 
+   * specifying the ratio of vertices to remove.
+   * Larger values compute less concave results.
    * An outer hull is computed if the parameter is positive, 
    * an inner hull is computed if it is negative.
    * 
    * @param geom the polygonal geometry to process
-   * @param vertexCountFraction the target fraction of number of vertices
+   * @param vertexReductionRatio the target ratio of number of vertices to remove
    * @return the hull geometry
    */
-  public static Geometry hull(Geometry geom, double vertexCountFraction) {
-    PolygonHull hull = new PolygonHull(geom, vertexCountFraction);
+  public static Geometry hull(Geometry geom, double vertexReductionRatio) {
+    boolean isOuter = vertexReductionRatio > 0;
+    PolygonHull hull = new PolygonHull(geom, isOuter);
+    hull.setVertexReductionRatio( Math.abs(vertexReductionRatio));
     return hull.getResult();
   }
 
-  private Geometry inputGeom;
-  private boolean isOuter;
-  private double vertexCountFraction;
-  private GeometryFactory geomFactory;
-  
   /**
-   * Creates a new instance.
+   * Computes a boundary-respecting hull of a polygonal geometry,
+   * with hull shape determined by a target parameter 
+   * specifying the ratio of maximum difference in area to original area.
+   * Larger values compute less concave results.
    * An outer hull is computed if the parameter is positive, 
    * an inner hull is computed if it is negative.
    * 
-   * @param inputGeom the polygonal geometry to process
-   * @param vertexCountFraction the fraction of number of vertices to target
+   * @param geom the polygonal geometry to process
+   * @param areaDeltaRatio the target ratio of area difference to original area
+   * @return the hull geometry
    */
-  public PolygonHull(Geometry inputGeom, double vertexCountFraction) {
+  public static Geometry hullByAreaDelta(Geometry geom, double areaDeltaRatio) {
+    boolean isOuter = areaDeltaRatio > 0;
+    PolygonHull hull = new PolygonHull(geom, isOuter);
+    hull.setAreaDeltaRatio( Math.abs(areaDeltaRatio));
+    return hull.getResult();
+  }
+  
+  private Geometry inputGeom;
+  private boolean isOuter;
+  private double vertexCountRatio = -1;
+  private double areaDeltaRatio = -1;
+  private GeometryFactory geomFactory;
+  
+  /**
+   * Creates a new instance
+   * to compute a hull of a polygonal geometry.
+   * An outer or inner hull is computed 
+   * depending on the value of <code>isOuter</code>. 
+   * 
+   * @param inputGeom the polygonal geometry to process
+   * @param isOuter indicates whether to compute an outer or inner hull
+   */
+  public PolygonHull(Geometry inputGeom, boolean isOuter) {
     this.inputGeom = inputGeom; 
     this.geomFactory = inputGeom.getFactory();
-    this.isOuter = vertexCountFraction >= 0;
-    this.vertexCountFraction = Math.abs(vertexCountFraction); 
+    this.isOuter = isOuter;
     if (! (inputGeom instanceof Polygonal)) {
-      throw new IllegalArgumentException("Input geometry must be polygonal");
+      throw new IllegalArgumentException("Input geometry is not polygonal");
     }
   }
 
+  public void setVertexReductionRatio(double vertexReductionRatio) {
+    double ratio = MathUtil.clamp(vertexReductionRatio, 0, 1);
+    this.vertexCountRatio = 1 - ratio; 
+  }
+  
+  public void setAreaDeltaRatio(double areaDeltaRatio) {
+    this.areaDeltaRatio = areaDeltaRatio; 
+  }
+  
   /**
    * Gets the result polygonal hull geometry.
    * 
@@ -99,8 +135,9 @@ public class PolygonHull {
       /**
        * Only outer hulls where there is more than one polygon
        * can potentially overlap.
-       * Shell hulls could overlap adjacent shells or holes containing them; 
-       * hole hulls could overlap contained shells.
+       * Shell outer hulls could overlap adjacent shell hulls 
+       * or hole hulls surrounding them; 
+       * hole outer hulls could overlap contained shell hulls.
        */
       boolean isOverlapPossible = isOuter && inputGeom.getNumGeometries() > 1;
       if (isOverlapPossible) {
@@ -129,12 +166,16 @@ public class PolygonHull {
     @SuppressWarnings("unchecked")
     List<RingHull>[] polyHulls = (List<RingHull>[]) new ArrayList[nPoly];
 
+    //TODO: investigate if reordering input elements improves result
+    
+    //-- prepare element polygon hulls and index
     for (int i = 0 ; i < multiPoly.getNumGeometries(); i++) {
       Polygon poly = (Polygon) multiPoly.getGeometryN(i);
       List<RingHull> ringHulls = initPolygon(poly, hullIndex);
       polyHulls[i] = ringHulls;
     }
     
+    //-- compute hull polygons
     List<Polygon> polys = new ArrayList<Polygon>();
     for (int i = 0 ; i < multiPoly.getNumGeometries(); i++) {
       Polygon poly = (Polygon) multiPoly.getGeometryN(i);
@@ -180,17 +221,38 @@ public class PolygonHull {
     if (poly.isEmpty()) 
       return hulls;
     
-    hulls.add( createRingHull( poly.getExteriorRing(), isOuter, hullIndex));
+    double areaTotal = 0.0;
+    if (areaDeltaRatio >= 0) {
+      areaTotal = ringArea(poly);
+    }
+    hulls.add( createRingHull( poly.getExteriorRing(), isOuter, areaTotal, hullIndex));
     for (int i = 0; i < poly.getNumInteriorRing(); i++) {
       //Assert: interior ring is not empty
-      hulls.add( createRingHull( poly.getInteriorRingN(i), ! isOuter, hullIndex));
+      hulls.add( createRingHull( poly.getInteriorRingN(i), ! isOuter, areaTotal, hullIndex));
     }
     return hulls;
   }
   
-  private RingHull createRingHull(LinearRing ring, boolean isOuter, RingHullIndex hullIndex) {
-    int targetVertexCount = (int) Math.ceil(vertexCountFraction * (ring.getNumPoints() - 1));
-    RingHull ringHull = new RingHull(ring, isOuter, targetVertexCount);
+  private double ringArea(Polygon poly) {
+    double area = Area.ofRing( poly.getExteriorRing().getCoordinateSequence());
+    for (int i = 0; i < poly.getNumInteriorRing(); i++) {
+      area += Area.ofRing( poly.getInteriorRingN(i).getCoordinateSequence());
+    }
+    return area;
+  }
+
+  private RingHull createRingHull(LinearRing ring, boolean isOuter, double areaTotal, RingHullIndex hullIndex) {
+    RingHull ringHull = new RingHull(ring, isOuter);
+    if (vertexCountRatio >= 0) {
+      int targetVertexCount = (int) Math.ceil(vertexCountRatio * (ring.getNumPoints() - 1));
+      ringHull.setMinVertexNum(targetVertexCount);
+    }
+    else if (areaDeltaRatio >= 0) {
+      double ringArea = Area.ofRing(ring.getCoordinateSequence());
+      double ringWeight = ringArea / areaTotal;
+      double maxAreaDelta = ringWeight * areaDeltaRatio * ringArea;
+      ringHull.setMaxAreaDelta(maxAreaDelta);
+    }
     if (hullIndex != null) hullIndex.add(ringHull);
     return ringHull;
   }
