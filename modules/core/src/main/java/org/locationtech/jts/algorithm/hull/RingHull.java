@@ -47,7 +47,7 @@ class RingHull {
   
   /**
    * Indexing vertices improves corner intersection testing performance.
-   * The polyShell vertices are contiguous, so are suitable for a
+   * The ring vertices are contiguous, so are suitable for a
    * {@link VertexSequencePackedRtree}.
    */
   private VertexSequencePackedRtree vertexIndex;
@@ -58,6 +58,7 @@ class RingHull {
    * Creates a new instance.
    * 
    * @param ring the ring vertices to process
+   * @param isOuter whether the hull is outer or inner
    */
   public RingHull(LinearRing ring, boolean isOuter) {
     this.inputRing = ring; 

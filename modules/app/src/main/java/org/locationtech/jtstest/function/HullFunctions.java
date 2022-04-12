@@ -74,7 +74,7 @@ public class HullFunctions {
   }
   
   public static Geometry polygonHullByArea(Geometry geom, 
-      @Metadata(title="Area Frac")
+      @Metadata(title="Area Delta Ratio")
       double areaFrac) {
     return PolygonHull.hullByAreaDelta(geom, areaFrac);
   }
