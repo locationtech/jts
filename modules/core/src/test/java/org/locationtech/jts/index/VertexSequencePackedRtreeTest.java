@@ -9,11 +9,10 @@
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
  */
-package org.locationtech.jts.triangulate.polygon;
+package org.locationtech.jts.index;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
-import org.locationtech.jts.index.VertexSequencePackedRtree;
 
 import junit.framework.TestCase;
 import junit.textui.TestRunner;
