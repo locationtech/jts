@@ -14,6 +14,7 @@ package org.locationtech.jtstest.function;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.locationtech.jts.geom.Envelope;
@@ -106,5 +107,14 @@ public class FunctionsUtil {
     if (a != null) geoms[size++] = a;
     if (b != null) geoms[size] = b;
     return geoms;
+  }
+  
+  public static List<Geometry> elements(Geometry g)
+  {
+    List<Geometry> comp = new ArrayList<Geometry>();
+    for (int i = 0; i < g.getNumGeometries(); i++) {
+      comp.add(g.getGeometryN(i));
+    }
+    return comp;
   }
 }
