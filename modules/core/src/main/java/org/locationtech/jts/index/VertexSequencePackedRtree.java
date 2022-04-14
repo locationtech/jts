@@ -9,7 +9,7 @@
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
  */
-package org.locationtech.jts.triangulate.polygon;
+package org.locationtech.jts.index;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
@@ -28,11 +28,14 @@ import org.locationtech.jts.util.IntArrayList;
  * Note that this index queries only the individual points
  * of the input coordinate sequence, 
  * <b>not</b> any line segments which might be lie between them.
+ * <p>
+ * The input coordinate array is read-only, 
+ * and is not changed when vertices are removed.
  * 
  * @author Martin Davis
  *
  */
-class VertexSequencePackedRtree {
+public class VertexSequencePackedRtree {
   
   /**
    * Number of items/nodes in a parent node.
@@ -44,6 +47,7 @@ class VertexSequencePackedRtree {
   private int[] levelOffset;
   private int nodeCapacity  = NODE_CAPACITY;
   private Envelope[] bounds;
+  private boolean[] isRemoved;
 
   /**
    * Creates a new tree over the given sequence of coordinates.
@@ -53,6 +57,7 @@ class VertexSequencePackedRtree {
    */
   public VertexSequencePackedRtree(Coordinate[] pts) {
     this.items = pts;
+    isRemoved = new boolean[pts.length];
     build();
   }
 
@@ -199,7 +204,7 @@ class VertexSequencePackedRtree {
       if (index >= items.length) 
         return;
       Coordinate p = items[index];
-      if (p != null 
+      if (! isRemoved[index]         
           && queryEnv.contains(p))
         resultList.add(index);
     }
@@ -209,11 +214,12 @@ class VertexSequencePackedRtree {
   
   /**
    * Removes the input item at the given index from the spatial index.
+   * This does not change the underlying coordinate array.
    * 
    * @param index the index of the item in the input
    */
   public void remove(int index) {
-    items[index] = null;
+    isRemoved[index] = true;
     
     //--- prune the item parent node if all its items are removed
     int nodeIndex = index / nodeCapacity;
@@ -248,7 +254,7 @@ class VertexSequencePackedRtree {
     int start = nodeIndex * nodeCapacity;
     int end = MathUtil.clampMax(start + nodeCapacity, items.length);
     for (int i = start; i < end; i++) {
-      if (items[i] != null) return false;
+      if (! isRemoved[i]) return false;
     }
     return true;
   }
