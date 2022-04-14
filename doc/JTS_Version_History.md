@@ -38,6 +38,7 @@ Distributions for older JTS versions can be obtained at the
 * Improve `Densifier` to interpolate Z values (#835)
 * Add support for GeoJSON Feature and FeatureCollection types (#837)
 * Add `WKTReader.setFixStructure` to fix WKT input (#848)
+* Add `PolygonHull` class (#861)
 
 ### Bug Fixes
 
