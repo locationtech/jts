@@ -26,6 +26,7 @@ import org.locationtech.jts.geom.Triangle;
 import org.locationtech.jts.index.VertexSequencePackedRtree;
 
 /**
+ * Computes the outer or inner hull of a ring.
  * 
  * @author Martin Davis
  *
@@ -37,11 +38,10 @@ class RingHull {
   private double targetAreaDelta = -1;
 
   /**
-   * The polygon vertices are provided in CW orientation. 
-   * Thus for convex interior angles 
-   * the vertices forming the angle are in CW orientation.
+   * The ring vertices are oriented so that
+   * for corners which are to be kept 
+   * the vertices forming the corner are in CW orientation.
    */
-  private final Coordinate[] vertex;
   private LinkedRing vertexRing;
   private double areaDelta = 0;
   
@@ -62,8 +62,7 @@ class RingHull {
    */
   public RingHull(LinearRing ring, boolean isOuter) {
     this.inputRing = ring; 
-    this.vertex = ring.getCoordinates();
-    init(vertex, isOuter);
+    init(ring.getCoordinates(), isOuter);
   }
   
   public void setMinVertexNum(int minVertexNum) {
