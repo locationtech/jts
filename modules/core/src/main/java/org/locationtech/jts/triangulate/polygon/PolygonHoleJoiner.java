@@ -32,7 +32,7 @@ import org.locationtech.jts.noding.SegmentStringUtil;
 
 /**
  * Transforms a polygon with holes into a single self-touching (invalid) ring
- * by connecting holes to the exterior shell or to another hole. 
+ * by joining holes to the exterior shell or to another hole. 
  * The holes are added from the lowest upwards. 
  * As the resulting shell develops, a hole might be added to what was
  * originally another hole.
@@ -55,8 +55,8 @@ public class PolygonHoleJoiner {
   private static final double EPS = 1.0E-4;
   
   private List<Coordinate> shellCoords;
-  // orderedCoords is a copy of shellCoords for sort purposes
-  private TreeSet<Coordinate> orderedCoords;
+  // a sorted copy of shellCoords
+  private TreeSet<Coordinate> shellCoordsSorted;
   // Key: starting end of the cut; Value: list of the other end of the cut
   private HashMap<Coordinate, ArrayList<Coordinate>> cutMap;
   private SegmentSetMutualIntersector polygonIntersector;
@@ -92,8 +92,8 @@ public class PolygonHoleJoiner {
   }
   
   private void joinHoles() {
-    orderedCoords = new TreeSet<Coordinate>();
-    orderedCoords.addAll(shellCoords);
+    shellCoordsSorted = new TreeSet<Coordinate>();
+    shellCoordsSorted.addAll(shellCoords);
     cutMap = new HashMap<Coordinate, ArrayList<Coordinate>>();
     List<LinearRing> orderedHoles = sortHoles(inputPolygon);
     for (int i = 0; i < orderedHoles.size(); i++) {
@@ -116,9 +116,9 @@ public class PolygonHoleJoiner {
      * shellCoords[], so find the proper one and add the hole after it.
      */
     final Coordinate[] holeCoords = hole.getCoordinates();
-    List<Integer> holeLeftVerticesIndex = getLeftMostVertex(hole);
+    List<Integer> holeLeftVerticesIndex = findLeftVertices(hole);
     Coordinate holeCoord = holeCoords[holeLeftVerticesIndex.get(0)];
-    List<Coordinate> shellCoordsList = getLeftShellVertex(holeCoord);
+    List<Coordinate> shellCoordsList = findLeftShellVertices(holeCoord);
     Coordinate shellCoord = shellCoordsList.get(0);
     int shortestHoleVertexIndex = 0;
     //--- pick the shell-hole vertex pair that gives the shortest distance
@@ -193,15 +193,15 @@ public class PolygonHoleJoiner {
    * @param holeCoord the hole coordinates
    * @return a list of candidate join vertices
    */
-  private List<Coordinate> getLeftShellVertex(Coordinate holeCoord) {
+  private List<Coordinate> findLeftShellVertices(Coordinate holeCoord) {
     ArrayList<Coordinate> list = new ArrayList<Coordinate>();
-    Coordinate closest = orderedCoords.higher(holeCoord);
+    Coordinate closest = shellCoordsSorted.higher(holeCoord);
     while (closest.x == holeCoord.x) {
-      closest = orderedCoords.higher(closest);
+      closest = shellCoordsSorted.higher(closest);
     }
     do {
-      closest = orderedCoords.lower(closest);
-    } while (!isJoinable(holeCoord, closest) && !closest.equals(orderedCoords.first()));
+      closest = shellCoordsSorted.lower(closest);
+    } while (!isJoinable(holeCoord, closest) && !closest.equals(shellCoordsSorted.first()));
     list.add(closest);
     if ( closest.x != holeCoord.x )
       return list;
@@ -209,7 +209,7 @@ public class PolygonHoleJoiner {
     list.clear();
     while (chosenX == closest.x) {
       list.add(closest);
-      closest = orderedCoords.lower(closest);
+      closest = shellCoordsSorted.lower(closest);
       if ( closest == null )
         return list;
     }
@@ -263,34 +263,47 @@ public class PolygonHoleJoiner {
   }
   
   /**
-   * Add hole at proper position in shell coordinate list.
+   * Add hole vertices at proper position in shell vertex list.
+   * For a touching/zero-length join line, avoids adding the join vertices twice.
+   * 
    * Also adds hole points to ordered coordinates.
    * 
-   * @param shellVertexIndex
-   * @param holeCoords
-   * @param holeVertexIndex
+   * @param shellJoinIndex index of join vertex in shell
+   * @param holeCoords the vertices of the hole to be inserted
+   * @param holeJoinIndex index of join vertex in hole
    */
-  private void addHoleToShell(int shellVertexIndex, Coordinate[] holeCoords, int holeVertexIndex) {
-    List<Coordinate> newCoords = new ArrayList<Coordinate>();
-    newCoords.add(new Coordinate(shellCoords.get(shellVertexIndex)));
+  private void addHoleToShell(int shellJoinIndex, Coordinate[] holeCoords, int holeJoinIndex) {
+    Coordinate shellJoinPt = shellCoords.get(shellJoinIndex);
+    Coordinate holeJoinPt = holeCoords[holeJoinIndex];
+    //-- check for touching (zero-length) join to avoid inserting duplicate vertices
+    boolean isJoinTouching = shellJoinPt.equals2D(holeJoinPt);
+    
+    //-- create new section of vertices to insert in shell
+    List<Coordinate> newSection = new ArrayList<Coordinate>();
+    if (! isJoinTouching) {
+      newSection.add(new Coordinate(shellJoinPt));
+    }
     final int nPts = holeCoords.length - 1;
-    int i = holeVertexIndex;
+    int i = holeJoinIndex;
     do {
-      newCoords.add(new Coordinate(holeCoords[i]));
+      newSection.add(new Coordinate(holeCoords[i]));
       i = (i + 1) % nPts;
-    } while (i != holeVertexIndex);
-    newCoords.add(new Coordinate(holeCoords[holeVertexIndex]));
-    shellCoords.addAll(shellVertexIndex, newCoords);
-    orderedCoords.addAll(newCoords);
+    } while (i != holeJoinIndex);
+    if (! isJoinTouching) {
+      newSection.add(new Coordinate(holeCoords[holeJoinIndex]));
+    }
+    
+    shellCoords.addAll(shellJoinIndex, newSection);
+    shellCoordsSorted.addAll(newSection);
   }
 
   /**
-   * Sort the holes by minimum X, minimum Y.
+   * Sort the hole rings by minimum X, minimum Y.
    * 
    * @param poly polygon that contains the holes
-   * @return a list of ordered hole geometry
+   * @return a list of sorted hole rings
    */
-  private List<LinearRing> sortHoles(final Polygon poly) {
+  private static List<LinearRing> sortHoles(final Polygon poly) {
     List<LinearRing> holes = new ArrayList<LinearRing>();
     for (int i = 0; i < poly.getNumInteriorRing(); i++) {
       holes.add(poly.getInteriorRingN(i));
@@ -303,21 +316,22 @@ public class PolygonHoleJoiner {
    * Gets a list of indices of the leftmost vertices in a ring.
    * 
    * @param geom the hole ring
-   * @return index of the left most vertex
+   * @return indices of the leftmost vertices
    */
-  private List<Integer> getLeftMostVertex(LinearRing ring) {
+  private static List<Integer> findLeftVertices(LinearRing ring) {
     Coordinate[] coords = ring.getCoordinates();
-    ArrayList<Integer> list = new ArrayList<Integer>();
-    double minX = ring.getEnvelopeInternal().getMinX();
-    for (int i = 0; i < coords.length; i++) {
-      if ( Math.abs(coords[i].x - minX) < EPS ) {
-        list.add(i);
+    ArrayList<Integer> leftmostIndex = new ArrayList<Integer>();
+    double leftX = ring.getEnvelopeInternal().getMinX();
+    for (int i = 0; i < coords.length - 1; i++) {
+      //TODO: can this be strict equality?
+      if ( Math.abs(coords[i].x - leftX) < EPS ) {
+        leftmostIndex.add(i);
       }
     }
-    return list;
+    return leftmostIndex;
   }
     
-  private SegmentSetMutualIntersector createPolygonIntersector(Polygon polygon) {
+  private static SegmentSetMutualIntersector createPolygonIntersector(Polygon polygon) {
     List<SegmentString> polySegStrings = SegmentStringUtil.extractSegmentStrings(polygon);
     return new MCIndexSegmentSetMutualIntersector(polySegStrings);
   }
