@@ -24,7 +24,7 @@ Distributions for older JTS versions can be obtained at the
 ### Functionality Improvements
 
 * Improve `GeometryFixer` behaviour for holes outside polygons (#772)
-* Add `ConstrainedDelaunayTriangulator` and `PolygonTriangulator` (#775)
+* Add `ConstrainedDelaunayTriangulator` and `PolygonTriangulator` (#775, #862)
 * Add `Tri` data structure for representing triangulations (#775)
 * Simplify and fix logic of `BufferParameters.setQuadSegs` (#778)
 * Improve `KdTree` query code to avoid recursion (#779)
