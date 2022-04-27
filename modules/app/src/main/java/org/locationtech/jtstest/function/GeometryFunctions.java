@@ -16,6 +16,7 @@ import java.util.List;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.GeometryFilter;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.LinearRing;
@@ -111,5 +112,22 @@ public class GeometryFunctions
 	{
 		Coordinate[] pts = g.getCoordinates();
 		return g.getFactory().createMultiPointFromCoords(pts);
+	}
+	
+	public static Geometry addHoles(Geometry g, Geometry holeGeom) {
+	  //TODO: support adding to MultiPolygon
+	  Polygon poly = (Polygon) g;
+	  LinearRing shell = poly.getExteriorRing();
+	  List<LinearRing> holes = new ArrayList<LinearRing>();
+	  
+    for (int i = 0; i < poly.getNumInteriorRing(); i++) {
+      holes.add(poly.getInteriorRingN(i));
+    }
+    for (int i = 0; i < holeGeom.getNumGeometries(); i++) {
+      Polygon holePoly = (Polygon) holeGeom.getGeometryN(i);
+      holes.add(holePoly.getExteriorRing());
+    }
+	  
+    return g.getFactory().createPolygon(shell, GeometryFactory.toLinearRingArray(holes));
 	}
 }
