@@ -12,6 +12,7 @@
 package org.locationtech.jtstest.function;
 
 import org.locationtech.jts.algorithm.hull.ConcaveHull;
+import org.locationtech.jts.algorithm.hull.ConstrainedConcaveHull;
 import org.locationtech.jts.algorithm.hull.PolygonHull;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jtstest.geomfunction.Metadata;
@@ -78,6 +79,13 @@ public class HullFunctions {
       double areaFrac) {
     return PolygonHull.hullByAreaDelta(geom, areaFrac);
   }
+  
+  public static Geometry constrainedHull(Geometry geom, 
+      @Metadata(title="Area Delta Ratio")
+      double areaFrac) {
+    return ConstrainedConcaveHull.hull(geom, areaFrac);
+  }
+  
   
 
 }
