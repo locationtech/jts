@@ -9,6 +9,7 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.operation.overlayng.CoverageUnion;
 import org.locationtech.jts.triangulate.polygon.ConstrainedDelaunayTriangulator;
 import org.locationtech.jts.triangulate.tri.Tri;
 
@@ -34,7 +35,9 @@ public class ConstrainedConcaveHull {
     Coordinate[] framePts = mask.getExteriorRing().getCoordinates();
     List<Tri> hullTris = removeFrameTris(tris, framePts);
     
-    Geometry hull = Tri.toGeometry(hullTris, geomFactory).union();
+    Geometry triCoverage = Tri.toGeometry(hullTris, geomFactory);
+    //TODO: add in input polygons
+    Geometry hull = CoverageUnion.union(triCoverage);
     return hull;
   }
 
