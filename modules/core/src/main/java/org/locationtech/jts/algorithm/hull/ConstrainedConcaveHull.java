@@ -1,7 +1,6 @@
 package org.locationtech.jts.algorithm.hull;
 
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -31,26 +30,25 @@ public class ConstrainedConcaveHull {
 
   ConstrainedConcaveHull(Geometry constraint, double tolerance) {
     this.constraint = constraint;
-    constraintRings = constraintRings(constraint);
+    constraintRings = extractShells(constraint);
 
     geomFactory = constraint.getFactory();
   }
   
   public Geometry getHull() {
-    Polygon mask = createMask(constraint);
-    ConstrainedDelaunayTriangulator cdt = new ConstrainedDelaunayTriangulator(mask);
+    Polygon frame = createFrame(constraint);
+    ConstrainedDelaunayTriangulator cdt = new ConstrainedDelaunayTriangulator(frame);
     List<Tri> tris = cdt.getTriangles();
-    Coordinate[] framePts = mask.getExteriorRing().getCoordinates();
-    removeFrameTris(tris, framePts);
+    Coordinate[] framePts = frame.getExteriorRing().getCoordinates();
     
-    pruneEdgeTris();
-    Geometry hull = createHullPolygon(hullTris);
+    removeFrameEdgeTris(tris, framePts);
+    removeEdgeTris();
+    
+    Geometry hull = buildHullPolygon(hullTris);
     return hull;
   }
 
-
-
-  private void pruneEdgeTris() {
+  private void removeEdgeTris() {
     while (! edgeTriQue.isEmpty()) {
       Tri tri = edgeTriQue.pop();
       //-- tri might have been removed already
@@ -75,34 +73,35 @@ public class ConstrainedConcaveHull {
   }
 
   private boolean isRemovable(Tri tri) {
-    if (isAllVerticesInSamePolygon(tri))
+    if (isTouchingSinglePolygon(tri))
       return true;
     //TODO: check if outside edge is longer than threshold
     return false;
   }
 
-  private boolean isAllVerticesInSamePolygon(Tri tri) {
+  private boolean isTouchingSinglePolygon(Tri tri) {
     Envelope envTri = envelope(tri);
     for (LinearRing ring : constraintRings) {
+      //-- touching tri must be in ring envelope
       if (ring.getEnvelopeInternal().intersects(envTri)) {
-        if (containsAllVertices(ring, tri))
+        if (hasAllVertices(ring, tri))
           return true;
       }
     }
     return false;
   }
 
-  private boolean containsAllVertices(LinearRing ring, Tri tri) {
+  private static boolean hasAllVertices(LinearRing ring, Tri tri) {
     for (int i = 0; i < 3; i++) {
       Coordinate v = tri.getCoordinate(i);
-      if (! containsVertex(ring, v)) {
+      if (! hasVertex(ring, v)) {
         return false;
       }
     }
     return true;
   }
   
-  private boolean containsVertex(LinearRing ring, Coordinate v) {
+  private static boolean hasVertex(LinearRing ring, Coordinate v) {
     for(int i = 1; i < ring.getNumPoints(); i++) {
       if (v.equals2D(ring.getCoordinateN(i))) {
         return true;
@@ -117,14 +116,14 @@ public class ConstrainedConcaveHull {
     return env;
   }
 
-  private void removeFrameTris(List<Tri> tris, Coordinate[] framePts) {
+  private void removeFrameEdgeTris(List<Tri> tris, Coordinate[] framePts) {
     hullTris = new HashSet<Tri>();
     edgeTriQue = new ArrayDeque<Tri>();
     for (Tri tri : tris) {
       int index = frameIndex(tri, framePts);
       if (index >= 0) {
         //-- frame tris are adjacent to at most one edge tri
-        int oppIndex = tri.oppEdge(index);
+        int oppIndex = Tri.oppEdge(index);
         Tri edgeTri = tri.getAdjacent(oppIndex);
         if (edgeTri != null) {
           edgeTriQue.add(edgeTri);
@@ -146,27 +145,25 @@ public class ConstrainedConcaveHull {
     return -1;
   }
 
-  private Geometry createHullPolygon(Set<Tri> hullTris) {
-    List<Tri> hullTriList =  new ArrayList<Tri>();
-    hullTriList.addAll(hullTris);
-    Geometry triCoverage = Tri.toGeometry(hullTriList, geomFactory);
+  private Geometry buildHullPolygon(Set<Tri> hullTris) {
+    Geometry triCoverage = Tri.toGeometry(hullTris, geomFactory);
     //TODO: add in input polygons
     Geometry hull = CoverageUnion.union(triCoverage);
     return hull;
   }
   
-  private Polygon createMask(Geometry polygons) {
+  private Polygon createFrame(Geometry polygons) {
     Envelope env = polygons.getEnvelopeInternal();
     double diam = env.getDiameter();
     Envelope envFrame = env.copy();
     envFrame.expandBy(4 * diam);
-    Polygon frame = (Polygon) geomFactory.toGeometry(envFrame);
-    LinearRing shell = (LinearRing) frame.getExteriorRing().copy();
-    Polygon mask = geomFactory.createPolygon(shell, constraintRings);
-    return mask;
+    Polygon frameOuter = (Polygon) geomFactory.toGeometry(envFrame);
+    LinearRing shell = (LinearRing) frameOuter.getExteriorRing().copy();
+    Polygon frame = geomFactory.createPolygon(shell, constraintRings);
+    return frame;
   }
 
-  private LinearRing[] constraintRings(Geometry polygons) {
+  private static LinearRing[] extractShells(Geometry polygons) {
     LinearRing[] rings = new LinearRing[polygons.getNumGeometries()];
     for (int i = 0; i < polygons.getNumGeometries(); i++) {
       Polygon consPoly = (Polygon) polygons.getGeometryN(i);

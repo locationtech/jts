@@ -11,6 +11,7 @@
  */
 package org.locationtech.jts.triangulate.tri;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.locationtech.jts.algorithm.Orientation;
@@ -42,14 +43,15 @@ public class Tri {
    * Creates a {@link GeometryCollection} of {@link Polygon}s
    * representing the triangles in a list.
    * 
-   * @param triList a list of Tris
+   * @param tris a collection of Tris
    * @param geomFact the GeometryFactory to use
    * @return the polygons for the triangles
    */
-  public static Geometry toGeometry(List<Tri> triList, GeometryFactory geomFact) {
-    Geometry[] geoms = new Geometry[triList.size()];
-    for (int i = 0; i < triList.size(); i++) {
-      geoms[i] = triList.get(i).toPolygon(geomFact);
+  public static Geometry toGeometry(Collection<Tri> tris, GeometryFactory geomFact) {
+    Geometry[] geoms = new Geometry[tris.size()];
+    int i = 0;
+    for (Tri tri : tris) {
+      geoms[i++] = tri.toPolygon(geomFact);
     }
     return geomFact.createGeometryCollection(geoms);
   }
