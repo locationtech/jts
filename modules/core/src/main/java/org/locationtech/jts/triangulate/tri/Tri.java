@@ -661,12 +661,22 @@ public class Tri {
   }
   
   /**
-   * Gets the length of the perimeter of the triangle.
+   * Gets the perimeter length of the triangle.
    * 
-   * @return the length of the perimeter
+   * @return the perimeter length
    */
   public double getLength() {
     return Triangle.length(p0, p1, p2);
+  }
+  
+  /**
+   * Gets the length of an edge of the triangle.
+   * 
+   * @param edgeIndex the edge index
+   * @return the edge length
+   */
+  public double getLength(int edgeIndex) {
+    return getCoordinate(edgeIndex).distance(getCoordinate(next(edgeIndex)));
   }
   
   /**

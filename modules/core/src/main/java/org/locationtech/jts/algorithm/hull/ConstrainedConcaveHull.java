@@ -1,8 +1,10 @@
 package org.locationtech.jts.algorithm.hull;
 
 import java.util.ArrayDeque;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.locationtech.jts.geom.Coordinate;
@@ -24,15 +26,18 @@ public class ConstrainedConcaveHull {
   }
   
   private Geometry constraints;
-  private GeometryFactory geomFactory;
+  private double maxEdgeLength;
   
+  private GeometryFactory geomFactory;
   private LinearRing[] constraintRings;
   
   private Set<Tri> hullTris;
-  private ArrayDeque<Tri> edgeTriQue;
+  private ArrayDeque<Tri> borderTriQue;
+  private Map<Tri, Integer> borderEdgeIndexMap = new HashMap<Tri, Integer>();
 
-  ConstrainedConcaveHull(Geometry constraints, double tolerance) {
+  ConstrainedConcaveHull(Geometry constraints, double maxLength) {
     this.constraints = constraints;
+    this.maxEdgeLength = maxLength;
     geomFactory = constraints.getFactory();
     constraintRings = extractShellRings(constraints);
   }
@@ -43,34 +48,86 @@ public class ConstrainedConcaveHull {
     List<Tri> tris = cdt.getTriangles();
     
     Coordinate[] framePts = frame.getExteriorRing().getCoordinates();
-    removeFrameEdgeTris(tris, framePts);
+    removeFrameCornerTris(tris, framePts);
     
-    removeEdgeTris();
+    removeBorderTris();
     
     Geometry hull = buildHullPolygon(hullTris);
     return hull;
   }
 
-  private void removeEdgeTris() {
-    while (! edgeTriQue.isEmpty()) {
-      Tri tri = edgeTriQue.pop();
+  private void removeFrameCornerTris(List<Tri> tris, Coordinate[] frameCorners) {
+    hullTris = new HashSet<Tri>();
+    borderTriQue = new ArrayDeque<Tri>();
+    for (Tri tri : tris) {
+      int index = vertexIndex(tri, frameCorners);
+      boolean isFrameCornerTri = index >= 0;
+      if (isFrameCornerTri) {
+        /**
+         * Frame tris are adjacent to at most one border tri,
+         * which is opposite the frame corner vertex.
+         * The opposite tri may be another frame tri. 
+         * This will be detected when it is processed,
+         * since it is not in the hullTri set.
+         */
+        int oppIndex = Tri.oppEdge(index);
+        addBorderTri(tri, oppIndex);
+        tri.remove();
+      }
+      else {
+        hullTris.add(tri);
+      }
+    }
+  }
+
+  /**
+   * Get the tri vertex index of some point in a list, 
+   * or -1 if none are vertices.
+   * 
+   * @param tri the tri to test for containing a point
+   * @param pts the points to test
+   * @return the vertex index of a point, or -1
+   */
+  private static int vertexIndex(Tri tri, Coordinate[] pts) {
+    for (Coordinate p : pts) {
+      int index = tri.getIndex(p);
+      if (index >= 0) 
+        return index;
+    }
+    return -1;
+  }
+  
+  private void addBorderTris(Tri tri) {
+    addBorderTri(tri, 0);
+    addBorderTri(tri, 1);
+    addBorderTri(tri, 2);
+  }
+  
+  private void addBorderTri(Tri tri, int index) {
+    Tri adj = tri.getAdjacent( index );
+    if (adj == null) 
+      return;
+    borderTriQue.add(adj);
+    int borderEdgeIndex = adj.getIndex(tri);
+    borderEdgeIndexMap.put(adj, borderEdgeIndex);
+  }
+
+  private void removeBorderTri(Tri tri) {
+    tri.remove();
+    hullTris.remove(tri);
+    borderEdgeIndexMap.remove(tri);
+  }
+  
+  private void removeBorderTris() {
+    while (! borderTriQue.isEmpty()) {
+      Tri tri = borderTriQue.pop();
       //-- tri might have been removed already
       if (! hullTris.contains(tri)) {
         continue;
       }
       if (isRemovable(tri)) {
-        addAdjacent(tri, edgeTriQue);
-        tri.remove();
-        hullTris.remove(tri);
-      }
-    }
-  }
-
-  private void addAdjacent(Tri tri, ArrayDeque<Tri> que) {
-    for (int i = 0; i < 3; i++) {
-      Tri adj = tri.getAdjacent(i);
-      if (adj != null) {
-        que.add(adj);
+        addBorderTris(tri);
+        removeBorderTri(tri);
       }
     }
   }
@@ -78,7 +135,13 @@ public class ConstrainedConcaveHull {
   private boolean isRemovable(Tri tri) {
     if (isTouchingSinglePolygon(tri))
       return true;
-    //TODO: check if outside edge is longer than threshold
+    //-- check if outside edge is longer than threshold
+    if (borderEdgeIndexMap.containsKey(tri)) {
+      int borderEdgeIndex = borderEdgeIndexMap.get(tri);
+      double edgeLen = tri.getLength(borderEdgeIndex);
+      if (edgeLen > maxEdgeLength)
+        return true;
+    }
     return false;
   }
 
@@ -119,40 +182,14 @@ public class ConstrainedConcaveHull {
     return env;
   }
 
-  private void removeFrameEdgeTris(List<Tri> tris, Coordinate[] framePts) {
-    hullTris = new HashSet<Tri>();
-    edgeTriQue = new ArrayDeque<Tri>();
-    for (Tri tri : tris) {
-      int index = frameIndex(tri, framePts);
-      if (index >= 0) {
-        //-- frame tris are adjacent to at most one edge tri
-        int oppIndex = Tri.oppEdge(index);
-        Tri edgeTri = tri.getAdjacent(oppIndex);
-        if (edgeTri != null) {
-          edgeTriQue.add(edgeTri);
-        }
-        tri.remove();
-      }
-      else {
-        hullTris.add(tri);
-      }
-    }
-  }
-
-  private static int frameIndex(Tri tri, Coordinate[] framePts) {
-    for (Coordinate framePt : framePts) {
-      int index = tri.getIndex(framePt);
-      if (index >= 0) 
-        return index;
-    }
-    return -1;
-  }
-
   private Geometry buildHullPolygon(Set<Tri> hullTris) {
     //-- union triangulation
     Geometry triCoverage = Tri.toGeometry(hullTris, geomFactory);
     Geometry filler = CoverageUnion.union(triCoverage);
     
+    if (filler.isEmpty()) {
+      return constraints.copy();
+    }
     //-- union with input constraints
     Geometry[] geoms = new Geometry[] { filler, constraints };
     GeometryCollection geomColl = geomFactory.createGeometryCollection(geoms);
