@@ -8,6 +8,7 @@ import java.util.Set;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryCollection;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.Polygon;
@@ -17,31 +18,33 @@ import org.locationtech.jts.triangulate.tri.Tri;
 
 public class ConstrainedConcaveHull {
   
-  public static Geometry hull(Geometry constraint, double tolerance) {
-    ConstrainedConcaveHull hull = new ConstrainedConcaveHull(constraint, tolerance);
+  public static Geometry hull(Geometry constraints, double tolerance) {
+    ConstrainedConcaveHull hull = new ConstrainedConcaveHull(constraints, tolerance);
     return hull.getHull();
   }
   
-  private Geometry constraint;
+  private Geometry constraints;
   private GeometryFactory geomFactory;
+  
   private LinearRing[] constraintRings;
+  
   private Set<Tri> hullTris;
   private ArrayDeque<Tri> edgeTriQue;
 
-  ConstrainedConcaveHull(Geometry constraint, double tolerance) {
-    this.constraint = constraint;
-    constraintRings = extractShells(constraint);
-
-    geomFactory = constraint.getFactory();
+  ConstrainedConcaveHull(Geometry constraints, double tolerance) {
+    this.constraints = constraints;
+    geomFactory = constraints.getFactory();
+    constraintRings = extractShellRings(constraints);
   }
   
   public Geometry getHull() {
-    Polygon frame = createFrame(constraint);
+    Polygon frame = createFrame(constraints.getEnvelopeInternal(), constraintRings);
     ConstrainedDelaunayTriangulator cdt = new ConstrainedDelaunayTriangulator(frame);
     List<Tri> tris = cdt.getTriangles();
-    Coordinate[] framePts = frame.getExteriorRing().getCoordinates();
     
+    Coordinate[] framePts = frame.getExteriorRing().getCoordinates();
     removeFrameEdgeTris(tris, framePts);
+    
     removeEdgeTris();
     
     Geometry hull = buildHullPolygon(hullTris);
@@ -146,16 +149,20 @@ public class ConstrainedConcaveHull {
   }
 
   private Geometry buildHullPolygon(Set<Tri> hullTris) {
+    //-- union triangulation
     Geometry triCoverage = Tri.toGeometry(hullTris, geomFactory);
-    //TODO: add in input polygons
-    Geometry hull = CoverageUnion.union(triCoverage);
+    Geometry filler = CoverageUnion.union(triCoverage);
+    
+    //-- union with input constraints
+    Geometry[] geoms = new Geometry[] { filler, constraints };
+    GeometryCollection geomColl = geomFactory.createGeometryCollection(geoms);
+    Geometry hull = CoverageUnion.union(geomColl);
     return hull;
   }
   
-  private Polygon createFrame(Geometry polygons) {
-    Envelope env = polygons.getEnvelopeInternal();
-    double diam = env.getDiameter();
-    Envelope envFrame = env.copy();
+  private Polygon createFrame(Envelope constraintEnv, LinearRing[] constraintRings) {
+    double diam = constraintEnv.getDiameter();
+    Envelope envFrame = constraintEnv.copy();
     envFrame.expandBy(4 * diam);
     Polygon frameOuter = (Polygon) geomFactory.toGeometry(envFrame);
     LinearRing shell = (LinearRing) frameOuter.getExteriorRing().copy();
@@ -163,7 +170,7 @@ public class ConstrainedConcaveHull {
     return frame;
   }
 
-  private static LinearRing[] extractShells(Geometry polygons) {
+  private static LinearRing[] extractShellRings(Geometry polygons) {
     LinearRing[] rings = new LinearRing[polygons.getNumGeometries()];
     for (int i = 0; i < polygons.getNumGeometries(); i++) {
       Polygon consPoly = (Polygon) polygons.getGeometryN(i);
