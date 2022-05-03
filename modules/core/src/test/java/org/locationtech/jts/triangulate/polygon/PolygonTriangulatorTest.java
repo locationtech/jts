@@ -86,6 +86,15 @@ public class PolygonTriangulatorTest extends GeometryTestCase {
         );
   }
   
+  /**
+   * A failing case for hole joining with two touching holes.
+   */
+  public void testBadHoleJoinTouchingHoles() {
+    checkTri(
+  "POLYGON ((0 9, 9 9, 9 0, 0 0, 0 9), (1 4, 6 8, 5 5, 1 4), (5 1, 1 4, 5 4, 5 1))"
+        );
+  }
+  
   private void checkTri(String wkt, String wktExpected) {
     Geometry geom = read(wkt);
     Geometry actual = PolygonTriangulator.triangulate(geom);
