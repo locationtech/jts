@@ -45,7 +45,7 @@
         <pmd.version>6.36.0</pmd.version>
         <checkstyle.version>8.44</checkstyle.version>
         <!--cast, deprecation, divzero, empty, fallthrough, finally, overrides, path, serial, and unchecked -->
-        <lint>unchecked</lint> 
+        <lint>unchecked</lint>
         <!-- none, accessibility, html, missing, reference, syntax, all -->
         <doclint>none</doclint>
     </properties>
@@ -132,6 +132,12 @@
                 <artifactId>ojdbc8</artifactId>
                 <version>19.10.0.0</version>
             </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-csv</artifactId>
+                <version>1.7</version>
+                <scope>test</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -192,7 +198,7 @@
                 </plugins>
             </build>
         </profile>
-        
+
     </profiles>
 
     <!-- =========================================================== -->
@@ -492,7 +498,7 @@
         </plugin>
       </plugins>
     </reporting>
-          
+
     <!-- Modules to build in appropriate dependency order -->
     <modules>
         <module>build-tools</module>
