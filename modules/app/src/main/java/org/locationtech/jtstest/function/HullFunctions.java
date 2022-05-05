@@ -67,13 +67,13 @@ public class HullFunctions {
     return (geom.getLength() - convexLen) / convexLen;
   }
   
-  public static Geometry polygonHull(Geometry geom, 
-      @Metadata(title="Vertex Frac")
+  public static Geometry polygonHullByVertexFrac(Geometry geom, 
+      @Metadata(title="Vertex Fraction")
       double vertexFrac) {
     return PolygonHull.hull(geom, vertexFrac);
   }
   
-  public static Geometry polygonHullByArea(Geometry geom, 
+  public static Geometry polygonHullByAreaDelta(Geometry geom, 
       @Metadata(title="Area Delta Ratio")
       double areaFrac) {
     return PolygonHull.hullByAreaDelta(geom, areaFrac);
