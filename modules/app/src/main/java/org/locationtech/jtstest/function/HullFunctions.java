@@ -81,9 +81,21 @@ public class HullFunctions {
   }
   
   public static Geometry constrainedHull(Geometry geom, 
-      @Metadata(title="Area Delta Ratio")
-      double areaFrac) {
-    return ConstrainedConcaveHull.hull(geom, areaFrac);
+      @Metadata(title="Max Edge Length")
+      double maxEdgeLen) {
+    return ConstrainedConcaveHull.hull(geom, maxEdgeLen);
+  }
+  
+  public static Geometry constrainedHullWithHoles(Geometry geom, 
+      @Metadata(title="Max Edge Length")
+      double maxEdgeLen) {
+    return ConstrainedConcaveHull.hull(geom, maxEdgeLen, true, false);
+  }
+  
+  public static Geometry constrainedHullKeepOuter(Geometry geom, 
+      @Metadata(title="Max Edge Length")
+      double maxEdgeLen) {
+    return ConstrainedConcaveHull.hull(geom, maxEdgeLen, false, true);
   }
   
   

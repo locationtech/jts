@@ -21,25 +21,56 @@ import org.locationtech.jts.triangulate.tri.Tri;
 public class ConstrainedConcaveHull {
   
   public static Geometry hull(Geometry constraints, double tolerance) {
+    return hull(constraints, tolerance, false, false);
+  }
+  
+  public static Geometry hull(Geometry constraints, double tolerance,
+      boolean isHolesAllowed, boolean isKeepOuterEdge) {
     ConstrainedConcaveHull hull = new ConstrainedConcaveHull(constraints, tolerance);
+    hull.setHolesAllowed(isHolesAllowed);
+    hull.setKeepOuterEdge(isKeepOuterEdge);
     return hull.getHull();
   }
   
   private Geometry constraints;
   private double maxEdgeLength;
+  private boolean isHolesAllowed = false;
+  private boolean isKeepOuterEdge = true;
   
   private GeometryFactory geomFactory;
   private LinearRing[] constraintRings;
   
   private Set<Tri> hullTris;
   private ArrayDeque<Tri> borderTriQue;
-  private Map<Tri, Integer> borderEdgeIndexMap = new HashMap<Tri, Integer>();
+  /**
+   * Records the border edge of border tris,
+   * so it can be tested for length and possible removal.
+   */
+  private Map<Tri, Integer> borderEdgeMap = new HashMap<Tri, Integer>();
 
-  ConstrainedConcaveHull(Geometry constraints, double maxLength) {
+  public ConstrainedConcaveHull(Geometry constraints, double maxLength) {
     this.constraints = constraints;
     this.maxEdgeLength = maxLength;
     geomFactory = constraints.getFactory();
     constraintRings = extractShellRings(constraints);
+  }
+  
+  /**
+   * Sets whether holes are allowed in the concave hull polygon.
+   * 
+   * @param isHolesAllowed true if holes are allowed in the result
+   */
+  public void setHolesAllowed(boolean isHolesAllowed) {
+    this.isHolesAllowed = isHolesAllowed;
+  }
+  
+  /**
+   * Sets whether holes are allowed in the concave hull polygon.
+   * 
+   * @param isHolesAllowed true if holes are allowed in the result
+   */
+  public void setKeepOuterEdge(boolean isKeepOuterEdge) {
+    this.isKeepOuterEdge = isKeepOuterEdge;
   }
   
   public Geometry getHull() {
@@ -51,6 +82,7 @@ public class ConstrainedConcaveHull {
     removeFrameCornerTris(tris, framePts);
     
     removeBorderTris();
+    if (isHolesAllowed) removeHoleTris();
     
     Geometry hull = buildHullPolygon(hullTris);
     return hull;
@@ -97,27 +129,6 @@ public class ConstrainedConcaveHull {
     return -1;
   }
   
-  private void addBorderTris(Tri tri) {
-    addBorderTri(tri, 0);
-    addBorderTri(tri, 1);
-    addBorderTri(tri, 2);
-  }
-  
-  private void addBorderTri(Tri tri, int index) {
-    Tri adj = tri.getAdjacent( index );
-    if (adj == null) 
-      return;
-    borderTriQue.add(adj);
-    int borderEdgeIndex = adj.getIndex(tri);
-    borderEdgeIndexMap.put(adj, borderEdgeIndex);
-  }
-
-  private void removeBorderTri(Tri tri) {
-    tri.remove();
-    hullTris.remove(tri);
-    borderEdgeIndexMap.remove(tri);
-  }
-  
   private void removeBorderTris() {
     while (! borderTriQue.isEmpty()) {
       Tri tri = borderTriQue.pop();
@@ -132,12 +143,41 @@ public class ConstrainedConcaveHull {
     }
   }
 
+  private void removeHoleTris() {
+    while (true) {
+      Tri holeTri = findHoleTri(hullTris);
+      if (holeTri == null)
+        return;
+      addBorderTris(holeTri);
+      removeBorderTri(holeTri);
+      removeBorderTris();
+    }
+  }
+  
+  private Tri findHoleTri(Set<Tri> tris) {
+    for (Tri tri : tris) {
+      if (isHoleTri(tri))
+        return tri;
+    }
+    return null;
+  }
+
+  private boolean isHoleTri(Tri tri) {
+    for (int i = 0; i < 3; i++) {
+      if (tri.hasAdjacent(i)
+          && tri.getLength(i) > maxEdgeLength)
+         return true;
+    }
+    return false;
+  }
+
   private boolean isRemovable(Tri tri) {
-    if (isTouchingSinglePolygon(tri))
+    //-- remove non-connecting edges if requested
+    if (isKeepOuterEdge && isTouchingSinglePolygon(tri))
       return true;
     //-- check if outside edge is longer than threshold
-    if (borderEdgeIndexMap.containsKey(tri)) {
-      int borderEdgeIndex = borderEdgeIndexMap.get(tri);
+    if (borderEdgeMap.containsKey(tri)) {
+      int borderEdgeIndex = borderEdgeMap.get(tri);
       double edgeLen = tri.getLength(borderEdgeIndex);
       if (edgeLen > maxEdgeLength)
         return true;
@@ -157,6 +197,39 @@ public class ConstrainedConcaveHull {
     return false;
   }
 
+  private void addBorderTris(Tri tri) {
+    addBorderTri(tri, 0);
+    addBorderTri(tri, 1);
+    addBorderTri(tri, 2);
+  }
+  
+  /**
+   * Adds an adjacent tri to the current border.
+   * The adjacent edge is recorded as the border edge for the tri.
+   * Note that only edges adjacent to another tri can become border edges.
+   * Since constraint-adjacent edges do not have an adjacent tri,
+   * they can never be on the border and thus will not be removed
+   * due to being shorter than the length threshold.
+   * The tri containing them may still be removed via another edge, however. 
+   * 
+   * @param tri the tri adjacent to the tri to be added to the border
+   * @param index the index of the adjacent tri
+   */
+  private void addBorderTri(Tri tri, int index) {
+    Tri adj = tri.getAdjacent( index );
+    if (adj == null) 
+      return;
+    borderTriQue.add(adj);
+    int borderEdgeIndex = adj.getIndex(tri);
+    borderEdgeMap.put(adj, borderEdgeIndex);
+  }
+
+  private void removeBorderTri(Tri tri) {
+    tri.remove();
+    hullTris.remove(tri);
+    borderEdgeMap.remove(tri);
+  }
+  
   private static boolean hasAllVertices(LinearRing ring, Tri tri) {
     for (int i = 0; i < 3; i++) {
       Coordinate v = tri.getCoordinate(i);
