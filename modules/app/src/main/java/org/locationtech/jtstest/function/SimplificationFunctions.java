@@ -15,6 +15,7 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.simplify.DouglasPeuckerSimplifier;
 import org.locationtech.jts.simplify.TopologyPreservingSimplifier;
 import org.locationtech.jts.simplify.VWSimplifier;
+import org.locationtech.jtstest.geomfunction.Metadata;
 
 public class SimplificationFunctions {
 	public static Geometry simplifyDP(Geometry g, double distance)	
@@ -23,8 +24,10 @@ public class SimplificationFunctions {
   public static Geometry simplifyTP(Geometry g, double distance)  
   {   return TopologyPreservingSimplifier.simplify(g, distance);  }
   
-  public static Geometry simplifyVW(Geometry g, double distance)  
-  {   return VWSimplifier.simplify(g, distance);  }
+  public static Geometry simplifyVW(Geometry g, 
+      @Metadata(title="Sqrt Area Tolerance")
+      double tolerance)  
+  {   return VWSimplifier.simplify(g, tolerance);  }
 
 
 }
