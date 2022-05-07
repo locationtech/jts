@@ -35,6 +35,7 @@ import org.locationtech.jts.geomgraph.EdgeList;
 import org.locationtech.jts.geomgraph.Label;
 import org.locationtech.jts.geomgraph.Node;
 import org.locationtech.jts.geomgraph.PlanarGraph;
+import org.locationtech.jts.noding.FastNodingValidator;
 import org.locationtech.jts.noding.IntersectionAdder;
 import org.locationtech.jts.noding.MCIndexNoder;
 import org.locationtech.jts.noding.Noder;
@@ -157,7 +158,15 @@ class BufferBuilder
 //wktWriter.setMaxCoordinatesPerLine(10);
 //System.out.println(wktWriter.writeFormatted(convertSegStrings(bufferSegStrList.iterator())));
 
-    computeNodedEdges(bufferSegStrList, precisionModel);
+    /**
+     * Currently only zero-distance buffers are validated, 
+     * to avoid reducing performance for other buffers.
+     * This fixes some noding failure cases found via GeometryFixer
+     * (see JTS-852).
+     */
+    boolean isNodingValidated = distance == 0.0;
+    computeNodedEdges(bufferSegStrList, precisionModel, isNodingValidated);
+    
     graph = new PlanarGraph(new OverlayNodeFactory());
     graph.addEdges(edgeList.getEdges());
 
@@ -192,11 +201,17 @@ class BufferBuilder
 //                                  precisionModel.getScale());
   }
 
-  private void computeNodedEdges(List bufferSegStrList, PrecisionModel precisionModel)
+  private void computeNodedEdges(List bufferSegStrList, PrecisionModel precisionModel, boolean isNodingValidated)
   {
     Noder noder = getNoder(precisionModel);
     noder.computeNodes(bufferSegStrList);
     Collection nodedSegStrings = noder.getNodedSubstrings();
+    
+    if (isNodingValidated) {
+      FastNodingValidator nv = new FastNodingValidator(nodedSegStrings);
+      nv.checkValid();
+    }
+    
 // DEBUGGING ONLY
 //BufferDebug.saveEdges(nodedEdges, "run" + BufferDebug.runCount + "_nodedEdges");
 
