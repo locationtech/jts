@@ -25,6 +25,8 @@ import org.locationtech.jts.geom.TopologyException;
 import org.locationtech.jts.geom.util.PolygonExtracter;
 import org.locationtech.jts.index.strtree.STRtree;
 import org.locationtech.jts.operation.overlay.snap.SnapIfNeededOverlayOp;
+import org.locationtech.jts.operation.overlayng.OverlayNG;
+import org.locationtech.jts.operation.overlayng.OverlayNGRobust;
 import org.locationtech.jts.util.Debug;
 
 
@@ -60,7 +62,7 @@ public class CascadedPolygonUnion
 {
   /**
    * A union strategy that uses the classic JTS {@link SnapIfNeededOverlayOp},
-   * and for polygonal geometries a robustness fallback using <cod>buffer(0)</code>.
+   * with a robustness fallback to OverlayNG.
    */
   final static  UnionStrategy CLASSIC_UNION = new UnionStrategy() {
     public Geometry union(Geometry g0, Geometry g1) {
@@ -68,32 +70,13 @@ public class CascadedPolygonUnion
         return SnapIfNeededOverlayOp.union(g0, g1);
       }
       catch (TopologyException ex) {
-        // union-by-buffer only works for polygons
-        if (g0.getDimension() != 2 || g1.getDimension() != 2)
-          throw ex;
-        return unionPolygonsByBuffer(g0, g1);
+        return OverlayNGRobust.overlay(g0, g1, OverlayNG.UNION);
       }
     }
 
     @Override
     public boolean isFloatingPrecision() {
       return true;
-    }
-    
-    /**
-     * An alternative way of unioning polygonal geometries 
-     * by using <code>bufer(0)</code>.
-     * Only worth using if regular overlay union fails.
-     * 
-     * @param g0 a polygonal geometry
-     * @param g1 a polygonal geometry
-     * @return the union of the geometries
-     */
-    private Geometry unionPolygonsByBuffer(Geometry g0, Geometry g1) {
-      //System.out.println("Unioning by buffer");
-      GeometryCollection coll = g0.getFactory().createGeometryCollection(
-          new Geometry[] { g0, g1 });
-      return coll.buffer(0);
     }
   };
 
