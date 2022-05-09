@@ -43,17 +43,6 @@ import org.locationtech.jts.util.Debug;
  * This algorithm is faster and more robust than
  * the simple iterated approach of
  * repeatedly unioning each polygon to a result geometry.
- * <p>
- * The <tt>buffer(0)</tt> trick is sometimes faster, but can be less robust and
- * can sometimes take a long time to complete.
- * This is particularly the case where there is a high degree of overlap
- * between the polygons.  In this case, <tt>buffer(0)</tt> is forced to compute
- * with <i>all</i> line segments from the outset,
- * whereas cascading can eliminate many segments
- * at each stage of processing.
- * The best situation for using <tt>buffer(0)</tt> is the trivial case
- * where there is <i>no</i> overlap between the input geometries.
- * However, this case is likely rare in practice.
  *
  * @author Martin Davis
  *
