@@ -45,7 +45,7 @@ Distributions for older JTS versions can be obtained at the
 * Fix `WKTReader` geometry typename parsing (#786)
 * Fix `CoordinateArrays.reverse` to handle zero-length arrays #787
 * Fix `GeometryFixer` to appply `isKeepCollapsed` flag to `GeometryCollection` elements (#790)
-* Fix `RectangleIntersects` to handle XYZM geometry (#794) 
+* Fix `RectangleIntersects` to handle XYZM geometry (#794)
 * Fix various operations to handle XYZM geometry (#795)
 * Fix `SnapRoundingNoder` to use tolerance in noding (also fixes `GeometryPrecisionReducer`) (#802)
 * Fix `MaximumInscribedCircle` to avoid infinite-looping on flat collapsed input (#807)
@@ -55,10 +55,11 @@ Distributions for older JTS versions can be obtained at the
 * Fix `RelateOp` for a snapped line boundary point (#839)
 * Fix IsValidOp for repeated node points (#845)
 * Fix `IsSimpleOp` for repeated endpoints (#851)
+* Fix `GeometryFixer` via noding check for zero-distance buffers (#867)
 
 # Version 1.18.2
 
-*Release Date: 08/27/2021* 
+*Release Date: 08/27/2021*
 
 ### API Changes
 
@@ -77,7 +78,7 @@ Distributions for older JTS versions can be obtained at the
 * Fix `MultiPoint.isValid` to check validity correctly (#700)
 * Fix `WKTReader` and `WKTWriter` handling of collections with all empty elements (#702)
 * Fix `HalfEdge.prev()` method (#703)
-* Fix `BufferOp` to remove invalid elements caused by inverted ring curves (#706) 
+* Fix `BufferOp` to remove invalid elements caused by inverted ring curves (#706)
 * Fix `IsSimpleOp` duplicate lines bug (#716)
 * Fix `Angle.interiorAngle` to produce interior angle correctly (#721)
 * Fix `IsValidOp` to correctly report invalidity for certain kinds of LinearRings (#737)
@@ -101,7 +102,7 @@ Distributions for older JTS versions can be obtained at the
 * Improve `Densifier` splitting algorithm to create longer segments (#677)
 * Allow constructing invalid `Polygon`s and `LinearRing`s with only 3 vertices (#682)
 * Ensure invalid 3-point polygons and rings are handled correctly (#683)
-* Fix `GeoJSONReader` to parse null and empty coordinates as empty geometry (#687) 
+* Fix `GeoJSONReader` to parse null and empty coordinates as empty geometry (#687)
 * Fix `GeoJSONWriter` to emit empty coordinates array for empty point and linestring (#688)
 * Add `MaximumInscribedCircle` check for invalid tolerance, to avoid infinite loops (#696)
 * Add `GeoJsonWriter.setForceCCW` method to emit polygons with CCW orientation, as per GeoJSON specification (#694)
@@ -111,7 +112,7 @@ Distributions for older JTS versions can be obtained at the
 * Ensure `Densifier` creates `Coordinate`s with same class as input (#637)
 * Fix Relate for cases with closed linear geometry and empty geometry (#671)
 * Fix `Densifier` to avoid splitting segments with length equal to distance tolerance (#676)
-* Fix `Geometry.compareTo` to test polygon holes (#678) 
+* Fix `Geometry.compareTo` to test polygon holes (#678)
 * Fix OverlayNG handling of polygons with interior flat lines (#685)
 * Fix `Polygonizer` to avoid NPE on invalid input (#692)
 
@@ -209,7 +210,7 @@ Distributions for older JTS versions can be obtained at the
 * Enhance `-geomfunc` to load multiple function classes
 * Fix function registry to replace matching loaded functions (#569)
 
-## JtsOp 
+## JtsOp
 
 * Added `-limit` and `-offset` options for reading from file inputs (#617)
 
@@ -224,7 +225,7 @@ Distributions for older JTS versions can be obtained at the
 
 ### API Changes
 
-* Change `Polygon` `getExteriorRing` and `getInteriorRingN` accessors to return `LinearRing`. 
+* Change `Polygon` `getExteriorRing` and `getInteriorRingN` accessors to return `LinearRing`.
   * *This is a binary incompatible change to the method signature.  Recompilation is necessary. No source code changes are required.*
 
 ### Functionality Improvements
@@ -261,10 +262,10 @@ Distributions for older JTS versions can be obtained at the
 * Fix bug in `HalfEdge.insert` method which caused CCW order not to be preserved in some cases
 * Fix generation of Voronoi diagrams for cases with sites in a square (#447)
 * Fix use of clipping envelope in `VoronoiDiagramBuilder`
-* Fix infinite loop on empty input in `IndexedPointInAreaLocator` and `SortedPackedIntervalRTree` (#462) 
+* Fix infinite loop on empty input in `IndexedPointInAreaLocator` and `SortedPackedIntervalRTree` (#462)
 * Fix WKT parsing in Turkish locale (#456)
 * Improve accuracy of `LineSegment.lineIntersection` (#468)
-* Fix `Distance3DOp` coordinate ordering (#480) 
+* Fix `Distance3DOp` coordinate ordering (#480)
 * Fix `Geometry.reverse()` to have consistent behaviour and to copy all fields (#513)
 * Fix `MinimumBoundingCircle.farthestPoints` to work correctly (#522 and #533)
 * Fix `DistanceOp` handling of geometry collections with empty components (#524)
@@ -287,7 +288,7 @@ Distributions for older JTS versions can be obtained at the
 * Allow test files/dirs to be specified as free args
 * Only load `.xml` files from directories
 
-## JtsOp 
+## JtsOp
 
 * Added command-line utility to run JTS operations
 
