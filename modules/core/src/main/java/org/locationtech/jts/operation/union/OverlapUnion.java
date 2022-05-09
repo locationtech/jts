@@ -220,24 +220,6 @@ public class OverlapUnion
       return geom0.copy();
     
     Geometry union = unionFun.union(geom0, geom1);
-    //Geometry union = geom0.union(geom1);
-    return union;
-  }
-
-  /**
-   * Implements union using the buffer-by-zero trick.
-   * This seems to be more robust than overlay union,
-   * for reasons somewhat unknown.
-   * 
-   * @param g0 a geometry
-   * @param g1 a geometry
-   * @return the union of the geometries
-   */
-  private static Geometry unionBuffer(Geometry g0, Geometry g1)
-  {
-    GeometryFactory factory = g0.getFactory();
-    Geometry gColl = factory.createGeometryCollection(new Geometry[] { g0, g1 } );
-    Geometry union = gColl.buffer(0.0);
     return union;
   }
   
