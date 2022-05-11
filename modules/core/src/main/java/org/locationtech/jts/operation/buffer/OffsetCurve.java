@@ -32,13 +32,13 @@ import org.locationtech.jts.index.chain.MonotoneChainSelectAction;
  * from the input.
  * If the offset distance is positive the curve lies on the left side of the input;
  * if it is negative the curve is on the right side.
- * <p>
- * The offset curve of a line is a {@link LineString} which
- * The offset curve of a Point is an empty {@link LineString}.
- * The offset curve of a Polygon is the boundary of the polygon buffer (which
+ * <ul>
+ * <li>For a {@link LineString} the offset curve is a line.
+ * <li>For a {@link Point} the offset curve is an empty {@link LineString}.
+ * <li>For a {@link Polygon} the offset curve is the boundary of the polygon buffer (which
  * may be a {@link MultiLineString}.
- * For a collection the output is a {@link MultiLineString} of the element offset curves.
- * <p>
+ * <li>For a collection the output is a {@link MultiLineString} containing the element offset curves.
+ * </ul>
  * The offset curve is computed as a single contiguous section of the geometry buffer boundary.
  * In some geometric situations this definition is ill-defined.
  * This algorithm provides a "best-effort" interpretation.
