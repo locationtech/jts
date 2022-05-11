@@ -33,20 +33,36 @@ public class ConcaveHullOfPolygons {
   
   private static final int FRAME_EXPAND_FACTOR = 4;
 
-  public static Geometry hull(Geometry constraints, double tolerance) {
-    return hull(constraints, tolerance, false, false);
+  public static Geometry concaveHullByLength(Geometry constraints, double maxLength) {
+    return concaveHullByLength(constraints, maxLength, false, false);
   }
   
-  public static Geometry hull(Geometry constraints, double tolerance,
-      boolean isHolesAllowed, boolean isTight) {
-    ConcaveHullOfPolygons hull = new ConcaveHullOfPolygons(constraints, tolerance);
+  public static Geometry concaveHullByLength(Geometry constraints, double maxLength,
+      boolean isTight, boolean isHolesAllowed) {
+    ConcaveHullOfPolygons hull = new ConcaveHullOfPolygons(constraints);
+    hull.setMaximumEdgeLength(maxLength);
     hull.setHolesAllowed(isHolesAllowed);
     hull.setTight(isTight);
     return hull.getHull();
   }
   
+  public static Geometry concaveHullByLengthRatio(Geometry constraints, double lengthRatio) {
+    return concaveHullByLengthRatio(constraints, lengthRatio, false, false);
+  }
+  
+  public static Geometry concaveHullByLengthRatio(Geometry constraints, double lengthRatio,
+      boolean isTight, boolean isHolesAllowed) {
+    ConcaveHullOfPolygons hull = new ConcaveHullOfPolygons(constraints);
+    hull.setMaximumEdgeLengthRatio(lengthRatio);
+    hull.setHolesAllowed(isHolesAllowed);
+    hull.setTight(isTight);
+    return hull.getHull();
+  }
+  
+  
   private Geometry inputPolygons;
-  private double maxEdgeLength;
+  private double maxEdgeLength = -1;
+  private double maxEdgeLengthRatio = -1;
   private boolean isHolesAllowed = false;
   private boolean isTight = false;
   
@@ -60,12 +76,54 @@ public class ConcaveHullOfPolygons {
    * so it can be tested for length and possible removal.
    */
   private Map<Tri, Integer> borderEdgeMap = new HashMap<Tri, Integer>();
-
-  public ConcaveHullOfPolygons(Geometry polygons, double maxLength) {
+  
+  public ConcaveHullOfPolygons(Geometry polygons) {
     this.inputPolygons = polygons;
-    this.maxEdgeLength = maxLength;
     geomFactory = inputPolygons.getFactory();
-    polygonRings = extractShellRings(inputPolygons);
+  }
+
+  /**
+   * Sets the target maximum edge length for the concave hull.
+   * The length value must be zero or greater.
+   * <ul>
+   * <li>The value 0.0 produces the concave hull of smallest area
+   * that is still connected.
+   * <li>Larger values produce less concave results.
+   * A value equal or greater than the longest Delaunay Triangulation edge length
+   * produces the convex hull.
+   * </ul>
+   * The {@link #uniformGridEdgeLength(Geometry)} value may be used as
+   * the basis for estimating an appropriate target maximum edge length.
+   * 
+   * @param edgeLength a non-negative length
+   * 
+   * @see #uniformGridEdgeLength(Geometry)
+   */
+  public void setMaximumEdgeLength(double edgeLength) {
+    if (edgeLength < 0)
+      throw new IllegalArgumentException("Edge length must be non-negative");
+    this.maxEdgeLength = edgeLength;
+    maxEdgeLengthRatio = -1;
+  }
+  
+  /**
+   * Sets the target maximum edge length ratio for the concave hull.
+   * The edge length ratio is a fraction of the difference
+   * between the longest and shortest edge lengths 
+   * in the Delaunay Triangulation of the input points.
+   * It is a value in the range 0 to 1. 
+   * <ul>
+   * <li>The value 0.0 produces a concave hull of minimum area
+   * that is still connected.
+   * <li>The value 1.0 produces the convex hull.
+   * <ul> 
+   * 
+   * @param edgeLengthRatio a length factor value between 0 and 1
+   */
+  public void setMaximumEdgeLengthRatio(double edgeLengthRatio) {
+    if (edgeLengthRatio < 0 || edgeLengthRatio > 1)
+      throw new IllegalArgumentException("Edge length ratio must be in range [0,1]");
+    this.maxEdgeLengthRatio = edgeLengthRatio;
   }
   
   /**
@@ -88,12 +146,17 @@ public class ConcaveHullOfPolygons {
   }
   
   public Geometry getHull() {
+    polygonRings = extractShellRings(inputPolygons);
     Polygon frame = createFrame(inputPolygons.getEnvelopeInternal(), polygonRings, geomFactory);
     ConstrainedDelaunayTriangulator cdt = new ConstrainedDelaunayTriangulator(frame);
     List<Tri> tris = cdt.getTriangles();
     
     Coordinate[] framePts = frame.getExteriorRing().getCoordinates();
-    removeFrameCornerTris(tris, framePts);
+    if (maxEdgeLengthRatio >= 0) {
+      maxEdgeLength = computeTargetEdgeLength(tris, framePts, maxEdgeLengthRatio);
+    }
+    
+     removeFrameCornerTris(tris, framePts);
     
     removeBorderTris();
     if (isHolesAllowed) removeHoleTris();
@@ -102,18 +165,54 @@ public class ConcaveHullOfPolygons {
     return hull;
   }
 
+  private static double computeTargetEdgeLength(List<Tri> triList, 
+      Coordinate[] frameCorners,
+      double edgeLengthRatio) {
+    if (edgeLengthRatio == 0) return 0;
+    double maxEdgeLen = -1;
+    double minEdgeLen = -1;
+    for (Tri tri : triList) {
+      //-- don't include frame triangles
+      if (isFrameTri(tri, frameCorners))
+        continue;
+      
+      for (int i = 0; i < 3; i++) {
+        //-- constraint edges are not used to determine ratio
+        if (! tri.hasAdjacent(i))
+          continue;
+        
+        double len = tri.getLength(i);
+        if (len > maxEdgeLen) 
+          maxEdgeLen = len;
+        if (minEdgeLen < 0 || len < minEdgeLen)
+          minEdgeLen = len;
+      }
+    }
+    //-- if ratio = 1 ensure all edges are included
+    if (edgeLengthRatio == 1) 
+      return 2 * maxEdgeLen;
+    
+    return edgeLengthRatio * (maxEdgeLen - minEdgeLen) + minEdgeLen;
+  }
+
+  private static boolean isFrameTri(Tri tri, Coordinate[] frameCorners) {
+    int index = vertexIndex(tri, frameCorners);
+    boolean isFrameTri = index >= 0;
+    return isFrameTri;
+  }
+  
   private void removeFrameCornerTris(List<Tri> tris, Coordinate[] frameCorners) {
     hullTris = new HashSet<Tri>();
     borderTriQue = new ArrayDeque<Tri>();
     for (Tri tri : tris) {
       int index = vertexIndex(tri, frameCorners);
-      boolean isFrameCornerTri = index >= 0;
-      if (isFrameCornerTri) {
+      boolean isFrameTri = index >= 0;
+      if (isFrameTri) {
         /**
          * Frame tris are adjacent to at most one border tri,
          * which is opposite the frame corner vertex.
          * The opposite tri may be another frame tri. 
-         * This will be detected when it is processed,
+         * This is detected when it is processed,
          * since it is not in the hullTri set.
          */
         int oppIndex = Tri.oppEdge(index);

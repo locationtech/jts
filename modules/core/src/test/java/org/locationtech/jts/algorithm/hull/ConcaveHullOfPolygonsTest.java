@@ -48,14 +48,14 @@ public class ConcaveHullOfPolygonsTest extends GeometryTestCase {
 
   private void checkHull(String wkt, double threshold, String wktExpected) {
     Geometry geom = read(wkt);
-    Geometry actual = ConcaveHullOfPolygons.hull(geom, threshold);
+    Geometry actual = ConcaveHullOfPolygons.concaveHullByLength(geom, threshold);
     Geometry expected = read(wktExpected);
     checkEqual(expected, actual);
   }
   
   private void checkHullTight(String wkt, double threshold, String wktExpected) {
     Geometry geom = read(wkt);
-    Geometry actual = ConcaveHullOfPolygons.hull(geom, threshold, false, true);
+    Geometry actual = ConcaveHullOfPolygons.concaveHullByLength(geom, threshold, true, false);
     Geometry expected = read(wktExpected);
     checkEqual(expected, actual);
   }

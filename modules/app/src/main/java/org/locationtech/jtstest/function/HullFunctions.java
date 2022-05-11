@@ -34,14 +34,14 @@ public class HullFunctions {
   
   public static Geometry concaveHullPointsByLenRatio(Geometry geom, 
       @Metadata(title="Length Ratio")
-      double maxLen) {
-    return ConcaveHull.concaveHullByLengthRatio(geom, maxLen);
+      double maxLenRatio) {
+    return ConcaveHull.concaveHullByLengthRatio(geom, maxLenRatio);
   }
   
   public static Geometry concaveHullPointsWithHolesByLenRatio(Geometry geom, 
       @Metadata(title="Length Ratio")
-      double maxLen) {
-    return ConcaveHull.concaveHullByLengthRatio(geom, maxLen, true);
+      double maxLenRatio) {
+    return ConcaveHull.concaveHullByLengthRatio(geom, maxLenRatio, true);
   }
   
   public static double concaveHullLenGuess(Geometry geom) {
@@ -83,21 +83,33 @@ public class HullFunctions {
   public static Geometry concaveHullPolygon(Geometry geom, 
       @Metadata(title="Max Edge Length")
       double maxEdgeLen) {
-    return ConcaveHullOfPolygons.hull(geom, maxEdgeLen);
+    return ConcaveHullOfPolygons.concaveHullByLength(geom, maxEdgeLen);
   }
   
   public static Geometry concaveHullPolygonWithHoles(Geometry geom, 
       @Metadata(title="Max Edge Length")
       double maxEdgeLen) {
-    return ConcaveHullOfPolygons.hull(geom, maxEdgeLen, true, false);
+    return ConcaveHullOfPolygons.concaveHullByLength(geom, maxEdgeLen, false, true);
   }
   
   public static Geometry concaveHullPolygonTight(Geometry geom, 
       @Metadata(title="Max Edge Length")
       double maxEdgeLen) {
-    return ConcaveHullOfPolygons.hull(geom, maxEdgeLen, false, true);
+    return ConcaveHullOfPolygons.concaveHullByLength(geom, maxEdgeLen, true, false);
   }
   
+  public static Geometry concaveHullPolygonByLenRatio(Geometry geom, 
+      @Metadata(title="Edge Length Ratio")
+      double maxEdgeLenRatio) {
+    return ConcaveHullOfPolygons.concaveHullByLengthRatio(geom, maxEdgeLenRatio);
+  }
+  
+  public static Geometry concaveHullPolygonTightByLenRatio(Geometry geom, 
+      @Metadata(title="Edge Length Ratio")
+      double maxEdgeLenRatio) {
+    return ConcaveHullOfPolygons.concaveHullByLengthRatio(geom, maxEdgeLenRatio, true, false);
+  }
   
 
+  
 }
