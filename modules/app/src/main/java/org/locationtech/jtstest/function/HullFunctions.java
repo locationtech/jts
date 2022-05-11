@@ -12,7 +12,7 @@
 package org.locationtech.jtstest.function;
 
 import org.locationtech.jts.algorithm.hull.ConcaveHull;
-import org.locationtech.jts.algorithm.hull.ConstrainedConcaveHull;
+import org.locationtech.jts.algorithm.hull.ConcaveHullOfPolygons;
 import org.locationtech.jts.algorithm.hull.PolygonHull;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jtstest.geomfunction.Metadata;
@@ -20,25 +20,25 @@ import org.locationtech.jtstest.geomfunction.Metadata;
 public class HullFunctions {
   public static Geometry convexHull(Geometry g) {      return g.convexHull();  }
  
-  public static Geometry concaveHullByLen(Geometry geom, 
-      @Metadata(title="Length")
+  public static Geometry concaveHullPoints(Geometry geom, 
+      @Metadata(title="Max Edge Length")
       double maxLen) {
     return ConcaveHull.concaveHullByLength(geom, maxLen);
   }
   
-  public static Geometry concaveHullWithHolesByLen(Geometry geom, 
-      @Metadata(title="Length")
+  public static Geometry concaveHullPointsWithHoles(Geometry geom, 
+      @Metadata(title="Max Edge Length")
       double maxLen) {
     return ConcaveHull.concaveHullByLength(geom, maxLen, true);
   }
   
-  public static Geometry concaveHullByLenRatio(Geometry geom, 
+  public static Geometry concaveHullPointsByLenRatio(Geometry geom, 
       @Metadata(title="Length Ratio")
       double maxLen) {
     return ConcaveHull.concaveHullByLengthRatio(geom, maxLen);
   }
   
-  public static Geometry concaveHullWithHolesByLenRatio(Geometry geom, 
+  public static Geometry concaveHullPointsWithHolesByLenRatio(Geometry geom, 
       @Metadata(title="Length Ratio")
       double maxLen) {
     return ConcaveHull.concaveHullByLengthRatio(geom, maxLen, true);
@@ -80,22 +80,22 @@ public class HullFunctions {
     return PolygonHull.hullByAreaDelta(geom, areaFrac);
   }
   
-  public static Geometry constrainedHull(Geometry geom, 
+  public static Geometry concaveHullPolygon(Geometry geom, 
       @Metadata(title="Max Edge Length")
       double maxEdgeLen) {
-    return ConstrainedConcaveHull.hull(geom, maxEdgeLen);
+    return ConcaveHullOfPolygons.hull(geom, maxEdgeLen);
   }
   
-  public static Geometry constrainedHullWithHoles(Geometry geom, 
+  public static Geometry concaveHullPolygonWithHoles(Geometry geom, 
       @Metadata(title="Max Edge Length")
       double maxEdgeLen) {
-    return ConstrainedConcaveHull.hull(geom, maxEdgeLen, true, false);
+    return ConcaveHullOfPolygons.hull(geom, maxEdgeLen, true, false);
   }
   
-  public static Geometry constrainedHullKeepOuter(Geometry geom, 
+  public static Geometry concaveHullPolygonTight(Geometry geom, 
       @Metadata(title="Max Edge Length")
       double maxEdgeLen) {
-    return ConstrainedConcaveHull.hull(geom, maxEdgeLen, false, true);
+    return ConcaveHullOfPolygons.hull(geom, maxEdgeLen, false, true);
   }
   
   

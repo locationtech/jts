@@ -29,27 +29,29 @@ import org.locationtech.jts.operation.overlayng.CoverageUnion;
 import org.locationtech.jts.triangulate.polygon.ConstrainedDelaunayTriangulator;
 import org.locationtech.jts.triangulate.tri.Tri;
 
-public class ConstrainedConcaveHull {
+public class ConcaveHullOfPolygons {
   
+  private static final int FRAME_EXPAND_FACTOR = 4;
+
   public static Geometry hull(Geometry constraints, double tolerance) {
     return hull(constraints, tolerance, false, false);
   }
   
   public static Geometry hull(Geometry constraints, double tolerance,
-      boolean isHolesAllowed, boolean isKeepOuterEdge) {
-    ConstrainedConcaveHull hull = new ConstrainedConcaveHull(constraints, tolerance);
+      boolean isHolesAllowed, boolean isTight) {
+    ConcaveHullOfPolygons hull = new ConcaveHullOfPolygons(constraints, tolerance);
     hull.setHolesAllowed(isHolesAllowed);
-    hull.setKeepOuterEdge(isKeepOuterEdge);
+    hull.setTight(isTight);
     return hull.getHull();
   }
   
-  private Geometry constraints;
+  private Geometry inputPolygons;
   private double maxEdgeLength;
   private boolean isHolesAllowed = false;
-  private boolean isKeepOuterEdge = true;
+  private boolean isTight = false;
   
   private GeometryFactory geomFactory;
-  private LinearRing[] constraintRings;
+  private LinearRing[] polygonRings;
   
   private Set<Tri> hullTris;
   private ArrayDeque<Tri> borderTriQue;
@@ -59,11 +61,11 @@ public class ConstrainedConcaveHull {
    */
   private Map<Tri, Integer> borderEdgeMap = new HashMap<Tri, Integer>();
 
-  public ConstrainedConcaveHull(Geometry constraints, double maxLength) {
-    this.constraints = constraints;
+  public ConcaveHullOfPolygons(Geometry polygons, double maxLength) {
+    this.inputPolygons = polygons;
     this.maxEdgeLength = maxLength;
-    geomFactory = constraints.getFactory();
-    constraintRings = extractShellRings(constraints);
+    geomFactory = inputPolygons.getFactory();
+    polygonRings = extractShellRings(inputPolygons);
   }
   
   /**
@@ -76,16 +78,17 @@ public class ConstrainedConcaveHull {
   }
   
   /**
-   * Sets whether holes are allowed in the concave hull polygon.
+   * Sets whether the boundary of the hull polygon is kept
+   * tight to the outer edges of the input polygons.
    * 
-   * @param isHolesAllowed true if holes are allowed in the result
+   * @param isTightBoundary true if the boundary is kept tight
    */
-  public void setKeepOuterEdge(boolean isKeepOuterEdge) {
-    this.isKeepOuterEdge = isKeepOuterEdge;
+  public void setTight(boolean isTight) {
+    this.isTight = isTight;
   }
   
   public Geometry getHull() {
-    Polygon frame = createFrame(constraints.getEnvelopeInternal(), constraintRings);
+    Polygon frame = createFrame(inputPolygons.getEnvelopeInternal(), polygonRings, geomFactory);
     ConstrainedDelaunayTriangulator cdt = new ConstrainedDelaunayTriangulator(frame);
     List<Tri> tris = cdt.getTriangles();
     
@@ -183,9 +186,10 @@ public class ConstrainedConcaveHull {
   }
 
   private boolean isRemovable(Tri tri) {
-    //-- remove non-connecting edges if requested
-    if (isKeepOuterEdge && isTouchingSinglePolygon(tri))
+    //-- remove non-bridging tris if keeping hull boundary tight
+    if (isTight && isTouchingSinglePolygon(tri))
       return true;
+    
     //-- check if outside edge is longer than threshold
     if (borderEdgeMap.containsKey(tri)) {
       int borderEdgeIndex = borderEdgeMap.get(tri);
@@ -196,10 +200,19 @@ public class ConstrainedConcaveHull {
     return false;
   }
 
+  /**
+   * Tests whether a triangle touches a single polygon at all vertices.
+   * If so, it is a candidate for removal if the hull polygon
+   * is being kept tight to the outer boundary of the input polygons.
+   * Tris which touch more than one polygon are called "bridging".
+   * 
+   * @param tri
+   * @return true if the tri touches a single polygon
+   */
   private boolean isTouchingSinglePolygon(Tri tri) {
     Envelope envTri = envelope(tri);
-    for (LinearRing ring : constraintRings) {
-      //-- touching tri must be in ring envelope
+    for (LinearRing ring : polygonRings) {
+      //-- optimization heuristic: a touching tri must be in ring envelope
       if (ring.getEnvelopeInternal().intersects(envTri)) {
         if (hasAllVertices(ring, tri))
           return true;
@@ -272,22 +285,35 @@ public class ConstrainedConcaveHull {
     Geometry filler = CoverageUnion.union(triCoverage);
     
     if (filler.isEmpty()) {
-      return constraints.copy();
+      return inputPolygons.copy();
     }
-    //-- union with input constraints
-    Geometry[] geoms = new Geometry[] { filler, constraints };
+    //-- union with input polygons
+    Geometry[] geoms = new Geometry[] { filler, inputPolygons };
     GeometryCollection geomColl = geomFactory.createGeometryCollection(geoms);
     Geometry hull = CoverageUnion.union(geomColl);
     return hull;
   }
   
-  private Polygon createFrame(Envelope constraintEnv, LinearRing[] constraintRings) {
-    double diam = constraintEnv.getDiameter();
-    Envelope envFrame = constraintEnv.copy();
-    envFrame.expandBy(4 * diam);
+  /**
+   * Creates a rectangular "frame" around the input polygons,
+   * with the input polygons as holes in it.
+   * The frame corners are far enough away that the constrained Delaunay triangulation
+   * of it should contain the convex hull of the input as edges.
+   * Thus the frame corner triangles can be removed and leave a correct 
+   * triangulation of the space between the input polygons.
+   * 
+   * @param polygonsEnv
+   * @param polygonRings
+   * @param geomFactory 
+   * @return the frame polygon
+   */
+  private static Polygon createFrame(Envelope polygonsEnv, LinearRing[] polygonRings, GeometryFactory geomFactory) {
+    double diam = polygonsEnv.getDiameter();
+    Envelope envFrame = polygonsEnv.copy();
+    envFrame.expandBy(FRAME_EXPAND_FACTOR * diam);
     Polygon frameOuter = (Polygon) geomFactory.toGeometry(envFrame);
     LinearRing shell = (LinearRing) frameOuter.getExteriorRing().copy();
-    Polygon frame = geomFactory.createPolygon(shell, constraintRings);
+    Polygon frame = geomFactory.createPolygon(shell, polygonRings);
     return frame;
   }
 
