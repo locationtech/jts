@@ -79,6 +79,10 @@ public class PolygonHullTest extends GeometryTestCase {
     checkHullByAreaDelta(wkt, 1, "POLYGON ((30 90, 80 80, 90 30, 70 10, 40 10, 10 40, 30 90))");
   }
 
+  public void testGoreRemoval() {
+    checkHullByAreaDelta("POLYGON ((30 120, 60 240, 200 220, 60.02 240.08, 80 320, 320 280, 230 160, 250 60, 30 120))",
+        0.01, "POLYGON ((30 120, 80 320, 320 280, 230 160, 250 60, 30 120))");
+  }
   
   //=================================================
   
