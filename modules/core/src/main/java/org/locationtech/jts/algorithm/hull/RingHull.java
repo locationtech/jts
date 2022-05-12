@@ -138,12 +138,13 @@ class RingHull {
   
   public void compute(RingHullIndex hullIndex) {        
     while (! cornerQueue.isEmpty() 
-        && ! isAtTarget()
         && vertexRing.size() > 3) {
       Corner corner = cornerQueue.poll();
       //-- a corner may no longer be valid due to removal of adjacent corners
       if (corner.isRemoved(vertexRing))
         continue;
+      if (isAtTarget(corner))
+        return;
       //System.out.println(corner.toLineString(vertexList));
       /**
        * Corner is concave or flat - remove it if possible.
@@ -154,12 +155,14 @@ class RingHull {
     }
   }
 
-  private boolean isAtTarget() {
+  private boolean isAtTarget(Corner corner) {
     if (targetVertexNum >= 0) {
       return vertexRing.size() < targetVertexNum;
     }
     if (targetAreaDelta >= 0) {
-      return areaDelta > targetAreaDelta;
+      //-- include candidate corder to avoid overshooting target
+      // (important for very small target area deltas)
+      return areaDelta + corner.getArea() > targetAreaDelta;
     }
     //-- no target set
     return true;
