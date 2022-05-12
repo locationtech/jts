@@ -51,7 +51,11 @@ import org.locationtech.jts.math.MathUtil;
  * Value 0 produces the original geometry.
  * Larger values produce less concave results.
  * </li>
- * </ol>  
+ * </ol> 
+ * The algorithm ensures that the result does not cause the target parameter 
+ * to be exceeded.  This allows computing outer or inner hulls
+ * with a small area delta ratio to be an effective way of removing 
+ * narrow gores and spikes.   
  * 
  * @author Martin Davis
  *

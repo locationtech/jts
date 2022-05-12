@@ -73,11 +73,16 @@ public class PolygonHullTest extends GeometryTestCase {
   public void testByAreaOuterSimple() {
     String wkt = "POLYGON ((30 90, 10 40, 40 10, 70 10, 90 30, 80 80, 70 40, 30 40, 50 50, 60 70, 30 90))";
     checkHullByAreaDelta(wkt, 0, "POLYGON ((10 40, 30 90, 60 70, 50 50, 30 40, 70 40, 80 80, 90 30, 70 10, 40 10, 10 40))");
-    checkHullByAreaDelta(wkt, 0.1, "POLYGON ((30 90, 60 70, 70 40, 80 80, 90 30, 70 10, 40 10, 10 40, 30 90))");
-    checkHullByAreaDelta(wkt, 0.2, "POLYGON ((30 90, 60 70, 80 80, 90 30, 70 10, 40 10, 10 40, 30 90))");
+    checkHullByAreaDelta(wkt, 0.01, "POLYGON ((10 40, 30 90, 60 70, 50 50, 30 40, 70 40, 80 80, 90 30, 70 10, 40 10, 10 40))");
+    checkHullByAreaDelta(wkt, 0.1, "POLYGON ((10 40, 30 90, 60 70, 50 50, 70 40, 80 80, 90 30, 70 10, 40 10, 10 40))");
+    checkHullByAreaDelta(wkt, 0.2, "POLYGON ((30 90, 60 70, 70 40, 80 80, 90 30, 70 10, 40 10, 10 40, 30 90))");
     checkHullByAreaDelta(wkt, 1, "POLYGON ((30 90, 80 80, 90 30, 70 10, 40 10, 10 40, 30 90))");
   }
 
+  public void testGoreRemoval() {
+    checkHullByAreaDelta("POLYGON ((30 120, 60 240, 200 220, 60.02 240.08, 80 320, 320 280, 230 160, 250 60, 30 120))",
+        0.01, "POLYGON ((30 120, 80 320, 320 280, 230 160, 250 60, 30 120))");
+  }
   
   //=================================================
   
