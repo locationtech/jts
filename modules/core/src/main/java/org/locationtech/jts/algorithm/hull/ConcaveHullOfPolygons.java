@@ -31,34 +31,73 @@ import org.locationtech.jts.triangulate.tri.Tri;
 
 public class ConcaveHullOfPolygons {
   
-  private static final int FRAME_EXPAND_FACTOR = 4;
-
-  public static Geometry concaveHullByLength(Geometry constraints, double maxLength) {
-    return concaveHullByLength(constraints, maxLength, false, false);
+  /**
+   * Computes a concave hull of set of polygons
+   * using the target criterion of maximum edge length.
+   * 
+   * @param polygons the input polygons
+   * @param maxLength the target maximum edge length
+   * @return the concave hull
+   */
+  public static Geometry concaveHullByLength(Geometry polygons, double maxLength) {
+    return concaveHullByLength(polygons, maxLength, false, false);
   }
   
-  public static Geometry concaveHullByLength(Geometry constraints, double maxLength,
+  /**
+   * Computes a concave hull of set of polygons
+   * using the target criterion of maximum edge length,
+   * and allowing control over whether the hull boundary is tight
+   * and can contain holes.
+   * 
+   * @param polygons the input polygons
+   * @param maxLength the target maximum edge length
+   * @param isTight true if the hull should be tight to the outside of the polygons
+   * @param isHolesAllowed true if holes are allowed in the hull polygon
+   * @return the concave hull
+   */
+  public static Geometry concaveHullByLength(Geometry polygons, double maxLength,
       boolean isTight, boolean isHolesAllowed) {
-    ConcaveHullOfPolygons hull = new ConcaveHullOfPolygons(constraints);
+    ConcaveHullOfPolygons hull = new ConcaveHullOfPolygons(polygons);
     hull.setMaximumEdgeLength(maxLength);
     hull.setHolesAllowed(isHolesAllowed);
     hull.setTight(isTight);
     return hull.getHull();
   }
   
-  public static Geometry concaveHullByLengthRatio(Geometry constraints, double lengthRatio) {
-    return concaveHullByLengthRatio(constraints, lengthRatio, false, false);
+  /**
+   * Computes a concave hull of set of polygons
+   * using the target criterion of maximum edge length ratio.
+   * 
+   * @param polygons the input polygons
+   * @param lengthRatio the target maximum edge length ratio
+   * @return the concave hull
+   */
+  public static Geometry concaveHullByLengthRatio(Geometry polygons, double lengthRatio) {
+    return concaveHullByLengthRatio(polygons, lengthRatio, false, false);
   }
   
-  public static Geometry concaveHullByLengthRatio(Geometry constraints, double lengthRatio,
+  /**
+   * Computes a concave hull of set of polygons
+   * using the target criterion of maximum edge length ratio,
+   * and allowing control over whether the hull boundary is tight
+   * and can contain holes.
+   * 
+   * @param polygons the input polygons
+   * @param lengthRatio the target maximum edge length ratio
+   * @param isTight true if the hull should be tight to the outside of the polygons
+   * @param isHolesAllowed true if holes are allowed in the hull polygon
+   * @return the concave hull
+   */
+  public static Geometry concaveHullByLengthRatio(Geometry polygons, double lengthRatio,
       boolean isTight, boolean isHolesAllowed) {
-    ConcaveHullOfPolygons hull = new ConcaveHullOfPolygons(constraints);
+    ConcaveHullOfPolygons hull = new ConcaveHullOfPolygons(polygons);
     hull.setMaximumEdgeLengthRatio(lengthRatio);
     hull.setHolesAllowed(isHolesAllowed);
     hull.setTight(isTight);
     return hull.getHull();
   }
   
+  private static final int FRAME_EXPAND_FACTOR = 4;
   
   private Geometry inputPolygons;
   private double maxEdgeLength = -1;
@@ -72,11 +111,16 @@ public class ConcaveHullOfPolygons {
   private Set<Tri> hullTris;
   private ArrayDeque<Tri> borderTriQue;
   /**
-   * Records the border edge of border tris,
+   * Records the edge index of the longest border edge for border tris,
    * so it can be tested for length and possible removal.
    */
   private Map<Tri, Integer> borderEdgeMap = new HashMap<Tri, Integer>();
   
+  /**
+   * Creates a new instance for a given geometry.
+   * 
+   * @param geom the input geometry
+   */
   public ConcaveHullOfPolygons(Geometry polygons) {
     this.inputPolygons = polygons;
     geomFactory = inputPolygons.getFactory();
@@ -86,18 +130,14 @@ public class ConcaveHullOfPolygons {
    * Sets the target maximum edge length for the concave hull.
    * The length value must be zero or greater.
    * <ul>
-   * <li>The value 0.0 produces the concave hull of smallest area
-   * that is still connected.
+   * <li>The value 0.0 produces the input polygons.
    * <li>Larger values produce less concave results.
-   * A value equal or greater than the longest Delaunay Triangulation edge length
-   * produces the convex hull.
-   * </ul>
-   * The {@link #uniformGridEdgeLength(Geometry)} value may be used as
-   * the basis for estimating an appropriate target maximum edge length.
+   * Above a certain large value the result is the convex hull of the input.
+   * <p>
+   * The edge length ratio provides a scale-free parameter which
+   * is intended to produce similar concave results for a variety of inputs.
    * 
    * @param edgeLength a non-negative length
-   * 
-   * @see #uniformGridEdgeLength(Geometry)
    */
   public void setMaximumEdgeLength(double edgeLength) {
     if (edgeLength < 0)
@@ -110,11 +150,12 @@ public class ConcaveHullOfPolygons {
    * Sets the target maximum edge length ratio for the concave hull.
    * The edge length ratio is a fraction of the difference
    * between the longest and shortest edge lengths 
-   * in the Delaunay Triangulation of the input points.
+   * in the Delaunay Triangulation of the area between the input polygons.
+   * (Roughly speaking, it is a fraction of the difference between
+   * the shortest and longest distances between the input polygons.)
    * It is a value in the range 0 to 1. 
    * <ul>
-   * <li>The value 0.0 produces a concave hull of minimum area
-   * that is still connected.
+   * <li>The value 0.0 produces the original input polygons.
    * <li>The value 1.0 produces the convex hull.
    * <ul> 
    * 
@@ -139,12 +180,17 @@ public class ConcaveHullOfPolygons {
    * Sets whether the boundary of the hull polygon is kept
    * tight to the outer edges of the input polygons.
    * 
-   * @param isTightBoundary true if the boundary is kept tight
+   * @param isTight true if the boundary is kept tight
    */
   public void setTight(boolean isTight) {
     this.isTight = isTight;
   }
   
+  /**
+   * Gets the computed concave hull.
+   * 
+   * @return the concave hull
+   */
   public Geometry getHull() {
     polygonRings = extractShellRings(inputPolygons);
     Polygon frame = createFrame(inputPolygons.getEnvelopeInternal(), polygonRings, geomFactory);

@@ -77,7 +77,7 @@ public class ConcaveHull
   }
   
   /**
-   * Computes the concave hull of the vertices in a geometry
+   * Computes a concave hull of the vertices in a geometry
    * using the target criterion of maximum edge length.
    * 
    * @param geom the input geometry
@@ -89,7 +89,7 @@ public class ConcaveHull
   }
   
   /**
-   * Computes the concave hull of the vertices in a geometry
+   * Computes a concave hull of the vertices in a geometry
    * using the target criterion of maximum edge length,
    * and optionally allowing holes.
    * 
@@ -106,7 +106,7 @@ public class ConcaveHull
   }
   
   /**
-   * Computes the concave hull of the vertices in a geometry
+   * Computes a concave hull of the vertices in a geometry
    * using the target criterion of maximum edge length ratio.
    * The edge length ratio is a fraction of the length difference
    * between the longest and shortest edges 
@@ -121,7 +121,7 @@ public class ConcaveHull
   }
   
   /**
-   * Computes the concave hull of the vertices in a geometry
+   * Computes a concave hull of the vertices in a geometry
    * using the target criterion of maximum edge length factor,
    * and optionally allowing holes.
    * The edge length factor is a fraction of the length difference
