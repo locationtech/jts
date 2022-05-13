@@ -23,12 +23,52 @@ import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryCollection;
 import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.LinearRing;
+import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.operation.overlayng.CoverageUnion;
 import org.locationtech.jts.triangulate.polygon.ConstrainedDelaunayTriangulator;
 import org.locationtech.jts.triangulate.tri.Tri;
 
+/**
+ * Constructs a concave hull of a set of polygons, respecting 
+ * the polygons as constraints.
+ * A concave hull is a possibly non-convex polygon containing all the input polygons.
+ * A given set of polygons has a sequence of hulls of increasing concaveness,
+ * determined by a numeric target parameter.
+ * The computed hull "fills the gap" between the polygons,
+ * and does not intersect their interior.
+ * <p>
+ * The concave hull is constructed by removing the longest outer edges 
+ * of the Delaunay Triangulation of the space between the polygons,
+ * until the target criterion parameter is reached.
+ * <p>
+ * The target criteria are:
+ * <ul>
+ * <li><b>Maximum Edge Length</b> - the length of the longest edge between the polygons is no larger
+ * than this value.
+ * <li><b>Maximum Edge Length Ratio</b> - determine the Maximum Edge Length 
+ * as a fraction of the difference between the longest and shortest edge lengths 
+ * between the polygons.  
+ * This normalizes the <b>Maximum Edge Length</b> to be scale-free.
+ * A value of 1 produces the convex hull; a value of 0 produces the original polygons.
+ * </ul>
+ * The preferred criterion is the <b>Maximum Edge Length Ratio</b>, since it is 
+ * scale-free and local (so that no assumption needs to be made about the 
+ * total amount of concaveness present).
+ * <p>
+ * Optionally the concave hull can be allowed to contain holes, via {@link #setHolesAllowed(boolean)}.
+ * <p>
+ * The hull can be specified as being "tight", which means it follows the outer boundaries
+ * of the input polygons. 
+ * <p>
+ * The input polygons must form a valid MultiPolygon
+ * (i.e. they must be non-overlapping).
+ * 
+ * @author Martin Davis
+ *
+ */
 public class ConcaveHullOfPolygons {
   
   /**
