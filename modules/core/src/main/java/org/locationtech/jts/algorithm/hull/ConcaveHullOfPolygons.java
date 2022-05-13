@@ -23,9 +23,7 @@ import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryCollection;
 import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.LinearRing;
-import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.operation.overlayng.CoverageUnion;
 import org.locationtech.jts.triangulate.polygon.ConstrainedDelaunayTriangulator;
@@ -232,23 +230,29 @@ public class ConcaveHullOfPolygons {
    * @return the concave hull
    */
   public Geometry getHull() {
+    buildHullTris();
+    Geometry hull = createHullGeometry(hullTris, true);
+    return hull;
+  }
+
+  //TODO: add getGapGeometry()
+  
+  private void buildHullTris() {
     polygonRings = extractShellRings(inputPolygons);
     Polygon frame = createFrame(inputPolygons.getEnvelopeInternal(), polygonRings, geomFactory);
     ConstrainedDelaunayTriangulator cdt = new ConstrainedDelaunayTriangulator(frame);
     List<Tri> tris = cdt.getTriangles();
+    //System.out.println(tris);
     
     Coordinate[] framePts = frame.getExteriorRing().getCoordinates();
     if (maxEdgeLengthRatio >= 0) {
       maxEdgeLength = computeTargetEdgeLength(tris, framePts, maxEdgeLengthRatio);
     }
     
-     removeFrameCornerTris(tris, framePts);
+    hullTris = removeFrameCornerTris(tris, framePts);
     
     removeBorderTris();
     if (isHolesAllowed) removeHoleTris();
-    
-    Geometry hull = buildHullPolygon(hullTris);
-    return hull;
   }
 
   private static double computeTargetEdgeLength(List<Tri> triList, 
@@ -287,8 +291,8 @@ public class ConcaveHullOfPolygons {
     return isFrameTri;
   }
   
-  private void removeFrameCornerTris(List<Tri> tris, Coordinate[] frameCorners) {
-    hullTris = new HashSet<Tri>();
+  private Set<Tri> removeFrameCornerTris(List<Tri> tris, Coordinate[] frameCorners) {
+    Set<Tri> hullTris = new HashSet<Tri>();
     borderTriQue = new ArrayDeque<Tri>();
     for (Tri tri : tris) {
       int index = vertexIndex(tri, frameCorners);
@@ -309,6 +313,7 @@ public class ConcaveHullOfPolygons {
         hullTris.add(tri);
       }
     }
+    return hullTris;
   }
 
   /**
@@ -464,16 +469,20 @@ public class ConcaveHullOfPolygons {
     return env;
   }
 
-  private Geometry buildHullPolygon(Set<Tri> hullTris) {
+  private Geometry createHullGeometry(Set<Tri> hullTris, boolean isMergeInput) {
+    if (! isMergeInput && hullTris.isEmpty())
+      return geomFactory.createPolygon();
+    
     //-- union triangulation
     Geometry triCoverage = Tri.toGeometry(hullTris, geomFactory);
-    Geometry filler = CoverageUnion.union(triCoverage);
+    //System.out.println(triCoverage);
+    Geometry gapGeometry = CoverageUnion.union(triCoverage);
     
-    if (filler.isEmpty()) {
+    if (gapGeometry.isEmpty()) {
       return inputPolygons.copy();
     }
     //-- union with input polygons
-    Geometry[] geoms = new Geometry[] { filler, inputPolygons };
+    Geometry[] geoms = new Geometry[] { gapGeometry, inputPolygons };
     GeometryCollection geomColl = geomFactory.createGeometryCollection(geoms);
     Geometry hull = CoverageUnion.union(geomColl);
     return hull;
@@ -482,10 +491,10 @@ public class ConcaveHullOfPolygons {
   /**
    * Creates a rectangular "frame" around the input polygons,
    * with the input polygons as holes in it.
-   * The frame corners are far enough away that the constrained Delaunay triangulation
+   * The frame is large enough that the constrained Delaunay triangulation
    * of it should contain the convex hull of the input as edges.
-   * Thus the frame corner triangles can be removed and leave a correct 
-   * triangulation of the space between the input polygons.
+   * The frame corner triangles can be removed to produce a 
+   * triangulation of the space around and between the input polygons.
    * 
    * @param polygonsEnv
    * @param polygonRings
