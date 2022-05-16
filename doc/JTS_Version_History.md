@@ -17,7 +17,7 @@ Distributions for older JTS versions can be obtained at the
 
 <!-- ================================================================ -->
 
-# Version 1.18.3
+# Version 1.19
 
 * Release Date: TBD *
 
@@ -39,6 +39,7 @@ Distributions for older JTS versions can be obtained at the
 * Add support for GeoJSON Feature and FeatureCollection types (#837)
 * Add `WKTReader.setFixStructure` to fix WKT input (#848)
 * Add `PolygonHull` class (#861)
+* Add `ConcaveHullOfPolygons` (#870)
 
 ### Bug Fixes
 
