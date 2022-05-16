@@ -24,6 +24,7 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryCollection;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LinearRing;
+import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.operation.overlayng.CoverageUnion;
 import org.locationtech.jts.triangulate.polygon.ConstrainedDelaunayTriangulator;
@@ -135,6 +136,34 @@ public class ConcaveHullOfPolygons {
     return hull.getHull();
   }
   
+  /**
+   * Computes a concave fill area between a set of polygons,
+   * using the target criterion of maximum edge length.
+   * 
+   * @param polygons the input polygons
+   * @param maxLength the target maximum edge length
+   * @return the concave fill
+   */
+  public static Geometry concaveFillByLength(Geometry polygons, double maxLength) {
+    ConcaveHullOfPolygons hull = new ConcaveHullOfPolygons(polygons);
+    hull.setMaximumEdgeLength(maxLength);
+    return hull.getFill();
+  }
+  
+  /**
+   * Computes a concave fill area between a set of polygons,
+   * using the target criterion of maximum edge length ratio.
+   * 
+   * @param polygons the input polygons
+   * @param lengthRatio the target maximum edge length ratio
+   * @return the concave fill
+   */
+  public static Geometry concaveFillByLengthRatio(Geometry polygons, double lengthRatio) {
+    ConcaveHullOfPolygons hull = new ConcaveHullOfPolygons(polygons);
+    hull.setMaximumEdgeLengthRatio(lengthRatio);
+    return hull.getFill();
+  }
+  
   private static final int FRAME_EXPAND_FACTOR = 4;
   
   private Geometry inputPolygons;
@@ -160,6 +189,9 @@ public class ConcaveHullOfPolygons {
    * @param geom the input geometry
    */
   public ConcaveHullOfPolygons(Geometry polygons) {
+    if (! (polygons instanceof Polygon || polygons instanceof MultiPolygon)) {
+      throw new IllegalArgumentException("Input must be polygonal");
+    }
     this.inputPolygons = polygons;
     geomFactory = inputPolygons.getFactory();
   }
@@ -230,12 +262,33 @@ public class ConcaveHullOfPolygons {
    * @return the concave hull
    */
   public Geometry getHull() {
+    if (inputPolygons.isEmpty()) {
+      return createEmptyHull();
+    }
     buildHullTris();
     Geometry hull = createHullGeometry(hullTris, true);
     return hull;
   }
 
-  //TODO: add getGapGeometry()
+  /**
+   * Gets the concave fill, which is the area between the input polygons, 
+   * subject to the concaveness control parameter.
+   * 
+   * @return the concave fill
+   */
+  public Geometry getFill() {
+    isTight = true;
+    if (inputPolygons.isEmpty()) {
+      return createEmptyHull();
+    }
+    buildHullTris();
+    Geometry fill = createHullGeometry(hullTris, false);
+    return fill;
+  }
+  
+  private Geometry createEmptyHull() {
+    return geomFactory.createPolygon();
+  }
   
   private void buildHullTris() {
     polygonRings = extractShellRings(inputPolygons);
@@ -469,20 +522,23 @@ public class ConcaveHullOfPolygons {
     return env;
   }
 
-  private Geometry createHullGeometry(Set<Tri> hullTris, boolean isMergeInput) {
-    if (! isMergeInput && hullTris.isEmpty())
-      return geomFactory.createPolygon();
+  private Geometry createHullGeometry(Set<Tri> hullTris, boolean isIncludeInput) {
+    if (! isIncludeInput && hullTris.isEmpty())
+      return createEmptyHull();
     
     //-- union triangulation
     Geometry triCoverage = Tri.toGeometry(hullTris, geomFactory);
     //System.out.println(triCoverage);
-    Geometry gapGeometry = CoverageUnion.union(triCoverage);
+    Geometry fillGeometry = CoverageUnion.union(triCoverage);
     
-    if (gapGeometry.isEmpty()) {
+    if (! isIncludeInput) {
+      return fillGeometry;
+    }
+    if (fillGeometry.isEmpty()) {
       return inputPolygons.copy();
     }
     //-- union with input polygons
-    Geometry[] geoms = new Geometry[] { gapGeometry, inputPolygons };
+    Geometry[] geoms = new Geometry[] { fillGeometry, inputPolygons };
     GeometryCollection geomColl = geomFactory.createGeometryCollection(geoms);
     Geometry hull = CoverageUnion.union(geomColl);
     return hull;

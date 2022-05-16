@@ -24,6 +24,20 @@ public class ConcaveHullOfPolygonsTest extends GeometryTestCase {
 
   public ConcaveHullOfPolygonsTest(String name) { super(name); }
   
+  public void testEmpty() {
+    String wkt = "MULTIPOLYGON EMPTY";
+    checkHullTight(wkt, 1000, 
+        "POLYGON EMPTY" );
+  }
+
+  public void testPolygon() {
+    String wkt = "POLYGON ((1 9, 5 8, 9 9, 4 4, 7 1, 2 1, 1 9))";
+    checkHullTight(wkt, 1000, 
+        "POLYGON ((1 9, 5 8, 9 9, 4 4, 7 1, 2 1, 1 9))" );
+    checkHull(wkt, 1000, 
+        "POLYGON ((1 9, 9 9, 7 1, 2 1, 1 9))" );
+  }
+
   public void testSimple() {
     String wkt = "MULTIPOLYGON (((100 200, 100 300, 150 250, 200 300, 200 200, 100 200)), ((100 100, 200 100, 150 50, 100 100)))";
     checkHullTight(wkt, 1000, 

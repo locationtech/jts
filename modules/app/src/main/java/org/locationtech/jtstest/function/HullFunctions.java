@@ -80,36 +80,46 @@ public class HullFunctions {
     return PolygonHull.hullByAreaDelta(geom, areaFrac);
   }
   
-  public static Geometry concaveHullPolygon(Geometry geom, 
+  public static Geometry concaveHullPolygons(Geometry geom, 
       @Metadata(title="Max Edge Length")
       double maxEdgeLen) {
     return ConcaveHullOfPolygons.concaveHullByLength(geom, maxEdgeLen);
   }
   
-  public static Geometry concaveHullPolygonWithHoles(Geometry geom, 
+  public static Geometry concaveHullPolygonsWithHoles(Geometry geom, 
       @Metadata(title="Max Edge Length")
       double maxEdgeLen) {
     return ConcaveHullOfPolygons.concaveHullByLength(geom, maxEdgeLen, false, true);
   }
   
-  public static Geometry concaveHullPolygonTight(Geometry geom, 
+  public static Geometry concaveHullPolygonsTight(Geometry geom, 
       @Metadata(title="Max Edge Length")
       double maxEdgeLen) {
     return ConcaveHullOfPolygons.concaveHullByLength(geom, maxEdgeLen, true, false);
   }
   
-  public static Geometry concaveHullPolygonByLenRatio(Geometry geom, 
+  public static Geometry concaveHullPolygonsByLenRatio(Geometry geom, 
       @Metadata(title="Edge Length Ratio")
       double maxEdgeLenRatio) {
     return ConcaveHullOfPolygons.concaveHullByLengthRatio(geom, maxEdgeLenRatio);
   }
   
-  public static Geometry concaveHullPolygonTightByLenRatio(Geometry geom, 
+  public static Geometry concaveHullPolygonsTightByLenRatio(Geometry geom, 
       @Metadata(title="Edge Length Ratio")
       double maxEdgeLenRatio) {
     return ConcaveHullOfPolygons.concaveHullByLengthRatio(geom, maxEdgeLenRatio, true, false);
   }
   
-
+  public static Geometry concaveFill(Geometry geom, 
+      @Metadata(title="Max Edge Length")
+      double maxEdgeLen) {
+    return ConcaveHullOfPolygons.concaveFillByLength(geom, maxEdgeLen);
+  }
+  
+  public static Geometry concaveFillByLenRatio(Geometry geom, 
+      @Metadata(title="Edge Length Ratio")
+      double maxEdgeLenRatio) {
+    return ConcaveHullOfPolygons.concaveFillByLengthRatio(geom, maxEdgeLenRatio);
+  }
   
 }
