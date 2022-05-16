@@ -23,9 +23,13 @@ import org.locationtech.jts.geom.Polygon;
 
 /**
  * Constructs a concave hull of a set of points.
- * The hull is constructed by removing the longest outer edges 
- * of the Delaunay Triangulation of the points
- * until a target criterion is reached.
+ * A concave hull is a possibly non-convex polygon containing all the input points.
+ * A given set of points has a sequence of hulls of increasing concaveness,
+ * determined by a numeric target parameter.
+ * <p>
+ * The concave hull is constructed by removing the longest outer edges 
+ * of the Delaunay Triangulation of the points,
+ * until the target criterion parameter is reached.
  * <p>
  * The target criteria are:
  * <ul>
@@ -77,7 +81,7 @@ public class ConcaveHull
   }
   
   /**
-   * Computes the concave hull of the vertices in a geometry
+   * Computes a concave hull of the vertices in a geometry
    * using the target criterion of maximum edge length.
    * 
    * @param geom the input geometry
@@ -89,7 +93,7 @@ public class ConcaveHull
   }
   
   /**
-   * Computes the concave hull of the vertices in a geometry
+   * Computes a concave hull of the vertices in a geometry
    * using the target criterion of maximum edge length,
    * and optionally allowing holes.
    * 
@@ -106,7 +110,7 @@ public class ConcaveHull
   }
   
   /**
-   * Computes the concave hull of the vertices in a geometry
+   * Computes a concave hull of the vertices in a geometry
    * using the target criterion of maximum edge length ratio.
    * The edge length ratio is a fraction of the length difference
    * between the longest and shortest edges 
@@ -121,7 +125,7 @@ public class ConcaveHull
   }
   
   /**
-   * Computes the concave hull of the vertices in a geometry
+   * Computes a concave hull of the vertices in a geometry
    * using the target criterion of maximum edge length factor,
    * and optionally allowing holes.
    * The edge length factor is a fraction of the length difference

@@ -11,7 +11,7 @@
  */
 
 /**
- * Contains classes and interfaces implementing algorithms to compute hulls
+ * Contains classes implementing algorithms to compute hulls
  * of geometry objects.
  * <p>
  * See also {@link ConvexHull}.
