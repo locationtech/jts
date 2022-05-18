@@ -24,6 +24,10 @@ import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 
+/**
+ * Represents the metadata header information of a geometry encoded with TWKB
+ * @see <a href="https://github.com/TWKB/Specification/blob/master/twkb.md">TWKB specification</a>
+ */
 class TWKBHeader {
 
     public TWKBHeader() {

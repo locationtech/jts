@@ -14,6 +14,10 @@ package org.locationtech.jts.io.twkb;
 import java.io.DataOutput;
 import java.io.IOException;
 
+/**
+ * Facade for a {@link DataOutput} providing the specific operations necessary for encoding in TWKB,
+ * including variable-length encoding
+ */
 class TWKBOutputStream {
 
     protected final DataOutput out;

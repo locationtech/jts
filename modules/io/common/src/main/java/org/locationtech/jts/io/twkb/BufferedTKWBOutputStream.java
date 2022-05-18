@@ -15,6 +15,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
+/**
+ * Buffered {@link TWKBOutputStream}. Useful for e.g. encoding the size of an encoded geometry
+ * <b>before</b> writing the bytes for the geometry itself.
+ */
 class BufferedTKWBOutputStream extends TWKBOutputStream {
 
     public static BufferedTKWBOutputStream create() {

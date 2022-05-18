@@ -14,6 +14,9 @@ package org.locationtech.jts.io.twkb;
 import org.locationtech.jts.geom.CoordinateSequence;
 import org.locationtech.jts.geom.CoordinateSequenceFilter;
 
+/**
+ * {@link CoordinateSequenceFilter} used to extract the ordinates of the bounding box of a {@link CoordinateSequence}
+ */
 class BoundsExtractor implements CoordinateSequenceFilter {
 
     private final int dimensions;
