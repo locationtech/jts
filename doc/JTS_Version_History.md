@@ -40,6 +40,7 @@ Distributions for older JTS versions can be obtained at the
 * Add `WKTReader.setFixStructure` to fix WKT input (#848)
 * Add `PolygonHull` class (#861)
 * Add `ConcaveHullOfPolygons` (#870)
+* Improve `LineSegment.hashCode` to reduce collisions (#872)
 
 ### Bug Fixes
 
