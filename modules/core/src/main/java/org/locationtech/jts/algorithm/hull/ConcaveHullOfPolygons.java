@@ -57,13 +57,18 @@ import org.locationtech.jts.triangulate.tri.Tri;
  * scale-free and local (so that no assumption needs to be made about the 
  * total amount of concaveness present).
  * <p>
- * Optionally the concave hull can be allowed to contain holes, via {@link #setHolesAllowed(boolean)}.
+ * Optionally the concave hull can be allowed to contain holes, 
+ * via {@link #setHolesAllowed(boolean)}.
  * <p>
- * The hull can be specified as being "tight", which means it follows the outer boundaries
+ * The hull can be specified as being "tight", via {@link #setTight(boolean).
+ * This causes the result to follow the outer boundaries
  * of the input polygons. 
  * <p>
- * The input polygons must form a valid MultiPolygon
- * (i.e. they must be non-overlapping).
+ * The input polygons must form a valid {@link MultiPolygon}
+ * (i.e. they must be non-overlapping and non-edge-adjacent).
+ * A collection of polygons 
+ * can be converted to a valid MultiPolygon if needed
+ * by using {@link Geometry#union()};
  * 
  * @author Martin Davis
  *
