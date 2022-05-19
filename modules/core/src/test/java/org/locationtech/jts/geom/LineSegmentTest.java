@@ -11,21 +11,14 @@
  */
 package org.locationtech.jts.geom;
 
-import org.locationtech.jts.io.WKTReader;
-
 import junit.framework.TestCase;
 import junit.textui.TestRunner;
 
 
 /**
- * Test named predicate short-circuits
- */
-/**
- * @version 1.7
+ * Test LineSegment methods
  */
 public class LineSegmentTest extends TestCase {
-
-  WKTReader rdr = new WKTReader();
 
   public static void main(String args[]) {
     TestRunner.run(LineSegmentTest.class);
@@ -34,6 +27,21 @@ public class LineSegmentTest extends TestCase {
   public LineSegmentTest(String name) { super(name); }
 
   private static double ROOT2 = Math.sqrt(2);
+  
+  /**
+   * Test hash code collisions.
+   * 
+   * See https://github.com/locationtech/jts/issues/871
+   */
+  public void testHashCode() {
+    checkHashcode(new LineSegment(0, 0, 10, 0), new LineSegment(0, 10, 10, 10));
+    checkHashcode(new LineSegment(580.0, 1330.0, 590.0, 1330.0), new LineSegment(580.0, 1340.0, 590.0, 1340.));
+  }
+
+  private void checkHashcode(LineSegment seg, LineSegment seg2) {
+    //System.out.format("Seg 1: %d   Seg 2: %d\n", seg.hashCode(), seg2.hashCode());
+    assertTrue(seg.hashCode() != seg2.hashCode());
+  }
   
   public void testProjectionFactor()
   {

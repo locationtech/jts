@@ -641,6 +641,15 @@ public class LineSegment
    * @return a hashcode for this object
    */
   public int hashCode() {
+    int hash = 17;
+    hash = hash * 29 + Double.hashCode(p0.x);
+    hash = hash * 29 + Double.hashCode(p0.y);
+    hash = hash * 29 + Double.hashCode(p1.x);
+    hash = hash * 29 + Double.hashCode(p1.y);
+    return hash;
+  }
+
+  public int OLDhashCode() {
     long bits0 = java.lang.Double.doubleToLongBits(p0.x);
     bits0 ^= java.lang.Double.doubleToLongBits(p0.y) * 31;
     int hash0 = (((int) bits0) ^ ((int) (bits0  >> 32)));
@@ -652,7 +661,7 @@ public class LineSegment
     // XOR is supposed to be a good way to combine hashcodes
     return hash0 ^ hash1;
   }
-
+  
   /**
    *  Compares this object with the specified object for order.
    *  Uses the standard lexicographic ordering for the points in the LineSegment.
