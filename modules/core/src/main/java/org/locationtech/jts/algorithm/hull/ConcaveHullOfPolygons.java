@@ -50,24 +50,23 @@ import org.locationtech.jts.triangulate.tri.Tri;
  * <li><b>Maximum Edge Length Ratio</b> - determine the Maximum Edge Length 
  * as a fraction of the difference between the longest and shortest edge lengths 
  * between the polygons.  
- * This normalizes the <b>Maximum Edge Length</b> to be scale-free.
+ * This provides a scale-free parameter.
  * A value of 1 produces the convex hull; a value of 0 produces the original polygons.
  * </ul>
- * The preferred criterion is the <b>Maximum Edge Length Ratio</b>, since it is 
- * scale-free and local (so that no assumption needs to be made about the 
- * total amount of concaveness present).
- * <p>
  * Optionally the concave hull can be allowed to contain holes, 
  * via {@link #setHolesAllowed(boolean)}.
  * <p>
- * The hull can be specified as being "tight", via {@link #setTight(boolean).
+ * The hull can be specified as being "tight", via {@link #setTight(boolean)}.
  * This causes the result to follow the outer boundaries
  * of the input polygons. 
  * <p>
+ * Instead of the complete hull, the "fill area" between the input polygons 
+ * can be computed using {@link #getFill()}.
+ * <p>
  * The input polygons must form a valid {@link MultiPolygon}
  * (i.e. they must be non-overlapping and non-edge-adjacent).
- * A collection of polygons 
- * can be converted to a valid MultiPolygon if needed
+ * If needed, a collection of polygons 
+ * can be converted to a valid MultiPolygon
  * by using {@link Geometry#union()};
  * 
  * @author Martin Davis
