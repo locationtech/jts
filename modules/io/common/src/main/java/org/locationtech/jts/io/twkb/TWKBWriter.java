@@ -11,6 +11,9 @@
  */
 package org.locationtech.jts.io.twkb;
 
+import static org.locationtech.jts.io.twkb.Varint.writeSignedVarLong;
+import static org.locationtech.jts.io.twkb.Varint.writeUnsignedVarInt;
+
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutput;
 import java.io.DataOutputStream;
@@ -137,10 +140,10 @@ public class TWKBWriter {
 
     public void write(Geometry geom, DataOutput out) throws IOException {
         Objects.requireNonNull(geom, "geometry is null");
-        write(geom, TWKBOutputStream.of(out), paramsHeader, false);
+        write(geom, out, paramsHeader, false);
     }
 
-    private TWKBHeader write(Geometry geometry, TWKBOutputStream out, TWKBHeader params,
+    private TWKBHeader write(Geometry geometry, DataOutput out, TWKBHeader params,
         boolean forcePreserveHeaderDimensions) throws IOException {
         Objects.requireNonNull(geometry, "Geometry is null");
         Objects.requireNonNull(out, "DataOutput is null");
@@ -149,12 +152,12 @@ public class TWKBWriter {
         TWKBHeader header = prepareHeader(geometry, new TWKBHeader(params), forcePreserveHeaderDimensions);
 
         if (header.hasSize()) {
-            BufferedTKWBOutputStream bufferedBody = BufferedTKWBOutputStream.create();
+            BufferedDataOutput bufferedBody = new BufferedDataOutput();
             writeGeometryBody(geometry, bufferedBody, header);
             int bodySize = bufferedBody.size();
             header = header.setGeometryBodySize(bodySize);
             writeHeaderTo(header, out);
-            bufferedBody.writeTo(out);
+            out.write(bufferedBody.content());
         } else {
             writeHeaderTo(header, out);
             writeGeometryBody(geometry, out, header);
@@ -162,7 +165,7 @@ public class TWKBWriter {
         return header;
     }
 
-    private static void writeHeaderTo(TWKBHeader header, TWKBOutputStream out) throws IOException {
+    private static void writeHeaderTo(TWKBHeader header, DataOutput out) throws IOException {
         Objects.requireNonNull(out);
         final int typeAndPrecisionHeader;
         final int metadataHeader;
@@ -187,7 +190,7 @@ public class TWKBWriter {
             out.writeByte(extendedDimsHeader);
         }
         if (header.hasSize()) {
-            out.writeUnsignedVarInt(header.geometryBodySize());
+            writeUnsignedVarInt(header.geometryBodySize(), out);
         }
     }
 
@@ -206,7 +209,7 @@ public class TWKBWriter {
         return header;
     }
 
-    private void writeGeometryBody(Geometry geom, TWKBOutputStream out, TWKBHeader header)
+    private void writeGeometryBody(Geometry geom, DataOutput out, TWKBHeader header)
         throws IOException {
         if (header.isEmpty()) {
             return;
@@ -242,7 +245,7 @@ public class TWKBWriter {
         }
     }
 
-    private void writePoint(Point geom, TWKBOutputStream out, TWKBHeader header)
+    private void writePoint(Point geom, DataOutput out, TWKBHeader header)
         throws IOException {
         assert !geom.isEmpty();
         CoordinateSequence seq = geom.getCoordinateSequence();
@@ -253,14 +256,14 @@ public class TWKBWriter {
     }
 
     private void writeCoordinateSequence(CoordinateSequence coordinateSequence,
-        TWKBOutputStream out, TWKBHeader header, long[] prev, int minNPoints) throws IOException {
+        DataOutput out, TWKBHeader header, long[] prev, int minNPoints) throws IOException {
 
         final int dimensions = header.getDimensions();
         long[] delta = new long[dimensions];
         int nPoints = 0;
         int nPointsRemaining = coordinateSequence.size();
         // Real number of points can't be determined beforehand, since duplicated points may be removed, so buffering is required
-        BufferedTKWBOutputStream bufferedOut = BufferedTKWBOutputStream.create();
+        BufferedDataOutput bufferedOut = new BufferedDataOutput();
 
         for (int coordIndex = 0; coordIndex < coordinateSequence.size(); coordIndex++) {
             long diff = 0;
@@ -279,20 +282,19 @@ public class TWKBWriter {
             }
 
             for (int ordinateIndex = 0; ordinateIndex < header.getDimensions(); ordinateIndex++) {
-                bufferedOut.writeSignedVarLong(delta[ordinateIndex]);
+                writeSignedVarLong(delta[ordinateIndex], bufferedOut);
             }
             nPoints++;
         }
 
-        out.writeUnsignedVarInt(nPoints);
-        bufferedOut.writeTo(out);
+        writeUnsignedVarInt(nPoints, out);
+        out.write(bufferedOut.content());
     }
 
-    private long writeOrdinate(double ordinate, long previousOrdinateValue, int precision,
-        TWKBOutputStream out) throws IOException {
+    private long writeOrdinate(double ordinate, long previousOrdinateValue, int precision, DataOutput out) throws IOException {
         long preciseOrdinate = makePrecise(ordinate, precision);
         long delta = preciseOrdinate - previousOrdinateValue;
-        out.writeSignedVarLong(delta);
+        writeSignedVarLong(delta, out);
         return preciseOrdinate;
     }
 
@@ -300,36 +302,36 @@ public class TWKBWriter {
         return Math.round(value * Math.pow(10, precision));
     }
 
-    private void writeLineString(LineString geom, TWKBOutputStream out, TWKBHeader header,
+    private void writeLineString(LineString geom, DataOutput out, TWKBHeader header,
         long[] prev) throws IOException {
         writeCoordinateSequence(geom.getCoordinateSequence(), out, header, prev, 3);
     }
 
-    private void writePolygon(Polygon geom, TWKBOutputStream out, TWKBHeader header,
+    private void writePolygon(Polygon geom, DataOutput out, TWKBHeader header,
         long[] prev) throws IOException {
         if (geom.isEmpty()) {
-            out.writeUnsignedVarInt(0);
+            writeUnsignedVarInt(0, out);
             return;
         }
         final int numInteriorRing = geom.getNumInteriorRing();
         final int nrings = 1 + numInteriorRing;
-        out.writeUnsignedVarInt(nrings);
+        writeUnsignedVarInt(nrings, out);
         writeLinearRing(geom.getExteriorRing(), out, header, prev);
         for (int r = 0; r < numInteriorRing; r++) {
             writeLinearRing(geom.getInteriorRingN(r), out, header, prev);
         }
     }
 
-    private void writeLinearRing(LinearRing geom, TWKBOutputStream out, TWKBHeader header,
+    private void writeLinearRing(LinearRing geom, DataOutput out, TWKBHeader header,
         long[] prev) throws IOException {
         if (geom.isEmpty()) {
-            out.writeUnsignedVarInt(0);
+            writeUnsignedVarInt(0, out);
             return;
         }
         writeCoordinateSequence(geom.getCoordinateSequence(), out, header, prev, 3);
     }
 
-    private void writeMultiPoint(MultiPoint geom, TWKBOutputStream out, TWKBHeader header)
+    private void writeMultiPoint(MultiPoint geom, DataOutput out, TWKBHeader header)
         throws IOException {
         assert !geom.isEmpty();
 
@@ -338,8 +340,7 @@ public class TWKBWriter {
         writeCoordinateSequence(seq, out, header, new long[header.getDimensions()], 2);
     }
 
-    private void writeMultiLineString(MultiLineString geom, TWKBOutputStream out,
-        TWKBHeader header) throws IOException {
+    private void writeMultiLineString(MultiLineString geom, DataOutput out, TWKBHeader header) throws IOException {
         final int size = writeNumGeometries(geom, out);
         long[] prev = new long[header.getDimensions()];
         for (int i = 0; i < size; i++) {
@@ -347,8 +348,7 @@ public class TWKBWriter {
         }
     }
 
-    private void writeMultiPolygon(MultiPolygon geom, TWKBOutputStream out,
-        TWKBHeader header) throws IOException {
+    private void writeMultiPolygon(MultiPolygon geom, DataOutput out, TWKBHeader header) throws IOException {
         final int size = writeNumGeometries(geom, out);
         long[] prev = new long[header.getDimensions()];
         for (int i = 0; i < size; i++) {
@@ -356,8 +356,7 @@ public class TWKBWriter {
         }
     }
 
-    private void writeGeometryCollection(GeometryCollection geom, TWKBOutputStream out,
-        TWKBHeader header) throws IOException {
+    private void writeGeometryCollection(GeometryCollection geom, DataOutput out, TWKBHeader header) throws IOException {
         final int size = writeNumGeometries(geom, out);
         for (int i = 0; i < size; i++) {
             Geometry geometryN = geom.getGeometryN(i);
@@ -366,14 +365,14 @@ public class TWKBWriter {
         }
     }
 
-    private int writeNumGeometries(GeometryCollection geom, TWKBOutputStream out)
+    private int writeNumGeometries(GeometryCollection geom, DataOutput out)
         throws IOException {
         int size = geom.getNumGeometries();
-        out.writeUnsignedVarInt(size);
+        writeUnsignedVarInt(size, out);
         return size;
     }
 
-    private void writeBbox(Geometry geom, TWKBOutputStream out, TWKBHeader header)
+    private void writeBbox(Geometry geom, DataOutput out, TWKBHeader header)
         throws IOException {
         final int dimensions = header.getDimensions();
         final double[] boundsCoordinates = computeEnvelope(geom, dimensions);
@@ -413,6 +412,17 @@ public class TWKBWriter {
         boolean hasZ = seq.hasZ();
         boolean hasM = seq.hasM();
         return header.setHasZ(hasZ).setHasM(hasM);
+    }
+
+    private static class BufferedDataOutput extends DataOutputStream {
+
+        public BufferedDataOutput() {
+            super(new ByteArrayOutputStream());
+        }
+
+        public byte[] content() {
+            return ((ByteArrayOutputStream) out).toByteArray();
+        }
     }
 
 }
