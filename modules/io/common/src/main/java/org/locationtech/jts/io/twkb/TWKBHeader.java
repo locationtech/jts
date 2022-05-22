@@ -251,8 +251,6 @@ class TWKBHeader {
      */
     private int geometryBodySize;
 
-    /////////////////////// custom optimizations ///////////////////////
-
     public int getDimensions() {
         return 2 + (hasZ ? 1 : 0) + (hasM ? 1 : 0);
     }

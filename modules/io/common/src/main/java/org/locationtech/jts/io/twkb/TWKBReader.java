@@ -112,17 +112,17 @@ public class TWKBReader {
         if (hasSize) {
             geometryBodySize = Varint.readUnsignedVarInt(in);
         }
-        return new TWKBHeader()//
-            .setGeometryType(geometryType)//
-            .setXyPrecision(precision)//
+        return new TWKBHeader()
+            .setGeometryType(geometryType)
+            .setXyPrecision(precision)
             .setHasZ(hasZ)
-            .setZPrecision(zprecision)//
+            .setZPrecision(zprecision)
             .setHasM(hasM)
-            .setMPrecision(mprecision)//
-            .setHasIdList(hasIdList)//
-            .setEmpty(isEmpty)//
-            .setHasSize(hasSize)//
-            .setHasBBOX(hasBBOX)//
+            .setMPrecision(mprecision)
+            .setHasIdList(hasIdList)
+            .setEmpty(isEmpty)
+            .setHasSize(hasSize)
+            .setHasBBOX(hasBBOX)
             .setGeometryBodySize(geometryBodySize);
     }
 
