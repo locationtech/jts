@@ -1,3 +1,8 @@
+/**
+ * This script can been used to generate test data against a PostgreSQL database + PostGIS extension.
+ * Just run on it against the PostgreSQL database, and it will generate CSV files in /tmp directory.
+ */
+
 CREATE OR REPLACE FUNCTION generate_twkb_test_data(
     arr text[],
     xyprecisions int[] default ARRAY[-7, 0, 7],
