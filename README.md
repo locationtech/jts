@@ -32,6 +32,10 @@ Currently JTS targets Java 1.8 and above.
 * [Mailing List](https://accounts.eclipse.org/mailing-list/jts-dev)
 * [Gitter Channel](https://gitter.im/locationtech/jts)
 
+### Forums
+* [Stack Overflow](https://stackoverflow.com/questions/tagged/jts)
+* [GIS Stack Exchange](https://gis.stackexchange.com/questions/tagged/jts-topology-suite)
+
 ## License
 
 JTS is open source software.  It is dual-licensed under:
