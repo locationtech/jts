@@ -73,7 +73,7 @@ import org.locationtech.jts.triangulate.tri.Tri;
  *
  */
 public class ConcaveHullOfPolygons {
-  
+ 
   /**
    * Computes a concave hull of set of polygons
    * using the target criterion of maximum edge length.
@@ -169,10 +169,12 @@ public class ConcaveHullOfPolygons {
   }
   
   private static final int FRAME_EXPAND_FACTOR = 4;
-  
+  private static final int NOT_SPECIFIED = -1;
+  private static final int NOT_FOUND = -1;
+
   private Geometry inputPolygons;
-  private double maxEdgeLength = -1;
-  private double maxEdgeLengthRatio = -1;
+  private double maxEdgeLength = 0.0;
+  private double maxEdgeLengthRatio = NOT_SPECIFIED;
   private boolean isHolesAllowed = false;
   private boolean isTight = false;
   
@@ -217,7 +219,7 @@ public class ConcaveHullOfPolygons {
     if (edgeLength < 0)
       throw new IllegalArgumentException("Edge length must be non-negative");
     this.maxEdgeLength = edgeLength;
-    maxEdgeLengthRatio = -1;
+    maxEdgeLengthRatio = NOT_SPECIFIED;
   }
   
   /**
@@ -353,7 +355,7 @@ public class ConcaveHullOfPolygons {
     borderTriQue = new ArrayDeque<Tri>();
     for (Tri tri : tris) {
       int index = vertexIndex(tri, frameCorners);
-      boolean isFrameTri = index >= 0;
+      boolean isFrameTri = index != NOT_FOUND;
       if (isFrameTri) {
         /**
          * Frame tris are adjacent to at most one border tri,
@@ -387,7 +389,7 @@ public class ConcaveHullOfPolygons {
       if (index >= 0) 
         return index;
     }
-    return -1;
+    return NOT_FOUND;
   }
   
   private void removeBorderTris() {
