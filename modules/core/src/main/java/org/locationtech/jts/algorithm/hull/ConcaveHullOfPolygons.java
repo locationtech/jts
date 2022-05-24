@@ -33,14 +33,15 @@ import org.locationtech.jts.triangulate.tri.Tri;
 /**
  * Constructs a concave hull of a set of polygons, respecting 
  * the polygons as constraints.
- * A concave hull is a possibly non-convex polygon containing all the input polygons.
+ * A concave hull is a concave or convex polygon containing all the input polygons,
+ * whose vertices are a subset of the vertices in the input.
  * A given set of polygons has a sequence of hulls of increasing concaveness,
  * determined by a numeric target parameter.
  * The computed hull "fills the gap" between the polygons,
  * and does not intersect their interior.
  * <p>
  * The concave hull is constructed by removing the longest outer edges 
- * of the Delaunay Triangulation of the space between the polygons,
+ * of the constrained Delaunay Triangulation of the space between the polygons,
  * until the target criterion parameter is reached.
  * <p>
  * The target criteria are:
@@ -57,15 +58,14 @@ import org.locationtech.jts.triangulate.tri.Tri;
  * via {@link #setHolesAllowed(boolean)}.
  * <p>
  * The hull can be specified as being "tight", via {@link #setTight(boolean)}.
- * This causes the result to follow the outer boundaries
- * of the input polygons. 
+ * This causes the result to follow the outer boundaries of the input polygons. 
  * <p>
  * Instead of the complete hull, the "fill area" between the input polygons 
  * can be computed using {@link #getFill()}.
  * <p>
  * The input polygons must form a valid {@link MultiPolygon}
  * (i.e. they must be non-overlapping and non-edge-adjacent).
- * If needed, a collection of polygons 
+ * If needed, a set of possibly-overlapping Polygons 
  * can be converted to a valid MultiPolygon
  * by using {@link Geometry#union()};
  * 

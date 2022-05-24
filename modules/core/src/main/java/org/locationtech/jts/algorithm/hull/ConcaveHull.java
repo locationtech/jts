@@ -23,7 +23,8 @@ import org.locationtech.jts.geom.Polygon;
 
 /**
  * Constructs a concave hull of a set of points.
- * A concave hull is a possibly non-convex polygon containing all the input points.
+ * A concave hull is a concave or convex polygon containing all the input points,
+ * whose vertices are a subset of the vertices in the input.
  * A given set of points has a sequence of hulls of increasing concaveness,
  * determined by a numeric target parameter.
  * <p>
