@@ -39,7 +39,7 @@ public class AppStrings {
   static final String TIP_DELETE_VERTEX_COMPONENT = "<html>Delete Components/Vertices<br><br>Delete Components = Drag<br>Delete Intersecting Components = Ctl-Drag<br>Delete Vertices = Right-Drag</html>";
 
   static final String TIP_MOVE_VERTEX = "<html>Move/Add/Delete Vertex<br><br>Move = Drag<br>Add = Right-Click<br>Delete = Ctl-Right-Click</html>";
-  static final String TIP_MOVE = "<html>Move Geometry<br><br>Move = Drag</html>";
+  static final String TIP_MOVE = "<html>Move<br><br>Geometry = Drag<br>Component = Ctl-Drag<br></html>";
 
   static final String TIP_PAN = "Pan";
   static final String TIP_ZOOM_TO_FULL_EXTENT = "Zoom To Full Extent";

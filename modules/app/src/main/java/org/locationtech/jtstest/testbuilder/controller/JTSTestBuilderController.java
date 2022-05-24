@@ -13,12 +13,16 @@
 package org.locationtech.jtstest.testbuilder.controller;
 
 
+import java.util.List;
+
 import javax.swing.JFileChooser;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.util.LinearComponentExtracter;
 import org.locationtech.jtstest.testbuilder.TestBuilderDialogs;
+import org.locationtech.jtstest.testbuilder.geom.ComponentLocater;
+import org.locationtech.jtstest.testbuilder.geom.GeometryLocation;
 import org.locationtech.jtstest.clean.CleanDuplicatePoints;
 import org.locationtech.jtstest.testbuilder.GeometryEditPanel;
 import org.locationtech.jtstest.testbuilder.JTSTestBuilder;
@@ -156,6 +160,18 @@ public class JTSTestBuilderController
     if (comp == null) 
       return;
     SwingUtil.copyToClipboard(comp, false);
+  }
+  
+  public Geometry getComponent(Coordinate pt)
+  {
+    double tolerance = editPanel().getToleranceInModel();
+    ComponentLocater locater = new ComponentLocater(geomEditModel().getGeometry());
+    List<GeometryLocation> locs = locater.getComponents(pt, tolerance);
+    if (locs.size() > 0) {
+      GeometryLocation loc = (GeometryLocation) locs.get(0);
+      return loc.getComponent();
+    }
+    return null;
   }
   
   public void setFocusGeometry(int index) {

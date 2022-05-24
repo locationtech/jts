@@ -327,6 +327,13 @@ public class GeometryEditModel
     return GeometryPointLocater.locateVertex(getGeometry(), testPt, tolerance);
   }
   
+  public List<GeometryLocation> getComponents(Coordinate testPt, double tolerance)
+  {
+    Geometry geom = getGeometry();
+    if (geom == null) return null;
+    return ComponentLocater.getComponents(getGeometry(), testPt, tolerance);
+  }
+  
   public Coordinate locateVertexPt(Coordinate testPt, double tolerance)
   {
     Geometry geom = getGeometry();

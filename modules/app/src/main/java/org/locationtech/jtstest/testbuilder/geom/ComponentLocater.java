@@ -26,8 +26,14 @@ import org.locationtech.jts.geom.*;
  */
 public class ComponentLocater {
 
+  public static List<GeometryLocation> getComponents(Geometry parentGeom, Coordinate queryPt, double tolerance) {
+    ComponentLocater locater = new ComponentLocater(parentGeom);
+    return locater.getComponents(queryPt, tolerance);
+  }
+
+  
   private Geometry parentGeom;
-  private List components = new ArrayList();
+  private List<GeometryLocation> components = new ArrayList();
   private Geometry aoi;
 
   public ComponentLocater(Geometry parentGeom) {
@@ -40,7 +46,7 @@ public class ComponentLocater {
    * @param tolerance
    * @return a List of the component Geometrys
    */
-  public List getComponents(Coordinate queryPt, double tolerance)
+  public List<GeometryLocation> getComponents(Coordinate queryPt, double tolerance)
   {
     //Coordinate queryPt = queryPt;
     //this.tolerance = tolerance;
@@ -48,7 +54,7 @@ public class ComponentLocater {
     return getComponents(aoi);
   }
 
-  public List getComponents(Geometry aoi)
+  public List<GeometryLocation> getComponents(Geometry aoi)
   {
     //Coordinate queryPt = queryPt;
     //this.tolerance = tolerance;

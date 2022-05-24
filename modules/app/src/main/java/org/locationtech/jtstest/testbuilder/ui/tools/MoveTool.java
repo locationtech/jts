@@ -16,9 +16,15 @@ import java.awt.Shape;
 import java.awt.event.MouseEvent;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
+import java.util.List;
 
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.util.AffineTransformation;
 import org.locationtech.jtstest.testbuilder.AppCursors;
+import org.locationtech.jtstest.testbuilder.geom.ComponentLocater;
+import org.locationtech.jtstest.testbuilder.geom.GeometryComponentTransformer;
+import org.locationtech.jtstest.testbuilder.geom.GeometryLocation;
 
 
 /**
@@ -31,6 +37,8 @@ extends IndicatorTool
 
   Point2D startIndicatorLoc = null;
   Coordinate currentVertexLoc = null;
+
+  private Geometry targetComp;
   
   public static MoveTool getInstance() {
     if (instance == null)
@@ -42,8 +50,23 @@ extends IndicatorTool
     super(AppCursors.EDIT_VERTEX);
   }
 
+  private Geometry getComponent(Coordinate pt, double tolerance) {
+    List<GeometryLocation> geoms = geomModel().getComponents(pt, tolerance);
+    if (geoms.size() <= 0) return null;
+    return geoms.get(0).getComponent();
+  }
+  
   public void mousePressed(MouseEvent e) {
+    startIndicatorLoc = null;
     //TODO: only start move if cursor is over geometry
+    Coordinate mousePtModel = toModelCoordinate(e.getPoint());
+    double tolModel = getModelSnapTolerance();
+    targetComp = getComponent(mousePtModel, tolModel);
+    if (targetComp == null) {
+      return;
+    }
+
+    //-- over a geom - start gesture
     startIndicatorLoc = e.getPoint();
   	currentVertexLoc = null;
     
@@ -58,7 +81,21 @@ extends IndicatorTool
     if (startIndicatorLoc != null) {
       Coordinate startLoc = toModelCoordinate((Point) startIndicatorLoc);
       Coordinate newLoc = toModelSnapped(e.getPoint());
-      geomModel().moveGeometry(startLoc, newLoc);
+      execute(startLoc, newLoc, e.isControlDown());
+    }
+    startIndicatorLoc = null;
+  }
+
+  private void execute(Coordinate fromLoc, Coordinate toLoc, boolean isComponentMoved) {
+    if (isComponentMoved) {
+      double dx = toLoc.getX() - fromLoc.getX();
+      double dy = toLoc.getY() - fromLoc.getY();
+      AffineTransformation trans = AffineTransformation.translationInstance(dx, dy);
+      Geometry geomTrans = GeometryComponentTransformer.transform(geomModel().getGeometry(), targetComp, trans);
+      geomModel().setGeometry(geomTrans);
+    }
+    else {
+      geomModel().moveGeometry(fromLoc, toLoc);    
     }
   }
 

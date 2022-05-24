@@ -41,6 +41,13 @@ public class GeometryPointLocater
     return null;
   }
 
+  public static GeometryLocation locate(Geometry geom, Coordinate testPt, double tolerance)
+  {
+    GeometryPointLocater finder = new GeometryPointLocater(geom);
+    GeometryLocation geomLoc = finder.getLocation(testPt, true, tolerance);
+    return geomLoc;
+  }
+
   private Geometry geom;
   private Coordinate locationPt;
   private int segIndex = -1;
