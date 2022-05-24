@@ -162,18 +162,6 @@ public class JTSTestBuilderController
     SwingUtil.copyToClipboard(comp, false);
   }
   
-  public Geometry getComponent(Coordinate pt)
-  {
-    double tolerance = editPanel().getToleranceInModel();
-    ComponentLocater locater = new ComponentLocater(geomEditModel().getGeometry());
-    List<GeometryLocation> locs = locater.getComponents(pt, tolerance);
-    if (locs.size() > 0) {
-      GeometryLocation loc = (GeometryLocation) locs.get(0);
-      return loc.getComponent();
-    }
-    return null;
-  }
-  
   public void setFocusGeometry(int index) {
     model().getGeometryEditModel().setEditGeomIndex(index);
     toolbar().setFocusGeometry(index);    

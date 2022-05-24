@@ -349,15 +349,6 @@ public class GeometryEditModel
     setGeometry(modGeom);
   }
   
-  public void moveGeometry(Coordinate fromLoc, Coordinate toLoc) {
-    Geometry geom = getGeometry().copy();
-    double dx = toLoc.getX() - fromLoc.getX();
-    double dy = toLoc.getY() - fromLoc.getY();
-    AffineTransformation trans = AffineTransformation.translationInstance(dx, dy);
-    geom.apply(trans);
-    setGeometry(geom);
-  }
-  
   public void geomChanged()
   {
     fireGeometryChanged(new GeometryEvent(this));

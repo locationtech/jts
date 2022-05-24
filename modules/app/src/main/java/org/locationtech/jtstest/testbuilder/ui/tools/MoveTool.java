@@ -87,16 +87,17 @@ extends IndicatorTool
   }
 
   private void execute(Coordinate fromLoc, Coordinate toLoc, boolean isComponentMoved) {
+    double dx = toLoc.getX() - fromLoc.getX();
+    double dy = toLoc.getY() - fromLoc.getY();
+    AffineTransformation trans = AffineTransformation.translationInstance(dx, dy);
+    Geometry geomTrans = null;
     if (isComponentMoved) {
-      double dx = toLoc.getX() - fromLoc.getX();
-      double dy = toLoc.getY() - fromLoc.getY();
-      AffineTransformation trans = AffineTransformation.translationInstance(dx, dy);
-      Geometry geomTrans = GeometryComponentTransformer.transform(geomModel().getGeometry(), targetComp, trans);
-      geomModel().setGeometry(geomTrans);
+      geomTrans = GeometryComponentTransformer.transform(geomModel().getGeometry(), targetComp, trans);
     }
     else {
-      geomModel().moveGeometry(fromLoc, toLoc);    
+      GeometryComponentTransformer.transform(geomModel().getGeometry(), trans);
     }
+    geomModel().setGeometry(geomTrans);
   }
 
   public void mouseDragged(MouseEvent e) {

@@ -26,6 +26,13 @@ import org.locationtech.jts.geom.util.GeometryEditor;
 public class GeometryComponentTransformer 
 {
 
+  public static Geometry transform(Geometry geom, AffineTransformation trans)
+  {
+    Geometry geomTrans = geom.copy();
+    geomTrans.apply(trans);
+    return geomTrans;
+  }
+  
   public static Geometry transform(Geometry geom, Geometry component, AffineTransformation trans)
   {
     GeometryEditor editor = new GeometryEditor();
