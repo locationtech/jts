@@ -36,6 +36,7 @@ import org.locationtech.jtstest.testbuilder.ui.tools.EditVertexTool;
 import org.locationtech.jtstest.testbuilder.ui.tools.ExtractComponentTool;
 import org.locationtech.jtstest.testbuilder.ui.tools.InfoTool;
 import org.locationtech.jtstest.testbuilder.ui.tools.LineStringTool;
+import org.locationtech.jtstest.testbuilder.ui.tools.MoveTool;
 import org.locationtech.jtstest.testbuilder.ui.tools.PanTool;
 import org.locationtech.jtstest.testbuilder.ui.tools.PointTool;
 import org.locationtech.jtstest.testbuilder.ui.tools.RectangleTool;
@@ -265,6 +266,9 @@ public class JTSTestBuilderController
   }
   public void modeEditVertex() {
     setTool(EditVertexTool.getInstance());
+  }
+  public void modeMove() {
+    setTool(MoveTool.getInstance());
   }
   public void modeZoomIn() {
     setTool(ZoomTool.getInstance());
