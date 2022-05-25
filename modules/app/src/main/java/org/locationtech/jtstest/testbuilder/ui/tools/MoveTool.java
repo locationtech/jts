@@ -62,11 +62,13 @@ extends IndicatorTool
     //TODO: only start move if cursor is over geometry
     Coordinate mousePtModel = toModelCoordinate(e.getPoint());
     double tolModel = getModelSnapTolerance();
-    targetComp = getComponent(mousePtModel, tolModel);
-    if (targetComp == null) {
+    Geometry comp = getComponent(mousePtModel, tolModel);
+    if (comp == null) {
       return;
     }
-
+    //-- Ctl-Drag -> use component, otherwise use entire geom
+    targetComp = e.isControlDown() ? comp : null;
+    
     //-- over a geom - start gesture
     startIndicatorLoc = e.getPoint();
   	currentVertexLoc = null;
@@ -96,7 +98,7 @@ extends IndicatorTool
       geomTrans = GeometryComponentTransformer.transform(geomModel().getGeometry(), targetComp, trans);
     }
     else {
-      GeometryComponentTransformer.transform(geomModel().getGeometry(), trans);
+      geomTrans = GeometryComponentTransformer.transform(geomModel().getGeometry(), trans);
     }
     geomModel().setGeometry(geomTrans);
   }
@@ -109,7 +111,6 @@ extends IndicatorTool
 
   protected Shape getShape() 
   {
-    
     Point2D currentIndicatorLoc = toView(currentVertexLoc);
     GeneralPath line = new GeneralPath();
     line.moveTo((float) currentIndicatorLoc.getX(), (float) currentIndicatorLoc.getY());
