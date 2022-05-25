@@ -12,17 +12,19 @@
 package org.locationtech.jtstest.testbuilder.ui.tools;
 
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.event.MouseEvent;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
 import java.util.List;
 
+import org.locationtech.jts.awt.GeometryCollectionShape;
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.util.AffineTransformation;
 import org.locationtech.jtstest.testbuilder.AppCursors;
-import org.locationtech.jtstest.testbuilder.geom.ComponentLocater;
 import org.locationtech.jtstest.testbuilder.geom.GeometryComponentTransformer;
 import org.locationtech.jtstest.testbuilder.geom.GeometryLocation;
 
@@ -35,9 +37,8 @@ extends IndicatorTool
 {
   private static MoveTool instance = null;
 
-  Point2D startIndicatorLoc = null;
-  Coordinate currentVertexLoc = null;
-
+  private Point2D startIndicatorLoc = null;
+  private Coordinate currentVertexLoc = null;
   private Geometry targetComp;
   
   public static MoveTool getInstance() {
@@ -108,12 +109,46 @@ extends IndicatorTool
 
   protected Shape getShape() 
   {
+    
     Point2D currentIndicatorLoc = toView(currentVertexLoc);
     GeneralPath line = new GeneralPath();
     line.moveTo((float) currentIndicatorLoc.getX(), (float) currentIndicatorLoc.getY());
     Point2D pt = startIndicatorLoc;
     line.lineTo((float) pt.getX(), (float) pt.getY());
-    return line;
+    
+    GeometryCollectionShape ind = new GeometryCollectionShape();
+    ind.add(line);
+    
+    int dx = (int) (currentIndicatorLoc.getX() - startIndicatorLoc.getX());
+    int dy = (int) (currentIndicatorLoc.getY() - startIndicatorLoc.getY());
+    Rectangle rect = boxTarget(dx, dy);
+    if (rect != null) {
+      ind.add(rect);
+    }
+
+    return ind;
   }
 
+  private Rectangle boxTarget(int dx, int dy) {
+    Envelope env = null;
+    if (targetComp != null) {
+      env = targetComp.getEnvelopeInternal();
+    }
+    else if (geomModel().getGeometry() != null) {
+      env = geomModel().getGeometry().getEnvelopeInternal();
+    }
+    if (env == null) return null;
+    return box(env, dx, dy);
+  }
+
+  
+  private Rectangle box(Envelope env, int dx, int dy) {
+    Coordinate envLL = new Coordinate(env.getMinX(), env.getMinY());
+    Point2D boxLL = toView(envLL);
+    Coordinate envUR = new Coordinate(env.getMaxX(), env.getMaxY());
+    Point2D boxUR = toView(envUR);
+    int width = (int) Math.abs(boxUR.getX() - boxLL.getX());
+    int height = (int) Math.abs(boxUR.getY() - boxLL.getY());
+    return new Rectangle((int) boxLL.getX() + dx, (int) boxUR.getY() + dy, width, height);
+  }
 }
