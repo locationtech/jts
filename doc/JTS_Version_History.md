@@ -58,6 +58,7 @@ Distributions for older JTS versions can be obtained at the
 * Fix IsValidOp for repeated node points (#845)
 * Fix `IsSimpleOp` for repeated endpoints (#851)
 * Fix `GeometryFixer` via noding check for zero-distance buffers (#867)
+* Fix `MinimumDiameter.minimumRectangle` for flat inputs (#875)
 
 # Version 1.18.2
 
