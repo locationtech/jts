@@ -8,12 +8,12 @@
     <artifactId>jts-core</artifactId>
     <name>${project.groupId}:${project.artifactId}</name>
     <packaging>bundle</packaging>
-    
+
     <properties>
         <lint>unchecked</lint>
         <doclint>none</doclint>
     </properties>
-    
+
     <build>
         <plugins>
             <plugin>
