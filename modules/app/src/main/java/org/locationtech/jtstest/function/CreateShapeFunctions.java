@@ -179,6 +179,7 @@ public class CreateShapeFunctions {
       gsf.setEnvelope(new Envelope(0, 1, 0, 1));
     return gsf.createCircle();
   }
+  
   public static Geometry ellipseRotate(Geometry g, int nPts, 
       @Metadata(title="Angle")
       double ang)
@@ -354,5 +355,22 @@ public class CreateShapeFunctions {
   @Metadata(description="Construct a geometry using cubic Bezier curves with control points")
   public static Geometry bezierCurveControl(Geometry geom, Geometry controlPoints) {
     return CubicBezierCurve.bezierCurve(geom, controlPoints);
+  }
+  
+  public static Geometry nGon(Geometry g, 
+      @Metadata(title="Num sides")
+      int sides) {
+    Envelope env = FunctionsUtil.getEnvelopeOrDefault(g);
+    Coordinate centre = env.centre();
+    double radius = Math.max(env.getHeight(), env.getWidth()) / 2;
+    CoordinateList pts = new CoordinateList();
+    double angInc = 2 * Math.PI / sides;
+    for (int i = 0; i < sides; i++) {
+      double x = centre.getX() + radius * Math.cos(i * angInc);
+      double y = centre.getY() + radius * Math.sin(i * angInc);
+      pts.add(new Coordinate(x, y));
+    }
+    pts.closeRing();
+    return FunctionsUtil.getFactoryOrDefault(g).createPolygon(pts.toCoordinateArray());
   }
 }
