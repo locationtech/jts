@@ -565,6 +565,17 @@ public class BufferTest extends GeometryTestCase {
     checkBufferNumGeometries(wkt, -18, 1);
   }
 
+  /**
+   * Checks a bug in the inverted-ring-removal heuristic.
+   * See https://github.com/locationtech/jts/issues/876
+   */
+  public void testLineClosedNoHole() {
+    String wkt = "LINESTRING (-20 0, 0 20, 20 0, 0 -20, -20 0)";
+    checkBufferHasHole(wkt, 70, false);
+  }
+  
+  //===================================================
+  
   private void checkBufferEmpty(String wkt, double dist, boolean isEmptyExpected) {
     Geometry a = read(wkt);
     Geometry result = a.buffer(dist);
