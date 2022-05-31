@@ -243,7 +243,7 @@ Distributions for older JTS versions can be obtained at the
 * Added `CascadedPolygonUnion` union-by-buffer on error capability (#470)
 * Added `HalfEdge` support for direction points (#479)
 * Added `CoordinateList.toCoordinateArray(isForward)` (#482)
-* Addded `HPRtree` Hilbert Packed R-tree (#494)
+* Added `HPRtree` Hilbert Packed R-tree (#494)
 * Added `VariableBuffer` class for computing varying-distance buffers (#495)
 * Added `LineSegment.reflect` method (#495)
 * Added `MaximumInscribedCircle` algorithm (#530)
@@ -254,7 +254,7 @@ Distributions for older JTS versions can be obtained at the
 * Improve performance of `UniqueCoordinateFilter` (#422)
 * Improve performance of `Polygonizer` (#431)
 * Avoid use of `ArrayList` in MonotoneChain builders
-* Add DistanceOp line-line envelope short-circuit optimizations (#534)
+* Add `DistanceOp` line-line envelope short-circuit optimizations (#534)
 
 ### Bug Fixes
 
