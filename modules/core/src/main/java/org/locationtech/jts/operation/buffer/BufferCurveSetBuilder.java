@@ -307,6 +307,7 @@ public class BufferCurveSetBuilder {
   }
 
   private static final int MAX_INVERTED_RING_SIZE = 9;
+  private static final int INVERTED_CURVE_VERTEX_FACTOR = 4;
   private static final double NEARNESS_FACTOR = 0.99;
 
   /**
@@ -344,10 +345,11 @@ public class BufferCurveSetBuilder {
     if (inputPts.length >= MAX_INVERTED_RING_SIZE) return false;
     
     /**
-     * An inverted curve has no more points than the input ring.
-     * This also eliminates concave inputs (which will produce fillet arcs)
+     * Don't check curves which are much larger than the input.
+     * This improves performance by avoiding checking some concave inputs 
+     * (which can produce fillet arcs with many more vertices)
      */
-    if (curvePts.length > inputPts.length) return false;
+    if (curvePts.length > INVERTED_CURVE_VERTEX_FACTOR * inputPts.length) return false;
     
     /**
      * Check if the curve vertices are all closer to the input ring
