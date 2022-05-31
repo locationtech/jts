@@ -40,7 +40,7 @@ import org.locationtech.jts.util.Assert;
  *
  * @version 1.7
  */
-public abstract class AbstractSTRtree implements Serializable {
+public abstract class AbstractSTRtree<T> implements Serializable {
 
   /**
    * 
@@ -68,7 +68,7 @@ public abstract class AbstractSTRtree implements Serializable {
   /**
    * Set to <tt>null</tt> when index is built, to avoid retaining memory.
    */
-  private ArrayList itemBoundables = new ArrayList();
+  private ArrayList<ItemBoundable<T>> itemBoundables = new ArrayList<>();
   
   private int nodeCapacity;
 
@@ -112,7 +112,7 @@ public abstract class AbstractSTRtree implements Serializable {
    * @param nodeCapacity the maximum number of child nodes in a node
    * @param itemBoundables the list of leaf nodes in the tree
    */
-  public AbstractSTRtree(int nodeCapacity, ArrayList itemBoundables) {
+  public AbstractSTRtree(int nodeCapacity, ArrayList<ItemBoundable<T>> itemBoundables) {
     this(nodeCapacity);
     this.itemBoundables = itemBoundables;
   }
@@ -260,17 +260,18 @@ public abstract class AbstractSTRtree implements Serializable {
   }
 
 
-  protected void insert(Object bounds, Object item) {
+  protected void insert(Object bounds, T item) {
     Assert.isTrue(!built, "Cannot insert items into an STR packed R-tree after it has been built.");
-    itemBoundables.add(new ItemBoundable(bounds, item));
+    itemBoundables.add(new ItemBoundable<>(bounds, item));
   }
 
   /**
    *  Also builds the tree, if necessary.
+ * @param <T>
    */
-  protected List query(Object searchBounds) {
+  protected List<T> query(Object searchBounds) {
     build();
-    ArrayList matches = new ArrayList();
+    ArrayList<T> matches = new ArrayList<>();
     if (isEmpty()) {
       //Assert.isTrue(root.getBounds() == null);
       return matches;

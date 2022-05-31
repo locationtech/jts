@@ -59,8 +59,8 @@ import org.locationtech.jts.index.strtree.STRtree;
  * @author Martin Davis
  *
  */
-public class HPRtree  
-  implements SpatialIndex
+public class HPRtree<T>  
+  implements SpatialIndex<T>
 {
   private static final int ENV_SIZE = 4;
 
@@ -68,7 +68,7 @@ public class HPRtree
 
   private static int DEFAULT_NODE_CAPACITY = 16;
   
-  private List<Item> items = new ArrayList<Item>();
+  private List<Item<T>> items = new ArrayList<>();
   
   private int nodeCapacity = DEFAULT_NODE_CAPACITY;
 
@@ -108,28 +108,28 @@ public class HPRtree
   }
   
   @Override
-  public void insert(Envelope itemEnv, Object item) {
+  public void insert(Envelope itemEnv, T item) {
     if (isBuilt) {
       throw new IllegalStateException("Cannot insert items after tree is built.");
     }
-    items.add( new Item(itemEnv, item) );
+    items.add( new Item<>(itemEnv, item) );
     totalExtent.expandToInclude(itemEnv);
   }
 
   @Override
-  public List query(Envelope searchEnv) {
+  public List<T> query(Envelope searchEnv) {
     build();
     
     if (! totalExtent.intersects(searchEnv)) 
-      return new ArrayList();
+      return new ArrayList<>();
     
-    ArrayListVisitor visitor = new ArrayListVisitor();
+    ArrayListVisitor<T> visitor = new ArrayListVisitor<>();
     query(searchEnv, visitor);
     return visitor.getItems();
   }
 
   @Override
-  public void query(Envelope searchEnv, ItemVisitor visitor) {
+  public void query(Envelope searchEnv, ItemVisitor<T> visitor) {
     build();
     if (! totalExtent.intersects(searchEnv)) 
       return;
@@ -141,7 +141,7 @@ public class HPRtree
     }
   }
 
-  private void queryTopLayer(Envelope searchEnv, ItemVisitor visitor) {
+  private void queryTopLayer(Envelope searchEnv, ItemVisitor<T> visitor) {
     int layerIndex = layerStartIndex.length - 2;
     int layerSize = layerSize(layerIndex);
     // query each node in layer
@@ -150,7 +150,7 @@ public class HPRtree
     }
   }
 
-  private void queryNode(int layerIndex, int nodeOffset, Envelope searchEnv, ItemVisitor visitor) {
+  private void queryNode(int layerIndex, int nodeOffset, Envelope searchEnv, ItemVisitor<T> visitor) {
     int layerStart = layerStartIndex[layerIndex];
     int nodeIndex = layerStart + nodeOffset;
     if (! intersects(nodeIndex, searchEnv)) return;
@@ -173,7 +173,7 @@ public class HPRtree
     return ! isBeyond;
   }
   
-  private void queryNodeChildren(int layerIndex, int blockOffset, Envelope searchEnv, ItemVisitor visitor) {
+  private void queryNodeChildren(int layerIndex, int blockOffset, Envelope searchEnv, ItemVisitor<T> visitor) {
     int layerStart = layerStartIndex[layerIndex];
     int layerEnd = layerStartIndex[layerIndex + 1];
     for (int i = 0; i < nodeCapacity; i++) {
@@ -185,14 +185,14 @@ public class HPRtree
     }
   }
 
-  private void queryItems(int blockStart, Envelope searchEnv, ItemVisitor visitor) {
+  private void queryItems(int blockStart, Envelope searchEnv, ItemVisitor<T> visitor) {
     for (int i = 0; i < nodeCapacity; i++) {
       int itemIndex = blockStart + i; 
       // don't query past end of items
       if (itemIndex >= items.size()) break;
       
       // visit the item if its envelope intersects search env
-      Item item = items.get(itemIndex);
+      Item<T> item = items.get(itemIndex);
       //nodeIntersectsCount++;
       if (intersects( item.getEnvelope(), searchEnv) ) {
       //if (item.getEnvelope().intersects(searchEnv)) {
@@ -387,7 +387,7 @@ public class HPRtree
     Collections.sort(items, comp);
   }
   
-  static class ItemComparator implements Comparator<Item> {
+  static class ItemComparator implements Comparator<Item<?>> {
 
     private HilbertEncoder encoder;
     
@@ -396,7 +396,7 @@ public class HPRtree
     }
 
     @Override
-    public int compare(Item item1, Item item2) {
+    public int compare(Item<?> item1, Item<?> item2) {
       int hcode1 = encoder.encode(item1.getEnvelope());
       int hcode2 = encoder.encode(item2.getEnvelope());
       return Integer.compare(hcode1, hcode2);

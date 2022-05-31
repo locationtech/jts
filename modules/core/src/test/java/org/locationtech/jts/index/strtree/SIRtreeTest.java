@@ -29,14 +29,14 @@ public class SIRtreeTest extends TestCase {
     junit.textui.TestRunner.main(testCaseName);
   }
 
-  private static class TestTree extends SIRtree {
+  private static class TestTree<T> extends SIRtree<T> {
     public TestTree(int nodeCapacity) { super(nodeCapacity); }
     public AbstractNode getRoot() { return super.getRoot(); }
     protected List boundablesAtLevel(int level) { return super.boundablesAtLevel(level); }
   }
 
   public void test() {
-    TestTree t = new TestTree(2);
+    TestTree<String> t = new TestTree<>(2);
     t.insert(2, 6, "A");
     t.insert(2, 4, "B");
     t.insert(2, 3, "C");
@@ -55,7 +55,7 @@ public class SIRtreeTest extends TestCase {
   }
 
   public void testEmptyTree() {
-    TestTree t = new TestTree(2);
+    TestTree<?> t = new TestTree<>(2);
     t.build();
     assertEquals(0, t.getRoot().getLevel());
     assertEquals(1, t.boundablesAtLevel(0).size());
