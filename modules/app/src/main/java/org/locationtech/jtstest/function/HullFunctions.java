@@ -13,8 +13,8 @@ package org.locationtech.jtstest.function;
 
 import org.locationtech.jts.algorithm.hull.ConcaveHull;
 import org.locationtech.jts.algorithm.hull.ConcaveHullOfPolygons;
-import org.locationtech.jts.algorithm.hull.PolygonHull;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.simplify.PolygonHullSimplifier;
 import org.locationtech.jtstest.geomfunction.Metadata;
 
 public class HullFunctions {
@@ -66,18 +66,6 @@ public class HullFunctions {
   public static double concaveness(Geometry geom) {
     double convexLen = geom.convexHull().getLength();
     return (geom.getLength() - convexLen) / convexLen;
-  }
-  
-  public static Geometry polygonHullByVertexFrac(Geometry geom, 
-      @Metadata(title="Vertex Fraction")
-      double vertexFrac) {
-    return PolygonHull.hull(geom, vertexFrac);
-  }
-  
-  public static Geometry polygonHullByAreaDelta(Geometry geom, 
-      @Metadata(title="Area Delta Ratio")
-      double areaFrac) {
-    return PolygonHull.hullByAreaDelta(geom, areaFrac);
   }
   
   public static Geometry concaveHullPolygons(Geometry geom, 

@@ -9,7 +9,7 @@
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
  */
-package org.locationtech.jts.algorithm.hull;
+package org.locationtech.jts.simplify;
 
 import java.util.ArrayList;
 import java.util.List;
