@@ -295,8 +295,9 @@ implements SpatialIndex, Serializable
    */
   public Object[] nearestNeighbour(ItemDistance itemDist)
   {
-    if (isEmpty()) return null;
-    
+    if (isEmpty())
+      return new Object[0];
+
     // if tree has only one item this will return null
     BoundablePair bp = new BoundablePair(this.getRoot(), this.getRoot(), itemDist);
     return nearestNeighbour(bp);
@@ -321,6 +322,9 @@ implements SpatialIndex, Serializable
    */
   public Object nearestNeighbour(Envelope env, Object item, ItemDistance itemDist)
   {
+    if (isEmpty())
+      return new Object[0];
+
     Boundable bnd = new ItemBoundable(env, item);
     BoundablePair bp = new BoundablePair(this.getRoot(), bnd, itemDist);
     return nearestNeighbour(bp)[0];
@@ -343,7 +347,9 @@ implements SpatialIndex, Serializable
    */
   public Object[] nearestNeighbour(STRtree tree, ItemDistance itemDist)
   {
-    if (isEmpty() || tree.isEmpty()) return null;
+    if (isEmpty() || tree.isEmpty())
+      return new Object[0];
+
     BoundablePair bp = new BoundablePair(this.getRoot(), tree.getRoot(), itemDist);
     return nearestNeighbour(bp);
   }
@@ -520,7 +526,7 @@ implements SpatialIndex, Serializable
   public Object[] nearestNeighbour(Envelope env, Object item, ItemDistance itemDist,int k)
   {
     if (isEmpty())
-      return null;
+      return new Object[0];
 
     Boundable bnd = new ItemBoundable(env, item);
     BoundablePair bp = new BoundablePair(this.getRoot(), bnd, itemDist);
