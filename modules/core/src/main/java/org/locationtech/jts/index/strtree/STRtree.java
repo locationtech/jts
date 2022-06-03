@@ -519,6 +519,9 @@ implements SpatialIndex, Serializable
    */
   public Object[] nearestNeighbour(Envelope env, Object item, ItemDistance itemDist,int k)
   {
+    if (isEmpty())
+      return null;
+
     Boundable bnd = new ItemBoundable(env, item);
     BoundablePair bp = new BoundablePair(this.getRoot(), bnd, itemDist);
     return nearestNeighbourK(bp,k);
