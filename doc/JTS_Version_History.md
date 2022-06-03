@@ -59,7 +59,8 @@ Distributions for older JTS versions can be obtained at the
 * Fix `IsSimpleOp` for repeated endpoints (#851)
 * Fix `GeometryFixer` via noding check for zero-distance buffers (#867)
 * Fix `MinimumDiameter.minimumRectangle` for flat inputs (#875)
-* Fix buffer inverted ring check optimization (#878)
+* Fix `BufferOp` inverted ring check optimization (#878)
+* Fix `STRtree` nearest-neighbour queries on empty trees to avoid NPE (#886)
 
 # Version 1.18.2
 
