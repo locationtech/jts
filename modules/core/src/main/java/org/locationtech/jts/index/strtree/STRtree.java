@@ -520,13 +520,13 @@ implements SpatialIndex, Serializable
    * @param env the envelope of the query item
    * @param item the item to find the nearest neighbour of
    * @param itemDist a distance metric applicable to the items in this tree and the query item
-   * @param k the K nearest items in kNearestNeighbour
-   * @return the K nearest items in this tree
+   * @param k the {@code K} nearest items in kNearestNeighbour
+   * @return the {@code K} nearest items in this tree (or {@code 0} for empty tree)
    */
   public Object[] nearestNeighbour(Envelope env, Object item, ItemDistance itemDist,int k)
   {
     if (isEmpty())
-      return null;
+      return new Object[0];
 
     Boundable bnd = new ItemBoundable(env, item);
     BoundablePair bp = new BoundablePair(this.getRoot(), bnd, itemDist);
