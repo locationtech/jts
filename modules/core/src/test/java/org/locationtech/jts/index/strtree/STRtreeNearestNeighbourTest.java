@@ -44,7 +44,23 @@ public class STRtreeNearestNeighbourTest extends GeometryTestCase {
 
   public void testNearestNeighboursEmpty() {
     STRtree tree = new STRtree();
+    
     Object[] nn = tree.nearestNeighbour(new GeometryItemDistance());
+    assertTrue(nn == null);
+  }
+  
+  public void testNearestNeighboursTreesEmpty() {
+    STRtree tree = new STRtree();
+    STRtree tree2 = new STRtree();
+    
+    Object[] nn = tree.nearestNeighbour(tree2, new GeometryItemDistance());
+    assertTrue(nn == null);
+  }
+  
+  public void testNearestNeighbourEmpty() {
+    STRtree tree = new STRtree();    
+    Geometry geom = read("POINT (1 1)");
+    Object nn = tree.nearestNeighbour(geom.getEnvelopeInternal(), geom, new GeometryItemDistance());
     assertTrue(nn == null);
   }
   
@@ -68,6 +84,13 @@ public class STRtreeNearestNeighbourTest extends GeometryTestCase {
   public void testWithinDistance() {
     checkWithinDistance( POINTS_A, POINTS_B, 2, true );
     checkWithinDistance( POINTS_A, POINTS_B, 1, false );
+  }
+  
+  public void testKNearestNeighborsEmpty() {
+    STRtree tree = new STRtree();    
+    Geometry geom = read("POINT (1 1)");
+    Object[] nn = tree.nearestNeighbour(geom.getEnvelopeInternal(), geom, new GeometryItemDistance(), 5);
+    assertTrue(nn.length == 0);
   }
   
   private void checkNN(String wktItems, String wktExpected) {
@@ -134,6 +157,8 @@ public class STRtreeNearestNeighbourTest extends GeometryTestCase {
     return tree;
   }
 
+
+  
   public void testKNearestNeighbors() {
     int topK = 1000;
     int totalRecords = 10000;
@@ -194,4 +219,4 @@ public class STRtreeNearestNeighbourTest extends GeometryTestCase {
   }
 
 }
-;
+
