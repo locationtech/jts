@@ -360,16 +360,21 @@ public class ConcaveHullOfPolygons {
         /**
          * Frame tris are adjacent to at most one border tri,
          * which is opposite the frame corner vertex.
-         * The opposite tri may be another frame tri. 
-         * This is detected when it is processed,
-         * since it is not in the hullTri set.
+         * Or, the opposite tri may be another frame tri,
+         * which is not added as a border tri.
          */
         int oppIndex = Tri.oppEdge(index);
-        addBorderTri(tri, oppIndex);
+        Tri oppTri = tri.getAdjacent(oppIndex);
+        boolean isBorderTri = oppTri != null && ! isFrameTri(oppTri, frameCorners);
+        if (isBorderTri) {
+          addBorderTri(tri, oppIndex);
+        }
+        //-- remove the frame tri
         tri.remove();
       }
       else {
         hullTris.add(tri);
+        //System.out.println(tri);
       }
     }
     return hullTris;
@@ -402,13 +407,14 @@ public class ConcaveHullOfPolygons {
       if (isRemovable(tri)) {
         addBorderTris(tri);
         removeBorderTri(tri);
+        //System.out.println(tri);
       }
     }
   }
 
   private void removeHoleTris() {
     while (true) {
-      Tri holeTri = findHoleTri(hullTris);
+      Tri holeTri = findHoleSeedTri(hullTris);
       if (holeTri == null)
         return;
       addBorderTris(holeTri);
@@ -417,19 +423,29 @@ public class ConcaveHullOfPolygons {
     }
   }
   
-  private Tri findHoleTri(Set<Tri> tris) {
+  private Tri findHoleSeedTri(Set<Tri> tris) {
     for (Tri tri : tris) {
-      if (isHoleTri(tri))
+      if (isHoleSeedTri(tri))
         return tri;
     }
     return null;
   }
 
-  private boolean isHoleTri(Tri tri) {
+  private boolean isHoleSeedTri(Tri tri) {
+    if (isBorderTri(tri))
+      return false;
     for (int i = 0; i < 3; i++) {
       if (tri.hasAdjacent(i)
           && tri.getLength(i) > maxEdgeLength)
          return true;
+    }
+    return false;
+  }
+
+  private boolean isBorderTri(Tri tri) {
+    for (int i = 0; i < 3; i++) {
+      if (! tri.hasAdjacent(i))
+          return true;
     }
     return false;
   }
