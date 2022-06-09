@@ -42,6 +42,10 @@ Distributions for older JTS versions can be obtained at the
 * Add `ConcaveHullOfPolygons` (#870)
 * Improve `LineSegment.hashCode` to reduce collisions (#872)
 
+### Performance Improvements
+
+* Improve performance of `CoveageUnion` by using boundary chains (#891)
+
 ### Bug Fixes
 
 * Fix `WKTReader` geometry typename parsing (#786)
