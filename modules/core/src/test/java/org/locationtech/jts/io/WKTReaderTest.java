@@ -89,13 +89,17 @@ public class WKTReaderTest extends GeometryTestCase {
     Point pt2DE = (Point) readerXY.read("POINT EMPTY");
     Point pt3D = (Point) readerXYZ.read("POINT Z(10 10 10)");
     Point pt2DM = (Point) readerXYM.read("POINT M(10 10 11)");
+    Point pt2DM2 = (Point) new WKTReader().read("POINT M(10 10 11)");
     Point pt3DM = (Point) readerXYZM.read("POINT ZM(10 10 10 11)");
 
     // assert
     assertTrue(isEqual(seqPt2D, pt2D.getCoordinateSequence()));
     assertTrue(isEqual(seqPt2DE, pt2DE.getCoordinateSequence()));
     assertTrue(isEqual(seqPt3D, pt3D.getCoordinateSequence()));
+    assertTrue(pt2DM.getCoordinateSequence().hasM());
     assertTrue(isEqual(seqPt2DM, pt2DM.getCoordinateSequence()));
+    assertTrue(pt2DM2.getCoordinateSequence().hasM());
+    assertTrue(isEqual(seqPt2DM, pt2DM2.getCoordinateSequence()));
     assertTrue(isEqual(seqPt3DM, pt3DM.getCoordinateSequence()));
   }
 
