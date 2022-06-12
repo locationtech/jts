@@ -156,10 +156,11 @@ Distributions for older JTS versions can be obtained at the
 * Add system property `jts.overlay=ng` to enable use of OverlayNG in `Geometry` methods (#615)
 * Add `SnapRoundingNoder` (#599)
 * Add `SnappingNoder` (#599)
+* Add `Orientation.isCCWArea` (#655)
 
 ### Functionality Improvements
 
-* Improve Orientation.isCCW to handle flat topology collapse (#588)
+* Improve `Orientation.isCCW` to handle flat topology collapse (#588)
 * Add `Densifier.setValidated` method to allow disabling expensive polygon validation (#595)
 * Change `GeometryPrecisionReducer` to use OverlayNG with Snap-Rounding
 * Change `GeometryNoder` to use `SnapRoundingNoder`
@@ -167,7 +168,6 @@ Distributions for older JTS versions can be obtained at the
 * Improve `WKBWriter` to write empty Polygons using a more compact representation (#623)
 * Support read and initialize internal structure of `STRtree` and `Quadtree` (#634)
 * Improve `GeometryPrecisionReducer` to handle GeometryCollections (#648)
-* Add `Orientation.isCCWArea` (#655)
 
 ### Performance Improvements
 
@@ -246,7 +246,7 @@ Distributions for older JTS versions can be obtained at the
 * Change `Polygon` `getExteriorRing` and `getInteriorRingN` accessors to return `LinearRing`.
   * *This is a binary incompatible change to the method signature.  Recompilation is necessary. No source code changes are required.*
 
-### Functionality Improvements
+### New Features
 
 * Added `IndexedFacetDistance.isWithinDistance`
 * Added `OrdinateFormat` to ensure that ordinate text output is accurate and consistent
@@ -254,14 +254,17 @@ Distributions for older JTS versions can be obtained at the
 * Added `DD.determinant` methods
 * Added `Envelope` methods `getDiameter`, `copy`, `disjoint` (#483)
 * Added `Intersection` class, refactored library to use it (#468)
-* Added `CascadedPolygonUnion` union-by-buffer on error capability (#470)
-* Added `HalfEdge` support for direction points (#479)
 * Added `CoordinateList.toCoordinateArray(isForward)` (#482)
 * Added `HPRtree` Hilbert Packed R-tree (#494)
 * Added `VariableBuffer` class for computing varying-distance buffers (#495)
 * Added `LineSegment.reflect` method (#495)
 * Added `MaximumInscribedCircle` algorithm (#530)
 * Added `LargestEmptyCircle` algorithm (#530)
+
+### Functionality Improvements
+
+* Added `CascadedPolygonUnion` union-by-buffer on error capability (#470)
+* Added `HalfEdge` support for direction points (#479)
 
 ### Performance Improvements
 
