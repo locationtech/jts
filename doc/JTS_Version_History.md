@@ -21,25 +21,28 @@ Distributions for older JTS versions can be obtained at the
 
 * Release Date: TBD *
 
+### New Features
+
+* Add `ConstrainedDelaunayTriangulator` and `PolygonTriangulator` (#775, #862)
+* Add `Tri` data structure for representing triangulations (#775)
+* Add `DiscreteFrechetDistance` (#764, #783)
+* Add `OffsetCurve` class (#810, #816)
+* Add `ConcaveHull` class for points (#823, #829)
+* Add `ConcaveHullOfPolygons` class (#870)
+* Add `PolygonHullSimplifier` class (#861, #880)
+
 ### Functionality Improvements
 
 * Improve `GeometryFixer` behaviour for holes outside polygons (#772)
-* Add `ConstrainedDelaunayTriangulator` and `PolygonTriangulator` (#775, #862)
-* Add `Tri` data structure for representing triangulations (#775)
 * Simplify and fix logic of `BufferParameters.setQuadSegs` (#778)
 * Improve `KdTree` query code to avoid recursion (#779)
 * Add `KdTree` seeding to`SnappingNoder` (#780)
-* Add `DiscreteFrechetDistance` (#764, #783)
 * Add `GeometryFixer` option to preserve `Multi` geometry types when collapses occur (#791)
 * Make `QuadTree` thread-safe (#792)
 * Allow specifying a fixed `PrecisionModel` via grid size (#804)
-* Add `OffsetCurve` class (#810, #816)
-* Add `ConcaveHull` class for points (#823, #829)
 * Improve `Densifier` to interpolate Z values (#835)
-* Add support for GeoJSON Feature and FeatureCollection types (#837)
+* Add support for GeoJSON `Feature` and `FeatureCollection` types (#837)
 * Add `WKTReader.setFixStructure` to fix WKT input (#848)
-* Add `PolygonHullSimplifier` class (#861, #880)
-* Add `ConcaveHullOfPolygons` (#870)
 * Improve `LineSegment.hashCode` to reduce collisions (#872)
 
 ### Performance Improvements
@@ -74,9 +77,12 @@ Distributions for older JTS versions can be obtained at the
 
 * Move `IsSimpleOp` to `org.locationtech.jts.operation.valid` package (#717)
 
-### Functionality Improvements
+### New Features
 
 * Add `GeometryFixer` class (#704)
+
+### Functionality Improvements
+
 * Improve design and performance of `IsSimpleOp` (#717, #754)
 * Improve design and perforance of `IsValidOp` (#743, #748, #755, #756, #757)
 * Fix `SortedPackedIntervalRtree` to be thread-safe (fixes `PreparedPolygon` too) (#746)
@@ -142,16 +148,19 @@ Distributions for older JTS versions can be obtained at the
 * Removed `SimpleSnapRounder` - use `SnapRoundingNoder` instead
 * Deprecated `MCIndexSnapRounder` - use `SnapRoundingNoder` instead
 
-### Functionality Improvements
+### New Features
 
-* Improve Orientation.isCCW to handle flat topology collapse (#588)
 * Add `KMLReader` (#593)
-* Add `Densifier.setValidated` method to allow disabling expensive polygon validation (#595)
 * Add `OverlayNG` codebase (#599)
 * Add Z support in OverlayNG (#645)
 * Add system property `jts.overlay=ng` to enable use of OverlayNG in `Geometry` methods (#615)
 * Add `SnapRoundingNoder` (#599)
 * Add `SnappingNoder` (#599)
+
+### Functionality Improvements
+
+* Improve Orientation.isCCW to handle flat topology collapse (#588)
+* Add `Densifier.setValidated` method to allow disabling expensive polygon validation (#595)
 * Change `GeometryPrecisionReducer` to use OverlayNG with Snap-Rounding
 * Change `GeometryNoder` to use `SnapRoundingNoder`
 * Add `KdTree` `size` and `depth` methods (#603)
