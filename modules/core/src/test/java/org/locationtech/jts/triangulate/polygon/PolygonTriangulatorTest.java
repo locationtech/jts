@@ -88,10 +88,32 @@ public class PolygonTriangulatorTest extends GeometryTestCase {
   
   /**
    * A failing case for hole joining with two touching holes.
+   * Fails due to PolygonHoleJoiner not handling holes which have same leftmost vertex.
+   * Note that input is normalized.
    */
   public void testBadHoleJoinTouchingHoles() {
     checkTri(
-  "POLYGON ((0 9, 9 9, 9 0, 0 0, 0 9), (1 4, 6 8, 5 5, 1 4), (5 1, 1 4, 5 4, 5 1))"
+  "POLYGON ((0 0, 0 9, 9 9, 9 0, 0 0), (1 4, 5 1, 5 4, 1 4), (1 4, 5 5, 6 8, 1 4))"
+        );
+  }
+  
+  public void testBadHoleJoinHolesTouchVertical() {
+    checkTri(
+  "POLYGON ((1 9, 9 9, 9 0, 1 0, 1 9), (1 4, 5 1, 5 4, 1 4), (1 5, 5 5, 6 8, 1 5))"
+        );
+  }
+  
+  public void testBadHoleJoinHoleTouchesShellVertical() {
+    checkTri(
+  "POLYGON ((1 9, 9 9, 9 0, 1 0, 1 9), (1 5, 5 5, 6 8, 1 5))",
+  "GEOMETRYCOLLECTION (POLYGON ((1 0, 1 4, 5 1, 1 0)), POLYGON ((5 4, 1 4, 1 5, 5 4)), POLYGON ((6 8, 1 5, 1 9, 6 8)), POLYGON ((9 0, 1 0, 5 1, 9 0)), POLYGON ((5 4, 1 5, 5 5, 5 4)), POLYGON ((6 8, 1 9, 9 9, 6 8)), POLYGON ((9 9, 9 0, 5 1, 9 9)), POLYGON ((5 4, 5 5, 6 8, 5 4)), POLYGON ((6 8, 9 9, 5 1, 6 8)), POLYGON ((5 1, 5 4, 6 8, 5 1)))"
+        );
+  }
+  
+  public void testBadHoleJoinHoleTouchesShell() {
+    checkTri(
+  "POLYGON ((5 5, 9 5, 9 0, 0 0, 5 5), (3 3, 6 1, 5 3, 3 3))",
+  "GEOMETRYCOLLECTION (POLYGON ((0 0, 3 3, 6 1, 0 0)), POLYGON ((5 3, 3 3, 5 5, 5 3)), POLYGON ((5 5, 9 5, 9 0, 5 5)), POLYGON ((9 0, 0 0, 6 1, 9 0)), POLYGON ((6 1, 5 3, 5 5, 6 1)), POLYGON ((5 5, 9 0, 6 1, 5 5)))"
         );
   }
   
