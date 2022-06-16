@@ -21,17 +21,13 @@ import org.locationtech.jts.geom.LineSegment;
 
 /**
  * A noder which extracts chains of boundary segments 
- * as {@link SegmentString}s.
- * Boundary segments are those which are not duplicated in the input.
- * The segment strings are extracted in a way that maximises their length,
- * and minimizes the total number of edges.
- * This produces the most efficient topological graph structure.
- * <p>
- * Segments which are not on the boundary are those which 
- * have an identical segment in another polygon ring.
+ * as {@link SegmentString}s from a polygonal coverage.
+ * Boundary segments are those which are not duplicated in the input polygonal coverage.
+ * Extracting chains of segments minimize the number of segment strings created,
+ * which produces a more efficient topological graph structure.
  * <p>
  * This enables fast overlay of polygonal coverages in {@link CoverageUnion}.
- * This noder is faster than {@link SegmentExtractingNoder}
+ * Using this noder is faster than {@link SegmentExtractingNoder}
  * and {@link BoundarySegmentNoder}.
  * <p>
  * No precision reduction is carried out. 
@@ -55,27 +51,27 @@ public class BoundaryChainNoder implements Noder {
   @Override
   public void computeNodes(Collection segStrings) {
     HashSet<Segment> segSet = new HashSet<Segment>();
-    BoundarySegmentMap[] bdySections = new BoundarySegmentMap[segStrings.size()];
-    addSegments(segStrings, segSet, bdySections);
+    BoundaryChainMap[] boundaryChains = new BoundaryChainMap[segStrings.size()];
+    addSegments(segStrings, segSet, boundaryChains);
     markBoundarySegments(segSet);
-    chainList = extractChains(bdySections);
+    chainList = extractChains(boundaryChains);
   }
 
   private static void addSegments(Collection<SegmentString> segStrings, HashSet<Segment> segSet, 
-      BoundarySegmentMap[] includedSegs) {
+      BoundaryChainMap[] boundaryChains) {
     int i = 0;
     for (SegmentString ss : segStrings) {
-      BoundarySegmentMap segInclude = new BoundarySegmentMap(ss);
-      includedSegs[i++] = segInclude;
-      addSegments( ss, segInclude, segSet );
+      BoundaryChainMap chainMap = new BoundaryChainMap(ss);
+      boundaryChains[i++] = chainMap;
+      addSegments( ss, chainMap, segSet );
     }
   }
   
-  private static void addSegments(SegmentString segString, BoundarySegmentMap segInclude, HashSet<Segment> segSet) {
+  private static void addSegments(SegmentString segString, BoundaryChainMap chainMap, HashSet<Segment> segSet) {
     for (int i = 0; i < segString.size() - 1; i++) {
       Coordinate p0 = segString.getCoordinate(i);
       Coordinate p1 = segString.getCoordinate(i + 1);
-      Segment seg = new Segment(p0, p1, segInclude, i);
+      Segment seg = new Segment(p0, p1, chainMap, i);
       if (segSet.contains(seg)) {
         segSet.remove(seg);
       }
@@ -87,16 +83,16 @@ public class BoundaryChainNoder implements Noder {
   
   private static void markBoundarySegments(HashSet<Segment> segSet) {
     for (Segment seg : segSet) {
-      seg.markInBoundary();
+      seg.markBoundary();
     }
   }
 
-  private static List<SegmentString> extractChains(BoundarySegmentMap[] sections) {
-    List<SegmentString> sectionList = new ArrayList<SegmentString>();
-    for (BoundarySegmentMap sect : sections) {
-      sect.createChains(sectionList);
+  private static List<SegmentString> extractChains(BoundaryChainMap[] boundaryChains) {
+    List<SegmentString> chainList = new ArrayList<SegmentString>();
+    for (BoundaryChainMap chainMap : boundaryChains) {
+      chainMap.createChains(chainList);
     }
-    return sectionList;
+    return chainList;
   }
 
   @Override
@@ -104,11 +100,11 @@ public class BoundaryChainNoder implements Noder {
     return chainList;
   }
 
-  private static class BoundarySegmentMap {
+  private static class BoundaryChainMap {
     private SegmentString segString;
     private boolean[] isBoundary;
     
-    public BoundarySegmentMap(SegmentString ss) {
+    public BoundaryChainMap(SegmentString ss) {
       this.segString = ss;
       isBoundary = new boolean[ss.size() - 1];
     }
@@ -155,18 +151,18 @@ public class BoundaryChainNoder implements Noder {
   }
   
   private static class Segment extends LineSegment {
-    private BoundarySegmentMap segMap;
+    private BoundaryChainMap segMap;
     private int index;
 
     public Segment(Coordinate p0, Coordinate p1, 
-        BoundarySegmentMap segMap, int index) {
+        BoundaryChainMap segMap, int index) {
       super(p0, p1);
       this.segMap = segMap;
       this.index = index;
       normalize();
     }
     
-    public void markInBoundary() {
+    public void markBoundary() {
       segMap.setBoundarySegment(index);
     }
   }
