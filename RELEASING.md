@@ -73,6 +73,7 @@ On master:
 
    ```
    git tag -a 1.19.0 -m "Release version 1.19.0"
+   git push --tags
    ```
 
    This is the commit that will form the GitHub release below.
