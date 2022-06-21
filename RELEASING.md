@@ -61,6 +61,12 @@ On master:
    mvn versions:set -DnewVersion=1.19.0
    ```
 
+3. Edit ``build-tools/pom.xml`` by hand, and compile to test.
+   
+   ```
+   mvn clean install
+   ```
+   
 3. Commit this change.
 
    ```
@@ -90,8 +96,7 @@ On master:
    To interact with the agent (so it asks you the passphrase):
    
    ````
-   gpg --use-agent --armor --detach-sign --output $output pom.xml
-   rm pom.xml.asc
+   gpg --use-agent --armor --detach-sign --output - pom.xml
    ```
    
    Reference: [Configuring GPG/PGP for Maven Releases to Sonatype on Mac OS X](https://nblair.github.io/2015/10/29/maven-gpg-sonatype/)
@@ -151,10 +156,33 @@ Update [Javadoc on JTS Github IO](http://locationtech.github.io/jts/javadoc/):
    
 2. Update branch [`gh-pages`](https://github.com/locationtech/jts/tree/gh-pages):
    
-   * clone
-   * branch
-   * copy new Javadoc
-   * commit
+   ```bash
+   cd ..
+   git clone https://github.com/locationtech/jts.git jts-docs
+   cd jts-docs
+   git checkout --track origin/gh-pages
+   git mv javadoc javadoc-1.18.0
+   git mv javadoc-io javadoc-io-1.18.0
+   cp -r ../jts/modules/core/target/apidocs/ javadoc  
+   cp -r ../jts/modules/io/common/target/apidocs javadoc-io
+   ```
+   
+   Edit ``index.html`` with new details:
+   
+   ```
+   <li>Javadoc for JTS 1.19.0 (
+       <a href="javadoc/index.html" target="javadoc">jts-core</a> |
+       <a href="javadoc-io/index.html" target="javadoc">jts-io-common</a>)</li>
+   <li>Javadoc for JTS 1.18.0 (
+       <a href="javadoc-1.18.0/index.html" target="javadoc">jts-core</a> |
+       <a href="javadoc-io-1.18.0/index.html" target="javadoc">jts-io-common</a>)</li>
+   ```
+   
+   Commit 
+   ```
+   git add .
+   git commit -m "JTS 1.19.0 javadocs"
+   ```
 
 ### Post release
 
@@ -166,7 +194,7 @@ Update master to the next release version:
    
    ```
    public static final int MAJOR = 1;
-   public static final int MINOR = 18;
+   public static final int MINOR = 19;
    public static final int PATCH = 0;
    private static final String RELEASE_INFO = "";
    ```
@@ -175,7 +203,7 @@ Update master to the next release version:
    
    ```
    public static final int MAJOR = 1;
-   public static final int MINOR = 19;
+   public static final int MINOR = 20;
    public static final int PATCH = 0;
    private static final String RELEASE_INFO = "SNAPSHOT";
    ```
@@ -183,15 +211,23 @@ Update master to the next release version:
 2. Update version number in Maven POMs (run the Maven release plugin at project root:
    
    ```
-   mvn versions:set -DnewVersion=1.19.0-SNAPSHOT
+   mvn versions:set -DnewVersion=1.20.0-SNAPSHOT
+   ```
+   
+3. Edit ``build-tools/pom.xml`` by hand, and compile to test.
+   
+   ```
+   mvn clean install
    ```
  
-3. Commit this change.
+3. Compile to test, and commit this change.
 
    ```
-   git commit -m "Version 1.19.0-SNAPSHOT"
+   git add .
+   git commit -m "Version 1.20.0-SNAPSHOT"
    git push
-   ```
+   ```  
+   
 4. Add a new version entry to the [Version History](https://github.com/locationtech/jts/blob/master/doc/JTS_Version_History.md)
 
 ### Announcing
