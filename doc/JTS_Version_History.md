@@ -19,7 +19,7 @@ Distributions for older JTS versions can be obtained at the
 
 # Version 1.19
 
-* Release Date: TBD *
+*Release Date: 06/21/2022*
 
 ### New Features
 

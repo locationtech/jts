@@ -58,20 +58,21 @@ On master:
 2. Update version number in Maven POMs (run the Maven release plugin at project root:
    
    ```
-   mvn versions:set -DnewVersion=1.18.0
+   mvn versions:set -DnewVersion=1.19.0
    ```
 
 3. Commit this change.
 
    ```
-   git commit -m "Release version 1.18.0"
+   git add .
+   git commit -m "Release version 1.19.0"
    git push
    ```
       
 4. Tag this commit, and push the tag to GitHub.
 
    ```
-   git tag -a 1.18.0 -m "Release version 1.18.0"
+   git tag -a 1.19.0 -m "Release version 1.19.0"
    ```
 
    This is the commit that will form the GitHub release below.

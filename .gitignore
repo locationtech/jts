@@ -21,3 +21,6 @@ hs_err_pid*
 
 # operating system specific
 .DS_Store
+
+# maven ignores
+pom.xml.versionsBackup

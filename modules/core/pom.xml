@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.locationtech.jts</groupId>
         <artifactId>jts-modules</artifactId>
-        <version>1.18.3-SNAPSHOT</version>
+        <version>1.19.0</version>
     </parent>
     <artifactId>jts-core</artifactId>
     <name>${project.groupId}:${project.artifactId}</name>
