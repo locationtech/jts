@@ -30,6 +30,7 @@ Distributions for older JTS versions can be obtained at the
 * Add `ConcaveHull` class for points (#823, #829)
 * Add `ConcaveHullOfPolygons` class (#870)
 * Add `PolygonHullSimplifier` class (#861, #880)
+* TWKB read and write implementation (#854)
 
 ### Functionality Improvements
 
@@ -68,6 +69,7 @@ Distributions for older JTS versions can be obtained at the
 * Fix `MinimumDiameter.minimumRectangle` for flat inputs (#875)
 * Fix `BufferOp` inverted ring check optimization (#878)
 * Fix `STRtree` nearest-neighbour queries on empty trees to avoid NPE (#886)
+* Remove transitive compile dependency on `junit` from `jts-io-commmon` (#855)
 
 # Version 1.18.2
 
