@@ -95,7 +95,7 @@ On master:
    
    To interact with the agent (so it asks you the passphrase):
    
-   ````
+   ```
    gpg --use-agent --armor --detach-sign --output - pom.xml
    ```
    
