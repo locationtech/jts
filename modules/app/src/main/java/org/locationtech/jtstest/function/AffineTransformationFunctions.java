@@ -64,25 +64,39 @@ public class AffineTransformationFunctions
   {
     Envelope viewEnv = gViewport.getEnvelopeInternal();
     Envelope env = g.getEnvelopeInternal();
-    AffineTransformation trans = viewportTrans(env, viewEnv);
+    AffineTransformation trans = viewportTrans(env, viewEnv, true);
     return trans.transform(g);
   }
 
-  private static AffineTransformation viewportTrans(Envelope srcEnv, Envelope viewEnv) {
+  private static AffineTransformation viewportTrans(Envelope srcEnv, Envelope viewEnv, boolean isIsotropic) {
     // works even if W or H are zero, thanks to Java infinity value.
     double scaleW = viewEnv.getWidth() / srcEnv.getWidth();
     double scaleH = viewEnv.getHeight() / srcEnv.getHeight();
+    
+    double scaleX = scaleW;
+    double scaleY = scaleH;
+    if (isIsotropic) {
     // choose minimum scale to ensure source fits viewport
-    double scale = Math.min(scaleW,  scaleH);
+      double scale = Math.min(scaleW,  scaleH);
+      scaleX = scale;
+      scaleY = scale;
+    }
     
     Coordinate centre = srcEnv.centre();
     Coordinate viewCentre = viewEnv.centre();
     
-    // isotropic scaling
-    AffineTransformation trans = AffineTransformation.scaleInstance(scale, scale, centre.x, centre.y);
+    AffineTransformation trans = AffineTransformation.scaleInstance(scaleX, scaleY, centre.x, centre.y);
     // translate using envelope centres
     trans.translate(viewCentre.x - centre.x, viewCentre.y - centre.y);
     return trans;
+  }
+  
+  public static Geometry stretchToViewport(Geometry g, Geometry gViewport)
+  {
+    Envelope viewEnv = gViewport.getEnvelopeInternal();
+    Envelope env = g.getEnvelopeInternal();
+    AffineTransformation trans = viewportTrans(env, viewEnv, false);
+    return trans.transform(g);
   }
   
   public static Geometry scale(Geometry g, 
