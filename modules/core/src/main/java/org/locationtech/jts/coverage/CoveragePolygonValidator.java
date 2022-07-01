@@ -113,10 +113,10 @@ public class CoveragePolygonValidator {
   private boolean hasDuplicateGeom(Geometry geom, Geometry adjGeoms) {
     for (int i = 0; i < adjGeoms.getNumGeometries(); i++) {
       Geometry testGeom = adjGeoms.getGeometryN(i);
-      if (! testGeom.getEnvelopeInternal().equals(geom.getEnvelopeInternal())) {
-        continue;
+      if (testGeom.getEnvelopeInternal().equals(geom.getEnvelopeInternal())) {
+        if (testGeom.equalsTopo(geom))
+          return true;
       }
-      return testGeom.equalsTopo(geom);
     }
     return false;
   }
