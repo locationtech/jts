@@ -28,6 +28,7 @@ import org.locationtech.jtstest.function.BufferByUnionFunctions;
 import org.locationtech.jtstest.function.BufferFunctions;
 import org.locationtech.jtstest.function.ConstructionFunctions;
 import org.locationtech.jtstest.function.ConversionFunctions;
+import org.locationtech.jtstest.function.CoverageFunctions;
 import org.locationtech.jtstest.function.CreateFractalShapeFunctions;
 import org.locationtech.jtstest.function.CreateRandomShapeFunctions;
 import org.locationtech.jtstest.function.CreateShapeFunctions;
@@ -91,6 +92,7 @@ public class GeometryFunctionRegistry
     funcRegistry.add(BufferByUnionFunctions.class);
     funcRegistry.add(ConstructionFunctions.class);
     funcRegistry.add(ConversionFunctions.class);
+    funcRegistry.add(CoverageFunctions.class);
     funcRegistry.add(EditFunctions.class);
     funcRegistry.add(HullFunctions.class);
     funcRegistry.add(LinearReferencingFunctions.class);
