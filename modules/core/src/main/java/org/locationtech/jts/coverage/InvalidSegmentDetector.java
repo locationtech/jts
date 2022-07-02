@@ -47,6 +47,11 @@ class InvalidSegmentDetector implements SegmentIntersector {
     if (p00.equals2D(p01) || p10.equals2D(p11))
       return;
 
+    //-- segments are not within distance tolerance, so skip them
+    if (distanceTol < Distance.segmentToSegment(p00, p01, p10, p11)) {
+      return;
+    } 
+    
     boolean isInvalid = isInvalid(p00, p01, p10, p11);
     if (isInvalid) {
       target.markInvalid(segIndex0);
@@ -55,11 +60,6 @@ class InvalidSegmentDetector implements SegmentIntersector {
 
   private boolean isInvalid(Coordinate p00, Coordinate p01, Coordinate p10, Coordinate p11) {
 
-    //-- segments are not within distance tolerance
-    if (distanceTol < Distance.segmentToSegment(p00, p01, p10, p11)) {
-      return false;
-    }  
-    
     //-- segments that cross or are collinear are invalid
     if (isCrossingOrCollinear(p00, p01, p10, p11))
       return true;
@@ -71,6 +71,18 @@ class InvalidSegmentDetector implements SegmentIntersector {
     return false;
   }
 
+  /**
+   * Checks if segments cross or are collinear (have 2 intersections).
+   * Collinear segments must not match and hence must be invalid, 
+   * since matching segments 
+   * have already been marked as valid and are skipped.
+   * 
+   * @param p00
+   * @param p01
+   * @param p10
+   * @param p11
+   * @return
+   */
   private boolean isCrossingOrCollinear(Coordinate p00, Coordinate p01, Coordinate p10, Coordinate p11) {
     li.computeIntersection(p00, p01, p10, p11);
     if (! li.hasIntersection())

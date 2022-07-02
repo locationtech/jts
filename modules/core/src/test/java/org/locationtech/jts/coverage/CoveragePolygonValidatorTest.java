@@ -52,6 +52,12 @@ public class CoveragePolygonValidatorTest extends GeometryTestCase {
         "LINESTRING (1 1, 3 4, 7 4, 9 1)");
   }
 
+  public void testTargetFullyContained() {
+    checkInvalid("POLYGON ((3 7, 7 7, 7 3, 3 3, 3 7))",
+        "POLYGON ((1 9, 9 9, 9 1, 1 1, 1 9))",
+        "LINESTRING (3 7, 7 7, 7 3, 3 3, 3 7)");
+  }
+
   //========  Valid cases   =============================
   
   public void testMatchedEdges() {
