@@ -46,7 +46,7 @@ public class CoverageValidator {
       Geometry item = coverage.getGeometryN(i);
       index.insert(item.getEnvelopeInternal(), item);
     }
-    
+    //TODO: change to array
     List<Geometry> resultLines = new ArrayList<Geometry>();
     for (int i = 0; i < coverage.getNumGeometries(); i++) {
       Geometry geom = coverage.getGeometryN(i);

@@ -128,21 +128,31 @@ public class CoveragePolygonValidator {
     addMatchedSegments(adjSegStrings, targetEnv, segmentMap);
   }
   
-  private void addMatchedSegments(List<CoverageEdge> segStrings, Envelope envLimit, Map<Segment, Segment> segMap) {
-    for (CoverageEdge ss : segStrings) {
+  /**
+   * Adds polygon segments to the segment map, 
+   * and detects if they match an existing segment.
+   * In this case the segment is assumed to be coverage-valid.
+   * 
+   * @param edges
+   * @param envLimit
+   * @param segMap
+   */
+  private void addMatchedSegments(List<CoverageEdge> edges, Envelope envLimit, 
+      Map<Segment, Segment> segmentMap) {
+    for (CoverageEdge ss : edges) {
       for (int i = 0; i < ss.size() - 1; i++) {
         Segment seg = Segment.create(ss, i);
         //-- skip segments which lie outside the limit envelope
         if (! envLimit.intersects(seg.p0, seg.p1)) {
           continue;
         }
-        if (segMap.containsKey(seg)) {
-          Segment segMatch = segMap.get(seg);
+        if (segmentMap.containsKey(seg)) {
+          Segment segMatch = segmentMap.get(seg);
           segMatch.markValid();
           seg.markValid();
         }
         else {
-          segMap.put(seg, seg);
+          segmentMap.put(seg, seg);
         }
       }
     }
@@ -155,20 +165,23 @@ public class CoveragePolygonValidator {
       return new Segment(p0, p1, ss, index);
     }
     
-    private CoverageEdge segString;
+    private CoverageEdge edge;
     private int index;
 
-    public Segment(Coordinate p0, Coordinate p1, CoverageEdge ss, int index) {
+    public Segment(Coordinate p0, Coordinate p1, CoverageEdge edge, int index) {
       super(p0, p1);
-      this.segString = ss;
-      this.index = index;
       normalize();
+      this.edge = edge;
+      this.index = index;
     }
     
     public void markValid() {
-      segString.markValid(index);
+      edge.markValid(index);
     }
   }
+  
+  //--------------------------------------------------
+  
   
   private void findMisalignedSegments(List<CoverageEdge> targetSegStrings, List<CoverageEdge> adjSegStrings,
       double distanceTolerance) {
@@ -185,34 +198,40 @@ public class CoveragePolygonValidator {
         
         //-- check if segment intersects interior of an adjacent polygon
         Coordinate p0 = ss.getCoordinate(i);
-        if (isInterioSegment(p0, adjPolygons))
+        if (isInteriorSegment(p0, adjPolygons))
           ss.markInvalid(i);
       }
     }
   }
   
-  private boolean isInterioSegment(Coordinate p, List<Polygon> adjPolygons) {
-    for (int i = 0; i < adjPolygons.size(); i++) {
-      Polygon adjPoly = adjPolygons.get(i);
+  private boolean isInteriorSegment(Coordinate p, List<Polygon> adjPolygons) {
+    /**
+     * There should not be too many adjacent polygons, 
+     * and hopefully not too many segments with unknown status
+     * so a linear scan should not be too inefficient
+     */
+    //TODO: try a spatial index?
+    for (int index = 0; index < adjPolygons.size(); index++) {
+      Polygon adjPoly = adjPolygons.get(index);
       if (! adjPoly.getEnvelopeInternal().intersects(p))
         continue;
      
-      if (isPointInPolygon(p, i, adjPoly))
+      if (polygonContainsPoint(index, adjPoly, p))
         return true;
     }
     return false;
   }
 
-  private boolean isPointInPolygon(Coordinate p, int i, Polygon poly) {
-    PointOnGeometryLocator pia = getLocator(i, poly);
-    return Location.INTERIOR == pia.locate(p);
+  private boolean polygonContainsPoint(int index, Polygon poly, Coordinate pt) {
+    PointOnGeometryLocator pia = getLocator(index, poly);
+    return Location.INTERIOR == pia.locate(pt);
   }
 
-  private PointOnGeometryLocator getLocator(int i, Polygon poly) {
-    IndexedPointInAreaLocator loc = locator[i];
+  private PointOnGeometryLocator getLocator(int index, Polygon poly) {
+    IndexedPointInAreaLocator loc = locator[index];
     if (loc == null) {
       loc = new IndexedPointInAreaLocator(poly);
-      locator[i] = loc;
+      locator[index] = loc;
     }
     return loc;
   }
