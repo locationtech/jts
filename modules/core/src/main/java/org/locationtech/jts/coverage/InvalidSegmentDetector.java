@@ -16,7 +16,6 @@ import org.locationtech.jts.algorithm.PolygonNodeTopology;
 import org.locationtech.jts.algorithm.RobustLineIntersector;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.LineSegment;
-import org.locationtech.jts.io.WKTWriter;
 import org.locationtech.jts.noding.SegmentIntersector;
 import org.locationtech.jts.noding.SegmentString;
 
@@ -32,7 +31,7 @@ class InvalidSegmentDetector implements SegmentIntersector {
 
   @Override
   public void processIntersections(SegmentString ss0, int index0, SegmentString ss1, int index1) {
-    // note the order of the segments is important
+    // note the source of the edges is important
     CoverageEdge target = (CoverageEdge) ss1;
     int iTarget =  index1;
     CoverageEdge adj = (CoverageEdge) ss0;
@@ -68,11 +67,11 @@ class InvalidSegmentDetector implements SegmentIntersector {
   private boolean isInvalid(Coordinate tgt0, Coordinate tgt1, 
       Coordinate adj0, Coordinate adj1, SegmentString adj, int indexAdj) {
 
-    //-- segments that cross or are collinear are invalid
+    //-- segments that are collinear (but not matching) or are interior are invalid
     if (isCollinearOrInterior(tgt0, tgt1, adj0, adj1, adj, indexAdj))
       return true;
 
-    //-- segments which are nearly parallel for a significant length 
+    //-- segments which are nearly parallel for a significant length are invalid
     if (distanceTol > 0 && isNearlyParallel(tgt0, tgt1, adj0, adj1, distanceTol))
       return true;
     
@@ -82,15 +81,13 @@ class InvalidSegmentDetector implements SegmentIntersector {
   /**
    * Checks if the segments are collinear, or if the target segment 
    * intersects the interior of the adjacent ring.
-   * Exactly-matching segments 
-   * have already been marked as valid and are skipped.
-   * Thus collinear segments must not match and hence are invalid. 
+   * Matching segments have already been marked as valid and are skipped.
+   * Thus collinear segments must not match, and hence are invalid. 
    * 
    * @param tgt0
    * @param tgt1
    * @param adj0
    * @param adj1
-   * @param adjNext 
    * @return
    */
   private boolean isCollinearOrInterior(Coordinate tgt0, Coordinate tgt1, 
@@ -102,13 +99,13 @@ class InvalidSegmentDetector implements SegmentIntersector {
     if (! li.hasIntersection())
       return false;
     
-    //-- segments are collinear, so one is a proper subset of the other (since if equal is already valid)
+    //-- segments are collinear and do not match, so are invalid
     if (li.getIntersectionNum() == 2) {
       //TODO: assert segments are not equal?
       return true;
     }
     
-    //-- target crosses, so intersects interior
+    //-- target segment crosses, so intersects adj polygon interior
     if (li.isProper() || li.isInteriorIntersection(0))
       return true;
     
@@ -118,12 +115,7 @@ class InvalidSegmentDetector implements SegmentIntersector {
     //-- find target segment endpoint which is not the intersection point
     Coordinate tgtEnd = intPt.equals2D(tgt0) ? tgt1 : tgt0;
 
-    if (intPt.equals2D(adj1))
-      return false;
-    
-    // Assert: intPt = tgt0
-    
-    //-- determine previous vertex to intersection pt in adjacent ring
+    //-- find adjacent ring vertices on either side of intersection pt
     Coordinate adjPrev = findVertexPrev(adj, indexAdj, intPt);
     Coordinate adjNext = findVertexNext(adj, indexAdj, intPt);
 
