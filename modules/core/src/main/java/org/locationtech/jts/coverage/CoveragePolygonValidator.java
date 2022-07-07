@@ -29,7 +29,6 @@ import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.util.PolygonExtracter;
 import org.locationtech.jts.noding.MCIndexSegmentSetMutualIntersector;
 
-
 /**
  * Validates that a target polygon forms a clean coverage with a set of polygons
  * adjacent to it.  
@@ -88,15 +87,6 @@ public class CoveragePolygonValidator {
   public Geometry validate(Geometry adjGeoms, double distanceTolerance) {
     List<Polygon> adjPolygons = PolygonExtracter.getPolygons(adjGeoms);
     adjPolygonLocators = new IndexedPointInAreaLocator[adjPolygons.size()];
-    
-    //TODO: CANCEL skip non-touching polygons? (since adjacent one may be a legitimate MultiPolygon)
-    //-- no, just use tol = 0 instead
-    
-    //TODO: DONE avoid flagging edges of spikes in coverage (perhaps: ignore matched edges in surrounding polygons?) 
-
-    //TODO: DONE avoid flagging edges which match to test edges which are exact matches
-
-    //TODO: DONE flag edges which are wholly inside target
     
     if (hasDuplicateGeom(targetGeom, adjGeoms)) {
       //TODO: convert to LineString copies
