@@ -93,7 +93,7 @@ public class CoveragePolygonValidator {
     findMisalignedSegments(targetRings, adjRings, distanceTolerance);
     findInteriorSegments(targetRings, adjPolygons);
     
-    return createChains(targetRings);
+    return createInvalidLines(targetRings);
   }
 
   private Geometry createEmptyResult() {
@@ -251,27 +251,19 @@ public class CoveragePolygonValidator {
     return loc;
   }
 
-  private Geometry createChains(List<CoverageRing> rings) {
-    List<SegmentString> chains = new ArrayList<SegmentString>();
+  private Geometry createInvalidLines(List<CoverageRing> rings) {
+    List<LineString> lines = new ArrayList<LineString>();
     for (CoverageRing ring : rings) {
-      ring.createChains(chains);
+      ring.createInvalidLines(geomFactory, lines);
     }
     
-    if (chains.size() == 0) {
+    if (lines.size() == 0) {
       return createEmptyResult();
     }
-    
-    LineString[] lines = new LineString[chains.size()];
-    int i = 0;
-    for (SegmentString ss : chains) {
-      LineString line = geomFactory.createLineString(ss.getCoordinates());
-      lines[i++] = line;
+    else if (lines.size() == 1) {
+      return lines.get(0);
     }
-    
-    if (lines.length == 1) {
-      return lines[0];
-    }
-    return geomFactory.createMultiLineString(lines);
+    return geomFactory.createMultiLineString(GeometryFactory.toLineStringArray(lines));
   }  
   
 }

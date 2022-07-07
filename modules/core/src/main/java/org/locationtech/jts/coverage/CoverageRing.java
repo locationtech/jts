@@ -17,6 +17,8 @@ import java.util.List;
 import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.util.PolygonExtracter;
@@ -76,6 +78,11 @@ class CoverageRing extends BasicSegmentString {
     return isValid[index];
   }
 
+  public boolean isInvalid(int index) {
+    //return ! isValid[index] && isInvalid[index];
+    return isInvalid[index];
+  }
+  
   public boolean isAllValid() {
     for (int i = 0; i < isValid.length; i++) {
       if (! isValid[i])
@@ -133,44 +140,42 @@ class CoverageRing extends BasicSegmentString {
     isValid[i] = true;
   }
 
-  public void createChains(List<SegmentString> chainList) {
+  public void createInvalidLines(GeometryFactory geomFactory, List<LineString> lines) {
     int endIndex = 0;
     while (true) {
-      int startIndex = findChainStart(endIndex); 
+      int startIndex = findInvalidStart(endIndex); 
       if (startIndex >= size() - 1)
         break;
-      endIndex = findChainEnd(startIndex);
-      SegmentString ss = createChain(this, startIndex, endIndex);
-      chainList.add(ss);
+      endIndex = findInvalidEnd(startIndex);
+      LineString line = createLine(startIndex, endIndex, geomFactory);
+      lines.add(line);
     }
   }
 
-  private static SegmentString createChain(SegmentString segString, int startIndex, int endIndex) {
-    Coordinate[] pts = new Coordinate[endIndex - startIndex + 1];
-    int ipts = 0;
-    for (int i = startIndex; i < endIndex + 1; i++) {
-      pts[ipts++] = segString.getCoordinate(i).copy();
-    }
-    return new BasicSegmentString(pts, segString.getData());
-  }
-
-  private int findChainStart(int index) {
-    while (index < isInvalid.length && ! isInChain(index)) {
+  private int findInvalidStart(int index) {
+    while (index < isInvalid.length && ! isInvalid(index)) {
       index++;
     }
     return index;
   }
 
-  private int findChainEnd(int index) {
+  private int findInvalidEnd(int index) {
     index++;
-    while (index < isInvalid.length && isInChain(index)) {
+    while (index < isInvalid.length && isInvalid(index)) {
       index++;
     }
     return index;
   }
   
-  private boolean isInChain(int index) {
-    return ! isValid[index] && isInvalid[index];
+  private LineString createLine(int startIndex, int endIndex, GeometryFactory geomFactory) {
+    Coordinate[] pts = new Coordinate[endIndex - startIndex + 1];
+    int ipts = 0;
+    for (int i = startIndex; i < endIndex + 1; i++) {
+      pts[ipts++] = getCoordinate(i).copy();
+    }
+    return geomFactory.createLineString(pts);
   }
+
+
 
 }

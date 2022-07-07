@@ -81,10 +81,16 @@ public class CoveragePolygonValidatorTest extends GeometryTestCase {
         "MULTILINESTRING ((7 6, 1 1), (3 6, 7 6))");
   }
 
-  public void testPartialMatchInHole() {
+  public void testAdjacentHoleOverlap() {
     checkInvalid("POLYGON ((3 3, 3 7, 6 8, 7 3, 3 3))",
         "POLYGON ((1 9, 9 9, 9 1, 1 1, 1 9), (3 7, 7 7, 7 3, 3 3, 3 7))",
         "LINESTRING (3 7, 6 8, 7 3)");
+  }
+  
+  public void testTargetHoleOverlap() {
+    checkInvalid("POLYGON ((1 1, 1 9, 9 9, 9 1, 1 1), (2 2, 8 2, 8 8, 5 4, 3 5, 2 5, 2 2))",
+        "POLYGON ((2 2, 2 5, 3 5, 8 6.7, 8 2, 2 2))",
+        "LINESTRING (8 2, 8 8, 5 4, 3 5)");
   }
   
   public void testFullyContained() {
