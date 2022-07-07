@@ -76,12 +76,30 @@ import org.locationtech.jts.noding.MCIndexSegmentSetMutualIntersector;
  */
 public class CoveragePolygonValidator {
   
-  public static Geometry validate(Geometry target, Geometry adjPolygons) {
-    return validate(target, adjPolygons, 0);
+  /**
+   * Validates that a polygon is coverage-valid  against the
+   * adjacent polygons in a polygonal coverage.
+   *  
+   * @param targetPolygon the polygon to validate
+   * @param adjPolygons a collection of the adjacent polygons
+   * @return a linear geometry containing the segments causing invalidity (if any)
+   */
+  public static Geometry validate(Geometry targetPolygon, Geometry adjPolygons) {
+    CoveragePolygonValidator v = new CoveragePolygonValidator(targetPolygon);
+    return v.validate(adjPolygons, 0);
   }
   
-  public static Geometry validate(Geometry target, Geometry adjPolygons, double distanceTolerance) {
-    CoveragePolygonValidator v = new CoveragePolygonValidator(target);
+  /**
+   * Validates that a polygon is coverage-valid  against the
+   * adjacent polygons in a polygonal coverage.
+   *  
+   * @param targetPolygon the polygon to validate
+   * @param adjPolygons a collection of the adjacent polygons
+   * @param distanceTolerance the misalignment tolerance distance (if any)
+   * @return a linear geometry containing the segments causing invalidity (if any)
+   */  
+  public static Geometry validate(Geometry targetPolygon, Geometry adjPolygons, double distanceTolerance) {
+    CoveragePolygonValidator v = new CoveragePolygonValidator(targetPolygon);
     return v.validate(adjPolygons, distanceTolerance);
   }
   
@@ -89,11 +107,24 @@ public class CoveragePolygonValidator {
   private GeometryFactory geomFactory;
   private IndexedPointInAreaLocator[] adjPolygonLocators;
 
+  /**
+   * Create a new validator.
+   * 
+   * @param geom the polygonal coverage geometry to validate
+   */
   public CoveragePolygonValidator(Geometry geom) {
     this.targetGeom = geom;
     geomFactory = targetGeom.getFactory();
   }
   
+  /**
+   * Validates the coverage polygon against the set of adjacent polygons
+   * in the coverage.
+   * 
+   * @param adjGeoms the surrounding polygons in the coverage
+   * @param distanceTolerance the distance tolerance for misaligned segments
+   * @return a linear geometry containing the segments causing invalidity (if any)
+   */
   public Geometry validate(Geometry adjGeoms, double distanceTolerance) {
     List<Polygon> adjPolygons = PolygonExtracter.getPolygons(adjGeoms);
     adjPolygonLocators = new IndexedPointInAreaLocator[adjPolygons.size()];

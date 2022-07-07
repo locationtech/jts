@@ -19,25 +19,39 @@ import org.locationtech.jts.geom.LineSegment;
 import org.locationtech.jts.noding.SegmentIntersector;
 import org.locationtech.jts.noding.SegmentString;
 
+/**
+ * Detects invalid coverage topology where ring segments interact.
+ * The inputs to {@link #processIntersections(SegmentString, int, SegmentString, int)}
+ * must be {@link CoverageRing}s.
+ * If an invalid situation is detected the input target segment is 
+ * marked invalid using {@link CoverageRing#markInvalid(int)}.
+ * 
+ * @author Martin Davis
+ *
+ */
 class InvalidSegmentDetector implements SegmentIntersector {
   private double distanceTol;
 
   /**
-   * Creates a invalid segment detector.
+   * Creates an invalid segment detector.
    */
   public InvalidSegmentDetector(double distanceTol) {
     this.distanceTol = distanceTol;
   }
 
+  /**
+   * Process interacting segments.
+   * The input order is important.
+   * The adjacent segment is first, the target is second.
+   * The inputs must be {@link CoverageRing}s.
+   */
   @Override
-  public void processIntersections(SegmentString ss0, int index0, SegmentString ss1, int index1) {
+  public void processIntersections(SegmentString ssAdj, int iAdj, SegmentString ssTarget, int iTarget) {
     // note the source of the edges is important
-    CoverageRing target = (CoverageRing) ss1;
-    int iTarget =  index1;
-    CoverageRing adj = (CoverageRing) ss0;
-    int iAdj =  index0;
+    CoverageRing target = (CoverageRing) ssTarget;
+    CoverageRing adj = (CoverageRing) ssAdj;
     
-    //-- don't check a target segment with known status
+    //-- skip target segments with known status
     if (target.isKnown(iTarget)) return;
     
     Coordinate t0 = target.getCoordinate(iTarget);
@@ -49,11 +63,11 @@ class InvalidSegmentDetector implements SegmentIntersector {
      + "   adj= " + WKTWriter.toLineString(adj0, adj1));
     //*/
     
-    //-- don't check zero-length segments
+    //-- skip zero-length segments
     if (t0.equals2D(t1) || adj0.equals2D(adj1))
       return;
 
-    //-- don't check segments not within distance tolerance
+    //-- skip segments beyond distance tolerance
     if (distanceTol < Distance.segmentToSegment(t0, t1, adj0, adj1)) {
       return;
     } 
@@ -81,8 +95,9 @@ class InvalidSegmentDetector implements SegmentIntersector {
   /**
    * Checks if the segments are collinear, or if the target segment 
    * intersects the interior of the adjacent ring.
-   * Matching segments have already been marked as valid and are skipped.
-   * Thus collinear segments must not match, and hence are invalid. 
+   * Segments which are collinear must be non-equal and hence invalid, 
+   * since matching segments have already been marked as valid and
+   * are not passed to this code. 
    * 
    * @param tgt0
    * @param tgt1
@@ -99,10 +114,7 @@ class InvalidSegmentDetector implements SegmentIntersector {
     if (! li.hasIntersection())
       return false;
     
-    /**
-     * If the segments are collinear,
-     * they do not match, so are invalid.
-     */
+    //-- If the segments are collinear, they do not match, so are invalid.
     if (li.getIntersectionNum() == 2) {
       //TODO: assert segments are not equal?
       return true;
@@ -167,7 +179,7 @@ class InvalidSegmentDetector implements SegmentIntersector {
   
   @Override
   public boolean isDone() {
-    // process all segments
+    // process all intersections
     return false;
   }
 }
