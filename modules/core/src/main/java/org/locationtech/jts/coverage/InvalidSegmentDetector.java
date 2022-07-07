@@ -32,9 +32,9 @@ class InvalidSegmentDetector implements SegmentIntersector {
   @Override
   public void processIntersections(SegmentString ss0, int index0, SegmentString ss1, int index1) {
     // note the source of the edges is important
-    CoverageEdge target = (CoverageEdge) ss1;
+    CoverageRing target = (CoverageRing) ss1;
     int iTarget =  index1;
-    CoverageEdge adj = (CoverageEdge) ss0;
+    CoverageRing adj = (CoverageRing) ss0;
     int iAdj =  index0;
     
     //-- don't check a target segment with known status
@@ -65,7 +65,7 @@ class InvalidSegmentDetector implements SegmentIntersector {
   }
 
   private boolean isInvalid(Coordinate tgt0, Coordinate tgt1, 
-      Coordinate adj0, Coordinate adj1, SegmentString adj, int indexAdj) {
+      Coordinate adj0, Coordinate adj1, CoverageRing adj, int indexAdj) {
 
     //-- segments that are collinear (but not matching) or are interior are invalid
     if (isCollinearOrInterior(tgt0, tgt1, adj0, adj1, adj, indexAdj))
@@ -91,7 +91,7 @@ class InvalidSegmentDetector implements SegmentIntersector {
    * @return
    */
   private boolean isCollinearOrInterior(Coordinate tgt0, Coordinate tgt1, 
-      Coordinate adj0, Coordinate adj1, SegmentString adj, int indexAdj) {
+      Coordinate adj0, Coordinate adj1, CoverageRing adj, int indexAdj) {
     RobustLineIntersector li = new RobustLineIntersector();
     li.computeIntersection(tgt0, tgt1, adj0, adj1);
     
@@ -123,7 +123,7 @@ class InvalidSegmentDetector implements SegmentIntersector {
     return isInterior;
   }
 
-  private Coordinate findVertexPrev(SegmentString ss, int index, Coordinate pt) {
+  private Coordinate findVertexPrev(CoverageRing ss, int index, Coordinate pt) {
     int iPrev = index;
     Coordinate prev = ss.getCoordinate(iPrev);
     while (pt.equals2D(prev)) {
@@ -133,13 +133,13 @@ class InvalidSegmentDetector implements SegmentIntersector {
     return prev;
   }
 
-  private int indexPrev(SegmentString ss, int index) {
+  private int indexPrev(CoverageRing ss, int index) {
     if (index == 0)
       return ss.size() - 2;
     return index - 1;
   }
 
-  private Coordinate findVertexNext(SegmentString ss, int index, Coordinate pt) {
+  private Coordinate findVertexNext(CoverageRing ss, int index, Coordinate pt) {
     //-- safe, since index is always the start of a segment
     int iNext = index + 1;
     Coordinate next = ss.getCoordinate(iNext);
@@ -150,7 +150,7 @@ class InvalidSegmentDetector implements SegmentIntersector {
     return next;
   }
   
-  private int indexNext(SegmentString ss, int index) {
+  private int indexNext(CoverageRing ss, int index) {
     if (index >= ss.size() - 2) 
       return 0;
     return index + 1;

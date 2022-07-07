@@ -17,10 +17,10 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.noding.BasicSegmentString;
 import org.locationtech.jts.noding.SegmentString;
 
-class CoverageEdge extends BasicSegmentString {
+class CoverageRing extends BasicSegmentString {
   
-  public static boolean isAllValid(List<CoverageEdge> segStrings) {
-    for (CoverageEdge ss : segStrings) {
+  public static boolean isAllValid(List<CoverageRing> segStrings) {
+    for (CoverageRing ss : segStrings) {
       if (! ss.isAllValid())
         return false;
     }
@@ -30,7 +30,7 @@ class CoverageEdge extends BasicSegmentString {
   private boolean[] isInvalid;
   private boolean[] isValid;
 
-  public CoverageEdge(Coordinate[] pts, Object data) {
+  public CoverageRing(Coordinate[] pts, Object data) {
     super(pts, data);
     isInvalid = new boolean[size() - 1];
     isValid = new boolean[size() - 1];

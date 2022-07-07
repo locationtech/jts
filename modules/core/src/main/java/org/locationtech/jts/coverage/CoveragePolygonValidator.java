@@ -48,14 +48,14 @@ public class CoveragePolygonValidator {
     return validate(base, adjPolygons, 0);
   }
   
-  public static Geometry validate(Geometry base, Geometry adjPolygons, double distanceTolerance) {
-    CoveragePolygonValidator v = new CoveragePolygonValidator(base);
+  public static Geometry validate(Geometry target, Geometry adjPolygons, double distanceTolerance) {
+    CoveragePolygonValidator v = new CoveragePolygonValidator(target);
     return v.validate(adjPolygons, distanceTolerance);
   }
   
   private Geometry targetGeom;
   private GeometryFactory geomFactory;
-  private IndexedPointInAreaLocator[] locator;
+  private IndexedPointInAreaLocator[] adjPolygonLocators;
 
   public CoveragePolygonValidator(Geometry geom) {
     this.targetGeom = geom;
@@ -64,7 +64,7 @@ public class CoveragePolygonValidator {
   
   public Geometry validate(Geometry adjGeoms, double distanceTolerance) {
     List<Polygon> adjPolygons = PolygonExtracter.getPolygons(adjGeoms);
-    locator = new IndexedPointInAreaLocator[adjPolygons.size()];
+    adjPolygonLocators = new IndexedPointInAreaLocator[adjPolygons.size()];
     
     //TODO: CANCEL skip non-touching polygons? (since adjacent one may be a legitimate MultiPolygon)
     //-- no, just use tol = 0 instead
@@ -80,22 +80,22 @@ public class CoveragePolygonValidator {
       return targetGeom.getBoundary();
     }
     
-    List<CoverageEdge> targetEdges = extractEdges(targetGeom);
-    List<CoverageEdge> adjEdges = extractEdges(adjGeoms);
+    List<CoverageRing> targetRings = extractRings(targetGeom);
+    List<CoverageRing> adjRings = extractRings(adjGeoms);
 
     //System.out.println("# adj edges: " + adjSegStrings.size());
     Envelope targetEnv = targetGeom.getEnvelopeInternal().copy();
     targetEnv.expandBy(distanceTolerance);
-    findMatchedSegments(targetEdges, adjEdges, targetEnv);
+    findMatchedSegments(targetRings, adjRings, targetEnv);
 
     //-- check if target is fully matched and thus forms a clean coverage 
-    if (CoverageEdge.isAllValid(targetEdges))
+    if (CoverageRing.isAllValid(targetRings))
       return createEmptyResult();
     
-    findMisalignedSegments(targetEdges, adjEdges, distanceTolerance);
-    findInteriorSegments(targetEdges, adjPolygons);
+    findMisalignedSegments(targetRings, adjRings, distanceTolerance);
+    findInteriorSegments(targetRings, adjPolygons);
     
-    return createChains(targetEdges);
+    return createChains(targetRings);
   }
 
   private Geometry createEmptyResult() {
@@ -121,11 +121,11 @@ public class CoveragePolygonValidator {
     return false;
   }
 
-  private void findMatchedSegments(List<CoverageEdge> targetSegStrings,
-      List<CoverageEdge> adjSegStrings, Envelope targetEnv) {
+  private void findMatchedSegments(List<CoverageRing> targetRings,
+      List<CoverageRing> adjRngs, Envelope targetEnv) {
     Map<Segment, Segment> segmentMap = new HashMap<Segment, Segment>();
-    addMatchedSegments(targetSegStrings, targetEnv, segmentMap);
-    addMatchedSegments(adjSegStrings, targetEnv, segmentMap);
+    addMatchedSegments(targetRings, targetEnv, segmentMap);
+    addMatchedSegments(adjRngs, targetEnv, segmentMap);
   }
   
   /**
@@ -133,15 +133,15 @@ public class CoveragePolygonValidator {
    * and detects if they match an existing segment.
    * In this case the segment is assumed to be coverage-valid.
    * 
-   * @param edges
+   * @param rings
    * @param envLimit
    * @param segMap
    */
-  private void addMatchedSegments(List<CoverageEdge> edges, Envelope envLimit, 
+  private void addMatchedSegments(List<CoverageRing> rings, Envelope envLimit, 
       Map<Segment, Segment> segmentMap) {
-    for (CoverageEdge ss : edges) {
-      for (int i = 0; i < ss.size() - 1; i++) {
-        Segment seg = Segment.create(ss, i);
+    for (CoverageRing ring : rings) {
+      for (int i = 0; i < ring.size() - 1; i++) {
+        Segment seg = Segment.create(ring, i);
         //-- skip segments which lie outside the limit envelope
         if (! envLimit.intersects(seg.p0, seg.p1)) {
           continue;
@@ -159,56 +159,68 @@ public class CoveragePolygonValidator {
   }
 
   private static class Segment extends LineSegment {
-    public static Segment create(CoverageEdge ss, int index) {
-      Coordinate p0 = ss.getCoordinate(index);
-      Coordinate p1 = ss.getCoordinate(index + 1);
-      return new Segment(p0, p1, ss, index);
+    public static Segment create(CoverageRing ring, int index) {
+      Coordinate p0 = ring.getCoordinate(index);
+      Coordinate p1 = ring.getCoordinate(index + 1);
+      return new Segment(p0, p1, ring, index);
     }
     
-    private CoverageEdge edge;
+    private CoverageRing ring;
     private int index;
 
-    public Segment(Coordinate p0, Coordinate p1, CoverageEdge edge, int index) {
+    public Segment(Coordinate p0, Coordinate p1, CoverageRing ring, int index) {
       super(p0, p1);
       normalize();
-      this.edge = edge;
+      this.ring = ring;
       this.index = index;
     }
     
     public void markValid() {
-      edge.markValid(index);
+      ring.markValid(index);
     }
   }
   
   //--------------------------------------------------
   
   
-  private void findMisalignedSegments(List<CoverageEdge> targetEdges, List<CoverageEdge> adjEdges,
+  private void findMisalignedSegments(List<CoverageRing> targetRings, List<CoverageRing> adjRings,
       double distanceTolerance) {
     InvalidSegmentDetector detector = new InvalidSegmentDetector(distanceTolerance);
-    MCIndexSegmentSetMutualIntersector segSetMutInt = new MCIndexSegmentSetMutualIntersector(targetEdges, distanceTolerance);
-    segSetMutInt.process(adjEdges, detector);
+    MCIndexSegmentSetMutualIntersector segSetMutInt = new MCIndexSegmentSetMutualIntersector(targetRings, distanceTolerance);
+    segSetMutInt.process(adjRings, detector);
   }
   
-  private void findInteriorSegments(List<CoverageEdge> targetEdges, List<Polygon> adjPolygons) {
-    for (CoverageEdge edge : targetEdges) {
-      for (int i = 0; i < edge.size() - 1; i++) {
-        if (edge.isKnown(i))
+  private void findInteriorSegments(List<CoverageRing> targetRings, List<Polygon> adjPolygons) {
+    for (CoverageRing ring : targetRings) {
+      for (int i = 0; i < ring.size() - 1; i++) {
+        if (ring.isKnown(i))
           continue;
         
-        //-- check if vertex is in interior of an adjacent polygon
-        Coordinate p = edge.getCoordinate(i);
+        /**
+         * Check if vertex is in interior of an adjacent polygon.
+         * If so, the segments on either side are in the interior.
+         * Mark them invalid, unless they are already matched.
+         */
+        Coordinate p = ring.getCoordinate(i);
         if (isInteriorVertex(p, adjPolygons)) {
-          edge.markInvalid(i);
-          //-- previous edge may be interior (but may also be matched)
-          int iPrev = i == 0 ? edge.size() - 2 : i-1;
-          if (! edge.isKnown(iPrev))
-            edge.markInvalid(iPrev);
+          ring.markInvalid(i);
+          //-- previous segment may be interior (but may also be matched)
+          int iPrev = i == 0 ? ring.size() - 2 : i-1;
+          if (! ring.isKnown(iPrev))
+            ring.markInvalid(iPrev);
         }
       }
     }
   }
   
+  /**
+   * Tests if a coordinate is in the interior of some adjacent polygon.
+   * Uses the cached Point-In-Polygon indexed locators, for performance.
+   * 
+   * @param p the coordinate to test
+   * @param adjPolygons the list of polygons
+   * @return true if the point is in the interior
+   */
   private boolean isInteriorVertex(Coordinate p, List<Polygon> adjPolygons) {
     /**
      * There should not be too many adjacent polygons, 
@@ -233,17 +245,17 @@ public class CoveragePolygonValidator {
   }
 
   private PointOnGeometryLocator getLocator(int index, Polygon poly) {
-    IndexedPointInAreaLocator loc = locator[index];
+    IndexedPointInAreaLocator loc = adjPolygonLocators[index];
     if (loc == null) {
       loc = new IndexedPointInAreaLocator(poly);
-      locator[index] = loc;
+      adjPolygonLocators[index] = loc;
     }
     return loc;
   }
 
-  private Geometry createChains(List<CoverageEdge> segStrings) {
+  private Geometry createChains(List<CoverageRing> segStrings) {
     List<SegmentString> chains = new ArrayList<SegmentString>();
-    for (CoverageEdge ss : segStrings) {
+    for (CoverageRing ss : segStrings) {
       ss.createChains(chains);
     }
     
@@ -264,13 +276,13 @@ public class CoveragePolygonValidator {
     return geomFactory.createMultiLineString(lines);
   }  
   
-  private static List<CoverageEdge> extractEdges(Geometry geom)
+  private static List<CoverageRing> extractRings(Geometry geom)
   {
-    List<CoverageEdge> segStr = new ArrayList<CoverageEdge>();
+    List<CoverageRing> segStr = new ArrayList<CoverageRing>();
     List<LineString> lines = LinearComponentExtracter.getLines(geom);
     for (LineString line : lines) {
       Coordinate[] pts = line.getCoordinates();
-      segStr.add(new CoverageEdge(pts, geom));
+      segStr.add(new CoverageRing(pts, geom));
     }
     return segStr;
   }
