@@ -111,6 +111,11 @@ public class CoveragePolygonValidatorTest extends GeometryTestCase {
         "POLYGON ((1 1, 9 1, 9 4, 6 5, 1 1))");
   }
   
+  public void testTargetCoveredAndMatching() {
+    checkValid("POLYGON ((1 7, 5 7, 9 7, 9 3, 5 3, 1 3, 1 7))",
+        "MULTIPOLYGON (((5 9, 9 7, 5 7, 1 7, 5 9)), ((1 7, 5 7, 5 3, 1 3, 1 7)), ((9 3, 5 3, 5 7, 9 7, 9 3)), ((1 3, 5 3, 9 3, 5 1, 1 3)))");
+  }
+  
   //-- confirms zero-length segments are skipped in processing
   public void testRepeatedCommonVertexInTarget() {
     checkValid("POLYGON ((1 1, 1 3, 5 3, 5 3, 9 1, 1 1))",

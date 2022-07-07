@@ -28,23 +28,47 @@ import org.locationtech.jts.geom.Location;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.util.PolygonExtracter;
 import org.locationtech.jts.noding.MCIndexSegmentSetMutualIntersector;
-import org.locationtech.jts.noding.SegmentString;
 
 
 /**
- * Performs the following checks:
- * <ul>
- * <li>Exact duplicate polygons
- * <li>Misaligned segments
- * </ul>
+ * Validates that a target polygon forms a clean coverage with a set of polygons
+ * adjacent to it.  
+ * The result is a linear geometry containing 
+ * the edge line segments that prevent forming a clean coverage.
+ * if the polygon is clean an empty {@link LineString} is returned.
  * 
- * @author mdavis
+ * The algorithm detects the following coverage errors:
+ * <ol>
+ * <li>Polygon is a duplicate of an adjacent one
+ * <li>Segments that are collinear with but do not match an adjacent segment
+ * <li>Segments that cross into an adjacent polygon
+ * <li>Segments that lie in the interior of an adjacent polygon 
+ * <ol>
+ * If one or more of these errors is present, the target polygon
+ * does not form a clean coverage with the adjacent polygons.
+ * <p>
+ * It can happen that a target polygon is clean with respect to 
+ * a set of adjacent polygons, but the collection as a whole does not
+ * form a clean coverage.  For example, the target polygon edges may be fully matched
+ * by adjacent polygons, but the set of adjacents contains polygons which are not clean relative
+ * to other ones in the set (e.g. they may overlap).
+ * Use {@link CoverageValidator} to validate an entire set of polygons.
+ * <p>
+ * If a non-zero tolerance distance is used, the algorithm also detects
+ * misaligned segments.  Misaligned segments are ones which are nearly collinear
+ * for a significant distance.
+ * They can indicate the presence of spikes, gores and gaps.
+ * However, as a heuristic check false reports can occur. 
+ * 
+ * @see CoverageValidator
+ * 
+ * @author Martin Davis
  *
  */
 public class CoveragePolygonValidator {
   
-  public static Geometry validate(Geometry base, Geometry adjPolygons) {
-    return validate(base, adjPolygons, 0);
+  public static Geometry validate(Geometry target, Geometry adjPolygons) {
+    return validate(target, adjPolygons, 0);
   }
   
   public static Geometry validate(Geometry target, Geometry adjPolygons, double distanceTolerance) {
@@ -82,6 +106,11 @@ public class CoveragePolygonValidator {
     List<CoverageRing> targetRings = CoverageRing.createRings(targetGeom);
     List<CoverageRing> adjRings = CoverageRing.createRings(adjGeoms);
 
+    /**
+     * Find matching segments first.
+     * Matching segments are not considered for further checks, 
+     * which improves performance substantialy for mostly-valid coverages.
+     */
     Envelope targetEnv = targetGeom.getEnvelopeInternal().copy();
     targetEnv.expandBy(distanceTolerance);
     findMatchedSegments(targetRings, adjRings, targetEnv);
@@ -91,6 +120,7 @@ public class CoveragePolygonValidator {
       return createEmptyResult();
     
     findMisalignedSegments(targetRings, adjRings, distanceTolerance);
+    
     findInteriorSegments(targetRings, adjPolygons);
     
     return createInvalidLines(targetRings);
