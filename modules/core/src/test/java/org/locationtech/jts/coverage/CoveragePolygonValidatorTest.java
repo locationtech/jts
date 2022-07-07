@@ -52,7 +52,36 @@ public class CoveragePolygonValidatorTest extends GeometryTestCase {
         "LINESTRING (1 1, 3 4, 7 4, 9 1)");
   }
 
-  public void testTargetFullyContained() {
+  public void testInteriorSegmentTouchingEdge() {
+    checkInvalid("POLYGON ((4 3, 4 7, 8 9, 8 1, 4 3))",
+        "POLYGON ((1 7, 6 7, 6 3, 1 3, 1 7))",
+        "LINESTRING (4 3, 4 7)");
+  }
+
+  public void testInteriorSegmentTouchingNodes() {
+    checkInvalid("POLYGON ((4 2, 4 8, 8 9, 8 1, 4 2))",
+        "POLYGON ((1 5, 4 8, 7 5, 4 2, 1 5))",
+        "LINESTRING (4 2, 4 8)");
+  }
+
+  public void testInteriorSegmentsTouching() {
+    checkInvalid("POLYGON ((1 9, 5 9, 8 7, 5 7, 3 5, 8 2, 1 2, 1 9))",
+        "POLYGON ((5 9, 9 9, 9 1, 5 1, 5 9))",
+        "MULTILINESTRING ((5 9, 8 7, 5 7), (3 5, 8 2, 1 2))");
+  }
+
+  /**
+   * Shows need to evaluate both start and end point of intersecting segments
+   * in InvalidSegmentDetector,
+   * since matched segments are not tested
+   */
+  public void testInteriorSegmentsWithMatch() {
+    checkInvalid("POLYGON ((7 6, 1 1, 3 6, 7 6))",
+        "MULTIPOLYGON (((1 9, 9 9, 9 1, 1 1, 3 6, 1 9)), ((0 1, 0 9, 1 9, 3 6, 1 1, 0 1)))",
+        "MULTILINESTRING ((7 6, 1 1), (3 6, 7 6))");
+  }
+
+  public void testFullyContained() {
     checkInvalid("POLYGON ((3 7, 7 7, 7 3, 3 3, 3 7))",
         "POLYGON ((1 9, 9 9, 9 1, 1 1, 1 9))",
         "LINESTRING (3 7, 7 7, 7 3, 3 3, 3 7)");

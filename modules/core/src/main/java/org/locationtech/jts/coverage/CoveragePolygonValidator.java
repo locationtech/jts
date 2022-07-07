@@ -80,22 +80,22 @@ public class CoveragePolygonValidator {
       return targetGeom.getBoundary();
     }
     
-    List<CoverageEdge> targetSegStrings = extractSegmentStrings(targetGeom);
-    List<CoverageEdge> adjSegStrings = extractSegmentStrings(adjGeoms);
+    List<CoverageEdge> targetEdges = extractEdges(targetGeom);
+    List<CoverageEdge> adjEdges = extractEdges(adjGeoms);
 
     //System.out.println("# adj edges: " + adjSegStrings.size());
     Envelope targetEnv = targetGeom.getEnvelopeInternal().copy();
     targetEnv.expandBy(distanceTolerance);
-    findMatchedSegments(targetSegStrings, adjSegStrings, targetEnv);
+    findMatchedSegments(targetEdges, adjEdges, targetEnv);
 
     //-- check if target is fully matched and thus forms a clean coverage 
-    if (CoverageEdge.isAllValid(targetSegStrings))
+    if (CoverageEdge.isAllValid(targetEdges))
       return createEmptyResult();
     
-    findMisalignedSegments(targetSegStrings, adjSegStrings, distanceTolerance);
-    findInteriorSegments(targetSegStrings, adjPolygons);
+    findMisalignedSegments(targetEdges, adjEdges, distanceTolerance);
+    findInteriorSegments(targetEdges, adjPolygons);
     
-    return createChains(targetSegStrings);
+    return createChains(targetEdges);
   }
 
   private Geometry createEmptyResult() {
@@ -183,40 +183,45 @@ public class CoveragePolygonValidator {
   //--------------------------------------------------
   
   
-  private void findMisalignedSegments(List<CoverageEdge> targetSegStrings, List<CoverageEdge> adjSegStrings,
+  private void findMisalignedSegments(List<CoverageEdge> targetEdges, List<CoverageEdge> adjEdges,
       double distanceTolerance) {
     InvalidSegmentDetector detector = new InvalidSegmentDetector(distanceTolerance);
-    MCIndexSegmentSetMutualIntersector segSetMutInt = new MCIndexSegmentSetMutualIntersector(targetSegStrings, distanceTolerance);
-    segSetMutInt.process(adjSegStrings, detector);
+    MCIndexSegmentSetMutualIntersector segSetMutInt = new MCIndexSegmentSetMutualIntersector(targetEdges, distanceTolerance);
+    segSetMutInt.process(adjEdges, detector);
   }
   
-  private void findInteriorSegments(List<CoverageEdge> targetSegStrings, List<Polygon> adjPolygons) {
-    for (CoverageEdge ss : targetSegStrings) {
-      for (int i = 0; i < ss.size() - 1; i++) {
-        if (ss.isKnown(i))
+  private void findInteriorSegments(List<CoverageEdge> targetEdges, List<Polygon> adjPolygons) {
+    for (CoverageEdge edge : targetEdges) {
+      for (int i = 0; i < edge.size() - 1; i++) {
+        if (edge.isKnown(i))
           continue;
         
-        //-- check if segment intersects interior of an adjacent polygon
-        Coordinate p0 = ss.getCoordinate(i);
-        if (isInteriorSegment(p0, adjPolygons))
-          ss.markInvalid(i);
+        //-- check if vertex is in interior of an adjacent polygon
+        Coordinate p = edge.getCoordinate(i);
+        if (isInteriorVertex(p, adjPolygons)) {
+          edge.markInvalid(i);
+          //-- previous edge may be interior (but may also be matched)
+          int iPrev = i == 0 ? edge.size() - 2 : i-1;
+          if (! edge.isKnown(iPrev))
+            edge.markInvalid(iPrev);
+        }
       }
     }
   }
   
-  private boolean isInteriorSegment(Coordinate p, List<Polygon> adjPolygons) {
+  private boolean isInteriorVertex(Coordinate p, List<Polygon> adjPolygons) {
     /**
      * There should not be too many adjacent polygons, 
      * and hopefully not too many segments with unknown status
      * so a linear scan should not be too inefficient
      */
     //TODO: try a spatial index?
-    for (int index = 0; index < adjPolygons.size(); index++) {
-      Polygon adjPoly = adjPolygons.get(index);
+    for (int i = 0; i < adjPolygons.size(); i++) {
+      Polygon adjPoly = adjPolygons.get(i);
       if (! adjPoly.getEnvelopeInternal().intersects(p))
         continue;
      
-      if (polygonContainsPoint(index, adjPoly, p))
+      if (polygonContainsPoint(i, adjPoly, p))
         return true;
     }
     return false;
@@ -259,7 +264,7 @@ public class CoveragePolygonValidator {
     return geomFactory.createMultiLineString(lines);
   }  
   
-  private static List<CoverageEdge> extractSegmentStrings(Geometry geom)
+  private static List<CoverageEdge> extractEdges(Geometry geom)
   {
     List<CoverageEdge> segStr = new ArrayList<CoverageEdge>();
     List<LineString> lines = LinearComponentExtracter.getLines(geom);

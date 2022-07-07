@@ -26,7 +26,7 @@ public class CoverageFunctions {
     return CoveragePolygonValidator.validate(geom, surround);
   }
   
-  public static Geometry validate(Geometry coverage) {
+  public static Geometry validateCoverage(Geometry coverage) {
     return CoverageValidator.validate(coverage);
   }
   

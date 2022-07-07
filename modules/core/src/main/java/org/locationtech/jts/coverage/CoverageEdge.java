@@ -36,11 +36,31 @@ class CoverageEdge extends BasicSegmentString {
     isValid = new boolean[size() - 1];
   }
   
+  public boolean isValid(int index) {
+    return isValid[index];
+  }
+
+  public boolean isAllValid() {
+    for (int i = 0; i < isValid.length; i++) {
+      if (! isValid[i])
+        return false;
+    }
+    return true;
+  }
+
+  public boolean isKnown(int i) {
+    return isValid[i] || isInvalid[i];
+  }
+  
   public void markInvalid(int i) {
+    if (isValid[i])
+      throw new IllegalStateException("Setting valid edge to invalid");
     isInvalid[i] = true;
   }
 
   public void markValid(int i) {
+    if (isInvalid[i])
+      throw new IllegalStateException("Setting invalid edge to valid");
     isValid[i] = true;
   }
 
@@ -82,22 +102,6 @@ class CoverageEdge extends BasicSegmentString {
   
   private boolean isInChain(int index) {
     return ! isValid[index] && isInvalid[index];
-  }
-
-  public boolean isValid(int index) {
-    return isValid[index];
-  }
-
-  public boolean isAllValid() {
-    for (int i = 0; i < isValid.length; i++) {
-      if (! isValid[i])
-        return false;
-    }
-    return true;
-  }
-
-  public boolean isKnown(int i) {
-    return isValid[i] || isInvalid[i];
   }
 
 }

@@ -9,9 +9,8 @@
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
  */
-package org.locationtech.jts.operation.valid;
+package org.locationtech.jts.algorithm;
 
-import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Quadrant;
 
@@ -22,7 +21,7 @@ import org.locationtech.jts.geom.Quadrant;
  * @author mdavis
  *
  */
-class PolygonNode 
+public class PolygonNodeTopology 
 {
   /**
    * Check if the edges at a node between two rings (or one ring) cross.

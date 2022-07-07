@@ -12,89 +12,157 @@
 package org.locationtech.jts.coverage;
 
 import org.locationtech.jts.algorithm.Distance;
-import org.locationtech.jts.algorithm.LineIntersector;
+import org.locationtech.jts.algorithm.PolygonNodeTopology;
 import org.locationtech.jts.algorithm.RobustLineIntersector;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.LineSegment;
+import org.locationtech.jts.io.WKTWriter;
 import org.locationtech.jts.noding.SegmentIntersector;
 import org.locationtech.jts.noding.SegmentString;
 
 class InvalidSegmentDetector implements SegmentIntersector {
   private double distanceTol;
-  private LineIntersector li;
 
   /**
    * Creates a invalid segment detector.
    */
   public InvalidSegmentDetector(double distanceTol) {
     this.distanceTol = distanceTol;
-    li = new RobustLineIntersector();
   }
 
   @Override
-  public void processIntersections(SegmentString ss0, int segIndex1, SegmentString ss1, int segIndex0) {
+  public void processIntersections(SegmentString ss0, int index0, SegmentString ss1, int index1) {
+    // note the order of the segments is important
     CoverageEdge target = (CoverageEdge) ss1;
-    if (target.isValid(segIndex0)) return;
-    CoverageEdge test = (CoverageEdge) ss0;
-    if (test.isValid(segIndex1)) return;
+    int iTarget =  index1;
+    CoverageEdge adj = (CoverageEdge) ss0;
+    int iAdj =  index0;
     
-    Coordinate p00 = target.getCoordinate(segIndex0);
-    Coordinate p01 = target.getCoordinate(segIndex0 + 1);
-    Coordinate p10 = test.getCoordinate(segIndex1);
-    Coordinate p11 = test.getCoordinate(segIndex1 + 1);
+    //-- don't check a target segment with known status
+    if (target.isKnown(iTarget)) return;
     
-    //-- zero-length segment, no need to check
-    if (p00.equals2D(p01) || p10.equals2D(p11))
+    Coordinate t0 = target.getCoordinate(iTarget);
+    Coordinate t1 = target.getCoordinate(iTarget + 1);
+    Coordinate adj0 = adj.getCoordinate(iAdj);
+    Coordinate adj1 = adj.getCoordinate(iAdj + 1);
+    /*
+    System.out.println("checking target= " + WKTWriter.toLineString(t0, t1)
+     + "   adj= " + WKTWriter.toLineString(adj0, adj1));
+    //*/
+    
+    //-- don't check zero-length segments
+    if (t0.equals2D(t1) || adj0.equals2D(adj1))
       return;
 
-    //-- segments are not within distance tolerance, so skip them
-    if (distanceTol < Distance.segmentToSegment(p00, p01, p10, p11)) {
+    //-- don't check segments not within distance tolerance
+    if (distanceTol < Distance.segmentToSegment(t0, t1, adj0, adj1)) {
       return;
     } 
     
-    boolean isInvalid = isInvalid(p00, p01, p10, p11);
+    boolean isInvalid = isInvalid(t0, t1, adj0, adj1, adj, iAdj);
     if (isInvalid) {
-      target.markInvalid(segIndex0);
+      target.markInvalid(iTarget);
     }
   }
 
-  private boolean isInvalid(Coordinate p00, Coordinate p01, Coordinate p10, Coordinate p11) {
+  private boolean isInvalid(Coordinate tgt0, Coordinate tgt1, 
+      Coordinate adj0, Coordinate adj1, SegmentString adj, int indexAdj) {
 
     //-- segments that cross or are collinear are invalid
-    if (isCrossingOrCollinear(p00, p01, p10, p11))
+    if (isCollinearOrInterior(tgt0, tgt1, adj0, adj1, adj, indexAdj))
       return true;
 
     //-- segments which are nearly parallel for a significant length 
-    if (distanceTol > 0 && isNearlyParallel(p00, p01, p10, p11, distanceTol))
+    if (distanceTol > 0 && isNearlyParallel(tgt0, tgt1, adj0, adj1, distanceTol))
       return true;
     
     return false;
   }
 
   /**
-   * Checks if segments cross or are collinear (have 2 intersections).
-   * Collinear segments must not match and hence must be invalid, 
-   * since matching segments 
+   * Checks if the segments are collinear, or if the target segment 
+   * intersects the interior of the adjacent ring.
+   * Exactly-matching segments 
    * have already been marked as valid and are skipped.
+   * Thus collinear segments must not match and hence are invalid. 
    * 
-   * @param p00
-   * @param p01
-   * @param p10
-   * @param p11
+   * @param tgt0
+   * @param tgt1
+   * @param adj0
+   * @param adj1
+   * @param adjNext 
    * @return
    */
-  private boolean isCrossingOrCollinear(Coordinate p00, Coordinate p01, Coordinate p10, Coordinate p11) {
-    li.computeIntersection(p00, p01, p10, p11);
+  private boolean isCollinearOrInterior(Coordinate tgt0, Coordinate tgt1, 
+      Coordinate adj0, Coordinate adj1, SegmentString adj, int indexAdj) {
+    RobustLineIntersector li = new RobustLineIntersector();
+    li.computeIntersection(tgt0, tgt1, adj0, adj1);
+    
+    //-- segments do not interact
     if (! li.hasIntersection())
       return false;
-    //-- crosses
-    if (li.isProper())
+    
+    //-- segments are collinear, so one is a proper subset of the other (since if equal is already valid)
+    if (li.getIntersectionNum() == 2) {
+      //TODO: assert segments are not equal?
       return true;
-    //-- one segment is a proper subset of the other (since if equal is already valid)
-    if (li.getIntersectionNum() == 2)
+    }
+    
+    //-- target crosses, so intersects interior
+    if (li.isProper() || li.isInteriorIntersection(0))
       return true;
-    return false;
+    
+    //-- segments have a single intersection, at an endpoint of target segment
+    Coordinate intPt = li.getIntersection(0);
+    
+    //-- find target segment endpoint which is not the intersection point
+    Coordinate tgtEnd = intPt.equals2D(tgt0) ? tgt1 : tgt0;
+
+    if (intPt.equals2D(adj1))
+      return false;
+    
+    // Assert: intPt = tgt0
+    
+    //-- determine previous vertex to intersection pt in adjacent ring
+    Coordinate adjPrev = findVertexPrev(adj, indexAdj, intPt);
+    Coordinate adjNext = findVertexNext(adj, indexAdj, intPt);
+
+    boolean isInterior = PolygonNodeTopology.isInteriorSegment(intPt, adjPrev, adjNext, tgtEnd);
+    return isInterior;
   }
+
+  private Coordinate findVertexPrev(SegmentString ss, int index, Coordinate pt) {
+    int iPrev = index;
+    Coordinate prev = ss.getCoordinate(iPrev);
+    while (pt.equals2D(prev)) {
+      iPrev = indexPrev(ss, iPrev);
+      prev = ss.getCoordinate(iPrev);
+    }
+    return prev;
+  }
+
+  private int indexPrev(SegmentString ss, int index) {
+    if (index == 0)
+      return ss.size() - 2;
+    return index - 1;
+  }
+
+  private Coordinate findVertexNext(SegmentString ss, int index, Coordinate pt) {
+    //-- safe, since index is always the start of a segment
+    int iNext = index + 1;
+    Coordinate next = ss.getCoordinate(iNext);
+    while (pt.equals2D(next)) {
+      iNext = indexNext(ss, iNext);
+      next = ss.getCoordinate(iNext);
+    }
+    return next;
+  }
+  
+  private int indexNext(SegmentString ss, int index) {
+    if (index >= ss.size() - 2) 
+      return 0;
+    return index + 1;
+  } 
   
   private static boolean isNearlyParallel(Coordinate p00, Coordinate p01, 
       Coordinate p10, Coordinate p11, double distanceTol) {
@@ -117,7 +185,7 @@ class InvalidSegmentDetector implements SegmentIntersector {
     return proj0.p0.distance(proj1.p0) <= distanceTol
         && proj0.p1.distance(proj1.p1) <= distanceTol;
   }
-
+  
   @Override
   public boolean isDone() {
     // process all segments
