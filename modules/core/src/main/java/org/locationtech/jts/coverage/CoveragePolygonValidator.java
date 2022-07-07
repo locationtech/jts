@@ -30,27 +30,35 @@ import org.locationtech.jts.geom.util.PolygonExtracter;
 import org.locationtech.jts.noding.MCIndexSegmentSetMutualIntersector;
 
 /**
- * Validates that a target polygon forms a clean coverage with a set of polygons
- * adjacent to it.  
+ * Validates that a polygon forms a valid (clean) polygonal coverage 
+ * with the set of adjacent polygons surrounding it.  
  * The result is a linear geometry containing 
- * the edge line segments that prevent forming a clean coverage.
- * if the polygon is clean an empty {@link LineString} is returned.
- * 
+ * the polygon linework that causes the coverage to be invalid.
+ * if the polygon is coverage-valid an empty {@link LineString} is returned.
+ * <p>
+ * A polygon is coverage-valid if:
+ * <ol>
+ * <li>The boundary edges of the polygon do not intersect the interior of other polygons
+ * <li>If the polygon boundary intersects the boundary of another polygon, the vertices
+ * and line segments of the intersection match exactly.
+ * </ol> 
+ * Note that this definition allows coverages to contain gaps, as long as they are clean.
+ * <p>
  * The algorithm detects the following coverage errors:
  * <ol>
  * <li>Polygon is a duplicate of an adjacent one
  * <li>Segments that are collinear with but do not match an adjacent segment
  * <li>Segments that cross into an adjacent polygon
  * <li>Segments that lie in the interior of an adjacent polygon 
- * <ol>
+ * </ol>
  * If one or more of these errors is present, the target polygon
- * does not form a clean coverage with the adjacent polygons.
+ * does not form a valid coverage with the adjacent polygons.
  * <p>
- * It can happen that a target polygon is clean with respect to 
+ * It can happen that a target polygon is coverage-valid with respect to 
  * a set of adjacent polygons, but the collection as a whole does not
  * form a clean coverage.  For example, the target polygon edges may be fully matched
- * by adjacent polygons, but the set of adjacents contains polygons which are not clean relative
- * to other ones in the set (e.g. they may overlap).
+ * by adjacent edges, but the adjacent set contains polygons 
+ * which are not coverage-valid relative to other ones in the set (e.g. they may overlap).
  * Use {@link CoverageValidator} to validate an entire set of polygons.
  * <p>
  * If a non-zero tolerance distance is used, the algorithm also detects
@@ -97,16 +105,16 @@ public class CoveragePolygonValidator {
     List<CoverageRing> adjRings = CoverageRing.createRings(adjGeoms);
 
     /**
-     * Find matching segments first.
-     * Matching segments are not considered for further checks, 
-     * which improves performance substantialy for mostly-valid coverages.
+     * Mark matching segments as valid first.
+     * Valid segments are not considered for further checks. 
+     * This improves performance substantially for mostly-valid coverages.
      */
     Envelope targetEnv = targetGeom.getEnvelopeInternal().copy();
     targetEnv.expandBy(distanceTolerance);
-    findMatchedSegments(targetRings, adjRings, targetEnv);
+    markMatchingSegments(targetRings, adjRings, targetEnv);
 
     //-- check if target is fully matched and thus forms a clean coverage 
-    if (CoverageRing.isAllValid(targetRings))
+    if (CoverageRing.isValid(targetRings))
       return createEmptyResult();
     
     findMisalignedSegments(targetRings, adjRings, distanceTolerance);
@@ -139,23 +147,23 @@ public class CoveragePolygonValidator {
     return false;
   }
 
-  private void findMatchedSegments(List<CoverageRing> targetRings,
+  private void markMatchingSegments(List<CoverageRing> targetRings,
       List<CoverageRing> adjRngs, Envelope targetEnv) {
     Map<Segment, Segment> segmentMap = new HashMap<Segment, Segment>();
-    addMatchedSegments(targetRings, targetEnv, segmentMap);
-    addMatchedSegments(adjRngs, targetEnv, segmentMap);
+    markMatchingSegments(targetRings, targetEnv, segmentMap);
+    markMatchingSegments(adjRngs, targetEnv, segmentMap);
   }
   
   /**
    * Adds polygon segments to the segment map, 
    * and detects if they match an existing segment.
-   * In this case the segment is assumed to be coverage-valid.
+   * In this case the segment is mark as coverage-valid.
    * 
    * @param rings
    * @param envLimit
    * @param segMap
    */
-  private void addMatchedSegments(List<CoverageRing> rings, Envelope envLimit, 
+  private void markMatchingSegments(List<CoverageRing> rings, Envelope envLimit, 
       Map<Segment, Segment> segmentMap) {
     for (CoverageRing ring : rings) {
       for (int i = 0; i < ring.size() - 1; i++) {

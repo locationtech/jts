@@ -23,7 +23,6 @@ import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.util.PolygonExtracter;
 import org.locationtech.jts.noding.BasicSegmentString;
-import org.locationtech.jts.noding.SegmentString;
 
 class CoverageRing extends BasicSegmentString {
   
@@ -51,9 +50,9 @@ class CoverageRing extends BasicSegmentString {
     return new CoverageRing(pts, isInteriorOnRight);
   }
   
-  public static boolean isAllValid(List<CoverageRing> rings) {
+  public static boolean isValid(List<CoverageRing> rings) {
     for (CoverageRing ring : rings) {
-      if (! ring.isAllValid())
+      if (! ring.isValid())
         return false;
     }
     return true;
@@ -83,7 +82,7 @@ class CoverageRing extends BasicSegmentString {
     return isInvalid[index];
   }
   
-  public boolean isAllValid() {
+  public boolean isValid() {
     for (int i = 0; i < isValid.length; i++) {
       if (! isValid[i])
         return false;
