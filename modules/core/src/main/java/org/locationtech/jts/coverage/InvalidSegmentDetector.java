@@ -108,33 +108,38 @@ class InvalidSegmentDetector implements SegmentIntersector {
       return true;
     }
     
-    //-- target segment crosses, so intersects adj polygon interior
-    if (li.isProper() || li.isInteriorIntersection(0))
+    //-- target segment crosses, or segments touch at non-endpoint
+    if (li.isProper() || li.isInteriorIntersection()) {
       return true;
+    }
     
     /**
-     * Here we know that the segments have a single intersection point, 
-     * at an endpoint of target segment.
-     * It may be at an endpoint or in the interior of the adj ring segment.
+     * At this point the segments have a single intersection point 
+     * which is an endpoint of both segments.
      * 
-     * Now check if the target segment lies in the interior of the adj ring.
+     * Check if the target segment lies in the interior of the adj ring.
      */
-    Coordinate intPt = li.getIntersection(0);
-    
-    //-- find target segment endpoint which is not the intersection point
-    Coordinate tgtEnd = intPt.equals2D(tgt0) ? tgt1 : tgt0;
+    Coordinate intVertex = li.getIntersection(0);
+    boolean isInterior = isInteriorSegment(intVertex, tgt0, tgt1, adj, indexAdj);
+    return isInterior;
+  }
 
-    //-- find adjacent ring vertices on either side of intersection pt
-    Coordinate adjPrev = adj.findVertexPrev(indexAdj, intPt);
-    Coordinate adjNext = adj.findVertexNext(indexAdj, intPt);
-    //-- if needed re-orient corner to have interior on right
+  private boolean isInteriorSegment(Coordinate intVertex, Coordinate tgt0, Coordinate tgt1, 
+      CoverageRing adj, int indexAdj) {
+    //-- find target segment endpoint which is not the intersection point
+    Coordinate tgtEnd = intVertex.equals2D(tgt0) ? tgt1 : tgt0;
+
+    //-- find adjacent ring vertices on either side of intersection vertex
+    Coordinate adjPrev = adj.findVertexPrev(indexAdj, intVertex);
+    Coordinate adjNext = adj.findVertexNext(indexAdj, intVertex);
+    //-- if needed, re-orient corner to have interior on right
     if (! adj.isInteriorOnRight()) {
       Coordinate temp = adjPrev;
       adjPrev = adjNext;
       adjNext = temp;
     }
     
-    boolean isInterior = PolygonNodeTopology.isInteriorSegment(intPt, adjPrev, adjNext, tgtEnd);
+    boolean isInterior = PolygonNodeTopology.isInteriorSegment(intVertex, adjPrev, adjNext, tgtEnd);
     return isInterior;
   }
   

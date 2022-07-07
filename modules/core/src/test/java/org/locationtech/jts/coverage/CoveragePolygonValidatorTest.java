@@ -52,10 +52,22 @@ public class CoveragePolygonValidatorTest extends GeometryTestCase {
         "LINESTRING (1 1, 3 4, 7 4, 9 1)");
   }
 
+  public void testTargetVertexTouchesSegment() {
+    checkInvalid("POLYGON ((1 9, 9 9, 9 5, 1 5, 1 9))",
+        "POLYGON ((1 1, 5 5, 9 1, 1 1))",
+        "LINESTRING (9 5, 1 5)");
+  }
+
+  public void testAdjVertexTouchesSegment() {
+    checkInvalid("POLYGON ((1 1, 5 5, 9 1, 1 1))",
+        "POLYGON ((1 9, 9 9, 9 5, 1 5, 1 9))",
+        "LINESTRING (1 1, 5 5, 9 1)");
+  }
+
   public void testInteriorSegmentTouchingEdge() {
     checkInvalid("POLYGON ((4 3, 4 7, 8 9, 8 1, 4 3))",
         "POLYGON ((1 7, 6 7, 6 3, 1 3, 1 7))",
-        "LINESTRING (4 3, 4 7)");
+        "MULTILINESTRING ((4 3, 4 7, 8 9), (8 1, 4 3))");
   }
 
   public void testInteriorSegmentTouchingNodes() {
@@ -67,7 +79,7 @@ public class CoveragePolygonValidatorTest extends GeometryTestCase {
   public void testInteriorSegmentsTouching() {
     checkInvalid("POLYGON ((1 9, 5 9, 8 7, 5 7, 3 5, 8 2, 1 2, 1 9))",
         "POLYGON ((5 9, 9 9, 9 1, 5 1, 5 9))",
-        "MULTILINESTRING ((5 9, 8 7, 5 7), (3 5, 8 2, 1 2))");
+        "LINESTRING (5 9, 8 7, 5 7, 3 5, 8 2, 1 2)");
   }
 
   /**

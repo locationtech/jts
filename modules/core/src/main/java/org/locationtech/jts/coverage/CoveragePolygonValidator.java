@@ -42,16 +42,18 @@ import org.locationtech.jts.noding.MCIndexSegmentSetMutualIntersector;
  * <li>If the polygon boundary intersects the boundary of another polygon, the vertices
  * and line segments of the intersection match exactly.
  * </ol> 
- * Note that this definition allows coverages to contain gaps, as long as they are clean.
+ * Note that this definition allows gaps between the polygon and adjacent ones 
+ * (as long as the linework around them is clean).
  * <p>
  * The algorithm detects the following coverage errors:
  * <ol>
  * <li>Polygon is a duplicate of an adjacent one
- * <li>Segments that are collinear with but do not match an adjacent segment
- * <li>Segments that cross into an adjacent polygon
- * <li>Segments that lie in the interior of an adjacent polygon 
+ * <li>Segment is collinear with an adjacent segment but not equal to it
+ * <li>Segment touches an adjacent segment at a non-vertex point
+ * <li>Segment crosses into an adjacent polygon
+ * <li>Segment is in the interior of an adjacent polygon 
  * </ol>
- * If one or more of these errors is present, the target polygon
+ * If any of these errors is present, the target polygon
  * does not form a valid coverage with the adjacent polygons.
  * <p>
  * It can happen that a target polygon is coverage-valid with respect to 
@@ -61,11 +63,11 @@ import org.locationtech.jts.noding.MCIndexSegmentSetMutualIntersector;
  * which are not coverage-valid relative to other ones in the set (e.g. they may overlap).
  * Use {@link CoverageValidator} to validate an entire set of polygons.
  * <p>
- * If a non-zero tolerance distance is used, the algorithm also detects
- * misaligned segments.  Misaligned segments are ones which are nearly collinear
- * for a significant distance.
+ * The class can also be used to detect
+ * misaligned segments, by using a non-zero tolerance distance.  
+ * Misaligned segments are ones which are nearly collinear for a significant distance.
  * They can indicate the presence of spikes, gores and gaps.
- * However, as a heuristic check false reports can occur. 
+ * However, this is a heuristic check, and false reports can occur. 
  * 
  * @see CoverageValidator
  * 
