@@ -55,7 +55,8 @@ public class PolygonNodeTopology
   /**
    * Tests whether an edge node-b lies in the interior or exterior
    * of a corner of a ring given by a0-node-a1.
-   * The ring interior is assumed to be on the right of the corner (a CW ring).
+   * The ring interior is assumed to be on the right of the corner 
+   * (i.e. a CW shell or CCW hole).
    * The edge must not be collinear with the corner segments.
    * 
    * @param nodePt the node location

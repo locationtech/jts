@@ -81,6 +81,12 @@ public class CoveragePolygonValidatorTest extends GeometryTestCase {
         "MULTILINESTRING ((7 6, 1 1), (3 6, 7 6))");
   }
 
+  public void testPartialMatchInHole() {
+    checkInvalid("POLYGON ((3 3, 3 7, 6 8, 7 3, 3 3))",
+        "POLYGON ((1 9, 9 9, 9 1, 1 1, 1 9), (3 7, 7 7, 7 3, 3 3, 3 7))",
+        "LINESTRING (3 7, 6 8, 7 3)");
+  }
+  
   public void testFullyContained() {
     checkInvalid("POLYGON ((3 7, 7 7, 7 3, 3 3, 3 7))",
         "POLYGON ((1 9, 9 9, 9 1, 1 1, 1 9))",
@@ -94,6 +100,11 @@ public class CoveragePolygonValidatorTest extends GeometryTestCase {
         "MULTIPOLYGON (((1 7, 3 7, 3 3, 1 3, 1 7)), ((3 9, 7 9, 7 7, 3 7, 3 9)), ((9 7, 9 3, 7 3, 7 7, 9 7)), ((3 1, 3 3, 7 3, 7 1, 3 1)))");
   }
 
+  public void testRingsCCW() {
+    checkValid("POLYGON ((1 1, 6 5, 4 9, 1 9, 1 1))",
+        "POLYGON ((1 1, 9 1, 9 4, 6 5, 1 1))");
+  }
+  
   //-- confirms zero-length segments are skipped in processing
   public void testRepeatedCommonVertexInTarget() {
     checkValid("POLYGON ((1 1, 1 3, 5 3, 5 3, 9 1, 1 1))",

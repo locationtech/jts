@@ -99,7 +99,10 @@ class InvalidSegmentDetector implements SegmentIntersector {
     if (! li.hasIntersection())
       return false;
     
-    //-- segments are collinear and do not match, so are invalid
+    /**
+     * If the segments are collinear,
+     * they do not match, so are invalid.
+     */
     if (li.getIntersectionNum() == 2) {
       //TODO: assert segments are not equal?
       return true;
@@ -109,52 +112,31 @@ class InvalidSegmentDetector implements SegmentIntersector {
     if (li.isProper() || li.isInteriorIntersection(0))
       return true;
     
-    //-- segments have a single intersection, at an endpoint of target segment
+    /**
+     * Here we know that the segments have a single intersection point, 
+     * at an endpoint of target segment.
+     * It may be at an endpoint or in the interior of the adj ring segment.
+     * 
+     * Now check if the target segment lies in the interior of the adj ring.
+     */
     Coordinate intPt = li.getIntersection(0);
     
     //-- find target segment endpoint which is not the intersection point
     Coordinate tgtEnd = intPt.equals2D(tgt0) ? tgt1 : tgt0;
 
     //-- find adjacent ring vertices on either side of intersection pt
-    Coordinate adjPrev = findVertexPrev(adj, indexAdj, intPt);
-    Coordinate adjNext = findVertexNext(adj, indexAdj, intPt);
-
+    Coordinate adjPrev = adj.findVertexPrev(indexAdj, intPt);
+    Coordinate adjNext = adj.findVertexNext(indexAdj, intPt);
+    //-- if needed re-orient corner to have interior on right
+    if (! adj.isInteriorOnRight()) {
+      Coordinate temp = adjPrev;
+      adjPrev = adjNext;
+      adjNext = temp;
+    }
+    
     boolean isInterior = PolygonNodeTopology.isInteriorSegment(intPt, adjPrev, adjNext, tgtEnd);
     return isInterior;
   }
-
-  private Coordinate findVertexPrev(CoverageRing ss, int index, Coordinate pt) {
-    int iPrev = index;
-    Coordinate prev = ss.getCoordinate(iPrev);
-    while (pt.equals2D(prev)) {
-      iPrev = indexPrev(ss, iPrev);
-      prev = ss.getCoordinate(iPrev);
-    }
-    return prev;
-  }
-
-  private int indexPrev(CoverageRing ss, int index) {
-    if (index == 0)
-      return ss.size() - 2;
-    return index - 1;
-  }
-
-  private Coordinate findVertexNext(CoverageRing ss, int index, Coordinate pt) {
-    //-- safe, since index is always the start of a segment
-    int iNext = index + 1;
-    Coordinate next = ss.getCoordinate(iNext);
-    while (pt.equals2D(next)) {
-      iNext = indexNext(ss, iNext);
-      next = ss.getCoordinate(iNext);
-    }
-    return next;
-  }
-  
-  private int indexNext(CoverageRing ss, int index) {
-    if (index >= ss.size() - 2) 
-      return 0;
-    return index + 1;
-  } 
   
   private static boolean isNearlyParallel(Coordinate p00, Coordinate p01, 
       Coordinate p10, Coordinate p11, double distanceTol) {

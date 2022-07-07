@@ -26,7 +26,6 @@ import org.locationtech.jts.geom.LineSegment;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Location;
 import org.locationtech.jts.geom.Polygon;
-import org.locationtech.jts.geom.util.LinearComponentExtracter;
 import org.locationtech.jts.geom.util.PolygonExtracter;
 import org.locationtech.jts.noding.MCIndexSegmentSetMutualIntersector;
 import org.locationtech.jts.noding.SegmentString;
@@ -80,10 +79,9 @@ public class CoveragePolygonValidator {
       return targetGeom.getBoundary();
     }
     
-    List<CoverageRing> targetRings = extractRings(targetGeom);
-    List<CoverageRing> adjRings = extractRings(adjGeoms);
+    List<CoverageRing> targetRings = CoverageRing.createRings(targetGeom);
+    List<CoverageRing> adjRings = CoverageRing.createRings(adjGeoms);
 
-    //System.out.println("# adj edges: " + adjSegStrings.size());
     Envelope targetEnv = targetGeom.getEnvelopeInternal().copy();
     targetEnv.expandBy(distanceTolerance);
     findMatchedSegments(targetRings, adjRings, targetEnv);
@@ -253,10 +251,10 @@ public class CoveragePolygonValidator {
     return loc;
   }
 
-  private Geometry createChains(List<CoverageRing> segStrings) {
+  private Geometry createChains(List<CoverageRing> rings) {
     List<SegmentString> chains = new ArrayList<SegmentString>();
-    for (CoverageRing ss : segStrings) {
-      ss.createChains(chains);
+    for (CoverageRing ring : rings) {
+      ring.createChains(chains);
     }
     
     if (chains.size() == 0) {
@@ -276,14 +274,4 @@ public class CoveragePolygonValidator {
     return geomFactory.createMultiLineString(lines);
   }  
   
-  private static List<CoverageRing> extractRings(Geometry geom)
-  {
-    List<CoverageRing> segStr = new ArrayList<CoverageRing>();
-    List<LineString> lines = LinearComponentExtracter.getLines(geom);
-    for (LineString line : lines) {
-      Coordinate[] pts = line.getCoordinates();
-      segStr.add(new CoverageRing(pts, geom));
-    }
-    return segStr;
-  }
 }

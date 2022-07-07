@@ -11,29 +11,65 @@
  */
 package org.locationtech.jts.coverage;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.LinearRing;
+import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.geom.util.PolygonExtracter;
 import org.locationtech.jts.noding.BasicSegmentString;
 import org.locationtech.jts.noding.SegmentString;
 
 class CoverageRing extends BasicSegmentString {
   
-  public static boolean isAllValid(List<CoverageRing> segStrings) {
-    for (CoverageRing ss : segStrings) {
-      if (! ss.isAllValid())
+  public static List<CoverageRing> createRings(Geometry geom)
+  {
+    List<CoverageRing> rings = new ArrayList<CoverageRing>();
+    List<Polygon> polygons = PolygonExtracter.getPolygons(geom);
+    for (Polygon poly : polygons) {
+      createRings(poly, rings);
+    }
+    return rings;
+  }
+
+  private static void createRings(Polygon poly, List<CoverageRing> rings) {
+    rings.add( createRing(poly.getExteriorRing(), true));
+    for (int i = 0; i < poly.getNumInteriorRing(); i++) {
+      rings.add( createRing(poly.getInteriorRingN(i), false));
+    }
+  }
+
+  private static CoverageRing createRing(LinearRing ring, boolean isShell) {
+    Coordinate[] pts = ring.getCoordinates();
+    boolean isCCW = Orientation.isCCW(pts);
+    boolean isInteriorOnRight = isShell ? ! isCCW : isCCW;
+    return new CoverageRing(pts, isInteriorOnRight);
+  }
+  
+  public static boolean isAllValid(List<CoverageRing> rings) {
+    for (CoverageRing ring : rings) {
+      if (! ring.isAllValid())
         return false;
     }
     return true;
   }
   
+  private boolean isInteriorOnRight;
   private boolean[] isInvalid;
   private boolean[] isValid;
 
-  public CoverageRing(Coordinate[] pts, Object data) {
-    super(pts, data);
+  public CoverageRing(Coordinate[] pts, boolean isInteriorOnRight) {
+    super(pts, null);
+    this.isInteriorOnRight = isInteriorOnRight;
     isInvalid = new boolean[size() - 1];
     isValid = new boolean[size() - 1];
+  }
+  
+  public boolean isInteriorOnRight() {
+    return isInteriorOnRight;
   }
   
   public boolean isValid(int index) {
@@ -50,6 +86,39 @@ class CoverageRing extends BasicSegmentString {
 
   public boolean isKnown(int i) {
     return isValid[i] || isInvalid[i];
+  } 
+  
+  public Coordinate findVertexPrev(int index, Coordinate pt) {
+    int iPrev = index;
+    Coordinate prev = getCoordinate(iPrev);
+    while (pt.equals2D(prev)) {
+      iPrev = prev(iPrev);
+      prev = getCoordinate(iPrev);
+    }
+    return prev;
+  }
+
+  public Coordinate findVertexNext(int index, Coordinate pt) {
+    //-- safe, since index is always the start of a segment
+    int iNext = index + 1;
+    Coordinate next = getCoordinate(iNext);
+    while (pt.equals2D(next)) {
+      iNext = next(iNext);
+      next = getCoordinate(iNext);
+    }
+    return next;
+  }
+  
+  public int prev(int index) {
+    if (index == 0)
+      return size() - 2;
+    return index - 1;
+  }
+  
+  public int next(int index) {
+    if (index < size() - 2) 
+      return index + 1;
+    return 0;
   }
   
   public void markInvalid(int i) {
