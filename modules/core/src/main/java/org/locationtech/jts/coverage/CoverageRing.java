@@ -90,6 +90,14 @@ class CoverageRing extends BasicSegmentString {
     return true;
   }
 
+  public boolean isInvalid() {
+    for (int i = 0; i < isInvalid.length; i++) {
+      if (! isInvalid[i])
+        return false;
+    }
+    return true;
+  }
+
   public boolean isKnown(int i) {
     return isValid[i] || isInvalid[i];
   } 
@@ -140,6 +148,12 @@ class CoverageRing extends BasicSegmentString {
   }
 
   public void createInvalidLines(GeometryFactory geomFactory, List<LineString> lines) {
+    //-- short-circuit for all invalid
+    if (isInvalid()) {
+      LineString line = createLine(0, size() - 1, geomFactory);
+      lines.add(line);
+      return;
+    }
     int endIndex = 0;
     while (true) {
       int startIndex = findInvalidStart(endIndex); 
@@ -169,7 +183,7 @@ class CoverageRing extends BasicSegmentString {
   private LineString createLine(int startIndex, int endIndex, GeometryFactory geomFactory) {
     Coordinate[] pts = new Coordinate[endIndex - startIndex + 1];
     int ipts = 0;
-    for (int i = startIndex; i < endIndex + 1; i++) {
+    for (int i = startIndex; i <= endIndex; i++) {
       pts[ipts++] = getCoordinate(i).copy();
     }
     return geomFactory.createLineString(pts);
