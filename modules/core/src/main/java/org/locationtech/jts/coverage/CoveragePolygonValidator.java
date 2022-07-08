@@ -38,7 +38,7 @@ import org.locationtech.jts.noding.MCIndexSegmentSetMutualIntersector;
  * <p>
  * A polygon is coverage-valid if:
  * <ol>
- * <li>The boundary edges of the polygon do not intersect the interior of other polygons
+ * <li>The boundary of the polygon does not intersect the interior of other polygons.
  * <li>If the polygon boundary intersects the boundary of another polygon, the vertices
  * and line segments of the intersection match exactly.
  * </ol> 
