@@ -67,7 +67,7 @@ public class CoveragePolygonValidatorTest extends GeometryTestCase {
   public void testInteriorSegmentTouchingEdge() {
     checkInvalid("POLYGON ((4 3, 4 7, 8 9, 8 1, 4 3))",
         "POLYGON ((1 7, 6 7, 6 3, 1 3, 1 7))",
-        "MULTILINESTRING ((4 3, 4 7, 8 9), (8 1, 4 3))");
+        "LINESTRING (8 1, 4 3, 4 7, 8 9)");
   }
 
   public void testInteriorSegmentTouchingNodes() {
@@ -85,13 +85,13 @@ public class CoveragePolygonValidatorTest extends GeometryTestCase {
   public void testTargetMultiPolygon() {
     checkInvalid("MULTIPOLYGON (((4 8, 9 9, 9 7, 4 8)), ((3 5, 9 6, 9 4, 3 5)), ((2 2, 9 3, 9 1, 2 2)))",
         "POLYGON ((1 1, 1 9, 5 9, 6 7, 5 5, 6 3, 5 1, 1 1))",
-        "MULTILINESTRING ((4 8, 9 9), (9 7, 4 8), (3 5, 9 6), (9 4, 3 5), (2 2, 9 3), (9 1, 2 2))");
+        "MULTILINESTRING ((9 7, 4 8, 9 9), (9 4, 3 5, 9 6), (9 1, 2 2, 9 3))");
   }
 
   public void testBothMultiPolygon() {
     checkInvalid("MULTIPOLYGON (((4 8, 9 9, 9 7, 4 8)), ((3 5, 9 6, 9 4, 3 5)), ((2 2, 9 3, 9 1, 2 2)))",
         "MULTIPOLYGON (((1 6, 1 9, 5 9, 6 7, 5 5, 1 6)), ((1 4, 5 5, 6 3, 5 1, 1 1, 1 4)))",
-        "MULTILINESTRING ((4 8, 9 9), (9 7, 4 8), (3 5, 9 6), (9 4, 3 5), (2 2, 9 3), (9 1, 2 2))");
+        "MULTILINESTRING ((9 7, 4 8, 9 9), (9 4, 3 5, 9 6), (9 1, 2 2, 9 3))");
   }
 
   /**
@@ -102,7 +102,7 @@ public class CoveragePolygonValidatorTest extends GeometryTestCase {
   public void testInteriorSegmentsWithMatch() {
     checkInvalid("POLYGON ((7 6, 1 1, 3 6, 7 6))",
         "MULTIPOLYGON (((1 9, 9 9, 9 1, 1 1, 3 6, 1 9)), ((0 1, 0 9, 1 9, 3 6, 1 1, 0 1)))",
-        "MULTILINESTRING ((7 6, 1 1), (3 6, 7 6))");
+        "LINESTRING (3 6, 7 6, 1 1)");
   }
 
   public void testAdjacentHoleOverlap() {

@@ -98,6 +98,14 @@ class CoverageRing extends BasicSegmentString {
     return true;
   }
 
+  public boolean hasInvalid() {
+    for (int i = 0; i < isInvalid.length; i++) {
+      if (isInvalid[i])
+        return true;
+    }
+    return false;
+  }
+
   public boolean isKnown(int i) {
     return isValid[i] || isInvalid[i];
   } 
@@ -148,47 +156,89 @@ class CoverageRing extends BasicSegmentString {
   }
 
   public void createInvalidLines(GeometryFactory geomFactory, List<LineString> lines) {
-    //-- short-circuit for all invalid
+    //-- empty case
+    if (! hasInvalid()) {
+      return;
+    }
+    //-- entire ring case
     if (isInvalid()) {
       LineString line = createLine(0, size() - 1, geomFactory);
       lines.add(line);
       return;
     }
-    int endIndex = 0;
+    
+    //-- find first end after index 0, to allow wrap-around
+    int startIndex = findInvalidStart(0);
+    int firstEndIndex = findInvalidEnd(startIndex);
+    int endIndex = firstEndIndex;
     while (true) {
-      int startIndex = findInvalidStart(endIndex); 
-      if (startIndex >= size() - 1)
-        break;
+      startIndex = findInvalidStart(endIndex); 
       endIndex = findInvalidEnd(startIndex);
       LineString line = createLine(startIndex, endIndex, geomFactory);
       lines.add(line);
+      if (endIndex == firstEndIndex)
+        break;
     }
   }
 
   private int findInvalidStart(int index) {
-    while (index < isInvalid.length && ! isInvalid(index)) {
-      index++;
+    while (! isInvalid(index)) {
+      index = nextMarkIndex(index);
     }
     return index;
   }
 
   private int findInvalidEnd(int index) {
-    index++;
-    while (index < isInvalid.length && isInvalid(index)) {
-      index++;
+    index = nextMarkIndex(index);
+    while (isInvalid(index)) {
+      index = nextMarkIndex(index);
     }
     return index;
   }
   
+  private int nextMarkIndex(int index) {
+    if (index >= isInvalid.length - 1) {
+      return 0;
+    }
+    return index + 1;
+  }
+
+  /**
+   * Creates a line from a sequence of ring segments between startIndex and endIndex (inclusive).
+   * If the endIndex < startIndex the sequence wraps around the ring endpoint.
+   * 
+   * @param startIndex
+   * @param endIndex
+   * @param geomFactory
+   * @return a line representing the section
+   */
   private LineString createLine(int startIndex, int endIndex, GeometryFactory geomFactory) {
-    Coordinate[] pts = new Coordinate[endIndex - startIndex + 1];
+    Coordinate[] pts = endIndex < startIndex ?
+          extractSectionWrap(startIndex, endIndex)
+        : extractSection(startIndex, endIndex);
+    return geomFactory.createLineString(pts);
+  }
+
+  private Coordinate[] extractSection(int startIndex, int endIndex) {
+    int size = endIndex - startIndex + 1;
+    Coordinate[] pts = new Coordinate[size];
     int ipts = 0;
     for (int i = startIndex; i <= endIndex; i++) {
       pts[ipts++] = getCoordinate(i).copy();
     }
-    return geomFactory.createLineString(pts);
+    return pts;
   }
 
-
+  private Coordinate[] extractSectionWrap(int startIndex, int endIndex) {
+    int size = endIndex + (size() - startIndex);
+    Coordinate[] pts = new Coordinate[size];
+    int ipts = 0;
+    int index = startIndex;
+    do {
+      pts[ipts++] = getCoordinate(index).copy();
+      index = nextMarkIndex(index);
+    } while (index <= endIndex);
+    return pts;
+  }
 
 }

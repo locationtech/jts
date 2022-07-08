@@ -141,7 +141,7 @@ class InvalidSegmentDetector implements SegmentIntersector {
     //-- find target segment endpoint which is not the intersection point
     Coordinate tgtEnd = intVertex.equals2D(tgt0) ? tgt1 : tgt0;
 
-    //-- find adjacent ring vertices on either side of intersection vertex
+    //-- find adjacent-ring vertices on either side of intersection vertex
     Coordinate adjPrev = adj.findVertexPrev(indexAdj, intVertex);
     Coordinate adjNext = adj.findVertexNext(indexAdj, intVertex);
     //-- if needed, re-orient corner to have interior on right
