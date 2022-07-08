@@ -82,6 +82,18 @@ public class CoveragePolygonValidatorTest extends GeometryTestCase {
         "LINESTRING (5 9, 8 7, 5 7, 3 5, 8 2, 1 2)");
   }
 
+  public void testTargetMultiPolygon() {
+    checkInvalid("MULTIPOLYGON (((4 8, 9 9, 9 7, 4 8)), ((3 5, 9 6, 9 4, 3 5)), ((2 2, 9 3, 9 1, 2 2)))",
+        "POLYGON ((1 1, 1 9, 5 9, 6 7, 5 5, 6 3, 5 1, 1 1))",
+        "MULTILINESTRING ((4 8, 9 9), (9 7, 4 8), (3 5, 9 6), (9 4, 3 5), (2 2, 9 3), (9 1, 2 2))");
+  }
+
+  public void testBothMultiPolygon() {
+    checkInvalid("MULTIPOLYGON (((4 8, 9 9, 9 7, 4 8)), ((3 5, 9 6, 9 4, 3 5)), ((2 2, 9 3, 9 1, 2 2)))",
+        "MULTIPOLYGON (((1 6, 1 9, 5 9, 6 7, 5 5, 1 6)), ((1 4, 5 5, 6 3, 5 1, 1 1, 1 4)))",
+        "MULTILINESTRING ((4 8, 9 9), (9 7, 4 8), (3 5, 9 6), (9 4, 3 5), (2 2, 9 3), (9 1, 2 2))");
+  }
+
   /**
    * Shows need to evaluate both start and end point of intersecting segments
    * in InvalidSegmentDetector,
