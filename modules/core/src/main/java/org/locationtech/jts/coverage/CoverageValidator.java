@@ -11,7 +11,6 @@
  */
 package org.locationtech.jts.coverage;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.locationtech.jts.geom.Envelope;
@@ -43,41 +42,48 @@ import org.locationtech.jts.index.strtree.STRtree;
  */
 public class CoverageValidator {
   
-  public static Geometry validate(Geometry coverage) {
-    return validate(coverage, 0);
-  }
-  
-  public static Geometry validate(Geometry coverage, double distanceTolerance) {
-    CoverageValidator v = new CoverageValidator(coverage, distanceTolerance);
+  public static Geometry[] validate(Geometry[] coverage) {
+    CoverageValidator v = new CoverageValidator(coverage);
     return v.validate();
   }
   
-  private Geometry coverage;
-  private double distanceTolerance;
+  public static Geometry[] validate(Geometry coverage[], double distanceTolerance) {
+    CoverageValidator v = new CoverageValidator(coverage);
+    v.setToleranceDistance(distanceTolerance);
+    return v.validate();
+  }
+  
+  private Geometry[] coverage;
+  private double distanceTolerance = 0.0;
   private GeometryFactory geomFactory;
 
-  public CoverageValidator(Geometry coverage, double distanceTolerance) {
+  public CoverageValidator(Geometry[] coverage) {
     this.coverage = coverage;
-    geomFactory = coverage.getFactory();
+  }
+  
+  /**
+   * Sets the distance tolerance used for misaligned segment detection.
+   * 
+   * @param distanceTolerance the distance tolerance
+   */
+  public void setToleranceDistance(double distanceTolerance) {
     this.distanceTolerance = distanceTolerance;
   }
   
-  public Geometry validate() {
+  public Geometry[] validate() {
     STRtree index = new STRtree();
-    for (int i = 0; i < coverage.getNumGeometries(); i++) {
-      Geometry item = coverage.getGeometryN(i);
-      index.insert(item.getEnvelopeInternal(), item);
+    for (Geometry geom : coverage) {
+      index.insert(geom.getEnvelopeInternal(), geom);
     }
-    //TODO: change to array
-    List<Geometry> resultLines = new ArrayList<Geometry>();
-    for (int i = 0; i < coverage.getNumGeometries(); i++) {
-      Geometry geom = coverage.getGeometryN(i);
-      addValidation(geom, index, resultLines);
+    Geometry[] invalidLines = new Geometry[coverage.length];
+    for (int i = 0; i < coverage.length; i++) {
+      Geometry geom = coverage[i];
+      invalidLines[i] = validate(geom, index);
     }
-    return geomFactory.createGeometryCollection(GeometryFactory.toGeometryArray(resultLines));
+    return invalidLines;
   }
 
-  private void addValidation(Geometry targetGeom, STRtree index, List<Geometry> resultLines) {
+  private Geometry validate(Geometry targetGeom, STRtree index) {
     Envelope queryEnv = targetGeom.getEnvelopeInternal();
     queryEnv.expandBy(distanceTolerance);
     List<Geometry> nearGeomList = index.query(queryEnv);
@@ -85,11 +91,7 @@ public class CoverageValidator {
     nearGeomList.remove(targetGeom);
     
     Geometry[] nearGeoms = GeometryFactory.toGeometryArray(nearGeomList);
-    Geometry nearGeomColl = geomFactory.createGeometryCollection(nearGeoms);
-    //TODO: add to array, to preserve linkage to source polygon
-    Geometry result = CoveragePolygonValidator.validate(targetGeom, nearGeomColl, distanceTolerance);
-    if (! result.isEmpty()) {
-      resultLines.add(result);
-    }
+    Geometry result = CoveragePolygonValidator.validate(targetGeom, nearGeoms, distanceTolerance);
+    return result.isEmpty() ? null : result;
   }
 }

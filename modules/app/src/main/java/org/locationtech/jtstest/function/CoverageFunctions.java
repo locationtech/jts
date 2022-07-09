@@ -23,13 +23,14 @@ import org.locationtech.jtstest.geomfunction.Metadata;
 public class CoverageFunctions {
   
   public static Geometry validatePolygon(Geometry geom, Geometry surround) {
-    return CoveragePolygonValidator.validate(geom, surround);
+    return CoveragePolygonValidator.validate(geom, toGeometryArray(surround));
   }
   
   public static Geometry validateCoverage(Geometry coverage) {
-    return CoverageValidator.validate(coverage);
+    Geometry[] invalid = CoverageValidator.validate(toGeometryArray(coverage));
+    return FunctionsUtil.buildGeometry(invalid);
   }
-  
+
   @Metadata(description="Fast Union of a coverage")
   public static Geometry unionCoverage(Geometry geom) {
     Geometry cov = extractPolygons(geom);
@@ -41,4 +42,13 @@ public class CoverageFunctions {
     Geometry result = geom.getFactory().buildGeometry(components);
     return result;
   }
+  
+  private static Geometry[] toGeometryArray(Geometry geom) {
+    Geometry[] geoms = new Geometry[geom.getNumGeometries()];
+    for (int i = 0; i < geom.getNumGeometries(); i++) {
+      geoms[i]= geom.getGeometryN(i);
+    }
+    return geoms;
+  }
+  
 }

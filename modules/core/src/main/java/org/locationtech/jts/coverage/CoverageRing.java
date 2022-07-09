@@ -28,12 +28,16 @@ class CoverageRing extends BasicSegmentString {
   
   public static List<CoverageRing> createRings(Geometry geom)
   {
-    List<CoverageRing> rings = new ArrayList<CoverageRing>();
     List<Polygon> polygons = PolygonExtracter.getPolygons(geom);
+    return createRings(polygons);
+  }
+
+  public static List<CoverageRing> createRings(List<Polygon> polygons) {
+    List<CoverageRing> rings = new ArrayList<CoverageRing>();
     for (Polygon poly : polygons) {
       createRings(poly, rings);
     }
-    return rings;
+    return rings;   
   }
 
   private static void createRings(Polygon poly, List<CoverageRing> rings) {
@@ -215,7 +219,7 @@ class CoverageRing extends BasicSegmentString {
   private LineString createLine(int startIndex, int endIndex, GeometryFactory geomFactory) {
     Coordinate[] pts = endIndex < startIndex ?
           extractSectionWrap(startIndex, endIndex)
-        : extractSection(startIndex, endIndex);
+        : extractSection(startIndex, endIndex);    
     return geomFactory.createLineString(pts);
   }
 
@@ -232,12 +236,11 @@ class CoverageRing extends BasicSegmentString {
   private Coordinate[] extractSectionWrap(int startIndex, int endIndex) {
     int size = endIndex + (size() - startIndex);
     Coordinate[] pts = new Coordinate[size];
-    int ipts = 0;
     int index = startIndex;
-    do {
-      pts[ipts++] = getCoordinate(index).copy();
+    for (int i = 0; i < size; i++) {
+      pts[i] = getCoordinate(index).copy();
       index = nextMarkIndex(index);
-    } while (index <= endIndex);
+    }
     return pts;
   }
 

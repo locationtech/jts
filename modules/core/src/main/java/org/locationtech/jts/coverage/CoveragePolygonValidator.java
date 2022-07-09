@@ -84,9 +84,9 @@ public class CoveragePolygonValidator {
    * @param adjPolygons a collection of the adjacent polygons
    * @return a linear geometry containing the segments causing invalidity (if any)
    */
-  public static Geometry validate(Geometry targetPolygon, Geometry adjPolygons) {
-    CoveragePolygonValidator v = new CoveragePolygonValidator(targetPolygon);
-    return v.validate(adjPolygons);
+  public static Geometry validate(Geometry targetPolygon, Geometry[] adjPolygons) {
+    CoveragePolygonValidator v = new CoveragePolygonValidator(targetPolygon, adjPolygons);
+    return v.validate();
   }
   
   /**
@@ -100,24 +100,26 @@ public class CoveragePolygonValidator {
    * @param distanceTolerance the misalignment tolerance distance (if any)
    * @return a linear geometry containing the segments causing invalidity (if any)
    */  
-  public static Geometry validate(Geometry targetPolygon, Geometry adjPolygons, double distanceTolerance) {
-    CoveragePolygonValidator v = new CoveragePolygonValidator(targetPolygon);
+  public static Geometry validate(Geometry targetPolygon, Geometry[] adjPolygons, double distanceTolerance) {
+    CoveragePolygonValidator v = new CoveragePolygonValidator(targetPolygon, adjPolygons);
     v.setToleranceDistance(distanceTolerance);
-    return v.validate(adjPolygons);
+    return v.validate();
   }
   
   private Geometry targetGeom;
   private double distanceTolerance = 0.0;
   private GeometryFactory geomFactory;
   private IndexedPointInAreaLocator[] adjPolygonLocators;
+  private Geometry[] adjGeoms;
 
   /**
    * Create a new validator.
    * 
    * @param geom the polygonal coverage geometry to validate
    */
-  public CoveragePolygonValidator(Geometry geom) {
+  public CoveragePolygonValidator(Geometry geom, Geometry[] adjGeoms) {
     this.targetGeom = geom;
+    this.adjGeoms = adjGeoms;
     geomFactory = targetGeom.getFactory();
   }
   
@@ -137,17 +139,17 @@ public class CoveragePolygonValidator {
    * @param adjGeoms the surrounding polygons in the coverage
    * @return a linear geometry containing the segments causing invalidity (if any)
    */
-  public Geometry validate(Geometry adjGeoms) {
-    List<Polygon> adjPolygons = PolygonExtracter.getPolygons(adjGeoms);
+  public Geometry validate() {
+    List<Polygon> adjPolygons = extractPolygons(adjGeoms);
     adjPolygonLocators = new IndexedPointInAreaLocator[adjPolygons.size()];
     
-    if (hasDuplicateGeom(targetGeom, adjGeoms)) {
+    if (hasDuplicateGeom(targetGeom, adjPolygons)) {
       //TODO: convert to LineString copies
       return targetGeom.getBoundary();
     }
     
     List<CoverageRing> targetRings = CoverageRing.createRings(targetGeom);
-    List<CoverageRing> adjRings = CoverageRing.createRings(adjGeoms);
+    List<CoverageRing> adjRings = CoverageRing.createRings(adjPolygons);
 
     /**
      * Mark matching segments as valid first.
@@ -169,23 +171,31 @@ public class CoveragePolygonValidator {
     return createInvalidLines(targetRings);
   }
 
+  private static List<Polygon> extractPolygons(Geometry[] geoms) {
+    List<Polygon> polygons = new ArrayList<Polygon>();
+    for (Geometry geom : geoms) {
+        PolygonExtracter.getPolygons(geom, polygons);
+    }
+    return polygons;
+  }
+
   private Geometry createEmptyResult() {
     return geomFactory.createLineString();
   }
 
   /**
    * Check if adjacent geoms contains a duplicate of the target.
-   * This situation is not detected by segment alignment checking, since all segments are duplicate.
+   * This situation is not detected by segment alignment checking, 
+   * since all segments are matches.
 
    * @param geom
-   * @param adjGeoms 
+   * @param adjPolygons 
    * @return
    */
-  private boolean hasDuplicateGeom(Geometry geom, Geometry adjGeoms) {
-    for (int i = 0; i < adjGeoms.getNumGeometries(); i++) {
-      Geometry testGeom = adjGeoms.getGeometryN(i);
-      if (testGeom.getEnvelopeInternal().equals(geom.getEnvelopeInternal())) {
-        if (testGeom.equalsTopo(geom))
+  private boolean hasDuplicateGeom(Geometry geom, List<Polygon> adjPolygons) {
+    for (Polygon adjPoly : adjPolygons) {
+      if (adjPoly.getEnvelopeInternal().equals(geom.getEnvelopeInternal())) {
+        if (adjPoly.equalsTopo(geom))
           return true;
       }
     }

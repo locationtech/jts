@@ -11,7 +11,12 @@
  */
 package org.locationtech.jts.coverage;
 
+import java.util.List;
+
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.geom.util.PolygonExtracter;
 
 import junit.textui.TestRunner;
 import test.jts.GeometryTestCase;
@@ -161,7 +166,8 @@ public class CoveragePolygonValidatorTest extends GeometryTestCase {
   private void checkResult(String wktTarget, String wktAdj, double tolerance, String wktExpected) {
     Geometry target = read(wktTarget);
     Geometry adj = read(wktAdj);
-    Geometry actual = CoveragePolygonValidator.validate(target, adj, tolerance);
+    Geometry[] adjPolygons = extractPolygons(adj);
+    Geometry actual = CoveragePolygonValidator.validate(target, adjPolygons, tolerance);
     //System.out.println(actual);
     Geometry expected = read(wktExpected);
     checkEqual(expected, actual);
@@ -170,8 +176,14 @@ public class CoveragePolygonValidatorTest extends GeometryTestCase {
   private void checkValid(String wktTarget, String wktAdj) {
     Geometry target = read(wktTarget);
     Geometry adj = read(wktAdj);
-    Geometry actual = CoveragePolygonValidator.validate(target, adj);
+    Geometry[] adjPolygons = extractPolygons(adj);
+    Geometry actual = CoveragePolygonValidator.validate(target, adjPolygons);
     Geometry expected = read("LINESTRING EMPTY");    //TODO: check equals LINESTRING EMPTY
     checkEqual(expected, actual);
+  }
+
+  private Geometry[] extractPolygons(Geometry geom) {
+    List<Polygon> polygons = PolygonExtracter.getPolygons(geom);
+    return GeometryFactory.toPolygonArray(polygons);
   }
 }
