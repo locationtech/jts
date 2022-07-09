@@ -86,12 +86,14 @@ public class CoveragePolygonValidator {
    */
   public static Geometry validate(Geometry targetPolygon, Geometry adjPolygons) {
     CoveragePolygonValidator v = new CoveragePolygonValidator(targetPolygon);
-    return v.validate(adjPolygons, 0);
+    return v.validate(adjPolygons);
   }
   
   /**
    * Validates that a polygon is coverage-valid  against the
-   * adjacent polygons in a polygonal coverage.
+   * adjacent polygons in a polygonal coverage,
+   * and detects segments which are misaligned relative to the 
+   * given distance tolerance.
    *  
    * @param targetPolygon the polygon to validate
    * @param adjPolygons a collection of the adjacent polygons
@@ -100,10 +102,12 @@ public class CoveragePolygonValidator {
    */  
   public static Geometry validate(Geometry targetPolygon, Geometry adjPolygons, double distanceTolerance) {
     CoveragePolygonValidator v = new CoveragePolygonValidator(targetPolygon);
-    return v.validate(adjPolygons, distanceTolerance);
+    v.setToleranceDistance(distanceTolerance);
+    return v.validate(adjPolygons);
   }
   
   private Geometry targetGeom;
+  private double distanceTolerance = 0.0;
   private GeometryFactory geomFactory;
   private IndexedPointInAreaLocator[] adjPolygonLocators;
 
@@ -118,14 +122,22 @@ public class CoveragePolygonValidator {
   }
   
   /**
+   * Sets the distance tolerance used for misaligned segment detection.
+   * 
+   * @param distanceTolerance the distance tolerance
+   */
+  public void setToleranceDistance(double distanceTolerance) {
+    this.distanceTolerance = distanceTolerance;
+  }
+  
+  /**
    * Validates the coverage polygon against the set of adjacent polygons
    * in the coverage.
    * 
    * @param adjGeoms the surrounding polygons in the coverage
-   * @param distanceTolerance the distance tolerance for misaligned segments
    * @return a linear geometry containing the segments causing invalidity (if any)
    */
-  public Geometry validate(Geometry adjGeoms, double distanceTolerance) {
+  public Geometry validate(Geometry adjGeoms) {
     List<Polygon> adjPolygons = PolygonExtracter.getPolygons(adjGeoms);
     adjPolygonLocators = new IndexedPointInAreaLocator[adjPolygons.size()];
     
