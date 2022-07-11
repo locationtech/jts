@@ -62,7 +62,7 @@ public class CoverageValidator {
   }
   
   /**
-   * Sets the distance tolerance used for misaligned segment detection.
+   * Sets the distance tolerance, if being used for misaligned segment detection.
    * 
    * @param distanceTolerance the distance tolerance
    */
