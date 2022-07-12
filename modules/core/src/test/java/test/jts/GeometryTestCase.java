@@ -243,6 +243,14 @@ public abstract class GeometryTestCase extends TestCase{
     return geometries;
   }
 
+  protected Geometry[] readArray(String... wkt) {
+    Geometry[] geometries = new Geometry[wkt.length];
+    for (int i = 0; i < wkt.length; i++) {
+      geometries[i] = wkt[i] == null ? null : read(wkt[i]);
+    }
+    return geometries;
+  }
+  
   /**
    * Gets a {@link WKTReader} to read geometries from WKT with expected ordinates.
    *

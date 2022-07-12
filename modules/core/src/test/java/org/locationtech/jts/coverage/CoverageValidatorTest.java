@@ -67,12 +67,4 @@ public class CoverageValidatorTest extends GeometryTestCase
     Geometry[] actual = CoverageValidator.validate(coverage);
     checkEqual(expected, actual);
   }
-
-  private Geometry[] readArray(String... wkt) {
-    Geometry[] geoms = new Geometry[wkt.length];
-    for (int i = 0; i < wkt.length; i++) {
-      geoms[i] = wkt[i] == null ? null : read(wkt[i]);
-    }
-    return geoms;
-  }
 }
