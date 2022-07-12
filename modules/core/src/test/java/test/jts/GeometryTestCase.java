@@ -67,9 +67,15 @@ public abstract class GeometryTestCase extends TestCase{
    * @param actual the actual value
    */
   protected void checkEqual(Geometry expected, Geometry actual) {
-    Geometry actualNorm = actual.norm();
-    Geometry expectedNorm = expected.norm();
-    boolean equal = actualNorm.equalsExact(expectedNorm);
+    Geometry actualNorm = actual == null ? null : actual.norm();
+    Geometry expectedNorm = expected == null ? null : expected.norm();
+    boolean equal;
+    if (actualNorm == null || expectedNorm == null) {
+      equal = expectedNorm == null && expectedNorm == null;
+    }
+    else {
+      equal = actualNorm.equalsExact(expectedNorm);
+    }
     if (! equal) {
       System.out.format(CHECK_EQUAL_FAIL, expectedNorm, actualNorm );
     }
@@ -149,6 +155,13 @@ public abstract class GeometryTestCase extends TestCase{
         return false;        
     }
     return true;
+  }
+
+  protected void checkEqual(Geometry[] expected, Geometry[] actual) {
+    assertEquals("Array length", expected.length, actual.length);
+    for (int i = 0; i < expected.length; i++) {
+      checkEqual(expected[i], actual[i]);      
+    }
   }
 
   protected void checkEqual(Collection expected, Collection actual) {
