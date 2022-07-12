@@ -14,10 +14,11 @@ package org.locationtech.jtstest.function;
 import java.util.List;
 
 import org.locationtech.jts.coverage.CoverageValidator;
+import org.locationtech.jts.coverage.CoverageGapFinder;
 import org.locationtech.jts.coverage.CoveragePolygonValidator;
+import org.locationtech.jts.coverage.CoverageUnion;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.util.PolygonExtracter;
-import org.locationtech.jts.operation.overlayng.CoverageUnion;
 import org.locationtech.jtstest.geomfunction.Metadata;
 
 public class CoverageFunctions {
@@ -26,14 +27,18 @@ public class CoverageFunctions {
     return CoveragePolygonValidator.validate(geom, toGeometryArray(surround));
   }
   
-  public static Geometry validateCoverage(Geometry coverage) {
-    Geometry[] invalid = CoverageValidator.validate(toGeometryArray(coverage));
+  public static Geometry validateCoverage(Geometry geom) {
+    Geometry[] invalid = CoverageValidator.validate(toGeometryArray(geom));
     return FunctionsUtil.buildGeometry(invalid);
   }
 
+  public static Geometry findGaps(Geometry geom, double maxGapWidth) {
+    return CoverageGapFinder.findGaps(toGeometryArray(geom), maxGapWidth);
+  }
+
   @Metadata(description="Fast Union of a coverage")
-  public static Geometry unionCoverage(Geometry geom) {
-    Geometry cov = extractPolygons(geom);
+  public static Geometry unionCoverage(Geometry coverage) {
+    Geometry[] cov = toGeometryArray(coverage);
     return CoverageUnion.union(cov);
   }
   
