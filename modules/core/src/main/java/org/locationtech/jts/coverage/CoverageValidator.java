@@ -28,8 +28,8 @@ import org.locationtech.jts.index.strtree.STRtree;
  * <ol>
  * <li>The interiors of all polygons are disjoint
  * This is the case if no polygon has a boundary which intersects the interior of another polygon.
- * <li>The boundaries of polygons may intersect, but if they do the vertices
- * and line segments of the intersection must match exactly.
+ * <li>If the boundaries of polygons intersect the vertices
+ * and line segments of the intersection match exactly.
  * </ol> 
  * Note that this definition allows gaps between the polygons, 
  * as long as the polygons around the gap form a valid coverage according to the above rules.
