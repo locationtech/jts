@@ -52,17 +52,22 @@ public class CoverageValidatorTest extends GeometryTestCase
   //========  Valid cases   =============================
 
   public void testChessboard() {
-    checkInvalid(readArray(
+    checkValid(readArray(
         "POLYGON ((1 9, 5 9, 5 5, 1 5, 1 9))",
         "POLYGON ((9 9, 9 5, 5 5, 5 9, 9 9))",
         "POLYGON ((1 1, 1 5, 5 5, 5 1, 1 1))",
-        "POLYGON ((9 1, 5 1, 5 5, 9 5, 9 1))" ),
-        readArray(null, null, null, null)
-            );
+        "POLYGON ((9 1, 5 1, 5 5, 9 5, 9 1))" ));
   }
 
   //------------------------------------------------------------
   
+  private void checkValid(Geometry[] coverage) {
+    Geometry[] actual = CoverageValidator.validate(coverage);
+    for (int i = 0; i < actual.length; i++) {
+      assertTrue("geometry " + i + " is invalid", actual[i] == null);
+    }
+  }
+
   private void checkInvalid(Geometry[] coverage, Geometry[] expected) {
     Geometry[] actual = CoverageValidator.validate(coverage);
     checkEqual(expected, actual);
