@@ -11,7 +11,7 @@
  */
 
 /**
- * Classes to operate on polygonal coverages.
+ * Classes that operate on polygonal coverages.
  * <p>
  * A polygonal coverage is a non-overlapping, fully-noded set of polygons.
  * Specifically, a polygonal coverage is valid if:
