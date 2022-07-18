@@ -77,15 +77,31 @@ class CoverageRing extends BasicSegmentString {
     return isInteriorOnRight;
   }
   
+  /**
+   * Tests if a segment is marked valid.
+   * 
+   * @param index the segment index
+   * @return true if the segment is valid
+   */
   public boolean isValid(int index) {
     return isValid[index];
   }
 
+  /**
+   * Tests if a segment is marked invalid.
+   * 
+   * @param index the segment index
+   * @return true if the segment is invalid
+   */
   public boolean isInvalid(int index) {
-    //return ! isValid[index] && isInvalid[index];
     return isInvalid[index];
   }
   
+  /**
+   * Tests whether all segments are valid.
+   * 
+   * @return true if all segments are valid
+   */
   public boolean isValid() {
     for (int i = 0; i < isValid.length; i++) {
       if (! isValid[i])
@@ -94,6 +110,11 @@ class CoverageRing extends BasicSegmentString {
     return true;
   }
 
+  /**
+   * Tests whether all segments are invalid.
+   * 
+   * @return true if all segments are invalid
+   */
   public boolean isInvalid() {
     for (int i = 0; i < isInvalid.length; i++) {
       if (! isInvalid[i])
@@ -102,6 +123,11 @@ class CoverageRing extends BasicSegmentString {
     return true;
   }
 
+  /**
+   * Tests whether any segment is invalid.
+   * 
+   * @return true if some segment is invalid
+   */
   public boolean hasInvalid() {
     for (int i = 0; i < isInvalid.length; i++) {
       if (isInvalid[i])
@@ -110,10 +136,23 @@ class CoverageRing extends BasicSegmentString {
     return false;
   }
 
+  /**
+   * Tests whether the validity state of a ring segment is known.
+   * 
+   * @param i the index of the ring segment
+   * @return true if the segment validity state is known
+   */
   public boolean isKnown(int i) {
     return isValid[i] || isInvalid[i];
   } 
   
+  /**
+   * Finds the previous vertex in the ring which is distinct from a given coordinate value.
+   * 
+   * @param index the index to start the search
+   * @param pt a coordinate value (which may not be a ring vertex)
+   * @return the previous distinct vertex in the ring
+   */
   public Coordinate findVertexPrev(int index, Coordinate pt) {
     int iPrev = index;
     Coordinate prev = getCoordinate(iPrev);
@@ -124,6 +163,13 @@ class CoverageRing extends BasicSegmentString {
     return prev;
   }
 
+  /**
+   * Finds the next vertex in the ring which is distinct from a given coordinate value.
+   * 
+   * @param index the index to start the search
+   * @param pt a coordinate value (which may not be a ring vertex)
+   * @return the next distinct vertex in the ring
+   */
   public Coordinate findVertexNext(int index, Coordinate pt) {
     //-- safe, since index is always the start of a segment
     int iNext = index + 1;
@@ -135,24 +181,46 @@ class CoverageRing extends BasicSegmentString {
     return next;
   }
   
+  /**
+   * Gets the index of the previous segment in the ring.
+   * 
+   * @param index a segment index
+   * @return the index of the previous segment
+   */
   public int prev(int index) {
     if (index == 0)
       return size() - 2;
     return index - 1;
   }
   
+  /**
+   * Gets the index of the next segment in the ring.
+   * 
+   * @param index a segment index
+   * @return the index of the next segment
+   */
   public int next(int index) {
     if (index < size() - 2) 
       return index + 1;
     return 0;
   }
   
+  /**
+   * Marks a segment as invalid.
+   * 
+   * @param i the segment index
+   */
   public void markInvalid(int i) {
     if (isValid[i])
       throw new IllegalStateException("Setting valid edge to invalid");
     isInvalid[i] = true;
   }
 
+  /**
+   * Marks a segment as valid.
+   * 
+   * @param i the segment index
+   */
   public void markValid(int i) {
     if (isInvalid[i])
       throw new IllegalStateException("Setting invalid edge to valid");

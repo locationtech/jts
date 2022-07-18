@@ -115,7 +115,8 @@ public class CoveragePolygonValidator {
   /**
    * Create a new validator.
    * 
-   * @param geom the polygonal coverage geometry to validate
+   * @param geom the geometry to validate
+   * @param adjGeoms the adjacent polygons in the polygonal coverage
    */
   public CoveragePolygonValidator(Geometry geom, Geometry[] adjGeoms) {
     this.targetGeom = geom;
@@ -164,7 +165,7 @@ public class CoveragePolygonValidator {
     if (CoverageRing.isValid(targetRings))
       return createEmptyResult();
     
-    findMisalignedSegments(targetRings, adjRings, distanceTolerance);
+    findInvalidInteractingSegments(targetRings, adjRings, distanceTolerance);
     
     findInteriorSegments(targetRings, adjPolygons);
     
@@ -204,31 +205,32 @@ public class CoveragePolygonValidator {
 
   private void markMatchingSegments(List<CoverageRing> targetRings,
       List<CoverageRing> adjRngs, Envelope targetEnv) {
-    Map<Segment, Segment> segmentMap = new HashMap<Segment, Segment>();
+    Map<CoverageRingSegment, CoverageRingSegment> segmentMap = new HashMap<CoverageRingSegment, CoverageRingSegment>();
     markMatchingSegments(targetRings, targetEnv, segmentMap);
     markMatchingSegments(adjRngs, targetEnv, segmentMap);
   }
   
   /**
-   * Adds polygon segments to the segment map, 
+   * Adds ring segments to the segment map, 
    * and detects if they match an existing segment.
-   * In this case the segment is mark as coverage-valid.
+   * Matched segments are marked as coverage-valid.
    * 
    * @param rings
    * @param envLimit
    * @param segMap
    */
   private void markMatchingSegments(List<CoverageRing> rings, Envelope envLimit, 
-      Map<Segment, Segment> segmentMap) {
+      Map<CoverageRingSegment, CoverageRingSegment> segmentMap) {
     for (CoverageRing ring : rings) {
       for (int i = 0; i < ring.size() - 1; i++) {
-        Segment seg = Segment.create(ring, i);
+        CoverageRingSegment seg = CoverageRingSegment.create(ring, i);
         //-- skip segments which lie outside the limit envelope
         if (! envLimit.intersects(seg.p0, seg.p1)) {
           continue;
         }
+        //-- if segments match, mark them valid
         if (segmentMap.containsKey(seg)) {
-          Segment segMatch = segmentMap.get(seg);
+          CoverageRingSegment segMatch = segmentMap.get(seg);
           segMatch.markValid();
           seg.markValid();
         }
@@ -239,17 +241,17 @@ public class CoveragePolygonValidator {
     }
   }
 
-  private static class Segment extends LineSegment {
-    public static Segment create(CoverageRing ring, int index) {
+  private static class CoverageRingSegment extends LineSegment {
+    public static CoverageRingSegment create(CoverageRing ring, int index) {
       Coordinate p0 = ring.getCoordinate(index);
       Coordinate p1 = ring.getCoordinate(index + 1);
-      return new Segment(p0, p1, ring, index);
+      return new CoverageRingSegment(p0, p1, ring, index);
     }
     
     private CoverageRing ring;
     private int index;
 
-    public Segment(Coordinate p0, Coordinate p1, CoverageRing ring, int index) {
+    public CoverageRingSegment(Coordinate p0, Coordinate p1, CoverageRing ring, int index) {
       super(p0, p1);
       normalize();
       this.ring = ring;
@@ -264,7 +266,7 @@ public class CoveragePolygonValidator {
   //--------------------------------------------------
   
   
-  private void findMisalignedSegments(List<CoverageRing> targetRings, List<CoverageRing> adjRings,
+  private void findInvalidInteractingSegments(List<CoverageRing> targetRings, List<CoverageRing> adjRings,
       double distanceTolerance) {
     InvalidSegmentDetector detector = new InvalidSegmentDetector(distanceTolerance);
     MCIndexSegmentSetMutualIntersector segSetMutInt = new MCIndexSegmentSetMutualIntersector(targetRings, distanceTolerance);
@@ -274,6 +276,7 @@ public class CoveragePolygonValidator {
   private void findInteriorSegments(List<CoverageRing> targetRings, List<Polygon> adjPolygons) {
     for (CoverageRing ring : targetRings) {
       for (int i = 0; i < ring.size() - 1; i++) {
+        //-- skip check for segments with known state. 
         if (ring.isKnown(i))
           continue;
         
