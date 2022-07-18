@@ -160,14 +160,10 @@ public class CoveragePolygonValidatorTest extends GeometryTestCase {
   //----------------------------------------------------------------------
   
   private void checkInvalid(String wktTarget, String wktAdj, String wktExpected) {
-    checkResult(wktTarget, wktAdj, 0, wktExpected);
-  }
-  
-  private void checkResult(String wktTarget, String wktAdj, double tolerance, String wktExpected) {
     Geometry target = read(wktTarget);
     Geometry adj = read(wktAdj);
     Geometry[] adjPolygons = extractPolygons(adj);
-    Geometry actual = CoveragePolygonValidator.validate(target, adjPolygons, tolerance);
+    Geometry actual = CoveragePolygonValidator.validate(target, adjPolygons);
     //System.out.println(actual);
     Geometry expected = read(wktExpected);
     checkEqual(expected, actual);

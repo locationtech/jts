@@ -30,13 +30,12 @@ import org.locationtech.jts.noding.SegmentString;
  *
  */
 class InvalidSegmentDetector implements SegmentIntersector {
-  private double distanceTol;
+  private double distanceTol = 0.0;
 
   /**
    * Creates an invalid segment detector.
    */
-  public InvalidSegmentDetector(double distanceTol) {
-    this.distanceTol = distanceTol;
+  public InvalidSegmentDetector() {
   }
 
   /**
@@ -67,10 +66,12 @@ class InvalidSegmentDetector implements SegmentIntersector {
     if (t0.equals2D(t1) || adj0.equals2D(adj1))
       return;
 
+    /*
     //-- skip segments beyond distance tolerance
     if (distanceTol < Distance.segmentToSegment(t0, t1, adj0, adj1)) {
       return;
     } 
+    */
     
     boolean isInvalid = isInvalid(t0, t1, adj0, adj1, adj, iAdj);
     if (isInvalid) {
@@ -85,9 +86,11 @@ class InvalidSegmentDetector implements SegmentIntersector {
     if (isCollinearOrInterior(tgt0, tgt1, adj0, adj1, adj, indexAdj))
       return true;
 
+    /*
     //-- segments which are nearly parallel for a significant length are invalid
     if (distanceTol > 0 && isNearlyParallel(tgt0, tgt1, adj0, adj1, distanceTol))
       return true;
+    */
     
     return false;
   }
@@ -155,6 +158,8 @@ class InvalidSegmentDetector implements SegmentIntersector {
     return isInterior;
   }
   
+  /*
+  // FUTURE
   private static boolean isNearlyParallel(Coordinate p00, Coordinate p01, 
       Coordinate p10, Coordinate p11, double distanceTol) {
     LineSegment line0 = new LineSegment(p00, p01);
@@ -176,6 +181,7 @@ class InvalidSegmentDetector implements SegmentIntersector {
     return proj0.p0.distance(proj1.p0) <= distanceTol
         && proj0.p1.distance(proj1.p1) <= distanceTol;
   }
+  */
   
   @Override
   public boolean isDone() {

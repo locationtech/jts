@@ -79,24 +79,7 @@ public class CoverageValidator {
     return v.validate();
   }
   
-  /**
-   * Validates that a set of polygons forms a valid polygonal coverage
-   * and contains no misaligned (gap) segments according to the 
-   * given distance tolerance.
-   * The result is an array of linear geometries indicating the locations of invalidities, if any.
-   * 
-   * @param coverage an array of polygons forming a coverage
-   * @param distanceTolerance the distance tolerance for misaligned segments
-   * @return an array of linear geometries indicating coverage errors, or nulls
-   */
-  public static Geometry[] validate(Geometry coverage[], double distanceTolerance) {
-    CoverageValidator v = new CoverageValidator(coverage);
-    v.setToleranceDistance(distanceTolerance);
-    return v.validate();
-  }
-  
   private Geometry[] coverage;
-  private double distanceTolerance = 0.0;
 
   /**
    * Creates a new coverage validator
@@ -105,15 +88,6 @@ public class CoverageValidator {
    */
   public CoverageValidator(Geometry[] coverage) {
     this.coverage = coverage;
-  }
-  
-  /**
-   * Sets the distance tolerance, if being used for misaligned segment detection.
-   * 
-   * @param distanceTolerance the distance tolerance
-   */
-  public void setToleranceDistance(double distanceTolerance) {
-    this.distanceTolerance = distanceTolerance;
   }
   
   /**
@@ -140,13 +114,13 @@ public class CoverageValidator {
 
   private Geometry validate(Geometry targetGeom, STRtree index) {
     Envelope queryEnv = targetGeom.getEnvelopeInternal();
-    queryEnv.expandBy(distanceTolerance);
+    //queryEnv.expandBy(distanceTolerance);
     List<Geometry> nearGeomList = index.query(queryEnv);
     //-- the target geometry is returned in the query, so must be removed from the set
     nearGeomList.remove(targetGeom);
     
     Geometry[] nearGeoms = GeometryFactory.toGeometryArray(nearGeomList);
-    Geometry result = CoveragePolygonValidator.validate(targetGeom, nearGeoms, distanceTolerance);
+    Geometry result = CoveragePolygonValidator.validate(targetGeom, nearGeoms);
     return result.isEmpty() ? null : result;
   }
 }

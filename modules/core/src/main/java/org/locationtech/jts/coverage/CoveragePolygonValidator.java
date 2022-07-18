@@ -89,23 +89,6 @@ public class CoveragePolygonValidator {
     return v.validate();
   }
   
-  /**
-   * Validates that a polygon is coverage-valid  against the
-   * adjacent polygons in a polygonal coverage,
-   * and detects segments which are misaligned relative to the 
-   * given distance tolerance.
-   *  
-   * @param targetPolygon the polygon to validate
-   * @param adjPolygons a collection of the adjacent polygons
-   * @param distanceTolerance the misalignment tolerance distance (if any)
-   * @return a linear geometry containing the segments causing invalidity (if any)
-   */  
-  public static Geometry validate(Geometry targetPolygon, Geometry[] adjPolygons, double distanceTolerance) {
-    CoveragePolygonValidator v = new CoveragePolygonValidator(targetPolygon, adjPolygons);
-    v.setToleranceDistance(distanceTolerance);
-    return v.validate();
-  }
-  
   private Geometry targetGeom;
   private double distanceTolerance = 0.0;
   private GeometryFactory geomFactory;
@@ -122,15 +105,6 @@ public class CoveragePolygonValidator {
     this.targetGeom = geom;
     this.adjGeoms = adjGeoms;
     geomFactory = targetGeom.getFactory();
-  }
-  
-  /**
-   * Sets the distance tolerance, if being used for misaligned segment detection.
-   * 
-   * @param distanceTolerance the distance tolerance
-   */
-  public void setToleranceDistance(double distanceTolerance) {
-    this.distanceTolerance = distanceTolerance;
   }
   
   /**
@@ -268,7 +242,7 @@ public class CoveragePolygonValidator {
   
   private void findInvalidInteractingSegments(List<CoverageRing> targetRings, List<CoverageRing> adjRings,
       double distanceTolerance) {
-    InvalidSegmentDetector detector = new InvalidSegmentDetector(distanceTolerance);
+    InvalidSegmentDetector detector = new InvalidSegmentDetector();
     MCIndexSegmentSetMutualIntersector segSetMutInt = new MCIndexSegmentSetMutualIntersector(targetRings, distanceTolerance);
     segSetMutInt.process(adjRings, detector);
   }
