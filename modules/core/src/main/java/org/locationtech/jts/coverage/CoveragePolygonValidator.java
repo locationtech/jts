@@ -32,9 +32,9 @@ import org.locationtech.jts.noding.MCIndexSegmentSetMutualIntersector;
 /**
  * Validates that a polygon forms a valid (clean) polygonal coverage 
  * with the set of adjacent polygons surrounding it.  
- * The result is a linear geometry containing 
- * the polygon linework that causes the coverage to be invalid.
  * if the polygon is coverage-valid an empty {@link LineString} is returned.
+ * Otherwise, the result is a linear geometry containing 
+ * the polygon linework that causes the coverage to be invalid.
  * <p>
  * A polygon is coverage-valid if:
  * <ol>
@@ -47,27 +47,22 @@ import org.locationtech.jts.noding.MCIndexSegmentSetMutualIntersector;
  * <p>
  * The algorithm detects the following coverage errors:
  * <ol>
- * <li>Polygon is a duplicate of an adjacent one
- * <li>Segment is collinear with an adjacent segment but not equal to it
- * <li>Segment touches an adjacent segment at a non-vertex point
- * <li>Segment crosses into an adjacent polygon
- * <li>Segment is in the interior of an adjacent polygon 
+ * <li>the polygon is a duplicate of an adjacent one
+ * <li>a polygon boundary segment is collinear with an adjacent segment but not equal to it
+ * <li>a polygon boundary segment touches an adjacent segment at a non-vertex point
+ * <li>a polygon boundary segment crosses into an adjacent polygon
+ * <li>a polygon boundary segment is in the interior of an adjacent polygon 
  * </ol>
  * If any of these errors is present, the target polygon
  * does not form a valid coverage with the adjacent polygons.
  * <p>
- * It can happen that a target polygon is coverage-valid with respect to 
+ * It can happen that a polygon is coverage-valid with respect to 
  * a set of adjacent polygons, but the collection as a whole does not
  * form a clean coverage.  For example, the target polygon edges may be fully matched
  * by adjacent edges, but the adjacent set contains polygons 
  * which are not coverage-valid relative to other ones in the set (e.g. they may overlap).
+ * A coverage is valid only if every polygon in the coverage is coverage-valid.
  * Use {@link CoverageValidator} to validate an entire set of polygons.
- * <p>
- * The class can also be used to detect
- * misaligned segments, by using a non-zero tolerance distance.  
- * Misaligned segments are ones which are nearly collinear for a significant distance.
- * They can indicate the presence of spikes, gores and gaps.
- * However, this is a heuristic check, and false reports can occur. 
  * 
  * @see CoverageValidator
  * 
