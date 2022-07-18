@@ -62,10 +62,7 @@ public class CoverageValidatorTest extends GeometryTestCase
   //------------------------------------------------------------
   
   private void checkValid(Geometry[] coverage) {
-    Geometry[] actual = CoverageValidator.validate(coverage);
-    for (int i = 0; i < actual.length; i++) {
-      assertTrue("geometry " + i + " is invalid", actual[i] == null);
-    }
+    assertTrue(CoverageValidator.isValid(coverage));
   }
 
   private void checkInvalid(Geometry[] coverage, Geometry[] expected) {
