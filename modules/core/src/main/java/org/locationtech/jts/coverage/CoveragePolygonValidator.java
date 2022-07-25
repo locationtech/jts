@@ -128,7 +128,7 @@ public class CoveragePolygonValidator {
      */
     Envelope targetEnv = targetGeom.getEnvelopeInternal().copy();
     targetEnv.expandBy(distanceTolerance);
-    markMatchingSegments(targetRings, adjRings, targetEnv);
+    markMatchedSegments(targetRings, adjRings, targetEnv);
 
     //-- check if target is fully matched and thus forms a clean coverage 
     if (CoverageRing.isValid(targetRings))
@@ -172,11 +172,26 @@ public class CoveragePolygonValidator {
     return false;
   }
 
-  private void markMatchingSegments(List<CoverageRing> targetRings,
+  /**
+   * Marks matched segments as valid.
+   * This improves the efficiency of validity testing, since in valid coverages 
+   * all segments (except exterior ones) will be matched, 
+   * and hence do not need to be tested further.
+   * In fact, the entire target polygon may be marked valid,
+   * which allows avoiding all further tests.
+   * Segments matched between adjacent polygons are also marked valid, 
+   * since this prevents them from being detected as misaligned,
+   * if this is being done.
+   * 
+   * @param targetRings the target rings
+   * @param adjRngs the adjacent rings
+   * @param targetEnv the tolerance envelope of the target
+   */
+  private void markMatchedSegments(List<CoverageRing> targetRings,
       List<CoverageRing> adjRngs, Envelope targetEnv) {
     Map<CoverageRingSegment, CoverageRingSegment> segmentMap = new HashMap<CoverageRingSegment, CoverageRingSegment>();
-    markMatchingSegments(targetRings, targetEnv, segmentMap);
-    markMatchingSegments(adjRngs, targetEnv, segmentMap);
+    markMatchedSegments(targetRings, targetEnv, segmentMap);
+    markMatchedSegments(adjRngs, targetEnv, segmentMap);
   }
   
   /**
@@ -188,7 +203,7 @@ public class CoveragePolygonValidator {
    * @param envLimit
    * @param segMap
    */
-  private void markMatchingSegments(List<CoverageRing> rings, Envelope envLimit, 
+  private void markMatchedSegments(List<CoverageRing> rings, Envelope envLimit, 
       Map<CoverageRingSegment, CoverageRingSegment> segmentMap) {
     for (CoverageRing ring : rings) {
       for (int i = 0; i < ring.size() - 1; i++) {
