@@ -20,22 +20,24 @@ import org.locationtech.jts.index.strtree.STRtree;
 
 /**
  * Validates a polygonal coverage, and returns the locations of
- * invalid linework if found.
+ * invalid polygon boundary segments, if found.
  * <p>
  * A polygonal coverage is a set of polygons which may be edge-adjacent but do 
  * not overlap.
+ * A valid polygonal coverage ensures that coverage algorithms 
+ * (such as union or simplification) produce valid results.
  * A polygonal coverage is valid if:
  * <ol>
  * <li>The interiors of all polygons are disjoint
- * This is the case if no polygon has a boundary which intersects the interior of another polygon.
+ * This is the case if no polygon has a boundary which intersects the interior of another polygon,
+ * and no two polygons are identical.
  * <li>If the boundaries of polygons intersect the vertices
  * and line segments of the intersection match exactly.
  * </ol> 
- * Note that this definition allows gaps between the polygons, 
+ * A valid coverage may contain gaps between the polygons, 
  * as long as the polygons around the gap form a valid coverage according to the above rules.
- * <p>
- * A valid polygonal coverage ensures that coverage algorithms 
- * (such as union or simplification) produce valid results.
+ * This class can also be used to detect narrow gaps, 
+ * by specifying a maximum gap width using {@link #setGapWidth(double)}.
  * 
  * @author Martin Davis
  *
@@ -79,7 +81,24 @@ public class CoverageValidator {
     return v.validate();
   }
   
+  /**
+   * Validates that a set of polygons forms a valid polygonal coverage
+   * and contains no gaps narrower than a specified width.
+   * The result is an array of linear geometries indicating the locations of invalidities, 
+   * or null if the polygon is coverage-valid.
+   * 
+   * @param coverage an array of polygons forming a coverage
+   * @param gapWidth the maximum width of invalid gaps
+   * @return an array of linear geometries indicating coverage errors, or nulls
+   */
+  public static Geometry[] validate(Geometry coverage[], double gapWidth) {
+    CoverageValidator v = new CoverageValidator(coverage);
+    v.setGapWidth(gapWidth);
+    return v.validate();
+  }
+  
   private Geometry[] coverage;
+  private double gapWidth;
 
   /**
    * Creates a new coverage validator
@@ -91,11 +110,21 @@ public class CoverageValidator {
   }
   
   /**
+   * Sets the maximum gap width, if narrow gaps are considered invalid.
+   * 
+   * @param gapWidth the maximum width of invalid gaps
+   */
+  public void setGapWidth(double gapWidth) {
+    this.gapWidth = gapWidth;
+  }
+  
+  /**
    * Validates the polygonal coverage.
    * The result is an array of the same size as the input coverage.
    * Each array entry is either null, or if the polygon does not form a valid coverage,
    * a linear geometry containing the boundary segments
-   * which intersect polygon interiors, or which are mismatched.
+   * which intersect polygon interiors, which are mismatched, 
+   * or form gaps (if checked).
    * 
    * @return an array of nulls or linear geometries
    */
@@ -114,13 +143,13 @@ public class CoverageValidator {
 
   private Geometry validate(Geometry targetGeom, STRtree index) {
     Envelope queryEnv = targetGeom.getEnvelopeInternal();
-    //queryEnv.expandBy(distanceTolerance);
+    queryEnv.expandBy(gapWidth);
     List<Geometry> nearGeomList = index.query(queryEnv);
     //-- the target geometry is returned in the query, so must be removed from the set
     nearGeomList.remove(targetGeom);
     
     Geometry[] nearGeoms = GeometryFactory.toGeometryArray(nearGeomList);
-    Geometry result = CoveragePolygonValidator.validate(targetGeom, nearGeoms);
+    Geometry result = CoveragePolygonValidator.validate(targetGeom, nearGeoms, gapWidth);
     return result.isEmpty() ? null : result;
   }
 }

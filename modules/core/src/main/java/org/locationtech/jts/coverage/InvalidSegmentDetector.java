@@ -14,6 +14,7 @@ package org.locationtech.jts.coverage;
 import org.locationtech.jts.algorithm.PolygonNodeTopology;
 import org.locationtech.jts.algorithm.RobustLineIntersector;
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.LineSegment;
 import org.locationtech.jts.noding.SegmentIntersector;
 import org.locationtech.jts.noding.SegmentString;
 
@@ -29,12 +30,18 @@ import org.locationtech.jts.noding.SegmentString;
  */
 class InvalidSegmentDetector implements SegmentIntersector {
 
+  private double distanceTol;
+
   /**
    * Creates an invalid segment detector.
    */
   public InvalidSegmentDetector() {
   }
 
+  public InvalidSegmentDetector(double distanceTol) {
+    this.distanceTol = distanceTol;
+  }
+  
   /**
    * Process interacting segments.
    * The input order is important.
@@ -83,11 +90,9 @@ class InvalidSegmentDetector implements SegmentIntersector {
     if (isCollinearOrInterior(tgt0, tgt1, adj0, adj1, adj, indexAdj))
       return true;
 
-    /*
     //-- segments which are nearly parallel for a significant length are invalid
     if (distanceTol > 0 && isNearlyParallel(tgt0, tgt1, adj0, adj1, distanceTol))
       return true;
-    */
     
     return false;
   }
@@ -154,9 +159,7 @@ class InvalidSegmentDetector implements SegmentIntersector {
     boolean isInterior = PolygonNodeTopology.isInteriorSegment(intVertex, adjPrev, adjNext, tgtEnd);
     return isInterior;
   }
-  
-  /*
-  // FUTURE
+
   private static boolean isNearlyParallel(Coordinate p00, Coordinate p01, 
       Coordinate p10, Coordinate p11, double distanceTol) {
     LineSegment line0 = new LineSegment(p00, p01);
@@ -178,7 +181,6 @@ class InvalidSegmentDetector implements SegmentIntersector {
     return proj0.p0.distance(proj1.p0) <= distanceTol
         && proj0.p1.distance(proj1.p1) <= distanceTol;
   }
-  */
   
   @Override
   public boolean isDone() {

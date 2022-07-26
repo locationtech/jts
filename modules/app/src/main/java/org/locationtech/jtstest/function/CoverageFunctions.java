@@ -23,8 +23,14 @@ import org.locationtech.jtstest.geomfunction.Metadata;
 
 public class CoverageFunctions {
   
-  public static Geometry validatePolygon(Geometry geom, Geometry surround) {
-    return CoveragePolygonValidator.validate(geom, toGeometryArray(surround));
+  public static Geometry validatePolygon(Geometry geom, Geometry adjacentPolys) {
+    return CoveragePolygonValidator.validate(geom, toGeometryArray(adjacentPolys));
+  }
+  
+  public static Geometry validatePolygonWithGaps(Geometry geom, Geometry adjacentPolys, 
+      @Metadata(title="Gap width")
+      double gapWidth) {
+    return CoveragePolygonValidator.validate(geom, toGeometryArray(adjacentPolys), gapWidth);
   }
   
   public static Geometry validateCoverage(Geometry geom) {
@@ -32,8 +38,17 @@ public class CoverageFunctions {
     return FunctionsUtil.buildGeometry(invalid);
   }
 
-  public static Geometry findGaps(Geometry geom, double maxGapWidth) {
-    return CoverageGapFinder.findGaps(toGeometryArray(geom), maxGapWidth);
+  public static Geometry validateCoverageWithGaps(Geometry geom, 
+      @Metadata(title="Gap width")
+      double gapWidth) {
+    Geometry[] invalid = CoverageValidator.validate(toGeometryArray(geom), gapWidth);
+    return FunctionsUtil.buildGeometry(invalid);
+  }
+
+  public static Geometry findGaps(Geometry geom, 
+      @Metadata(title="Gap width")
+      double gapWidth) {
+    return CoverageGapFinder.findGaps(toGeometryArray(geom),gapWidth);
   }
 
   @Metadata(description="Fast Union of a coverage")

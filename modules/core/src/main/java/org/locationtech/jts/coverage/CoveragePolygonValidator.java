@@ -63,6 +63,10 @@ import org.locationtech.jts.noding.MCIndexSegmentSetMutualIntersector;
  * which are not coverage-valid relative to other ones in the set (e.g. they may overlap).
  * A coverage is valid only if every polygon in the coverage is coverage-valid.
  * Use {@link CoverageValidator} to validate an entire set of polygons.
+ * <p>
+ * A coverage-polygon may contain gaps between it and adjacent polygons.
+ * This class can also be used to detect narrow gaps, 
+ * by specifying a maximum gap width using {@link #setGapWidth(double)}.
  * 
  * @see CoverageValidator
  * 
@@ -84,8 +88,24 @@ public class CoveragePolygonValidator {
     return v.validate();
   }
   
+  /**
+   * Validates that a polygon is coverage-valid against the
+   * adjacent polygons in a polygonal coverage,
+   * and forms no gaps narrower than a specified width.
+   *  
+   * @param targetPolygon the polygon to validate
+   * @param adjPolygons a collection of the adjacent polygons
+   * @param gapWidth the maximum width of invalid gaps
+   * @return a linear geometry containing the segments causing invalidity (if any)
+   */  
+  public static Geometry validate(Geometry targetPolygon, Geometry[] adjPolygons, double gapWidth) {
+    CoveragePolygonValidator v = new CoveragePolygonValidator(targetPolygon, adjPolygons);
+    v.setGapWidth(gapWidth);
+    return v.validate();
+  }
+  
   private Geometry targetGeom;
-  private double distanceTolerance = 0.0;
+  private double gapWidth = 0.0;
   private GeometryFactory geomFactory;
   private IndexedPointInAreaLocator[] adjPolygonLocators;
   private Geometry[] adjGeoms;
@@ -100,6 +120,15 @@ public class CoveragePolygonValidator {
     this.targetGeom = geom;
     this.adjGeoms = adjGeoms;
     geomFactory = targetGeom.getFactory();
+  }
+  
+  /**
+   * Sets the maximum gap width, if narrow gaps are considered invalid.
+   * 
+   * @param gapWidth the maximum width of invalid gaps
+   */
+  public void setGapWidth(double gapWidth) {
+    this.gapWidth = gapWidth;
   }
   
   /**
@@ -127,14 +156,14 @@ public class CoveragePolygonValidator {
      * This improves performance substantially for mostly-valid coverages.
      */
     Envelope targetEnv = targetGeom.getEnvelopeInternal().copy();
-    targetEnv.expandBy(distanceTolerance);
+    targetEnv.expandBy(gapWidth);
     markMatchedSegments(targetRings, adjRings, targetEnv);
 
     //-- check if target is fully matched and thus forms a clean coverage 
     if (CoverageRing.isValid(targetRings))
       return createEmptyResult();
     
-    findInvalidInteractingSegments(targetRings, adjRings, distanceTolerance);
+    findInvalidInteractingSegments(targetRings, adjRings, gapWidth);
     
     findInteriorSegments(targetRings, adjPolygons);
     
@@ -252,7 +281,7 @@ public class CoveragePolygonValidator {
   
   private void findInvalidInteractingSegments(List<CoverageRing> targetRings, List<CoverageRing> adjRings,
       double distanceTolerance) {
-    InvalidSegmentDetector detector = new InvalidSegmentDetector();
+    InvalidSegmentDetector detector = new InvalidSegmentDetector(distanceTolerance);
     MCIndexSegmentSetMutualIntersector segSetMutInt = new MCIndexSegmentSetMutualIntersector(targetRings, distanceTolerance);
     segSetMutInt.process(adjRings, detector);
   }
