@@ -128,6 +128,15 @@ public class CoveragePolygonValidatorTest extends GeometryTestCase {
         "LINESTRING (3 7, 7 7, 7 3, 3 3, 3 7)");
   }
 
+  //========  Gap cases   =============================
+  
+  public void testGap() {
+    checkInvalidGap("POLYGON ((1 5, 9 5, 9 1, 1 1, 1 5))",
+        "POLYGON ((1 9, 5 9, 5 5.1, 1 5, 1 9))",
+        0.5,
+        "LINESTRING (1 5, 9 5)");
+  }
+
   //========  Valid cases   =============================
   
   public void testMatchedEdges() {
@@ -164,6 +173,17 @@ public class CoveragePolygonValidatorTest extends GeometryTestCase {
     Geometry adj = read(wktAdj);
     Geometry[] adjPolygons = extractPolygons(adj);
     Geometry actual = CoveragePolygonValidator.validate(target, adjPolygons);
+    //System.out.println(actual);
+    Geometry expected = read(wktExpected);
+    checkEqual(expected, actual);
+  }
+  
+  private void checkInvalidGap(String wktTarget, String wktAdj, 
+      double gapWidth, String wktExpected) {
+    Geometry target = read(wktTarget);
+    Geometry adj = read(wktAdj);
+    Geometry[] adjPolygons = extractPolygons(adj);
+    Geometry actual = CoveragePolygonValidator.validate(target, adjPolygons, gapWidth);
     //System.out.println(actual);
     Geometry expected = read(wktExpected);
     checkEqual(expected, actual);
