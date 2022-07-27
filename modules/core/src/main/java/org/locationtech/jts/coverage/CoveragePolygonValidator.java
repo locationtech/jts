@@ -30,24 +30,22 @@ import org.locationtech.jts.geom.util.PolygonExtracter;
 import org.locationtech.jts.noding.MCIndexSegmentSetMutualIntersector;
 
 /**
- * Validates that a polygon forms a valid (clean) polygonal coverage 
- * with the set of adjacent polygons surrounding it.  
+ * Validates that a polygon forms a valid polygonal coverage 
+ * with the set of polygons surrounding it.  
  * if the polygon is coverage-valid an empty {@link LineString} is returned.
  * Otherwise, the result is a linear geometry containing 
- * the polygon linework that causes the coverage to be invalid.
+ * the polygon boundary linework that causes the coverage to be invalid.
  * <p>
  * A polygon is coverage-valid if:
  * <ol>
- * <li>The boundary of the polygon does not intersect the interior of other polygons.
- * <li>If the polygon boundary intersects the boundary of another polygon, the vertices
+ * <li>The polygon interior does not intersect the interior of other polygons.
+ * <li>If the polygon boundary intersects another polygon boundary, the vertices
  * and line segments of the intersection match exactly.
- * </ol> 
- * Note that this definition allows gaps between the polygon and adjacent ones 
- * (as long as the linework around them is clean).
+ * </ol>
  * <p>
  * The algorithm detects the following coverage errors:
  * <ol>
- * <li>the polygon is a duplicate of an adjacent one
+ * <li>the polygon is a duplicate of another one
  * <li>a polygon boundary segment is collinear with an adjacent segment but not equal to it
  * <li>a polygon boundary segment touches an adjacent segment at a non-vertex point
  * <li>a polygon boundary segment crosses into an adjacent polygon
@@ -56,20 +54,21 @@ import org.locationtech.jts.noding.MCIndexSegmentSetMutualIntersector;
  * If any of these errors is present, the target polygon
  * does not form a valid coverage with the adjacent polygons.
  * <p>
- * It can happen that a polygon is coverage-valid with respect to 
- * a set of adjacent polygons, but the collection as a whole does not
+ * The validity rules does not preclude gaps between coverage polygons.
+ * This class can be used to detect narrow gaps, 
+ * by specifying a maximum gap width using {@link #setGapWidth(double)}.
+ * Note that this will also identify narrow gaps separating disjoint coverage regions, 
+ * and narrow gores.
+ * In some situations it may also produce false positives 
+ * (linework identified as part of a gap which is actually wider).
+ * <p>
+ * A polygon may be coverage-valid with respect to 
+ * a set of surrounding polygons, but the collection as a whole may not
  * form a clean coverage.  For example, the target polygon edges may be fully matched
  * by adjacent edges, but the adjacent set contains polygons 
  * which are not coverage-valid relative to other ones in the set (e.g. they may overlap).
  * A coverage is valid only if every polygon in the coverage is coverage-valid.
  * Use {@link CoverageValidator} to validate an entire set of polygons.
- * <p>
- * A coverage-polygon may contain gaps between it and adjacent polygons.
- * This class can be used to detect narrow gaps, 
- * by specifying a maximum gap width using {@link #setGapWidth(double)}.
- * Note that this will also identify narrow gaps separating disjoint coverage regions, 
- * and narrow gores.
- * It may also produce false positives (linework identified as part of a gap which is actually wider).
  * 
  * @see CoverageValidator
  * 
@@ -80,10 +79,10 @@ public class CoveragePolygonValidator {
   
   /**
    * Validates that a polygon is coverage-valid  against the
-   * adjacent polygons in a polygonal coverage.
+   * surrounding polygons in a polygonal coverage.
    *  
    * @param targetPolygon the polygon to validate
-   * @param adjPolygons a collection of the adjacent polygons
+   * @param adjPolygons the adjacent polygons
    * @return a linear geometry containing the segments causing invalidity (if any)
    */
   public static Geometry validate(Geometry targetPolygon, Geometry[] adjPolygons) {
@@ -93,8 +92,11 @@ public class CoveragePolygonValidator {
   
   /**
    * Validates that a polygon is coverage-valid against the
-   * adjacent polygons in a polygonal coverage,
+   * surrounding polygons in a polygonal coverage,
    * and forms no gaps narrower than a specified width.
+   * <p>
+   * The set of surrounding polygons should include all polygons which
+   * are within the gap width distance of the target polygon.
    *  
    * @param targetPolygon the polygon to validate
    * @param adjPolygons a collection of the adjacent polygons
@@ -115,6 +117,10 @@ public class CoveragePolygonValidator {
 
   /**
    * Create a new validator.
+   * <p>
+   * If the gap width is specified, the set of surrounding polygons 
+   * should include all polygons which
+   * are within the gap width distance of the target polygon.
    * 
    * @param geom the geometry to validate
    * @param adjGeoms the adjacent polygons in the polygonal coverage
@@ -126,9 +132,9 @@ public class CoveragePolygonValidator {
   }
   
   /**
-   * Sets the maximum gap width, if narrow gaps are considered invalid.
+   * Sets the maximum gap width, if narrow gaps are to be detected.
    * 
-   * @param gapWidth the maximum width of invalid gaps
+   * @param gapWidth the maximum width of gaps to detect
    */
   public void setGapWidth(double gapWidth) {
     this.gapWidth = gapWidth;

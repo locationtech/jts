@@ -26,13 +26,13 @@ import org.locationtech.jts.geom.util.PolygonExtracter;
  * Finds gaps in a polygonal coverage.
  * Gaps are holes in the coverage which are narrower than a given width.
  * <p>
+ * The coverage should be valid according to {@link CoverageValidator}.
+ * If this is not the case, some gaps may not be reported, or the invocation may fail.
+ * <p>
  * This is a more accurate way of identifying gaps 
  * than using {@link CoverageValidator#setGapWidth(double)}.
  * Gaps which separate the coverage into two disjoint regions are not detected.
  * Gores are not identified as gaps.
- * <p>
- * The coverage should be valid according to {@link CoverageValidator}.
- * If this is not the case, some gaps may not be reported, or the invocation may fail.
  * 
  * @author mdavis
  *

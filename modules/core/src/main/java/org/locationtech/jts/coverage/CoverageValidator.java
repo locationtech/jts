@@ -20,7 +20,7 @@ import org.locationtech.jts.index.strtree.STRtree;
 
 /**
  * Validates a polygonal coverage, and returns the locations of
- * invalid polygon boundary segments, if found.
+ * invalid polygon boundary segments if found.
  * <p>
  * A polygonal coverage is a set of polygons which may be edge-adjacent but do 
  * not overlap.
@@ -34,13 +34,15 @@ import org.locationtech.jts.index.strtree.STRtree;
  * <li>If the boundaries of polygons intersect the vertices
  * and line segments of the intersection match exactly.
  * </ol> 
- * A valid coverage may contain gaps between the polygons, 
+ * <p>
+ * A valid coverage may contain gaps between polygons, 
  * as long as the polygons around the gap form a valid coverage according to the above rules.
  * This class can be used to detect narrow gaps, 
  * by specifying a maximum gap width using {@link #setGapWidth(double)}.
  * Note that this will also identify narrow gaps separating disjoint coverage regions, 
  * and narrow gores.
- * It may also produce false positives (linework identified as part of a gap which is actually wider).
+ * In some situations it may also produce false positives 
+ * (linework identified as part of a gap which is actually wider).
  * 
  * @author Martin Davis
  *
@@ -113,9 +115,9 @@ public class CoverageValidator {
   }
   
   /**
-   * Sets the maximum gap width, if narrow gaps are considered invalid.
+   * Sets the maximum gap width, if narrow gaps are to be detected.
    * 
-   * @param gapWidth the maximum width of invalid gaps
+   * @param gapWidth the maximum width of gaps to detect
    */
   public void setGapWidth(double gapWidth) {
     this.gapWidth = gapWidth;
