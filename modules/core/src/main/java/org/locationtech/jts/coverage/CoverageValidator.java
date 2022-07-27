@@ -36,8 +36,11 @@ import org.locationtech.jts.index.strtree.STRtree;
  * </ol> 
  * A valid coverage may contain gaps between the polygons, 
  * as long as the polygons around the gap form a valid coverage according to the above rules.
- * This class can also be used to detect narrow gaps, 
+ * This class can be used to detect narrow gaps, 
  * by specifying a maximum gap width using {@link #setGapWidth(double)}.
+ * Note that this will also identify narrow gaps separating disjoint coverage regions, 
+ * and narrow gores.
+ * It may also produce false positives (linework identified as part of a gap which is actually wider).
  * 
  * @author Martin Davis
  *

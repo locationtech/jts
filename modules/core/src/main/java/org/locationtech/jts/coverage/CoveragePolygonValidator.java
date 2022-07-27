@@ -65,8 +65,11 @@ import org.locationtech.jts.noding.MCIndexSegmentSetMutualIntersector;
  * Use {@link CoverageValidator} to validate an entire set of polygons.
  * <p>
  * A coverage-polygon may contain gaps between it and adjacent polygons.
- * This class can also be used to detect narrow gaps, 
+ * This class can be used to detect narrow gaps, 
  * by specifying a maximum gap width using {@link #setGapWidth(double)}.
+ * Note that this will also identify narrow gaps separating disjoint coverage regions, 
+ * and narrow gores.
+ * It may also produce false positives (linework identified as part of a gap which is actually wider).
  * 
  * @see CoverageValidator
  * 
