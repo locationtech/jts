@@ -246,7 +246,7 @@ public abstract class GeometryTestCase extends TestCase{
   protected Geometry[] readArray(String... wkt) {
     Geometry[] geometries = new Geometry[wkt.length];
     for (int i = 0; i < wkt.length; i++) {
-      geometries[i] = wkt[i] == null ? null : read(wkt[i]);
+      geometries[i] = (wkt[i] == null) ? null : read(wkt[i]);
     }
     return geometries;
   }

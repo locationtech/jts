@@ -49,6 +49,34 @@ public class CoverageValidatorTest extends GeometryTestCase
             );
   }
   
+  //========  Gap cases   =============================
+
+  public void testGap() {
+    checkInvalidWithGaps(readArray(
+        "POLYGON ((1 5, 9 5, 9 1, 1 1, 1 5))",
+        "POLYGON ((1 9, 5 9, 5 5.1, 1 5, 1 9))",
+        "POLYGON ((5 9, 9 9, 9 5, 5 5.1, 5 9))"),
+        0.5,
+        readArray(
+            "LINESTRING (1 5, 9 5)",
+            "LINESTRING (5 5.1, 1 5)",
+            "LINESTRING (9 5, 5 5.1)")
+            );
+  }
+  
+  public void testGore() {
+    checkInvalidWithGaps(readArray(
+        "POLYGON ((1 5, 5 5, 9 5, 9 1, 1 1, 1 5))",
+        "POLYGON ((1 9, 5 9, 5 5, 1 5.1, 1 9))",
+        "POLYGON ((5 9, 9 9, 9 5, 5 5, 5 9))"),
+        0.5,
+        readArray(
+            "LINESTRING (1 5, 5 5)",
+            "LINESTRING (1 5.1, 5 5)",
+            null)
+            );
+  }
+  
   //========  Valid cases   =============================
 
   public void testChessboard() {
@@ -67,6 +95,11 @@ public class CoverageValidatorTest extends GeometryTestCase
 
   private void checkInvalid(Geometry[] coverage, Geometry[] expected) {
     Geometry[] actual = CoverageValidator.validate(coverage);
+    checkEqual(expected, actual);
+  }
+  
+  private void checkInvalidWithGaps(Geometry[] coverage, double gapWidth, Geometry[] expected) {
+    Geometry[] actual = CoverageValidator.validate(coverage, gapWidth);
     checkEqual(expected, actual);
   }
 }
