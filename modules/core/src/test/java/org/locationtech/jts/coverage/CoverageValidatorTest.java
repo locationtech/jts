@@ -55,12 +55,12 @@ public class CoverageValidatorTest extends GeometryTestCase
     checkInvalidWithGaps(readArray(
         "POLYGON ((1 5, 9 5, 9 1, 1 1, 1 5))",
         "POLYGON ((1 9, 5 9, 5 5.1, 1 5, 1 9))",
-        "POLYGON ((5 9, 9 9, 9 5, 5 5.1, 5 9))"),
+        "POLYGON ((5 9, 9 9, 9 5, 5.5 5.1, 5 9))"),
         0.5,
         readArray(
             "LINESTRING (1 5, 9 5)",
-            "LINESTRING (5 5.1, 1 5)",
-            "LINESTRING (9 5, 5 5.1)")
+            "LINESTRING (1 5, 5 5.1, 5 9)",
+            "LINESTRING (5 9, 5.5 5.1, 9 5)")
             );
   }
   

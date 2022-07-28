@@ -36,7 +36,7 @@ import junit.framework.TestCase;
 
 public abstract class GeometryTestCase extends TestCase{
 
-  private static final String CHECK_EQUAL_FAIL = "FAIL - Expected = %s -- Actual = %s\n";
+  private static final String CHECK_EQUAL_FAIL = "FAIL - %sExpected = %s -- Actual = %s\n";
 
   final GeometryFactory geomFactory;
   
@@ -67,6 +67,17 @@ public abstract class GeometryTestCase extends TestCase{
    * @param actual the actual value
    */
   protected void checkEqual(Geometry expected, Geometry actual) {
+    checkEqual("", expected, actual);
+  }
+
+  /**
+   * Checks that the normalized values of the expected and actual
+   * geometries are exactly equal.
+   * 
+   * @param expected the expected value
+   * @param actual the actual value
+   */
+  protected void checkEqual(String msg, Geometry expected, Geometry actual) {
     Geometry actualNorm = actual == null ? null : actual.norm();
     Geometry expectedNorm = expected == null ? null : expected.norm();
     boolean equal;
@@ -77,7 +88,7 @@ public abstract class GeometryTestCase extends TestCase{
       equal = actualNorm.equalsExact(expectedNorm);
     }
     if (! equal) {
-      System.out.format(CHECK_EQUAL_FAIL, expectedNorm, actualNorm );
+      System.out.format(CHECK_EQUAL_FAIL, msg + ": ", expectedNorm, actualNorm );
     }
     assertTrue(equal);
   }
@@ -160,7 +171,7 @@ public abstract class GeometryTestCase extends TestCase{
   protected void checkEqual(Geometry[] expected, Geometry[] actual) {
     assertEquals("Array length", expected.length, actual.length);
     for (int i = 0; i < expected.length; i++) {
-      checkEqual(expected[i], actual[i]);      
+      checkEqual("element " + i, expected[i], actual[i]);      
     }
   }
 
