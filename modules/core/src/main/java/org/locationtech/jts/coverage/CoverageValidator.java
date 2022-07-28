@@ -38,7 +38,7 @@ import org.locationtech.jts.index.strtree.STRtree;
  * A valid coverage may contain holes (regions of no coverage).
  * Sometimes it is desired to detect whether coverages contain 
  * narrow gaps between polygons
- * which are a result of digitizing error.
+ * (which can be a result of digitizing error or misaligned data).
  * This class can detect narrow gaps, 
  * by specifying a maximum gap width using {@link #setGapWidth(double)}.
  * Note that this also identifies narrow gaps separating disjoint coverage regions, 
