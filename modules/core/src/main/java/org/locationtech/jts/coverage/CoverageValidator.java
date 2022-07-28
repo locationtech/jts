@@ -24,25 +24,28 @@ import org.locationtech.jts.index.strtree.STRtree;
  * <p>
  * A polygonal coverage is a set of polygons which may be edge-adjacent but do 
  * not overlap.
- * A valid polygonal coverage ensures that coverage algorithms 
- * (such as union or simplification) produce valid results.
+ * Coverage algorithms (such as {@link CoverageUnion} or simplification) 
+ * generally require the input coverage to be valid to produce correct results.
  * A polygonal coverage is valid if:
  * <ol>
- * <li>The interiors of all polygons are disjoint
+ * <li>The interiors of all polygons do not intersect (are disjoint).
  * This is the case if no polygon has a boundary which intersects the interior of another polygon,
  * and no two polygons are identical.
- * <li>If the boundaries of polygons intersect the vertices
+ * <li>If the boundaries of polygons intersect, the vertices
  * and line segments of the intersection match exactly.
  * </ol> 
  * <p>
- * A valid coverage may contain gaps between polygons, 
- * as long as the polygons around the gap form a valid coverage according to the above rules.
- * This class can be used to detect narrow gaps, 
+ * A valid coverage may contain holes (regions of no coverage).
+ * Sometimes it is desired to detect whether coverages contain 
+ * narrow gaps between polygons
+ * which are a result of digitizing error.
+ * This class can detect narrow gaps, 
  * by specifying a maximum gap width using {@link #setGapWidth(double)}.
- * Note that this will also identify narrow gaps separating disjoint coverage regions, 
+ * Note that this also identifies narrow gaps separating disjoint coverage regions, 
  * and narrow gores.
  * In some situations it may also produce false positives 
  * (linework identified as part of a gap which is actually wider).
+ * See {@link CoverageGapFinder} for an alternate way to detect gaps which may be more accurate.
  * 
  * @author Martin Davis
  *

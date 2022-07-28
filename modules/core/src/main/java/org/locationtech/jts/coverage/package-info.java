@@ -14,13 +14,18 @@
  * Classes that operate on polygonal coverages.
  * <p>
  * A polygonal coverage is a non-overlapping, fully-noded set of polygons.
- * Specifically, a set of polygons is a coverage if:
+ * Specifically, a set of polygons is a valid coverage if:
  * <ol>
  * <li>The interiors of all polygons are disjoint.
  * This is the case if no polygon has a boundary which intersects the interior of another polygon.
  * <li>Where polygons are adjacent (their boundaries intersect), the vertices
  * (and thus line segments) of the common boundary match exactly.
  * </ol> 
+ * <p>
+ * Coverage algorithms (such as {@link CoverageUnion}) 
+ * generally require the input coverage to be valid to produce correct results.
+ * Coverages can be validated using {@link CoverageValidator}.
+ * 
  * 
  */
 package org.locationtech.jts.coverage;

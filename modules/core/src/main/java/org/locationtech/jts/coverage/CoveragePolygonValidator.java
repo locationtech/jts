@@ -32,9 +32,9 @@ import org.locationtech.jts.noding.MCIndexSegmentSetMutualIntersector;
 /**
  * Validates that a polygon forms a valid polygonal coverage 
  * with the set of polygons surrounding it.  
- * if the polygon is coverage-valid an empty {@link LineString} is returned.
+ * If the polygon is coverage-valid an empty {@link LineString} is returned.
  * Otherwise, the result is a linear geometry containing 
- * the polygon boundary linework that causes the coverage to be invalid.
+ * the polygon boundary linework causing the invalidity.
  * <p>
  * A polygon is coverage-valid if:
  * <ol>
@@ -51,22 +51,23 @@ import org.locationtech.jts.noding.MCIndexSegmentSetMutualIntersector;
  * <li>a polygon boundary segment crosses into an adjacent polygon
  * <li>a polygon boundary segment is in the interior of an adjacent polygon 
  * </ol>
+ * <p>
  * If any of these errors is present, the target polygon
  * does not form a valid coverage with the adjacent polygons.
  * <p>
  * The validity rules does not preclude gaps between coverage polygons.
- * This class can be used to detect narrow gaps, 
+ * However, this class can detect narrow gaps, 
  * by specifying a maximum gap width using {@link #setGapWidth(double)}.
  * Note that this will also identify narrow gaps separating disjoint coverage regions, 
  * and narrow gores.
  * In some situations it may also produce false positives 
- * (linework identified as part of a gap which is actually wider).
+ * (i.e. linework identified as part of a gap which is wider than the given width).
  * <p>
  * A polygon may be coverage-valid with respect to 
  * a set of surrounding polygons, but the collection as a whole may not
- * form a clean coverage.  For example, the target polygon edges may be fully matched
- * by adjacent edges, but the adjacent set contains polygons 
- * which are not coverage-valid relative to other ones in the set (e.g. they may overlap).
+ * form a clean coverage.  For example, the target polygon boundary may be fully matched
+ * by adjacent boundary segments, but the adjacent set contains polygons 
+ * which are not coverage-valid relative to other ones in the set.
  * A coverage is valid only if every polygon in the coverage is coverage-valid.
  * Use {@link CoverageValidator} to validate an entire set of polygons.
  * 
