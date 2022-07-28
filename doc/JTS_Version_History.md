@@ -17,6 +17,16 @@ Distributions for older JTS versions can be obtained at the
 
 <!-- ================================================================ -->
 
+# Version 1.x
+
+*Release Date: TBD*
+
+### New Features
+
+* Add `CoverageValidator` `CoveragePolygonValidator` (#900)
+* Add `CoverageGapFinder` (#900)
+* Add `CoverageUnion` (#900)
+
 # Version 1.19
 
 *Release Date: 06/21/2022*
@@ -53,7 +63,7 @@ Distributions for older JTS versions can be obtained at the
 ### Bug Fixes
 
 * Fix `WKTReader` geometry typename parsing (#786)
-* Fix `CoordinateArrays.reverse` to handle zero-length arrays #787
+* Fix `CoordinateArrays.reverse` to handle zero-length arrays (#787)
 * Fix `GeometryFixer` to appply `isKeepCollapsed` flag to `GeometryCollection` elements (#790)
 * Fix `RectangleIntersects` to handle XYZM geometry (#794)
 * Fix various operations to handle XYZM geometry (#795)
