@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.locationtech.jts.algorithm.Orientation;
+import org.locationtech.jts.algorithm.PolygonNodeTopology;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.LinearRing;
 
@@ -444,7 +445,7 @@ class PolygonRingSelfNode {
      * Note that either corner and either of the other edges could be used to test.
      * The situation is fully symmetrical.
      */
-    boolean isInteriorSeg = PolygonNode.isInteriorSegment(nodePt, e00, e01, e10);
+    boolean isInteriorSeg = PolygonNodeTopology.isInteriorSegment(nodePt, e00, e01, e10);
     boolean isExterior = isInteriorOnRight ? ! isInteriorSeg : isInteriorSeg;
     return isExterior;
   }

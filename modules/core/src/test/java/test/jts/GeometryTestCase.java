@@ -36,7 +36,7 @@ import junit.framework.TestCase;
 
 public abstract class GeometryTestCase extends TestCase{
 
-  private static final String CHECK_EQUAL_FAIL = "FAIL - Expected = %s -- Actual = %s\n";
+  private static final String CHECK_EQUAL_FAIL = "FAIL - %sExpected = %s -- Actual = %s\n";
 
   final GeometryFactory geomFactory;
   
@@ -67,11 +67,28 @@ public abstract class GeometryTestCase extends TestCase{
    * @param actual the actual value
    */
   protected void checkEqual(Geometry expected, Geometry actual) {
-    Geometry actualNorm = actual.norm();
-    Geometry expectedNorm = expected.norm();
-    boolean equal = actualNorm.equalsExact(expectedNorm);
+    checkEqual("", expected, actual);
+  }
+
+  /**
+   * Checks that the normalized values of the expected and actual
+   * geometries are exactly equal.
+   * 
+   * @param expected the expected value
+   * @param actual the actual value
+   */
+  protected void checkEqual(String msg, Geometry expected, Geometry actual) {
+    Geometry actualNorm = actual == null ? null : actual.norm();
+    Geometry expectedNorm = expected == null ? null : expected.norm();
+    boolean equal;
+    if (actualNorm == null || expectedNorm == null) {
+      equal = expectedNorm == null && expectedNorm == null;
+    }
+    else {
+      equal = actualNorm.equalsExact(expectedNorm);
+    }
     if (! equal) {
-      System.out.format(CHECK_EQUAL_FAIL, expectedNorm, actualNorm );
+      System.out.format(CHECK_EQUAL_FAIL, msg + ": ", expectedNorm, actualNorm );
     }
     assertTrue(equal);
   }
@@ -149,6 +166,13 @@ public abstract class GeometryTestCase extends TestCase{
         return false;        
     }
     return true;
+  }
+
+  protected void checkEqual(Geometry[] expected, Geometry[] actual) {
+    assertEquals("Array length", expected.length, actual.length);
+    for (int i = 0; i < expected.length; i++) {
+      checkEqual("element " + i, expected[i], actual[i]);      
+    }
   }
 
   protected void checkEqual(Collection expected, Collection actual) {
@@ -230,6 +254,14 @@ public abstract class GeometryTestCase extends TestCase{
     return geometries;
   }
 
+  protected Geometry[] readArray(String... wkt) {
+    Geometry[] geometries = new Geometry[wkt.length];
+    for (int i = 0; i < wkt.length; i++) {
+      geometries[i] = (wkt[i] == null) ? null : read(wkt[i]);
+    }
+    return geometries;
+  }
+  
   /**
    * Gets a {@link WKTReader} to read geometries from WKT with expected ordinates.
    *

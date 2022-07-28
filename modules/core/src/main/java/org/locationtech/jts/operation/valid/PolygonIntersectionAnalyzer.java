@@ -12,6 +12,7 @@
 package org.locationtech.jts.operation.valid;
 
 import org.locationtech.jts.algorithm.LineIntersector;
+import org.locationtech.jts.algorithm.PolygonNodeTopology;
 import org.locationtech.jts.algorithm.RobustLineIntersector;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.noding.SegmentIntersector;
@@ -168,7 +169,7 @@ implements SegmentIntersector
       e10 = prevCoordinateInRing(ss1, segIndex1);
       e11 = p11;
     }
-    boolean hasCrossing = PolygonNode.isCrossing(intPt, e00, e01, e10, e11); 
+    boolean hasCrossing = PolygonNodeTopology.isCrossing(intPt, e00, e01, e10, e11); 
     if (hasCrossing) {
       return TopologyValidationError.SELF_INTERSECTION;
     }
