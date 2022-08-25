@@ -92,7 +92,7 @@ public class CoverageValidatorTest extends GeometryTestCase
   
   //========  Valid cases   =============================
 
-  public void testChessboard() {
+  public void testGrid() {
     checkValid(readArray(
         "POLYGON ((1 9, 5 9, 5 5, 1 5, 1 9))",
         "POLYGON ((9 9, 9 5, 5 5, 5 9, 9 9))",
