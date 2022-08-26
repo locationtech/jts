@@ -31,12 +31,12 @@ public class CoverageValidatorTest extends GeometryTestCase
 
   public void testCollinearUnmatchedEdge() {
     checkInvalid(readArray(
-        "POLYGON ((100 200, 200 200, 200 100, 100 100, 100 200))",
-        "POLYGON ((100 300, 180 300, 180 200, 100 200, 100 300))"),
-        readArray(
+            "POLYGON ((100 200, 200 200, 200 100, 100 100, 100 200))",
+            "POLYGON ((100 300, 180 300, 180 200, 100 200, 100 300))"),
+            readArray(
             "LINESTRING (100 200, 200 200)",
-            null)
-            );
+            "LINESTRING (100 200, 180 200, 180 300)")
+        );
   }
   
   public void testOverlappingSquares() {

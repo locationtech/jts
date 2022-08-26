@@ -82,7 +82,7 @@ public abstract class GeometryTestCase extends TestCase{
     Geometry expectedNorm = expected == null ? null : expected.norm();
     boolean equal;
     if (actualNorm == null || expectedNorm == null) {
-      equal = expectedNorm == null && expectedNorm == null;
+      equal = actualNorm == null && expectedNorm == null;
     }
     else {
       equal = actualNorm.equalsExact(expectedNorm);
