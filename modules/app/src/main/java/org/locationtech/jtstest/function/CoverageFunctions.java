@@ -16,6 +16,7 @@ import java.util.List;
 import org.locationtech.jts.coverage.CoverageValidator;
 import org.locationtech.jts.coverage.CoverageGapFinder;
 import org.locationtech.jts.coverage.CoveragePolygonValidator;
+import org.locationtech.jts.coverage.CoverageSimplifier;
 import org.locationtech.jts.coverage.CoverageUnion;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.util.PolygonExtracter;
@@ -55,6 +56,13 @@ public class CoverageFunctions {
   public static Geometry unionCoverage(Geometry coverage) {
     Geometry[] cov = toGeometryArray(coverage);
     return CoverageUnion.union(cov);
+  }
+  
+  @Metadata(description="Simplify a coverage")
+  public static Geometry simplify(Geometry coverage, double tolerance) {
+    Geometry[] cov = toGeometryArray(coverage);
+    Geometry[] result =  CoverageSimplifier.simplify(cov, tolerance);
+    return FunctionsUtil.buildGeometry(result);
   }
   
   static Geometry extractPolygons(Geometry geom) {
