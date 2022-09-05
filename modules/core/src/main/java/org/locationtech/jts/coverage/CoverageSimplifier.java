@@ -59,7 +59,7 @@ public class CoverageSimplifier {
   public Geometry[] simplify(double tolerance) {
     extractEdges();
     simplifyEdges(tolerance);
-    Geometry[] result = buildPolygons();
+    Geometry[] result = buildResult();
     return result;
   }
 
@@ -155,15 +155,15 @@ public class CoverageSimplifier {
     //TODO: implement
   }
 
-  private Geometry[] buildPolygons() {
+  private Geometry[] buildResult() {
     Geometry[] result = new Geometry[input.length];
     for (int i = 0; i < input.length; i++) {
-      result[i] = buildResult(input[i]);
+      result[i] = buildPolygonal(input[i]);
     }
     return result;
   }
 
-  private Geometry buildResult(Geometry geom) {
+  private Geometry buildPolygonal(Geometry geom) {
     if (geom instanceof MultiPolygon) {
       //TODO: build MultiPoly
       return null;
