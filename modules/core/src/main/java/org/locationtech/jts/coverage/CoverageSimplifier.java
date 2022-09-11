@@ -11,14 +11,13 @@
  */
 package org.locationtech.jts.coverage;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.LineSegment;
-import org.locationtech.jts.geom.LinearRing;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.MultiLineString;
+import org.locationtech.jts.simplify.TopologyPreservingSimplifier;
 
 /**
  * Simplifies the boundaries of the polygons in a polygonal coverage
@@ -31,15 +30,30 @@ import org.locationtech.jts.geom.LinearRing;
  */
 public class CoverageSimplifier {
   
+  public interface LineSimplifier {
+    MultiLineString simplify(MultiLineString lines, double tolerance);
+  }
   public static Geometry[] simplify(Geometry[] coverage, double tolerance) {
     CoverageSimplifier simplifier = new CoverageSimplifier(coverage);
     return simplifier.simplify(tolerance);
   }
   
-  Geometry[] input;
+  private Geometry[] input;
+  private GeometryFactory geomFactory;
+  private LineSimplifier simplifier;
   
   public CoverageSimplifier(Geometry[] coverage) {
     input = coverage;
+    geomFactory = coverage[0].getFactory();
+    simplifier = new LineSimplifier() {
+
+      @Override
+      public MultiLineString simplify(MultiLineString lines, double tolerance) {
+        return (MultiLineString) VWTPSimplifier.simplify(lines, tolerance);
+        //return (MultiLineString) TopologyPreservingSimplifier.simplify(lines, tolerance);
+      }
+      
+    };
   }
   
   public Geometry[] simplify(double tolerance) {
@@ -49,8 +63,18 @@ public class CoverageSimplifier {
     return result;
   }
   
-  private void simplifyEdges(List<CoverageEdge> list, double tolerance) {
-    //TODO: implement
+  private void simplifyEdges(List<CoverageEdge> edges, double tolerance) {
+    LineString lines[] = new LineString[edges.size()];
+    for (int i = 0; i < lines.length; i++) {
+      lines[i] = geomFactory.createLineString(edges.get(i).getCoordinates());
+    }
+    MultiLineString mls = geomFactory.createMultiLineString(lines);
+    MultiLineString mlsSimp = simplifier.simplify(mls, tolerance);
+    //Assert: mlsSimp.getNumGeometries = lines.length
+    
+    for (int i = 0; i < lines.length; i++) {
+      edges.get(i).setCoordinates(mlsSimp.getGeometryN(i).getCoordinates());
+    }
   }
-
+  
 }

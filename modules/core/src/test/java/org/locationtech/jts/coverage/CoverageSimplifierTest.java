@@ -25,20 +25,57 @@ public class CoverageSimplifierTest extends GeometryTestCase {
     super(name);
   }
   
-  public void testSimple2() {
+  public void testNoopSimple2() {
     checkNoop(readArray(
         "POLYGON ((100 100, 200 200, 300 100, 200 101, 100 100))",
         "POLYGON ((150 0, 100 100, 200 101, 300 100, 250 0, 150 0))" )
     );
   }
 
-  public void testSimple3() {
+  public void testNoopSimple3() {
     checkNoop(readArray(
         "POLYGON ((100 300, 200 200, 100 200, 100 300))",
         "POLYGON ((100 200, 200 200, 200 100, 100 100, 100 200))",
         "POLYGON ((100 100, 200 100, 150 50, 100 100))" )
     );
   }
+
+  public void testNoopHole() {
+    checkNoop(readArray(
+        "POLYGON ((10 90, 90 90, 90 10, 10 10, 10 90), (20 80, 80 80, 80 20, 20 20, 20 80))",
+        "POLYGON ((80 20, 20 20, 20 80, 80 80, 80 20))" )
+    );
+  }
+
+  public void testNoopMulti() {
+    checkNoop(readArray(
+        "MULTIPOLYGON (((10 10, 10 50, 50 50, 50 10, 10 10)), ((90 90, 90 50, 50 50, 50 90, 90 90)))",
+        "MULTIPOLYGON (((10 90, 50 90, 50 50, 10 50, 10 90)), ((90 10, 50 10, 50 50, 90 50, 90 10)))" )
+    );
+  }
+
+  //---------------------------------------------
+  
+  public void testSimple2() {
+    checkResult(readArray(
+        "POLYGON ((100 100, 200 200, 300 100, 200 101, 100 100))",
+        "POLYGON ((150 0, 100 100, 200 101, 300 100, 250 0, 150 0))" ),
+        100,
+        readArray(
+            "POLYGON ((100 100, 200 200, 300 100, 100 100))",
+            "POLYGON ((150 0, 100 100, 300 100, 250 0, 150 0))" )
+    );
+  }
+
+  public void testRingNoCollapse() {
+    checkResult(readArray(
+        "POLYGON ((10 50, 60 90, 70 50, 60 10, 10 50))" ),
+        100000,
+        readArray(
+            "POLYGON ((10 50, 60 90, 60 10, 10 50))" )
+    );
+  }
+
 
   private void checkNoop(Geometry[] input) {
     Geometry[] actual = CoverageSimplifier.simplify(input, 0);

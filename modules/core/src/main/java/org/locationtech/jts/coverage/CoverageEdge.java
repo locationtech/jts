@@ -57,16 +57,17 @@ class CoverageEdge {
     this.pts = pts;
   }
 
+  public void setCoordinates(Coordinate[] pts) {
+    this.pts = pts;
+  }
+  
   public LineSegment getKey() {
+    //-- key is stable due to points list normalization
     return new LineSegment(pts[0], pts[1]);
   }
 
   public Coordinate[] getCoordinates() {
     return pts;
-  }
-
-  public String toString() {
-    return WKTWriter.toLineString(pts);
   }
 
   public Coordinate getEndCoordinate() {
@@ -76,4 +77,9 @@ class CoverageEdge {
   public Coordinate getStartCoordinate() {
     return pts[0];
   }
+  
+  public String toString() {
+    return WKTWriter.toLineString(pts);
+  }
+
 }
