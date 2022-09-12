@@ -16,8 +16,10 @@ public class PreparedGeometryTest extends GeometryTestCase {
   
   public void testEmptyElement() {
     Geometry geomA = read("MULTIPOLYGON (((9 9, 9 1, 1 1, 2 4, 7 7, 9 9)), EMPTY)");
-    Geometry geomB = read("MULTIPOLYGON (((7 6, 7 3, 4 3, 7 6)))");
+    Geometry geomB = read("MULTIPOLYGON (((7 6, 7 3, 4 3, 7 6)), EMPTY)");
     PreparedGeometry prepA = PreparedGeometryFactory.prepare(geomA);
-    boolean result = prepA.covers(geomB);
+    assertTrue( prepA.covers(geomB));
+    assertTrue( prepA.contains(geomB));
+    assertTrue( prepA.intersects(geomB));
   }
 }

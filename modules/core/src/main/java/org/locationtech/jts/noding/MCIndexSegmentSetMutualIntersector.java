@@ -109,6 +109,8 @@ public class MCIndexSegmentSetMutualIntersector implements SegmentSetMutualInter
 
   private void addToMonoChains(SegmentString segStr, List monoChains)
   {
+    if (segStr.size() == 0)
+      return;
     List segChains = MonotoneChainBuilder.getChains(segStr.getCoordinates(), segStr);
     for (Iterator i = segChains.iterator(); i.hasNext(); ) {
       MonotoneChain mc = (MonotoneChain) i.next();
