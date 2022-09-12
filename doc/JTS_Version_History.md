@@ -27,6 +27,10 @@ Distributions for older JTS versions can be obtained at the
 * Add `CoverageGapFinder` (#900)
 * Add `CoverageUnion` (#900)
 
+### Bug Fixes
+
+* Fix `PreparedGeometry` handling of EMPTY elements (#904)
+
 # Version 1.19
 
 *Release Date: 06/21/2022*
