@@ -49,6 +49,8 @@ public class MonotoneChainBuilder {
   public static List getChains(Coordinate[] pts, Object context)
   {
     List mcList = new ArrayList();
+    if (pts.length == 0)
+      return mcList;
     int chainStart = 0;
     do {
       int chainEnd = findChainEnd(pts, chainStart);
