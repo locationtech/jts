@@ -68,10 +68,12 @@ public class MCIndexSegmentSetMutualIntersector implements SegmentSetMutualInter
    */
   public SpatialIndex getIndex() { return index; }
 
-  private void initBaseSegments(Collection segStrings)
+  private void initBaseSegments(Collection<SegmentString> segStrings)
   {
-    for (Iterator i = segStrings.iterator(); i.hasNext(); ) {
-      addToIndex((SegmentString) i.next());
+    for (SegmentString ss : segStrings) {
+      if (ss.size() == 0)
+        continue;
+      addToIndex(ss);
     }
     // build index to ensure thread-safety
     index.build();
