@@ -12,6 +12,7 @@
 package org.locationtech.jts.io;
 
 import java.io.IOException;
+import java.util.EnumSet;
 
 import org.locationtech.jts.geom.CoordinateSequence;
 import org.locationtech.jts.geom.CoordinateSequenceFactory;
@@ -244,6 +245,14 @@ public class WKBReader
     boolean hasM = ((typeInt & 0x40000000) != 0 || (typeInt & 0xffff)/1000 == 2 || (typeInt & 0xffff)/1000 == 3);
     //System.out.println(typeInt + " - " + geometryType + " - hasZ:" + hasZ);
     inputDimension = 2 + (hasZ ? 1 : 0) + (hasM ? 1 : 0);
+    
+    EnumSet<Ordinate> ordinateFlags = EnumSet.of(Ordinate.X, Ordinate.Y);
+    if (hasZ) {
+      ordinateFlags.add(Ordinate.Z);
+    }
+    if (hasM) {
+      ordinateFlags.add(Ordinate.M);
+    }
 
     // determine if SRIDs are present (EWKB only)
     boolean hasSRID = (typeInt & 0x20000000) != 0;
@@ -258,13 +267,13 @@ public class WKBReader
     Geometry geom = null;
     switch (geometryType) {
       case WKBConstants.wkbPoint :
-        geom = readPoint();
+        geom = readPoint(ordinateFlags);
         break;
       case WKBConstants.wkbLineString :
-        geom = readLineString();
+        geom = readLineString(ordinateFlags);
         break;
      case WKBConstants.wkbPolygon :
-       geom = readPolygon();
+       geom = readPolygon(ordinateFlags);
         break;
       case WKBConstants.wkbMultiPoint :
         geom = readMultiPoint(SRID);
@@ -298,9 +307,9 @@ public class WKBReader
     return g;
   }
 
-  private Point readPoint() throws IOException, ParseException
+  private Point readPoint(EnumSet<Ordinate> ordinateFlags) throws IOException, ParseException
   {
-    CoordinateSequence pts = readCoordinateSequence(1);
+    CoordinateSequence pts = readCoordinateSequence(1, ordinateFlags);
     // If X and Y are NaN create a empty point
     if (Double.isNaN(pts.getX(0)) || Double.isNaN(pts.getY(0))) {
       return factory.createPoint();
@@ -308,21 +317,21 @@ public class WKBReader
     return factory.createPoint(pts);
   }
 
-  private LineString readLineString() throws IOException, ParseException
+  private LineString readLineString(EnumSet<Ordinate> ordinateFlags) throws IOException, ParseException
   {
     int size = readNumField(FIELD_NUMCOORDS);
-    CoordinateSequence pts = readCoordinateSequenceLineString(size);
+    CoordinateSequence pts = readCoordinateSequenceLineString(size, ordinateFlags);
     return factory.createLineString(pts);
   }
 
-  private LinearRing readLinearRing() throws IOException, ParseException
+  private LinearRing readLinearRing(EnumSet<Ordinate> ordinateFlags) throws IOException, ParseException
   {
     int size = readNumField(FIELD_NUMCOORDS);
-    CoordinateSequence pts = readCoordinateSequenceRing(size);
+    CoordinateSequence pts = readCoordinateSequenceRing(size, ordinateFlags);
     return factory.createLinearRing(pts);
   }
 
-  private Polygon readPolygon() throws IOException, ParseException
+  private Polygon readPolygon(EnumSet<Ordinate> ordinateFlags) throws IOException, ParseException
   {
     int numRings = readNumField(FIELD_NUMRINGS);
     LinearRing[] holes = null;
@@ -333,9 +342,9 @@ public class WKBReader
     if (numRings <= 0)
       return factory.createPolygon();
     
-    LinearRing shell = readLinearRing();
+    LinearRing shell = readLinearRing(ordinateFlags);
     for (int i = 0; i < numRings - 1; i++) {
-      holes[i] = readLinearRing();
+      holes[i] = readLinearRing(ordinateFlags);
     }
     return factory.createPolygon(shell, holes);
   }
@@ -390,9 +399,9 @@ public class WKBReader
     return factory.createGeometryCollection(geoms);
   }
 
-  private CoordinateSequence readCoordinateSequence(int size) throws IOException, ParseException
+  private CoordinateSequence readCoordinateSequence(int size, EnumSet<Ordinate> ordinateFlags) throws IOException, ParseException
   {
-    CoordinateSequence seq = csFactory.create(size, inputDimension);
+    CoordinateSequence seq = csFactory.create(size, inputDimension, ordinateFlags.contains(Ordinate.M) ? 1 : 0);
     int targetDim = seq.getDimension();
     if (targetDim > inputDimension)
       targetDim = inputDimension;
@@ -405,17 +414,17 @@ public class WKBReader
     return seq;
   }
 
-  private CoordinateSequence readCoordinateSequenceLineString(int size) throws IOException, ParseException
+  private CoordinateSequence readCoordinateSequenceLineString(int size, EnumSet<Ordinate> ordinateFlags) throws IOException, ParseException
   {
-    CoordinateSequence seq = readCoordinateSequence(size);
+    CoordinateSequence seq = readCoordinateSequence(size, ordinateFlags);
     if (isStrict) return seq;
     if (seq.size() == 0 || seq.size() >= 2) return seq;
     return CoordinateSequences.extend(csFactory, seq, 2);
   }
   
-  private CoordinateSequence readCoordinateSequenceRing(int size) throws IOException, ParseException
+  private CoordinateSequence readCoordinateSequenceRing(int size, EnumSet<Ordinate> ordinateFlags) throws IOException, ParseException
   {
-    CoordinateSequence seq = readCoordinateSequence(size);
+    CoordinateSequence seq = readCoordinateSequence(size, ordinateFlags);
     if (isStrict) return seq;
     if (CoordinateSequences.isRing(seq)) return seq;
     return CoordinateSequences.ensureValidRing(csFactory, seq);

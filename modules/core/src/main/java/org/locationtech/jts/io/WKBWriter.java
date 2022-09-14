@@ -13,6 +13,7 @@ package org.locationtech.jts.io;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.EnumSet;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateSequence;
@@ -211,6 +212,7 @@ public class WKBWriter
     return (char) ('A' + (n - 10));
   }
 
+  private EnumSet<Ordinate> outputOrdinates;
   private int outputDimension = 2;
   private int byteOrder;
   private boolean includeSRID = false;
@@ -272,13 +274,27 @@ public class WKBWriter
   
   /**
    * Creates a writer that writes {@link Geometry}s with
-   * the given dimension (2 or 3) for output coordinates
+   * the given dimension (2 to 4) for output coordinates
    * and byte order. This constructor also takes a flag to 
    * control whether srid information will be written.
    * If the input geometry has a small coordinate dimension,
    * coordinates will be padded with {@link Coordinate#NULL_ORDINATE}.
+   * The output follows the following rules:
+   * <ul>
+   *   <li>If the specified <b>output dimension is 3</b> and the <b>z is measure flag
+   *   is set to true</b>, the Z value of coordinates will be written if it is present
+   * (i.e. if it is not <code>Double.NaN</code>)</li>
+   *   <li>If the specified <b>output dimension is 3</b> and the <b>z is measure flag
+   *   is set to false</b>, the Measure value of coordinates will be written if it is present
+   * (i.e. if it is not <code>Double.NaN</code>)</li>
+   *   <li>If the specified <b>output dimension is 4</b>, the Z value of coordinates will
+   *   be written even if it is not present when the Measure value is present. The Measure
+   *   value of coordinates will be written if it is present
+   * (i.e. if it is not <code>Double.NaN</code>)</li>
+   * </ul>
+   * See also {@link #setOutputOrdinates(EnumSet)}
    *
-   * @param outputDimension the coordinate dimension to output (2 or 3)
+   * @param outputDimension the coordinate dimension to output (2 to 4)
    * @param byteOrder the byte ordering to use
    * @param includeSRID indicates whether SRID should be written
    */
@@ -287,10 +303,57 @@ public class WKBWriter
       this.byteOrder = byteOrder;
       this.includeSRID = includeSRID;
       
-      if (outputDimension < 2 || outputDimension > 3)
-        throw new IllegalArgumentException("Output dimension must be 2 or 3");
+      if (outputDimension < 2 || outputDimension > 4)
+        throw new IllegalArgumentException("Output dimension must be 2 to 4");
+
+      this.outputOrdinates = EnumSet.of(Ordinate.X, Ordinate.Y);
+      if (outputDimension > 2)
+        outputOrdinates.add(Ordinate.Z);
+      if (outputDimension > 3)
+        outputOrdinates.add(Ordinate.M);
   }
-  
+
+  /**
+   * Sets the {@link Ordinate} that are to be written. Possible members are:
+   * <ul>
+   * <li>{@link Ordinate#X}</li>
+   * <li>{@link Ordinate#Y}</li>
+   * <li>{@link Ordinate#Z}</li>
+   * <li>{@link Ordinate#M}</li>
+   * </ul>
+   * Values of {@link Ordinate#X} and {@link Ordinate#Y} are always assumed and not
+   * particularly checked for.
+   *
+   * @param outputOrdinates A set of {@link Ordinate} values
+   */
+  public void setOutputOrdinates(EnumSet<Ordinate> outputOrdinates) {
+
+    this.outputOrdinates.remove(Ordinate.Z);
+    this.outputOrdinates.remove(Ordinate.M);
+
+    if (this.outputDimension == 3) {
+      if (outputOrdinates.contains(Ordinate.Z))
+        this.outputOrdinates.add(Ordinate.Z);
+      else if (outputOrdinates.contains(Ordinate.M))
+        this.outputOrdinates.add(Ordinate.M);
+    }
+    if (this.outputDimension == 4) {
+      if (outputOrdinates.contains(Ordinate.Z))
+        this.outputOrdinates.add(Ordinate.Z);
+      if (outputOrdinates.contains(Ordinate.M))
+        this.outputOrdinates.add(Ordinate.M);
+    }
+  }
+
+  /**
+   * Gets a bit-pattern defining which ordinates should be
+   * @return an ordinate bit-pattern
+   * @see #setOutputOrdinates(EnumSet)
+   */
+  public EnumSet<Ordinate> getOutputOrdinates() {
+    return this.outputOrdinates;
+  }
+
   /**
    * Writes a {@link Geometry} into a byte array.
    *
@@ -405,7 +468,16 @@ public class WKBWriter
   private void writeGeometryType(int geometryType, Geometry g, OutStream os)
       throws IOException
   {
-    int flag3D = (outputDimension == 3) ? 0x80000000 : 0;
+    int ordinals = 0;
+    if (outputOrdinates.contains(Ordinate.Z)) {
+      ordinals = ordinals | 0x80000000;
+      }
+
+    if (outputOrdinates.contains(Ordinate.M)) {
+      ordinals = ordinals | 0x40000000;
+      }
+
+    int flag3D = (outputDimension > 2) ? ordinals : 0;
     int typeInt = geometryType | flag3D;
     typeInt |= includeSRID ? 0x20000000 : 0;
     writeInt(typeInt, os);

@@ -257,10 +257,11 @@ public class WKTWriter
    *   is set to false</b>, the Measure value of coordinates will be written if it is present
    * (i.e. if it is not <code>Double.NaN</code>)</li>
    *   <li>If the specified <b>output dimension is 4</b>, the Z value of coordinates will
-   *   be written even if it is not present when the Measure value is present.The Measrue
+   *   be written even if it is not present when the Measure value is present. The Measure
    *   value of coordinates will be written if it is present
    * (i.e. if it is not <code>Double.NaN</code>)</li>
    * </ul>
+   * See also {@link #setOutputOrdinates(EnumSet)}
    *
    * @param outputDimension the coordinate dimension to output (2 to 4)
    */
