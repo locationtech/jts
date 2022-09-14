@@ -115,9 +115,9 @@ public class WKBReader
 
   private static final String FIELD_NUMCOORDS = "numCoords";
 
-  private static final String FIELD_NUMRINGS = null;
+  private static final String FIELD_NUMRINGS = "numRings";
 
-  private static final String FIELD_NUMELEMS = null;
+  private static final String FIELD_NUMELEMS = "numElems";
 
   private GeometryFactory factory;
   private CoordinateSequenceFactory csFactory;
@@ -156,7 +156,7 @@ public class WKBReader
     // possibly reuse the ByteArrayInStream?
     // don't throw IOExceptions, since we are not doing any I/O
     try {
-      return read(new ByteArrayInStream(bytes), bytes.length / 16);
+      return read(new ByteArrayInStream(bytes), bytes.length / 8);
     }
     catch (IOException ex) {
       throw new RuntimeException("Unexpected IOException caught: " + ex.getMessage());
