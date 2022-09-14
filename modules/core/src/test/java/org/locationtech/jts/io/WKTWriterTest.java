@@ -181,4 +181,22 @@ public class WKTWriterTest extends TestCase {
     assertEquals("LINESTRING (1 1, 2 2)", wkt);
   }
 
+  public void testWktLineStringZM() throws ParseException {
+      LineString lineZM = new GeometryFactory().createLineString(new Coordinate[]{new CoordinateXYZM(1,2,3,4), new CoordinateXYZM(5,6,7,8)});
+      String write = new WKTWriter(4).write(lineZM);
+
+      LineString deserialisiert = (LineString) new WKTReader().read(write);
+
+      assertEquals(lineZM, deserialisiert);
+
+      assertEquals(1.0, lineZM.getPointN(0).getCoordinate().getX());
+      assertEquals(2.0, lineZM.getPointN(0).getCoordinate().getY());
+      assertEquals(3.0, lineZM.getPointN(0).getCoordinate().getZ());
+      assertEquals(4.0, lineZM.getPointN(0).getCoordinate().getM());
+      
+      assertEquals(5.0, lineZM.getPointN(1).getCoordinate().getX());
+      assertEquals(6.0, lineZM.getPointN(1).getCoordinate().getY());
+      assertEquals(7.0, lineZM.getPointN(1).getCoordinate().getZ());
+      assertEquals(8.0, lineZM.getPointN(1).getCoordinate().getM());
+  }
 }
