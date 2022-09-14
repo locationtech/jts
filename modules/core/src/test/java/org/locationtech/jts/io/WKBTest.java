@@ -109,6 +109,11 @@ public class WKBTest
   {
     runWKBTest("LINESTRING EMPTY");
   }
+  public void testGeometryCollectionContainingEmptyGeometries()
+      throws IOException, ParseException
+  {
+    runWKBTest("GEOMETRYCOLLECTION (LINESTRING EMPTY, MULTIPOINT EMPTY)");
+  }
 
   public void testBigPolygon()
       throws IOException, ParseException
