@@ -30,6 +30,7 @@ Distributions for older JTS versions can be obtained at the
 ### Bug Fixes
 
 * Fix `PreparedGeometry` handling of EMPTY elements (#904)
+* Fix `WKBReader` parsing of WKB containing multiple empty elements (#905)
 
 # Version 1.19
 
