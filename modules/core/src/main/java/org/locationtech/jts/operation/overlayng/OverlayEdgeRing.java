@@ -47,6 +47,10 @@ class OverlayEdgeRing {
     return ring;
   }
   
+  private Envelope getEnvelope() {
+    return ring.getEnvelopeInternal();
+  }
+  
   /**
    * Tests whether this ring is a hole.
    * @return <code>true</code> if this ring is a hole
@@ -145,43 +149,23 @@ class OverlayEdgeRing {
    * make the passed shellList as small as possible (e.g.
    * by using a spatial index filter beforehand).
    * 
-   * @return containing EdgeRing, if there is one
-   * or null if no containing EdgeRing is found
+   * @return containing EdgeRing or null if no containing EdgeRing is found
    */
   public OverlayEdgeRing findEdgeRingContaining(List<OverlayEdgeRing> erList)
   {
-    LinearRing testRing = this.getRing();
-    Envelope testEnv = testRing.getEnvelopeInternal();
-    Coordinate testPt = testRing.getCoordinateN(0);
-
-    OverlayEdgeRing minRing = null;
-    Envelope minRingEnv = null;
-    for (OverlayEdgeRing tryEdgeRing: erList ) {
-      LinearRing tryRing = tryEdgeRing.getRing();
-      Envelope tryShellEnv = tryRing.getEnvelopeInternal();
-      // the hole envelope cannot equal the shell envelope
-      // (also guards against testing rings against themselves)
-      if (tryShellEnv.equals(testEnv)) continue;
-      
-      // hole must be contained in shell
-      if (! tryShellEnv.contains(testEnv)) continue;
-      
-      testPt = CoordinateArrays.ptNotInList(testRing.getCoordinates(), tryEdgeRing.getCoordinates());
- 
-      boolean isContained = tryEdgeRing.isInRing(testPt);
-
-      // check if the new containing ring is smaller than the current minimum ring
-      if (isContained) {
-        if (minRing == null
-            || minRingEnv.contains(tryShellEnv)) {
-          minRing = tryEdgeRing;
-          minRingEnv = minRing.getRing().getEnvelopeInternal();
+    OverlayEdgeRing minContainingRing = null;
+    
+    for (OverlayEdgeRing edgeRing: erList) {
+      if (edgeRing.contains(this)) {
+        if (minContainingRing == null
+            || minContainingRing.getEnvelope().contains(edgeRing.getEnvelope())) {
+          minContainingRing = edgeRing;
         }
       }
     }
-    return minRing;
+    return minContainingRing;
   }
-  
+
   private PointOnGeometryLocator getLocator() {
     if (locator == null) {
       locator = new IndexedPointInAreaLocator(getRing());
@@ -189,12 +173,44 @@ class OverlayEdgeRing {
     return locator;
   }
   
-  public boolean isInRing(Coordinate pt) {
+  public int locate(Coordinate pt) {
     /**
      * Use an indexed point-in-polygon for performance
      */
-    return Location.EXTERIOR != getLocator().locate(pt);
-    //return PointLocation.isInRing(pt, getCoordinates());
+    return getLocator().locate(pt);
+  }
+  
+  /**
+   * Tests if an edgeRing is properly contained in this ring.
+   * Relies on property that edgeRings never overlap (although they may
+   * touch at single vertices).
+   * 
+   * @param ring ring to test
+   * @return true if ring is properly contained
+   */
+  private boolean contains(OverlayEdgeRing ring) {
+    // the test envelope must be properly contained
+    // (guards against testing rings against themselves)
+    Envelope env = getEnvelope();
+    Envelope testEnv = ring.getEnvelope();
+    if (! env.containsProperly(testEnv))
+      return false;
+    return isPointInOrOut(ring);
+  }
+  
+  private boolean isPointInOrOut(OverlayEdgeRing ring) {
+    // in most cases only one or two points will be checked
+    for (Coordinate pt : ring.getCoordinates()) {
+      int loc = locate(pt);
+      if (loc == Location.INTERIOR) {
+        return true;
+      }
+      if (loc == Location.EXTERIOR) {
+        return false;
+      }
+      // pt is on BOUNDARY, so keep checking for a determining location
+    }
+    return false;
   }
 
   public Coordinate getCoordinate() {
