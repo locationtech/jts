@@ -32,6 +32,10 @@ Distributions for older JTS versions can be obtained at the
 * Fix `PreparedGeometry` handling of EMPTY elements (#904)
 * Fix `WKBReader` parsing of WKB containing multiple empty elements (#905)
 
+### Performance Improvements
+
+* Improve `Polygonizer` performance in some cases with many islands (#906)
+
 # Version 1.19
 
 *Release Date: 06/21/2022*
