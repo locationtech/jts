@@ -20,7 +20,6 @@ import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.algorithm.locate.IndexedPointInAreaLocator;
 import org.locationtech.jts.algorithm.locate.PointOnGeometryLocator;
 import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.CoordinateArrays;
 import org.locationtech.jts.geom.CoordinateList;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -57,51 +56,21 @@ class EdgeRing {
    * make the passed shellList as small as possible (e.g.
    * by using a spatial index filter beforehand).
    * 
-   * @return containing EdgeRing, if there is one
-   * or null if no containing EdgeRing is found
+   * @return containing EdgeRing, or null if no containing EdgeRing is found
    */
   public static EdgeRing findEdgeRingContaining(EdgeRing testEr, List erList)
   {
-    LinearRing testRing = testEr.getRing();
-    Envelope testEnv = testRing.getEnvelopeInternal();
-    Coordinate testPt = testRing.getCoordinateN(0);
-
-    EdgeRing minRing = null;
-    Envelope minRingEnv = null;
+    EdgeRing minContainingRing = null;
     for (Iterator it = erList.iterator(); it.hasNext(); ) {
-      EdgeRing tryEdgeRing = (EdgeRing) it.next();
-      LinearRing tryRing = tryEdgeRing.getRing();
-      Envelope tryShellEnv = tryRing.getEnvelopeInternal();
-      // the hole envelope cannot equal the shell envelope
-      // (also guards against testing rings against themselves)
-      if (tryShellEnv.equals(testEnv)) continue;
-      
-      // hole must be contained in shell
-      if (! tryShellEnv.contains(testEnv)) continue;
-      
-      testPt = CoordinateArrays.ptNotInList(testRing.getCoordinates(), tryEdgeRing.getCoordinates());
- 
-      /**
-       * If testPt is null it indicates that the hole is exactly surrounded by the tryShell.
-       * This should not happen for fully noded/dissolved linework.
-       * For now just ignore this hole and continue - this should produce
-       * "best effort" output.
-       * In futher could flag this as an error (invalid ring).
-       */
-      if (testPt == null) continue;
-      
-      boolean isContained =  tryEdgeRing.isInRing(testPt);
-
-      // check if the new containing ring is smaller than the current minimum ring
-      if (isContained) {
-        if (minRing == null
-            || minRingEnv.contains(tryShellEnv)) {
-          minRing = tryEdgeRing;
-          minRingEnv = minRing.getRing().getEnvelopeInternal();
+      EdgeRing edgeRing = (EdgeRing) it.next();
+      if (edgeRing.contains(testEr)) {
+        if (minContainingRing == null
+            || minContainingRing.getEnvelope().contains(edgeRing.getEnvelope())) {
+          minContainingRing = edgeRing;
         }
       }
     }
-    return minRing;
+    return minContainingRing;
   }
   
   /**
@@ -260,12 +229,44 @@ class EdgeRing {
     return locator;
   }
   
-  public boolean isInRing(Coordinate pt) {
+  public int locate(Coordinate pt) {
     /**
      * Use an indexed point-in-polygon for performance
      */
-    return Location.EXTERIOR != getLocator().locate(pt);
-    //return PointLocation.isInRing(pt, getCoordinates());
+    return getLocator().locate(pt);
+  }
+  
+  /**
+   * Tests if an edgeRing is properly contained in this ring.
+   * Relies on property that edgeRings never overlap (although they may
+   * touch at single vertices).
+   * 
+   * @param ring ring to test
+   * @return true if ring is properly contained
+   */
+  private boolean contains(EdgeRing ring) {
+    // the test envelope must be properly contained
+    // (guards against testing rings against themselves)
+    Envelope env = getEnvelope();
+    Envelope testEnv = ring.getEnvelope();
+    if (! env.containsProperly(testEnv))
+      return false;
+    return isPointInOrOut(ring);
+  }
+  
+  private boolean isPointInOrOut(EdgeRing ring) {
+    // in most cases only one or two points will be checked
+    for (Coordinate pt : ring.getCoordinates()) {
+      int loc = locate(pt);
+      if (loc == Location.INTERIOR) {
+        return true;
+      }
+      if (loc == Location.EXTERIOR) {
+        return false;
+      }
+      // pt is on BOUNDARY, so keep checking for a determining location
+    }
+    return false;
   }
   
   /**
@@ -319,6 +320,10 @@ class EdgeRing {
     return ring;
   }
 
+  private Envelope getEnvelope() {
+    return getRing().getEnvelopeInternal();
+  }
+  
   private static void addEdge(Coordinate[] coords, boolean isForward, CoordinateList coordList)
   {
     if (isForward) {

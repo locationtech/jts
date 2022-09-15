@@ -698,6 +698,20 @@ public class Envelope
   }
 
   /**
+   * Tests if an envelope is properly contained in this one.
+   * The envelope is properly contained if it is contained 
+   * by this one but not equal to it.
+   * 
+   * @param other the envelope to test
+   * @return true if the envelope is properly contained
+   */
+  public boolean containsProperly(Envelope other) {
+    if (equals(other))
+      return false;
+    return covers(other);
+  }
+  
+  /**
    * Tests if the given point lies in or on the envelope.
    *
    *@param  x  the x-coordinate of the point which this <code>Envelope</code> is
