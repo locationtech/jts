@@ -41,13 +41,11 @@ class CoverageEdges {
   }
   
   private Geometry[] coverage;
-  private GeometryFactory geomFactory;
   private Map<LinearRing, List<CoverageEdge>> ringEdgesMap;
   private List<CoverageEdge> edges;
   
   public CoverageEdges(Geometry[] coverage) {
     this.coverage = coverage;
-    geomFactory = coverage.length > 0 ? coverage[0].getFactory() : null;
     ringEdgesMap = new HashMap<LinearRing, List<CoverageEdge>>();
     edges = new ArrayList<CoverageEdge>();
     create();
@@ -199,34 +197,34 @@ class CoverageEdges {
     for (int i = 0; i < polys.length; i++) {
       polys[i] = buildPolygon((Polygon) geom.getGeometryN(i));
     }
-    return geomFactory.createMultiPolygon(polys);
+    return geom.getFactory().createMultiPolygon(polys);
   }
 
   private Polygon buildPolygon(Polygon polygon) {
     LinearRing shell = buildRing(polygon.getExteriorRing());
     if (polygon.getNumInteriorRing() == 0) {
-      return geomFactory.createPolygon(shell);
+      return polygon.getFactory().createPolygon(shell);
     }
     LinearRing holes[] = new LinearRing[polygon.getNumInteriorRing()];
     for (int i = 0; i < holes.length; i++) {
       LinearRing hole = polygon.getInteriorRingN(i);
       holes[i] = buildRing(hole);
     }
-    return geomFactory.createPolygon(shell, holes);
+    return polygon.getFactory().createPolygon(shell, holes);
   }
 
   private LinearRing buildRing(LinearRing ring) {
-    List<CoverageEdge> edges = ringEdgesMap.get(ring);
+    List<CoverageEdge> ringEdges = ringEdgesMap.get(ring);
     CoordinateList ptsList = new CoordinateList();
-    for (int i = 0; i < edges.size(); i++) {
+    for (int i = 0; i < ringEdges.size(); i++) {
       Coordinate lastPt = ptsList.size() > 0 
                             ? ptsList.getCoordinate(ptsList.size() - 1)
                             : null;
-      boolean dir = isEdgeForward(edges, i, lastPt);
-      ptsList.add(edges.get(i).getCoordinates(), false, dir);
+      boolean dir = isEdgeForward(ringEdges, i, lastPt);
+      ptsList.add(ringEdges.get(i).getCoordinates(), false, dir);
     }
     Coordinate[] pts = ptsList.toCoordinateArray();
-    return geomFactory.createLinearRing(pts);
+    return ring.getFactory().createLinearRing(pts);
   }
 
   private boolean isEdgeForward(List<CoverageEdge> edges, int index, Coordinate lastPt) {
