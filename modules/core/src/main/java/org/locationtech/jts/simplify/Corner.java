@@ -23,11 +23,11 @@ public class Corner implements Comparable<Corner> {
   private int next;
   private double area;
 
-  public Corner(int i, int prev, int next, double area) {
-    this.index = i;
-    this.prev = prev;
-    this.next = next;
-    this.area = area;
+  public Corner(LinkedLine edge, int i) {
+    this.index = i; 
+    this.prev = edge.prev(i);
+    this.next = edge.next(i);
+    this.area = area(edge, i);
   }
 
   public boolean isVertex(int index) {
@@ -44,6 +44,13 @@ public class Corner implements Comparable<Corner> {
     return area;
   }
   
+  private static double area(LinkedLine edge, int index) {
+    Coordinate pp = edge.prevCoordinate(index);
+    Coordinate p = edge.getCoordinate(index);
+    Coordinate pn = edge.nextCoordinate(index);
+    return Triangle.area(pp, p, pn);
+  }
+
   /**
    * Orders corners by increasing area
    */
@@ -52,16 +59,23 @@ public class Corner implements Comparable<Corner> {
     return Double.compare(area, o.area);
   }
   
-  public Envelope envelope(LinkedRing ring) {
-    Coordinate pp = ring.getCoordinate(prev);
-    Coordinate p = ring.getCoordinate(index);
-    Coordinate pn = ring.getCoordinate(next);
+  public Envelope envelope(LinkedLine edge) {
+    Coordinate pp = edge.getCoordinate(prev);
+    Coordinate p = edge.getCoordinate(index);
+    Coordinate pn = edge.getCoordinate(next);
     Envelope env = new Envelope(pp, pn);
     env.expandToInclude(p);
     return env;
   }
   
-  public boolean intersects(Coordinate v, LinkedLine edge) {
+  public boolean isVertex(LinkedLine edge, Coordinate v) {
+    if (v.equals2D(edge.getCoordinate(prev))) return true;
+    if (v.equals2D(edge.getCoordinate(index))) return true;
+    if (v.equals2D(edge.getCoordinate(next))) return true;
+    return false;
+  }
+  
+  public boolean intersects(LinkedLine edge, Coordinate v) {
     Coordinate pp = edge.getCoordinate(prev);
     Coordinate p = edge.getCoordinate(index);
     Coordinate pn = edge.getCoordinate(next);
@@ -84,5 +98,7 @@ public class Corner implements Comparable<Corner> {
     if (p == null) return new Coordinate(Double.NaN, Double.NaN);
     return p;
   }
+
+
 }
 

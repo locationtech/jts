@@ -60,7 +60,7 @@ public class CoverageSimplifierTest extends GeometryTestCase {
     checkResult(readArray(
         "POLYGON ((100 100, 200 200, 300 100, 200 101, 100 100))",
         "POLYGON ((150 0, 100 100, 200 101, 300 100, 250 0, 150 0))" ),
-        100,
+        10,
         readArray(
             "POLYGON ((100 100, 200 200, 300 100, 100 100))",
             "POLYGON ((150 0, 100 100, 300 100, 250 0, 150 0))" )
@@ -75,6 +75,18 @@ public class CoverageSimplifierTest extends GeometryTestCase {
             "POLYGON ((10 50, 60 90, 60 10, 10 50))" )
     );
   }
+
+  public void testFilledHole() {
+    checkResult(readArray(
+        "POLYGON ((20 30, 20 80, 60 50, 80 20, 50 20, 20 30))",
+        "POLYGON ((10 90, 90 90, 90 10, 10 10, 10 90), (50 20, 20 30, 20 80, 60 50, 80 20, 50 20))" ),
+        28,
+        readArray(
+            "POLYGON ((50 20, 20 80, 80 20, 50 20))",
+            "POLYGON ((10 90, 90 90, 90 10, 10 10, 10 90), (50 20, 20 80, 80 20, 50 20))" )
+    );
+  }
+
 
 
   private void checkNoop(Geometry[] input) {

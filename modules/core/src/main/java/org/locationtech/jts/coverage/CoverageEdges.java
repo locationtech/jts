@@ -33,10 +33,10 @@ import org.locationtech.jts.geom.Polygon;
  * @author Martin Davis
  *
  */
-class CoverageRingEdges {
+class CoverageEdges {
   
-  public static CoverageRingEdges create(Geometry[] coverage) {
-    CoverageRingEdges edges = new CoverageRingEdges(coverage);
+  public static CoverageEdges create(Geometry[] coverage) {
+    CoverageEdges edges = new CoverageEdges(coverage);
     return edges;
   }
   
@@ -45,7 +45,7 @@ class CoverageRingEdges {
   private Map<LinearRing, List<CoverageEdge>> ringEdgesMap;
   private List<CoverageEdge> edges;
   
-  public CoverageRingEdges(Geometry[] coverage) {
+  public CoverageEdges(Geometry[] coverage) {
     this.coverage = coverage;
     geomFactory = coverage.length > 0 ? coverage[0].getFactory() : null;
     ringEdgesMap = new HashMap<LinearRing, List<CoverageEdge>>();

@@ -49,7 +49,7 @@ public class CoverageSimplifier {
 
       @Override
       public MultiLineString simplify(MultiLineString lines, double tolerance) {
-        return (MultiLineString) VWTPSimplifier.simplify(lines, tolerance);
+        return (MultiLineString) TPVWSimplifier.simplify(lines, tolerance);
         //return (MultiLineString) TopologyPreservingSimplifier.simplify(lines, tolerance);
       }
       
@@ -57,7 +57,7 @@ public class CoverageSimplifier {
   }
   
   public Geometry[] simplify(double tolerance) {
-    CoverageRingEdges covEdges = CoverageRingEdges.create(input);
+    CoverageEdges covEdges = CoverageEdges.create(input);
     simplifyEdges(covEdges.getEdges(), tolerance);
     Geometry[] result = covEdges.buildCoverage();
     return result;
