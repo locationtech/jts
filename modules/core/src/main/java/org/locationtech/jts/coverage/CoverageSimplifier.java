@@ -57,7 +57,7 @@ public class CoverageSimplifier {
   }
   
   public Geometry[] simplify(double tolerance) {
-    CoverageEdges covEdges = CoverageEdges.create(input);
+    CoverageRingEdges covEdges = CoverageRingEdges.create(input);
     simplifyEdges(covEdges.getEdges(), tolerance);
     Geometry[] result = covEdges.buildCoverage();
     return result;

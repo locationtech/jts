@@ -22,7 +22,6 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateList;
 import org.locationtech.jts.geom.CoordinateSequence;
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineSegment;
 import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.MultiPolygon;
@@ -33,10 +32,10 @@ import org.locationtech.jts.geom.Polygon;
  * @author Martin Davis
  *
  */
-class CoverageEdges {
+class CoverageRingEdges {
   
-  public static CoverageEdges create(Geometry[] coverage) {
-    CoverageEdges edges = new CoverageEdges(coverage);
+  public static CoverageRingEdges create(Geometry[] coverage) {
+    CoverageRingEdges edges = new CoverageRingEdges(coverage);
     return edges;
   }
   
@@ -44,7 +43,7 @@ class CoverageEdges {
   private Map<LinearRing, List<CoverageEdge>> ringEdgesMap;
   private List<CoverageEdge> edges;
   
-  public CoverageEdges(Geometry[] coverage) {
+  public CoverageRingEdges(Geometry[] coverage) {
     this.coverage = coverage;
     ringEdgesMap = new HashMap<LinearRing, List<CoverageEdge>>();
     edges = new ArrayList<CoverageEdge>();
@@ -72,8 +71,6 @@ class CoverageEdges {
         }
       }
     }
-    //-- no longer needed
-    uniqueEdgeMap = null;
   }
 
   private void addRingEdges(LinearRing ring, Set<Coordinate> nodes, Set<LineSegment> boundarySegs,
@@ -108,8 +105,8 @@ class CoverageEdges {
     List<CoverageEdge> ringEdges = new ArrayList<CoverageEdge>();
     int first = findNextNodeIndex(ring, -1, nodes);
     if (first < 0) {
-      //-- ring does not contain a node
-      CoverageEdge edge = getEdge(ring, 0, ring.getNumPoints() - 1, uniqueEdgeMap);
+      //-- ring does not contain a node, so edge is entire ring
+      CoverageEdge edge = getEdge(ring, uniqueEdgeMap);
       ringEdges.add(edge);
     }
     else {
@@ -126,6 +123,20 @@ class CoverageEdges {
     return ringEdges;
   }
 
+  private CoverageEdge getEdge(LinearRing ring, HashMap<LineSegment, CoverageEdge> uniqueEdgeMap) {
+    CoverageEdge edge;
+    LineSegment edgeKey = CoverageEdge.computeKey(ring.getCoordinates());
+    if (uniqueEdgeMap.containsKey(edgeKey)) {
+      edge = uniqueEdgeMap.get(edgeKey);
+    }
+    else {
+      edge = CoverageEdge.createEdge(ring, 0, ring.getNumPoints() - 1);
+      uniqueEdgeMap.put(edgeKey, edge);
+      edges.add(edge);
+    }
+    return edge;
+  }
+  
   private CoverageEdge getEdge(LinearRing ring, int start, int end, HashMap<LineSegment, CoverageEdge> uniqueEdgeMap) {
     CoverageEdge edge = CoverageEdge.createEdge(ring, start, end);
     LineSegment edgeKey = edge.getKey();
@@ -220,26 +231,26 @@ class CoverageEdges {
       Coordinate lastPt = ptsList.size() > 0 
                             ? ptsList.getCoordinate(ptsList.size() - 1)
                             : null;
-      boolean dir = isEdgeForward(ringEdges, i, lastPt);
+      boolean dir = isEdgeDirForward(ringEdges, i, lastPt);
       ptsList.add(ringEdges.get(i).getCoordinates(), false, dir);
     }
     Coordinate[] pts = ptsList.toCoordinateArray();
     return ring.getFactory().createLinearRing(pts);
   }
 
-  private boolean isEdgeForward(List<CoverageEdge> edges, int index, Coordinate lastPt) {
-    int size = edges.size();
+  private boolean isEdgeDirForward(List<CoverageEdge> ringEdges, int index, Coordinate prevPt) {
+    int size = ringEdges.size();
     if (size <= 1) return true;
     if (index == 0) {
       //-- if only 2 edges, first one can keep orientation
       if (size == 2)
         return true;
-      Coordinate endPt0 = edges.get(0).getEndCoordinate();
-      return endPt0.equals2D(edges.get(1).getStartCoordinate())
-          || endPt0.equals2D(edges.get(1).getEndCoordinate());
+      Coordinate endPt0 = ringEdges.get(0).getEndCoordinate();
+      return endPt0.equals2D(ringEdges.get(1).getStartCoordinate())
+          || endPt0.equals2D(ringEdges.get(1).getEndCoordinate());
     }
-    //-- last point indicates required orientation
-    return lastPt.equals2D(edges.get(index).getStartCoordinate());
+    //-- previous point determines required orientation
+    return prevPt.equals2D(ringEdges.get(index).getStartCoordinate());
   }
 
 }
