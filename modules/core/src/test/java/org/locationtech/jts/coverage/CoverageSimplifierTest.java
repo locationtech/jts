@@ -67,12 +67,27 @@ public class CoverageSimplifierTest extends GeometryTestCase {
     );
   }
 
-  public void testRingNoCollapse() {
+  public void testSingleRingNoCollapse() {
     checkResult(readArray(
         "POLYGON ((10 50, 60 90, 70 50, 60 10, 10 50))" ),
         100000,
         readArray(
             "POLYGON ((10 50, 60 90, 60 10, 10 50))" )
+    );
+  }
+
+  /**
+   * Checks that a polygon on the edge of the coverage does not collapse 
+   * under maximal simplification
+   */
+  public void testMultiEdgeRingNoCollapse() {
+    checkResult(readArray(
+        "POLYGON ((50 250, 200 200, 180 170, 200 150, 50 50, 50 250))",
+        "POLYGON ((200 200, 180 170, 200 150, 200 200))"),
+        40,
+        readArray(
+            "POLYGON ((50 250, 200 200, 180 170, 200 150, 50 50, 50 250))",
+            "POLYGON ((200 200, 180 170, 200 150, 200 200))")
     );
   }
 

@@ -125,7 +125,7 @@ class CoverageRingEdges {
 
   private CoverageEdge getEdge(LinearRing ring, HashMap<LineSegment, CoverageEdge> uniqueEdgeMap) {
     CoverageEdge edge;
-    LineSegment edgeKey = CoverageEdge.computeKey(ring.getCoordinates());
+    LineSegment edgeKey = CoverageEdge.computeKey(ring);
     if (uniqueEdgeMap.containsKey(edgeKey)) {
       edge = uniqueEdgeMap.get(edgeKey);
     }
@@ -138,12 +138,13 @@ class CoverageRingEdges {
   }
   
   private CoverageEdge getEdge(LinearRing ring, int start, int end, HashMap<LineSegment, CoverageEdge> uniqueEdgeMap) {
-    CoverageEdge edge = CoverageEdge.createEdge(ring, start, end);
-    LineSegment edgeKey = edge.getKey();
+    CoverageEdge edge;
+    LineSegment edgeKey = CoverageEdge.computeKey(ring, start, end);
     if (uniqueEdgeMap.containsKey(edgeKey)) {
       edge = uniqueEdgeMap.get(edgeKey);
     }
     else {
+      edge = CoverageEdge.createEdge(ring, start, end);
       uniqueEdgeMap.put(edgeKey, edge);
       edges.add(edge);
     }

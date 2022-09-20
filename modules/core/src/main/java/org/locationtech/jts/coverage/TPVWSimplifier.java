@@ -11,6 +11,7 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.MultiLineString;
 import org.locationtech.jts.index.VertexSequencePackedRtree;
+import org.locationtech.jts.index.strtree.STRtree;
 import org.locationtech.jts.simplify.Corner;
 import org.locationtech.jts.simplify.LinkedLine;
 
@@ -26,106 +27,131 @@ class TPVWSimplifier {
   private double tolerance;
   private GeometryFactory geomFactory;
 
-  TPVWSimplifier(MultiLineString lines, double distanceTolerance) {
+  private TPVWSimplifier(MultiLineString lines, double distanceTolerance) {
     this.input = lines;
     this.tolerance = distanceTolerance * distanceTolerance;
     geomFactory = input.getFactory();
   }
   
-  Geometry simplify() {
-    List<Line> lines = new ArrayList<Line>();
-    LineIndex lineIndex = new LineIndex();
-    LineString[] result = new LineString[input.getNumGeometries()];
-    for (int i = 0 ; i < result.length; i++) {
-      LineString line = (LineString) input.getGeometryN(i);
-      Line lineSimp = new Line(line, tolerance);
-      lines.add(lineSimp);
-      lineIndex.add(lineSimp);
-    }
-    for (int i = 0 ; i < result.length; i++) {
-      Line lineSimp = lines.get(i);
-      Coordinate[] ptsSimp = lineSimp.simplify(lineIndex);
+  private Geometry simplify() {
+    List<Edge> edges = createEdges(input);
+    
+    EdgeIndex edgeIndex = new EdgeIndex();
+    edgeIndex.add(edges);
+    
+    LineString[] result = new LineString[edges.size()];
+    for (int i = 0 ; i < edges.size(); i++) {
+      Edge edge = edges.get(i);
+      Coordinate[] ptsSimp = edge.simplify(edgeIndex);
       result[i] = geomFactory.createLineString(ptsSimp);
     }
     return geomFactory.createMultiLineString(result);
   }
+
+  private List<Edge> createEdges(MultiLineString lines) {
+    List<Edge> edges = new ArrayList<Edge>();
+    for (int i = 0 ; i < lines.getNumGeometries(); i++) {
+      LineString line = (LineString) lines.getGeometryN(i);
+      edges.add(new Edge(line, tolerance));
+    }
+    return edges;
+  }
   
-  private static class Line {
-    private double tolerance;
-    private LinkedLine line;
+  private static class Edge {
+    private double areaTolerance;
+    private LinkedLine linkedLine;
     private int minEdgeSize;
 
     private PriorityQueue<Corner> cornerQueue;
     private VertexSequencePackedRtree vertexIndex;
     private Envelope envelope;
     
-    Line(LineString inputLine, double tolerance) {
-      this.tolerance = tolerance;
+    Edge(LineString inputLine, double tolerance) {
+      this.areaTolerance = tolerance;
       this.envelope = inputLine.getEnvelopeInternal();
       Coordinate[] pts = inputLine.getCoordinates();
-      line = new LinkedLine(pts);
-      minEdgeSize = line.isRing() ? 3 : 2;
+      linkedLine = new LinkedLine(pts);
+      minEdgeSize = linkedLine.isRing() ? 3 : 2;
       
       vertexIndex = new VertexSequencePackedRtree(pts);
       //-- remove ring duplicate final vertex
-      if (line.isRing()) {
+      if (linkedLine.isRing()) {
         vertexIndex.remove(pts.length-1);
       }
       
       cornerQueue = new PriorityQueue<Corner>();
-      for (int i = 1; i < line.size() - 1; i++) {
+      for (int i = 1; i < linkedLine.size() - 1; i++) {
         addCorner(i, cornerQueue);
       }
     }
 
     private Coordinate getCoordinate(int index) {
-      return line.getCoordinate(index);
+      return linkedLine.getCoordinate(index);
     }
   
     public Envelope getEnvelope() {
       return envelope;
     }
     
+    public int size() {
+      return linkedLine.size();
+    }
+    
     private void addCorner(int i, PriorityQueue<Corner> cornerQueue) {
-      if (! line.isCorner(i))
+      if (! linkedLine.isCorner(i))
         return;
-      Corner corner = new Corner(line, i);
-      if (corner.getArea() <= tolerance) {
+      Corner corner = new Corner(linkedLine, i);
+      if (corner.getArea() <= areaTolerance) {
         cornerQueue.add(corner);
       }
     }
     
-    private Coordinate[] simplify(LineIndex lineIndex) {        
+    private Coordinate[] simplify(EdgeIndex lineIndex) {        
       while (! cornerQueue.isEmpty() 
-          && line.size() > minEdgeSize) {
+          && linkedLine.size() > minEdgeSize) {
         Corner corner = cornerQueue.poll();
         //-- a corner may no longer be valid due to removal of adjacent corners
-        if (corner.isRemoved(line))
+        if (corner.isRemoved(linkedLine))
           continue;
         //System.out.println(corner.toLineString(edge));
         //-- done when all small corners are removed
-        if (corner.getArea() > tolerance)
+        if (corner.getArea() > areaTolerance)
           break;
         if (isRemovable(corner, lineIndex) ) {
           removeCorner(corner, cornerQueue);
         }
       }
-      return line.getCoordinates();
+      return linkedLine.getCoordinates();
     }
     
-    private boolean isRemovable(Corner corner, LineIndex lineIndex) {
-      Envelope cornerEnv = corner.envelope(line);
+    private boolean isRemovable(Corner corner, EdgeIndex lineIndex) {
+      Envelope cornerEnv = corner.envelope(linkedLine);
       if (hasIntersectingVertex(corner, cornerEnv, this))
         return false;
       //-- check other rings for intersections
-      for (Line line : lineIndex.query(cornerEnv)) {
+      for (Edge line : lineIndex.query(cornerEnv)) {
         //-- this line was already checked above
         if (line == this)
           continue;
         if (hasIntersectingVertex(corner, cornerEnv, line)) 
           return false;
+        //-- check if base of corner equals line (2-pts)
+        if (line.size() == 2) {
+          Coordinate[] linePts = line.linkedLine.getCoordinates();
+          if (isEqualSegs(
+              corner.getPrev(linkedLine), corner.getNext(linkedLine),
+              linePts[0], linePts[1]))
+            return false;
+        }
       }
       return true;
+    }
+
+    private static boolean isEqualSegs(Coordinate p0, Coordinate p1, 
+        Coordinate q0, Coordinate q1) {
+      if (p0.equals2D(q0) && p1.equals2D(q1)) return true;
+      if (p0.equals2D(q1) && p1.equals2D(q0)) return true;
+      return false;
     }
 
     /**
@@ -138,18 +164,18 @@ class TPVWSimplifier {
      * @return true if there is an intersecting vertex
      */
     private boolean hasIntersectingVertex(Corner corner, Envelope cornerEnv, 
-        Line line) {
+        Edge line) {
       int[] result = line.query(cornerEnv);
       for (int i = 0; i < result.length; i++) {
         int index = result[i];
         
         Coordinate v = line.getCoordinate(index);
         // ok if corner touches another line - should only happen at endpoints
-        if (corner.isVertex(this.line, v))
+        if (corner.isVertex(this.linkedLine, v))
             continue;
         
         //--- does corner triangle contain vertex?
-        if (corner.intersects(this.line, v))
+        if (corner.intersects(this.linkedLine, v))
           return true;
       }
       return false;
@@ -170,9 +196,9 @@ class TPVWSimplifier {
      */
     private void removeCorner(Corner corner, PriorityQueue<Corner> cornerQueue) {
       int index = corner.getIndex();
-      int prev = line.prev(index);
-      int next = line.next(index);
-      line.remove(index);
+      int prev = linkedLine.prev(index);
+      int next = linkedLine.next(index);
+      linkedLine.remove(index);
       vertexIndex.remove(index);
       
       //-- potentially add the new corners created
@@ -180,28 +206,28 @@ class TPVWSimplifier {
       addCorner(next, cornerQueue);
     }
 
+    public String toString() {
+      return linkedLine.toString();
+    }
   }
   
-  private static class LineIndex {
+  private static class EdgeIndex {
 
-    //TODO: use a proper spatial index
-    List<Line> lines = new ArrayList<Line>();
+    STRtree index = new STRtree(); 
     
-    public void add(Line line) {
-      lines.add(line);
-    }
-    
-    public List<Line> query(Envelope queryEnv) {
-      List<Line> result = new ArrayList<Line>();
-      for (Line line : lines) {
-        Envelope env = line.getEnvelope();
-        if (queryEnv.intersects(env)) {
-          result.add(line);
-        }
+    public void add(List<Edge> edges) {
+      for (Edge edge : edges) {
+        add(edge);
       }
-      return result;
     }
     
+    public void add(Edge edge) {
+      index.insert(edge.getEnvelope(), edge);
+    }
+    
+    public List<Edge> query(Envelope queryEnv) {
+      return index.query(queryEnv);
+    }
   }
-
+  
 }

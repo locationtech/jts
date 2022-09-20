@@ -44,6 +44,14 @@ public class Corner implements Comparable<Corner> {
     return area;
   }
   
+  public Coordinate getPrev(LinkedLine edge) {
+    return edge.getCoordinate(prev);  
+  }
+  
+  public Coordinate getNext(LinkedLine edge) {
+    return edge.getCoordinate(next);  
+  }
+  
   private static double area(LinkedLine edge, int index) {
     Coordinate pp = edge.prevCoordinate(index);
     Coordinate p = edge.getCoordinate(index);

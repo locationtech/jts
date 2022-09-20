@@ -14,6 +14,7 @@ package org.locationtech.jts.simplify;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateArrays;
 import org.locationtech.jts.geom.CoordinateList;
+import org.locationtech.jts.io.WKTWriter;
 
 public class LinkedLine {
   
@@ -119,4 +120,7 @@ public class LinkedLine {
     return coords.toCoordinateArray();
   }
   
+  public String toString() {
+    return WKTWriter.toLineString(getCoordinates());
+  }
 }
