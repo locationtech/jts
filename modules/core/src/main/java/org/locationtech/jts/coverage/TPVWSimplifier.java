@@ -1,3 +1,14 @@
+/*
+ * Copyright (c) 2022 Martin Davis.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
+ * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
+ * and the Eclipse Distribution License is available at
+ *
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ */
 package org.locationtech.jts.coverage;
 
 import java.util.ArrayList;
@@ -19,8 +30,8 @@ class TPVWSimplifier {
 
   public static MultiLineString simplify(MultiLineString lines, double tolerance) {
     TPVWSimplifier simp = new TPVWSimplifier(lines, tolerance);
-    MultiLineString linesSimp = (MultiLineString) simp.simplify();
-    return linesSimp;
+    MultiLineString result = (MultiLineString) simp.simplify();
+    return result;
   }
   
   private MultiLineString input;
@@ -126,17 +137,12 @@ class TPVWSimplifier {
     
     private boolean isRemovable(Corner corner, EdgeIndex lineIndex) {
       Envelope cornerEnv = corner.envelope(linkedLine);
-      if (hasIntersectingVertex(corner, cornerEnv, this))
-        return false;
-      //-- check other rings for intersections
+      //-- check nearby lines for violating intersections
       for (Edge line : lineIndex.query(cornerEnv)) {
-        //-- this line was already checked above
-        if (line == this)
-          continue;
         if (hasIntersectingVertex(corner, cornerEnv, line)) 
           return false;
         //-- check if base of corner equals line (2-pts)
-        if (line.size() == 2) {
+        if (line != this && line.size() == 2) {
           Coordinate[] linePts = line.linkedLine.getCoordinates();
           if (isEqualSegs(
               corner.getPrev(linkedLine), corner.getNext(linkedLine),
