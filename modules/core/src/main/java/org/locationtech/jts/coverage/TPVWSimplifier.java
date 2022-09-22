@@ -73,12 +73,11 @@ class TPVWSimplifier {
     private LinkedLine linkedLine;
     private int minEdgeSize;
 
-    private PriorityQueue<Corner> cornerQueue;
     private VertexSequencePackedRtree vertexIndex;
     private Envelope envelope;
     
-    Edge(LineString inputLine, double tolerance) {
-      this.areaTolerance = tolerance;
+    Edge(LineString inputLine, double areaTolerance) {
+      this.areaTolerance = areaTolerance;
       this.envelope = inputLine.getEnvelopeInternal();
       Coordinate[] pts = inputLine.getCoordinates();
       linkedLine = new LinkedLine(pts);
@@ -88,11 +87,6 @@ class TPVWSimplifier {
       //-- remove ring duplicate final vertex
       if (linkedLine.isRing()) {
         vertexIndex.remove(pts.length-1);
-      }
-      
-      cornerQueue = new PriorityQueue<Corner>();
-      for (int i = 1; i < linkedLine.size() - 1; i++) {
-        addCorner(i, cornerQueue);
       }
     }
 
@@ -108,21 +102,14 @@ class TPVWSimplifier {
       return linkedLine.size();
     }
     
-    private void addCorner(int i, PriorityQueue<Corner> cornerQueue) {
-      if (! linkedLine.isCorner(i))
-        return;
-      Corner corner = new Corner(linkedLine, i);
-      if (corner.getArea() <= areaTolerance) {
-        cornerQueue.add(corner);
-      }
-    }
-    
     private Coordinate[] simplify(EdgeIndex lineIndex) {        
+      PriorityQueue<Corner> cornerQueue = createQueue(linkedLine);
+
       while (! cornerQueue.isEmpty() 
           && linkedLine.size() > minEdgeSize) {
         Corner corner = cornerQueue.poll();
         //-- a corner may no longer be valid due to removal of adjacent corners
-        if (corner.isRemoved(linkedLine))
+        if (corner.isRemoved())
           continue;
         //System.out.println(corner.toLineString(edge));
         //-- done when all small corners are removed
@@ -134,30 +121,39 @@ class TPVWSimplifier {
       }
       return linkedLine.getCoordinates();
     }
+
+    private PriorityQueue<Corner> createQueue(LinkedLine linkedLine) {
+      PriorityQueue<Corner> cornerQueue = new PriorityQueue<Corner>();
+      for (int i = 1; i < linkedLine.size() - 1; i++) {
+        addCorner(i, cornerQueue);
+      }
+      return cornerQueue;
+    }
+    
+    private void addCorner(int i, PriorityQueue<Corner> cornerQueue) {
+      if (! linkedLine.isCorner(i))
+        return;
+      Corner corner = new Corner(linkedLine, i);
+      if (corner.getArea() <= areaTolerance) {
+        cornerQueue.add(corner);
+      }
+    }  
     
     private boolean isRemovable(Corner corner, EdgeIndex lineIndex) {
-      Envelope cornerEnv = corner.envelope(linkedLine);
+      Envelope cornerEnv = corner.envelope();
       //-- check nearby lines for violating intersections
+      //-- the query also returns this line for checking
       for (Edge line : lineIndex.query(cornerEnv)) {
         if (hasIntersectingVertex(corner, cornerEnv, line)) 
           return false;
         //-- check if base of corner equals line (2-pts)
         if (line != this && line.size() == 2) {
           Coordinate[] linePts = line.linkedLine.getCoordinates();
-          if (isEqualSegs(
-              corner.getPrev(linkedLine), corner.getNext(linkedLine),
-              linePts[0], linePts[1]))
+          if (corner.isBaseline(linePts[0], linePts[1]))
             return false;
         }
       }
       return true;
-    }
-
-    private static boolean isEqualSegs(Coordinate p0, Coordinate p1, 
-        Coordinate q0, Coordinate q1) {
-      if (p0.equals2D(q0) && p1.equals2D(q1)) return true;
-      if (p0.equals2D(q1) && p1.equals2D(q0)) return true;
-      return false;
     }
 
     /**
@@ -177,11 +173,11 @@ class TPVWSimplifier {
         
         Coordinate v = line.getCoordinate(index);
         // ok if corner touches another line - should only happen at endpoints
-        if (corner.isVertex(this.linkedLine, v))
+        if (corner.isVertex(v))
             continue;
         
         //--- does corner triangle contain vertex?
-        if (corner.intersects(this.linkedLine, v))
+        if (corner.intersects(v))
           return true;
       }
       return false;

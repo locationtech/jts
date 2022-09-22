@@ -16,14 +16,17 @@ import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Triangle;
+import org.locationtech.jts.io.WKTWriter;
 
 public class Corner implements Comparable<Corner> {
+  private LinkedLine edge;
   private int index;
   private int prev;
   private int next;
   private double area;
 
   public Corner(LinkedLine edge, int i) {
+    this.edge = edge;
     this.index = i; 
     this.prev = edge.prev(i);
     this.next = edge.next(i);
@@ -44,11 +47,11 @@ public class Corner implements Comparable<Corner> {
     return area;
   }
   
-  public Coordinate getPrev(LinkedLine edge) {
+  public Coordinate prev() {
     return edge.getCoordinate(prev);  
   }
   
-  public Coordinate getNext(LinkedLine edge) {
+  public Coordinate next() {
     return edge.getCoordinate(next);  
   }
   
@@ -67,7 +70,7 @@ public class Corner implements Comparable<Corner> {
     return Double.compare(area, o.area);
   }
   
-  public Envelope envelope(LinkedLine edge) {
+  public Envelope envelope() {
     Coordinate pp = edge.getCoordinate(prev);
     Coordinate p = edge.getCoordinate(index);
     Coordinate pn = edge.getCoordinate(next);
@@ -76,25 +79,33 @@ public class Corner implements Comparable<Corner> {
     return env;
   }
   
-  public boolean isVertex(LinkedLine edge, Coordinate v) {
+  public boolean isVertex(Coordinate v) {
     if (v.equals2D(edge.getCoordinate(prev))) return true;
     if (v.equals2D(edge.getCoordinate(index))) return true;
     if (v.equals2D(edge.getCoordinate(next))) return true;
     return false;
   }
+
+  public boolean isBaseline(Coordinate p0, Coordinate p1) {
+    Coordinate prev = prev();
+    Coordinate next = next();
+    if (prev.equals2D( p0 ) && next.equals2D( p1 )) return true;
+    if (prev.equals2D( p1 ) && next.equals2D( p0 )) return true;
+    return false;
+  }
   
-  public boolean intersects(LinkedLine edge, Coordinate v) {
+  public boolean intersects(Coordinate v) {
     Coordinate pp = edge.getCoordinate(prev);
     Coordinate p = edge.getCoordinate(index);
     Coordinate pn = edge.getCoordinate(next);
     return Triangle.intersects(pp, p, pn, v);
   }
   
-  public boolean isRemoved(LinkedLine edge) {
+  public boolean isRemoved() {
     return edge.prev(index) != prev || edge.next(index) != next;
   }
   
-  public LineString toLineString(LinkedLine edge) {
+  public LineString toLineString() {
     Coordinate pp = edge.getCoordinate(prev);
     Coordinate p = edge.getCoordinate(index);
     Coordinate pn = edge.getCoordinate(next);
@@ -102,11 +113,14 @@ public class Corner implements Comparable<Corner> {
         new Coordinate[] { safeCoord(pp), safeCoord(p), safeCoord(pn) });
   }
 
+  public String toString() {
+    return toLineString().toString();
+  }
+
   private static Coordinate safeCoord(Coordinate p) {
     if (p == null) return new Coordinate(Double.NaN, Double.NaN);
     return p;
   }
-
 
 }
 
