@@ -102,11 +102,11 @@ class TPVWSimplifier {
       return linkedLine.size();
     }
     
-    private Coordinate[] simplify(EdgeIndex lineIndex) {        
-      PriorityQueue<Corner> cornerQueue = createQueue(linkedLine);
+    private Coordinate[] simplify(EdgeIndex edgeIndex) {        
+      PriorityQueue<Corner> cornerQueue = createQueue();
 
       while (! cornerQueue.isEmpty() 
-          && linkedLine.size() > minEdgeSize) {
+          && size() > minEdgeSize) {
         Corner corner = cornerQueue.poll();
         //-- a corner may no longer be valid due to removal of adjacent corners
         if (corner.isRemoved())
@@ -115,14 +115,14 @@ class TPVWSimplifier {
         //-- done when all small corners are removed
         if (corner.getArea() > areaTolerance)
           break;
-        if (isRemovable(corner, lineIndex) ) {
+        if (isRemovable(corner, edgeIndex) ) {
           removeCorner(corner, cornerQueue);
         }
       }
       return linkedLine.getCoordinates();
     }
 
-    private PriorityQueue<Corner> createQueue(LinkedLine linkedLine) {
+    private PriorityQueue<Corner> createQueue() {
       PriorityQueue<Corner> cornerQueue = new PriorityQueue<Corner>();
       for (int i = 1; i < linkedLine.size() - 1; i++) {
         addCorner(i, cornerQueue);
@@ -139,16 +139,17 @@ class TPVWSimplifier {
       }
     }  
     
-    private boolean isRemovable(Corner corner, EdgeIndex lineIndex) {
+    private boolean isRemovable(Corner corner, EdgeIndex edgeIndex) {
       Envelope cornerEnv = corner.envelope();
       //-- check nearby lines for violating intersections
       //-- the query also returns this line for checking
-      for (Edge line : lineIndex.query(cornerEnv)) {
-        if (hasIntersectingVertex(corner, cornerEnv, line)) 
+      for (Edge edge : edgeIndex.query(cornerEnv)) {
+        if (hasIntersectingVertex(corner, cornerEnv, edge)) 
           return false;
-        //-- check if base of corner equals line (2-pts)
-        if (line != this && line.size() == 2) {
-          Coordinate[] linePts = line.linkedLine.getCoordinates();
+        //-- check if corner base equals line (2-pts)
+        //-- if so, don't remove corner, since that would collapse to the line
+        if (edge != this && edge.size() == 2) {
+          Coordinate[] linePts = edge.linkedLine.getCoordinates();
           if (corner.isBaseline(linePts[0], linePts[1]))
             return false;
         }
@@ -166,12 +167,12 @@ class TPVWSimplifier {
      * @return true if there is an intersecting vertex
      */
     private boolean hasIntersectingVertex(Corner corner, Envelope cornerEnv, 
-        Edge line) {
-      int[] result = line.query(cornerEnv);
+        Edge edge) {
+      int[] result = edge.query(cornerEnv);
       for (int i = 0; i < result.length; i++) {
         int index = result[i];
         
-        Coordinate v = line.getCoordinate(index);
+        Coordinate v = edge.getCoordinate(index);
         // ok if corner touches another line - should only happen at endpoints
         if (corner.isVertex(v))
             continue;

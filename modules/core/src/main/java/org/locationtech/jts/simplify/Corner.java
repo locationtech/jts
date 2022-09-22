@@ -16,7 +16,6 @@ import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Triangle;
-import org.locationtech.jts.io.WKTWriter;
 
 public class Corner implements Comparable<Corner> {
   private LinkedLine edge;
