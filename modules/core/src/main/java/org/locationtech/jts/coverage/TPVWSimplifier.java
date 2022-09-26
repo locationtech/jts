@@ -28,27 +28,42 @@ import org.locationtech.jts.simplify.LinkedLine;
 
 class TPVWSimplifier {
 
-  public static MultiLineString simplify(MultiLineString lines, double tolerance) {
-    TPVWSimplifier simp = new TPVWSimplifier(lines, tolerance);
+  public static MultiLineString simplify(MultiLineString lines, double distanceTolerance) {
+    TPVWSimplifier simp = new TPVWSimplifier(lines, distanceTolerance);
     MultiLineString result = (MultiLineString) simp.simplify();
     return result;
   }
   
+  public static MultiLineString simplify(MultiLineString lines, 
+      MultiLineString constraints, double distanceTolerance) {
+    TPVWSimplifier simp = new TPVWSimplifier(lines, distanceTolerance);
+    simp.setConstraints(constraints);
+    MultiLineString result = (MultiLineString) simp.simplify();
+    return result;
+  }
+ 
   private MultiLineString input;
-  private double tolerance;
+  private double areaTolerance;
   private GeometryFactory geomFactory;
+  private MultiLineString constraints = null;
 
   private TPVWSimplifier(MultiLineString lines, double distanceTolerance) {
     this.input = lines;
-    this.tolerance = distanceTolerance * distanceTolerance;
+    this.areaTolerance = distanceTolerance * distanceTolerance;
     geomFactory = input.getFactory();
   }
   
+  private void setConstraints(MultiLineString constraints) {
+    this.constraints = constraints;
+  }
+
   private Geometry simplify() {
     List<Edge> edges = createEdges(input);
+    List<Edge> constraintEdges = createEdges(constraints);
     
     EdgeIndex edgeIndex = new EdgeIndex();
     edgeIndex.add(edges);
+    edgeIndex.add(constraintEdges);
     
     LineString[] result = new LineString[edges.size()];
     for (int i = 0 ; i < edges.size(); i++) {
@@ -61,9 +76,11 @@ class TPVWSimplifier {
 
   private List<Edge> createEdges(MultiLineString lines) {
     List<Edge> edges = new ArrayList<Edge>();
+    if (lines == null)
+      return edges;
     for (int i = 0 ; i < lines.getNumGeometries(); i++) {
       LineString line = (LineString) lines.getGeometryN(i);
-      edges.add(new Edge(line, tolerance));
+      edges.add(new Edge(line, areaTolerance));
     }
     return edges;
   }

@@ -11,6 +11,7 @@
  */
 package org.locationtech.jts.coverage;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.locationtech.jts.geom.Geometry;
@@ -30,12 +31,18 @@ import org.locationtech.jts.simplify.TopologyPreservingSimplifier;
  */
 public class CoverageSimplifier {
   
-  public interface LineSimplifier {
+  private interface LineSimplifier {
     MultiLineString simplify(MultiLineString lines, double tolerance);
   }
+  
   public static Geometry[] simplify(Geometry[] coverage, double tolerance) {
     CoverageSimplifier simplifier = new CoverageSimplifier(coverage);
     return simplifier.simplify(tolerance);
+  }
+  
+  public static Geometry[] simplifyInner(Geometry[] coverage, double tolerance) {
+    CoverageSimplifier simplifier = new CoverageSimplifier(coverage);
+    return simplifier.simplifyInner(tolerance);
   }
   
   private Geometry[] input;
@@ -57,24 +64,47 @@ public class CoverageSimplifier {
   }
   
   public Geometry[] simplify(double tolerance) {
-    CoverageRingEdges covEdges = CoverageRingEdges.create(input);
-    simplifyEdges(covEdges.getEdges(), tolerance);
-    Geometry[] result = covEdges.buildCoverage();
+    CoverageRingEdges cov = CoverageRingEdges.create(input);
+    simplifyEdges(cov.getEdges(), null, tolerance);
+    Geometry[] result = cov.buildCoverage();
     return result;
   }
   
-  private void simplifyEdges(List<CoverageEdge> edges, double tolerance) {
+  public Geometry[] simplifyInner(double tolerance) {
+    CoverageRingEdges cov = CoverageRingEdges.create(input);
+    List<CoverageEdge> innerEdges = cov.selectEdges(2);
+    
+    List<CoverageEdge> outerEdges = cov.selectEdges(1);
+    MultiLineString constraint = createLines(outerEdges);
+    
+    simplifyEdges(innerEdges, constraint, tolerance);
+    Geometry[] result = cov.buildCoverage();
+    return result;
+  }
+
+  private void simplifyEdges(List<CoverageEdge> edges, MultiLineString constraints, double tolerance) {
+    MultiLineString mls = createLines(edges);
+    MultiLineString mlsSimp;
+    if (constraints == null) {
+      mlsSimp = simplifier.simplify(mls, tolerance);
+    }
+    else {
+      mlsSimp = TPVWSimplifier.simplify(mls, constraints, tolerance);
+    }
+    //Assert: mlsSimp.getNumGeometries = lines.length
+    
+    for (int i = 0; i < edges.size(); i++) {
+      edges.get(i).setCoordinates(mlsSimp.getGeometryN(i).getCoordinates());
+    }
+  }
+
+  private MultiLineString createLines(List<CoverageEdge> edges) {
     LineString lines[] = new LineString[edges.size()];
-    for (int i = 0; i < lines.length; i++) {
+    for (int i = 0; i < edges.size(); i++) {
       lines[i] = geomFactory.createLineString(edges.get(i).getCoordinates());
     }
     MultiLineString mls = geomFactory.createMultiLineString(lines);
-    MultiLineString mlsSimp = simplifier.simplify(mls, tolerance);
-    //Assert: mlsSimp.getNumGeometries = lines.length
-    
-    for (int i = 0; i < lines.length; i++) {
-      edges.get(i).setCoordinates(mlsSimp.getGeometryN(i).getCoordinates());
-    }
+    return mls;
   }
   
 }

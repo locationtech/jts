@@ -65,6 +65,13 @@ public class CoverageFunctions {
     return FunctionsUtil.buildGeometry(result);
   }
   
+  @Metadata(description="Simplify inner edges of a coverage")
+  public static Geometry simplifyinner(Geometry coverage, double tolerance) {
+    Geometry[] cov = toGeometryArray(coverage);
+    Geometry[] result =  CoverageSimplifier.simplifyInner(cov, tolerance);
+    return FunctionsUtil.buildGeometry(result);
+  }
+  
   static Geometry extractPolygons(Geometry geom) {
     List components = PolygonExtracter.getPolygons(geom);
     Geometry result = geom.getFactory().buildGeometry(components);

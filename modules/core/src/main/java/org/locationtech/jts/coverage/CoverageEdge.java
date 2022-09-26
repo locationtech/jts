@@ -122,11 +122,20 @@ class CoverageEdge {
   }
 
   private Coordinate[] pts;
+  private int ringCount = 0;
   
   public CoverageEdge(Coordinate[] pts) {
     this.pts = pts;
   }
 
+  public void addRing() {
+    ringCount ++;
+  }
+  
+  public int getRingCount() {
+    return ringCount;
+  }
+  
   public void setCoordinates(Coordinate[] pts) {
     this.pts = pts;
   }
@@ -146,5 +155,6 @@ class CoverageEdge {
   public String toString() {
     return WKTWriter.toLineString(pts);
   }
+
 
 }
