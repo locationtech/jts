@@ -11,7 +11,9 @@
  */
 package org.locationtech.jtstest.function;
 
+import org.locationtech.jts.algorithm.BoundaryNodeRule;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.operation.relate.RelateOp;
 
 /**
  * Implementations for spatial predicate functions.
@@ -21,9 +23,6 @@ import org.locationtech.jts.geom.Geometry;
  */
 public class SpatialPredicateFunctions {
 
-  public static String relate(Geometry a, Geometry b) {
-    return a.relate(b).toString();
-  }
   public static boolean intersects(Geometry a, Geometry b) {    return a.intersects(b);    }
   public static boolean crosses(Geometry a, Geometry b) {    return a.crosses(b);    }
   public static boolean disjoint(Geometry a, Geometry b) {    return a.disjoint(b);    }
@@ -37,4 +36,17 @@ public class SpatialPredicateFunctions {
   
   public static boolean interiorIntersects(Geometry a, Geometry b) { return a.relate(b, "T********");    }
   public static boolean adjacentTo(Geometry a, Geometry b) { return a.relate(b, "F***T****");    }
+
+  public static String relate(Geometry a, Geometry b) {
+    return a.relate(b).toString();
+  }
+  public static String relateEndpoint(Geometry a, Geometry b) {
+    return RelateOp.relate(a, b, BoundaryNodeRule.ENDPOINT_BOUNDARY_RULE).toString();
+  }
+  public static String relateMultiValent(Geometry a, Geometry b) {
+    return RelateOp.relate(a, b, BoundaryNodeRule.MULTIVALENT_ENDPOINT_BOUNDARY_RULE).toString();
+  }
+  public static String relateMonoValent(Geometry a, Geometry b) {
+    return RelateOp.relate(a, b, BoundaryNodeRule.MONOVALENT_ENDPOINT_BOUNDARY_RULE).toString();
+  }
 }
