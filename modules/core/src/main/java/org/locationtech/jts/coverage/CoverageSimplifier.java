@@ -11,14 +11,12 @@
  */
 package org.locationtech.jts.coverage;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.MultiLineString;
-import org.locationtech.jts.simplify.TopologyPreservingSimplifier;
 
 /**
  * Simplifies the boundaries of the polygons in a polygonal coverage
@@ -30,10 +28,6 @@ import org.locationtech.jts.simplify.TopologyPreservingSimplifier;
  *
  */
 public class CoverageSimplifier {
-  
-  private interface LineSimplifier {
-    MultiLineString simplify(MultiLineString lines, double tolerance);
-  }
   
   public static Geometry[] simplify(Geometry[] coverage, double tolerance) {
     CoverageSimplifier simplifier = new CoverageSimplifier(coverage);
@@ -47,20 +41,11 @@ public class CoverageSimplifier {
   
   private Geometry[] input;
   private GeometryFactory geomFactory;
-  private LineSimplifier simplifier;
+  //private LineSimplifier simplifier;
   
   public CoverageSimplifier(Geometry[] coverage) {
     input = coverage;
     geomFactory = coverage[0].getFactory();
-    simplifier = new LineSimplifier() {
-
-      @Override
-      public MultiLineString simplify(MultiLineString lines, double tolerance) {
-        return (MultiLineString) TPVWSimplifier.simplify(lines, tolerance);
-        //return (MultiLineString) TopologyPreservingSimplifier.simplify(lines, tolerance);
-      }
-      
-    };
   }
   
   public Geometry[] simplify(double tolerance) {
@@ -84,14 +69,8 @@ public class CoverageSimplifier {
 
   private void simplifyEdges(List<CoverageEdge> edges, MultiLineString constraints, double tolerance) {
     MultiLineString mls = createLines(edges);
-    MultiLineString mlsSimp;
-    if (constraints == null) {
-      mlsSimp = simplifier.simplify(mls, tolerance);
-    }
-    else {
-      mlsSimp = TPVWSimplifier.simplify(mls, constraints, tolerance);
-    }
-    //Assert: mlsSimp.getNumGeometries = lines.length
+    MultiLineString mlsSimp = TPVWSimplifier.simplify(mls, constraints, tolerance);
+    //Assert: mlsSimp.getNumGeometries = edges.length
     
     for (int i = 0; i < edges.size(); i++) {
       edges.get(i).setCoordinates(mlsSimp.getGeometryN(i).getCoordinates());
