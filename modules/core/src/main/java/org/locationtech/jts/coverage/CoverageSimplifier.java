@@ -21,19 +21,43 @@ import org.locationtech.jts.geom.MultiLineString;
 /**
  * Simplifies the boundaries of the polygons in a polygonal coverage
  * while preserving the original coverage topology.
- * An area-based simplification algorithm is used to provide
- * high-quality results.
+ * An area-based simplification algorithm 
+ * (similar to Visvalingam-Whyatt simplification)
+ * is used to provide high-quality results.
+ * Also supports simplifying just the inner edges in a coverage,
+ * which allows simplifying "patches" without affecting their boundary.
+ * <p>
+ * The amount of simplification is determined by a tolerance value, 
+ * which is a non-zero quantity. It equates roughly to the maximum
+ * distance by which a simplfied line can change from the original.
+ * (In fact, it is the square root of the area tolerance used 
+ * in the Visvalingam-Whyatt algorithm.)
  * 
  * @author Martin Davis
- *
  */
 public class CoverageSimplifier {
   
+  /**
+   * Simplify the boundaries of a set of polygonal geometries forming a coverage,
+   * preserving the coverage topology.
+   * 
+   * @param coverage a set of polygonal geometries forming a coverage
+   * @param tolerance the simplification tolerance
+   * @return the simplified polygons
+   */
   public static Geometry[] simplify(Geometry[] coverage, double tolerance) {
     CoverageSimplifier simplifier = new CoverageSimplifier(coverage);
     return simplifier.simplify(tolerance);
   }
   
+  /**
+   * Simplify the inner boundaries of a set of polygonal geometries forming a coverage,
+   * preserving the coverage topology.
+   * 
+   * @param coverage a set of polygonal geometries forming a coverage
+   * @param tolerance the simplification tolerance
+   * @return the simplified polygons
+   */
   public static Geometry[] simplifyInner(Geometry[] coverage, double tolerance) {
     CoverageSimplifier simplifier = new CoverageSimplifier(coverage);
     return simplifier.simplifyInner(tolerance);
@@ -41,13 +65,23 @@ public class CoverageSimplifier {
   
   private Geometry[] input;
   private GeometryFactory geomFactory;
-  //private LineSimplifier simplifier;
   
+  /**
+   * Create a new simplifier instance.
+   * 
+   * @param coverage a set of polygonal geometries forming a coverage
+   */
   public CoverageSimplifier(Geometry[] coverage) {
     input = coverage;
     geomFactory = coverage[0].getFactory();
   }
   
+  /**
+   * Computes the simplified coverage, preserving the coverage topology.
+   * 
+   * @param tolerance the simplification tolerance
+   * @return the simplified polygons
+   */
   public Geometry[] simplify(double tolerance) {
     CoverageRingEdges cov = CoverageRingEdges.create(input);
     simplifyEdges(cov.getEdges(), null, tolerance);
@@ -55,10 +89,16 @@ public class CoverageSimplifier {
     return result;
   }
   
+  /**
+   * Computes the inner-boundary simplified coverage,
+   * preserving the coverage topology.
+   * 
+   * @param tolerance the simplification tolerance
+   * @return the simplified polygons
+   */
   public Geometry[] simplifyInner(double tolerance) {
     CoverageRingEdges cov = CoverageRingEdges.create(input);
     List<CoverageEdge> innerEdges = cov.selectEdges(2);
-    
     List<CoverageEdge> outerEdges = cov.selectEdges(1);
     MultiLineString constraint = createLines(outerEdges);
     

@@ -28,6 +28,8 @@ import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Polygon;
 
 /**
+ * Models a polygonal coverage as a set of unique {@link CoverageEdge}s,
+ * maintaining a map back to the parent polygonal geometries (either one or two).
  * 
  * @author Martin Davis
  *
@@ -47,13 +49,19 @@ class CoverageRingEdges {
     this.coverage = coverage;
     ringEdgesMap = new HashMap<LinearRing, List<CoverageEdge>>();
     edges = new ArrayList<CoverageEdge>();
-    create();
+    build();
   }
 
   public List<CoverageEdge> getEdges() {
     return edges;
   }
   
+  /**
+   * Selects the edges with a given ring count (which can be 1 or 2).
+   * 
+   * @param ringCount the edge ring count to select (1 or 2)
+   * @return the selected edges
+   */
   public List<CoverageEdge> selectEdges(int ringCount) {
     List<CoverageEdge> result = new ArrayList<CoverageEdge>();
     for (CoverageEdge edge : edges) {
@@ -64,7 +72,7 @@ class CoverageRingEdges {
     return result;
   }
   
-  private void create() {
+  private void build() {
     Set<Coordinate> nodes = findNodes(coverage);
     Set<LineSegment> boundarySegs = CoverageBoundarySegmentFinder.findBoundarySegments(coverage);
     HashMap<LineSegment, CoverageEdge> uniqueEdgeMap = new HashMap<LineSegment, CoverageEdge>();
@@ -124,7 +132,6 @@ class CoverageRingEdges {
       int end = start;
       do {
         end = findNextNodeIndex(ring, start, nodes);
-        //TODO: create key without creating edge, until needed
         CoverageEdge edge = createEdge(ring, start, end, uniqueEdgeMap);
         ringEdges.add(edge);
         start = end;
@@ -135,22 +142,22 @@ class CoverageRingEdges {
 
   private CoverageEdge createEdge(LinearRing ring, HashMap<LineSegment, CoverageEdge> uniqueEdgeMap) {
     CoverageEdge edge;
-    LineSegment edgeKey = CoverageEdge.computeKey(ring);
+    LineSegment edgeKey = CoverageEdge.key(ring);
     if (uniqueEdgeMap.containsKey(edgeKey)) {
       edge = uniqueEdgeMap.get(edgeKey);
     }
     else {
-      edge = CoverageEdge.createEdge(ring, 0, ring.getNumPoints() - 1);
+      edge = CoverageEdge.createEdge(ring);
       uniqueEdgeMap.put(edgeKey, edge);
       edges.add(edge);
     }
-    edge.addRing();
+    edge.incRingCount();
     return edge;
   }
   
   private CoverageEdge createEdge(LinearRing ring, int start, int end, HashMap<LineSegment, CoverageEdge> uniqueEdgeMap) {
     CoverageEdge edge;
-    LineSegment edgeKey = CoverageEdge.computeKey(ring, start, end);
+    LineSegment edgeKey = CoverageEdge.key(ring, start, end);
     if (uniqueEdgeMap.containsKey(edgeKey)) {
       edge = uniqueEdgeMap.get(edgeKey);
     }
@@ -159,7 +166,7 @@ class CoverageRingEdges {
       uniqueEdgeMap.put(edgeKey, edge);
       edges.add(edge);
     }
-    edge.addRing();
+    edge.incRingCount();
     return edge;
   }
 

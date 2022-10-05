@@ -26,14 +26,47 @@ import org.locationtech.jts.index.strtree.STRtree;
 import org.locationtech.jts.simplify.Corner;
 import org.locationtech.jts.simplify.LinkedLine;
 
+/**
+ * Computes a Topology-Preserving Visvalingnam-Whyatt simplification
+ * of a set of input lines.
+ * The simplified lines will contain no more intersections than are present
+ * in the original input, and line endpoints are preserved.
+ * <p>
+ * The amount of simplification is determined by a tolerance value, 
+ * which is a non-zero quantity. 
+ * It is the square root of the area tolerance used 
+ * in the Visvalingam-Whyatt algorithm.
+ * This equates roughly to the maximum
+ * distance by which a simplfied line can change from the original.
+ * 
+ * @author mdavis
+ *
+ */
 class TPVWSimplifier {
 
+  /**
+   * Simplifies a set of lines, preserving the topology of the lines.
+   * 
+   * @param lines the lines to simplify
+   * @param constraints the linear constraints
+   * @param distanceTolerance the simplification tolerance
+   * @return the simplified lines
+   */
   public static MultiLineString simplify(MultiLineString lines, double distanceTolerance) {
     TPVWSimplifier simp = new TPVWSimplifier(lines, distanceTolerance);
     MultiLineString result = (MultiLineString) simp.simplify();
     return result;
   }
   
+  /**
+   * Simplifies a set of lines, preserving the topology of the lines between
+   * themselves and a set of linear constraints.
+   * 
+   * @param lines the lines to simplify
+   * @param constraints the linear constraints
+   * @param distanceTolerance the simplification tolerance
+   * @return the simplified lines
+   */
   public static MultiLineString simplify(MultiLineString lines, 
       MultiLineString constraints, double distanceTolerance) {
     TPVWSimplifier simp = new TPVWSimplifier(lines, distanceTolerance);

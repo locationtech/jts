@@ -16,7 +16,18 @@ import org.locationtech.jts.geom.LineSegment;
 import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.io.WKTWriter;
 
+/**
+ * An edge of a polygonal coverage formed from all or a section of a polygon ring.
+ * 
+ * @author mdavis
+ *
+ */
 class CoverageEdge {
+
+  public static CoverageEdge createEdge(LinearRing ring) {
+    Coordinate[] pts = extractEdgePoints(ring, 0, ring.getNumPoints() - 1);
+    return new CoverageEdge(pts);
+  }
 
   public static CoverageEdge createEdge(LinearRing ring, int start, int end) {
     Coordinate[] pts = extractEdgePoints(ring, start, end);
@@ -37,32 +48,15 @@ class CoverageEdge {
     return pts;
   }
 
-  public static LineSegment computeKey(LinearRing ring, int start, int end) {
-    Coordinate[] pts = ring.getCoordinates();
-    //-- endpoints are distinct in a line edge
-    Coordinate end0 = pts[start];
-    Coordinate end1 = pts[end];
-    boolean isForward = 0 > end0.compareTo(end1);
-    Coordinate key0, key1;
-    if (isForward) {
-      key0 = end0;
-      key1 = findDistinctPoint(pts, start, true, key0);
-    }
-    else {
-      key0 = end1;
-      key1 = findDistinctPoint(pts, end, false, key0);
-    }
-    return new LineSegment(key0, key1);  }
-  
   /**
-   * Computes a key for a ring.
+   * Computes a key segment for a ring.
    * The key is the segment starting at the lowest vertex,
    * towards the lowest adjacent distinct vertex.
    * 
-   * @param pts
-   * @return
+   * @param ring a linear ring
+   * @return a LineSegment representing the key
    */
-  public static LineSegment computeKey(LinearRing ring) {
+  public static LineSegment key(LinearRing ring) {
     Coordinate[] pts = ring.getCoordinates();
     // find lowest vertex index
     int indexLow = 0;
@@ -77,29 +71,31 @@ class CoverageEdge {
     Coordinate key1 = adj0.compareTo(adj1) < 0 ? adj0 : adj1;
     return new LineSegment(key0, key1);
   }
-
+  
   /**
-   * Compute a key for a line.
-   * The key is the segment starting at the lowest endpoint.
+   * Computes a distinct key for a section of a linear ring.
    * 
-   * @param pts
-   * @return the edge key value
+   * @param ring the linear ring
+   * @param start index of the start of the section
+   * @param end end index of the end of the section
+   * @return a LineSegment representing the key
    */
-  private static LineSegment computeLineKey(Coordinate[] pts) {
+  public static LineSegment key(LinearRing ring, int start, int end) {
+    Coordinate[] pts = ring.getCoordinates();
     //-- endpoints are distinct in a line edge
-    Coordinate end0 = pts[0];
-    Coordinate end1 = pts[pts.length - 1];
+    Coordinate end0 = pts[start];
+    Coordinate end1 = pts[end];
     boolean isForward = 0 > end0.compareTo(end1);
     Coordinate key0, key1;
     if (isForward) {
       key0 = end0;
-      key1 = findDistinctPoint(pts, 1, true, key0);
+      key1 = findDistinctPoint(pts, start, true, key0);
     }
     else {
       key0 = end1;
-      key1 = findDistinctPoint(pts, pts.length - 2, false, key0);
+      key1 = findDistinctPoint(pts, end, false, key0);
     }
-    return new LineSegment(key0, key1);
+    return new LineSegment(key0, key1);  
   }
 
   private static Coordinate findDistinctPoint(Coordinate[] pts, int index, boolean isForward, Coordinate pt) {
@@ -128,8 +124,8 @@ class CoverageEdge {
     this.pts = pts;
   }
 
-  public void addRing() {
-    ringCount ++;
+  public void incRingCount() {
+    ringCount++;
   }
   
   public int getRingCount() {
