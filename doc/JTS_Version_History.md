@@ -26,6 +26,7 @@ Distributions for older JTS versions can be obtained at the
 * Add `CoverageValidator` `CoveragePolygonValidator` (#900)
 * Add `CoverageGapFinder` (#900)
 * Add `CoverageUnion` (#900)
+* Add `CoverageSimplifier` (#911)
 
 ### Bug Fixes
 
