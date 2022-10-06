@@ -32,6 +32,13 @@ import org.locationtech.jts.geom.MultiLineString;
  * distance by which a simplified line can change from the original.
  * (In fact, it is the square root of the area tolerance used 
  * in the Visvalingam-Whyatt algorithm.)
+ * <p>
+ * The simplified result coverage has the following characteristics:
+ * <ul>
+ * <li>It has the same number and types of polygonal geometries as the input
+ * <li>Coverage node points (inner vertices shared by three or more polygons, or boundary vertices shared by two or more) are not changed
+ * <li>if the input is a valid coverage, then so is the result
+ * </ul>
  * 
  * @author Martin Davis
  */
