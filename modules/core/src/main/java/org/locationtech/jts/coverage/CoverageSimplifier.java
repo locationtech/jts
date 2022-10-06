@@ -28,8 +28,8 @@ import org.locationtech.jts.geom.MultiLineString;
  * which allows simplifying "patches" without affecting their boundary.
  * <p>
  * The amount of simplification is determined by a tolerance value, 
- * which is a non-zero quantity. It equates roughly to the maximum
- * distance by which a simplfied line can change from the original.
+ * which is a non-negative quantity. It equates roughly to the maximum
+ * distance by which a simplified line can change from the original.
  * (In fact, it is the square root of the area tolerance used 
  * in the Visvalingam-Whyatt algorithm.)
  * 
