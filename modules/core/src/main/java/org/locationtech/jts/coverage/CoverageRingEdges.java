@@ -29,13 +29,23 @@ import org.locationtech.jts.geom.Polygon;
 
 /**
  * Models a polygonal coverage as a set of unique {@link CoverageEdge}s,
- * maintaining a map back to the parent polygonal geometries (either one or two).
+ * linked to the parent rings in the coverage polygons.
+ * Each edge has either one or two parent rings, depending on whether 
+ * it is an inner or outer edge of the coverage.
+ * The source coverage is represented as a array of polygonal geometries 
+ * (either {@link Polygon}s or {@link MultiPolygon}s).
  * 
  * @author Martin Davis
  *
  */
 class CoverageRingEdges {
   
+  /**
+   * Create a new instance for a given coverage.
+   * 
+   * @param coverage the set of polygonal geometries in the coverage
+   * @return the edges of the coverage
+   */
   public static CoverageRingEdges create(Geometry[] coverage) {
     CoverageRingEdges edges = new CoverageRingEdges(coverage);
     return edges;
@@ -206,6 +216,11 @@ class CoverageRingEdges {
     return nodes;
   }
 
+  /**
+   * Recreates the polygon coverage from the current edge values.
+   * 
+   * @return an array of polygonal geometries representing the coverage
+   */
   public Geometry[] buildCoverage() {
     Geometry[] result = new Geometry[coverage.length];
     for (int i = 0; i < coverage.length; i++) {
