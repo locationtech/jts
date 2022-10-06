@@ -112,10 +112,10 @@ public class CoverageSimplifier {
     MultiLineString linesSimp = TPVWSimplifier.simplify(lines, constraints, tolerance);
     //Assert: mlsSimp.getNumGeometries = edges.length
     
-    setCoordinates(linesSimp, edges);
+    setCoordinates(edges, linesSimp);
   }
 
-  private void setCoordinates(MultiLineString lines, List<CoverageEdge> edges) {
+  private void setCoordinates(List<CoverageEdge> edges, MultiLineString lines) {
     for (int i = 0; i < edges.size(); i++) {
       edges.get(i).setCoordinates(lines.getGeometryN(i).getCoordinates());
     }
