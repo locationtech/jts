@@ -12,14 +12,15 @@
 
 package org.locationtech.jtstest.testbuilder.ui;
 
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-
 import javax.imageio.ImageIO;
 
 public class ImageUtil 

@@ -11,16 +11,17 @@
  */
 package org.locationtech.jtstest.testbuilder.ui.tools;
 
-import java.awt.*;
-import java.awt.geom.*;
+import java.awt.Shape;
 import java.awt.event.MouseEvent;
-
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.GeneralPath;
+import java.awt.geom.Point2D;
 import javax.swing.SwingUtilities;
 
 import org.locationtech.jts.awt.GeometryCollectionShape;
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jtstest.testbuilder.AppCursors;
-import org.locationtech.jtstest.testbuilder.geom.*;
+import org.locationtech.jtstest.testbuilder.geom.GeometryLocation;
 
 
 /**

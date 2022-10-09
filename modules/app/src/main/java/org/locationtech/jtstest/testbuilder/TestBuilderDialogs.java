@@ -12,7 +12,6 @@
 package org.locationtech.jtstest.testbuilder;
 
 import java.io.File;
-
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 

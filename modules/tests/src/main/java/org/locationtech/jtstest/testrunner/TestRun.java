@@ -12,10 +12,12 @@
 package org.locationtech.jtstest.testrunner;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import org.locationtech.jts.geom.PrecisionModel;
-import org.locationtech.jtstest.geomop.*;
+import org.locationtech.jtstest.geomop.GeometryOperation;
 
 
 

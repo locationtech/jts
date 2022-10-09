@@ -11,11 +11,11 @@
  */
 package org.locationtech.jtstest.geomop;
 
-import java.lang.reflect.*;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.util.Assert;
-import org.locationtech.jtstest.util.*;
 
 
 /**

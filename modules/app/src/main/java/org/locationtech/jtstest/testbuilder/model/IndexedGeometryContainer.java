@@ -12,8 +12,7 @@
 
 package org.locationtech.jtstest.testbuilder.model;
 
-import org.locationtech.jts.geom.*;
-import org.locationtech.jtstest.testbuilder.geom.*;
+import org.locationtech.jts.geom.Geometry;
 
 
 public class IndexedGeometryContainer

@@ -13,19 +13,19 @@
 package org.locationtech.jtstest.testbuilder.ui;
 
 import java.awt.Component;
-import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Insets;
 import java.awt.RenderingHints;
 import java.awt.SystemColor;
 import java.awt.Toolkit;
-import java.util.Collection;
-import java.awt.datatransfer.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.io.File;
-
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -36,11 +36,8 @@ import javax.swing.JTextField;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.text.JTextComponent;
 
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.io.ParseException;
-import org.locationtech.jtstest.util.ExceptionFormatter;
+import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jtstest.util.StringUtil;
-import org.locationtech.jtstest.util.io.MultiFormatReader;
 
 
 public class SwingUtil {

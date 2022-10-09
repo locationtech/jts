@@ -12,7 +12,10 @@
 
 package org.locationtech.jtstest.testbuilder.geom;
 
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateSequence;
+import org.locationtech.jts.geom.CoordinateSequenceFilter;
+import org.locationtech.jts.geom.Geometry;
 
 public class NearestPointFinder 
 {

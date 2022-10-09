@@ -11,8 +11,10 @@
  */
 package org.locationtech.jtstest.command;
 
-import java.io.*;
-import java.util.*;
+import java.io.PrintStream;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Vector;
 
 /**
  * A class to parse Unix (and DOS/Win)-style application command-lines

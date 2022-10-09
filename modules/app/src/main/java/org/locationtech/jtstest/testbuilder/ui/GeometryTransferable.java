@@ -17,8 +17,7 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.io.*;
+import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jtstest.testbuilder.io.IOUtil;
 
 public class GeometryTransferable implements Transferable 

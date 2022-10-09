@@ -12,10 +12,13 @@
 
 package org.locationtech.jtstest.testbuilder.topostretch;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.geom.util.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.util.GeometryEditor;
 
 public class GeometryVerticesMover 
 {

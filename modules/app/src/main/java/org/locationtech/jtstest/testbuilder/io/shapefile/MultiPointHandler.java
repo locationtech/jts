@@ -26,7 +26,11 @@ package org.locationtech.jtstest.testbuilder.io.shapefile;
 
 import java.io.IOException;
 
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.MultiPoint;
+import org.locationtech.jts.geom.PrecisionModel;
 
 
 /**

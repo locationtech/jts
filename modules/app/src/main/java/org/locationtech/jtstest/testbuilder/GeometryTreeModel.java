@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Vector;
-
 import javax.swing.ImageIcon;
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;

@@ -11,7 +11,7 @@
  */
 package org.locationtech.jtstest.geomfunction;
 
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Geometry;
 
 /**
  * A reification of a function which can be executed on a 

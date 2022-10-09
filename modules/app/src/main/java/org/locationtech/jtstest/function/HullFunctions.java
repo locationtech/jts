@@ -14,7 +14,6 @@ package org.locationtech.jtstest.function;
 import org.locationtech.jts.algorithm.hull.ConcaveHull;
 import org.locationtech.jts.algorithm.hull.ConcaveHullOfPolygons;
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.simplify.PolygonHullSimplifier;
 import org.locationtech.jtstest.geomfunction.Metadata;
 
 public class HullFunctions {

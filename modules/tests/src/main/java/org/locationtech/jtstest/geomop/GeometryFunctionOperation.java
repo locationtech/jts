@@ -11,10 +11,13 @@
  */
 package org.locationtech.jtstest.geomop;
 
-import java.lang.reflect.*;
-
-import org.locationtech.jts.geom.*;
-import org.locationtech.jtstest.testrunner.*;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jtstest.testrunner.BooleanResult;
+import org.locationtech.jtstest.testrunner.DoubleResult;
+import org.locationtech.jtstest.testrunner.GeometryResult;
+import org.locationtech.jtstest.testrunner.IntegerResult;
+import org.locationtech.jtstest.testrunner.JTSTestReflectionException;
+import org.locationtech.jtstest.testrunner.Result;
 
 /**
  * Invokes a function from registry 

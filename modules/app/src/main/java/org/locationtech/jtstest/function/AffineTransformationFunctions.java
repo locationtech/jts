@@ -12,8 +12,11 @@
 
 package org.locationtech.jtstest.function;
 
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.geom.util.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.util.AffineTransformation;
+import org.locationtech.jts.geom.util.AffineTransformationFactory;
 import org.locationtech.jtstest.geomfunction.Metadata;
 
 public class AffineTransformationFunctions 

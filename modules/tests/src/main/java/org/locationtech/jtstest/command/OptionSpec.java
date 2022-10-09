@@ -11,7 +11,8 @@
  */
 package org.locationtech.jtstest.command;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.Vector;
 /**
  * Specifes the syntax for a single option on a
  * command line

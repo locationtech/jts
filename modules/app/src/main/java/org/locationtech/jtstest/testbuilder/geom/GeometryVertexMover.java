@@ -12,8 +12,9 @@
 
 package org.locationtech.jtstest.testbuilder.geom;
 
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.geom.util.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.util.GeometryEditor;
 
 public class GeometryVertexMover 
 {

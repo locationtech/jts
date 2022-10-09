@@ -12,14 +12,13 @@
 package org.locationtech.jtstest.testbuilder;
 
 
-import java.awt.*;
-
+import java.awt.BorderLayout;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-import org.locationtech.jtstest.testbuilder.model.*;
+import org.locationtech.jtstest.testbuilder.model.TestBuilderModel;
 
 
 /**

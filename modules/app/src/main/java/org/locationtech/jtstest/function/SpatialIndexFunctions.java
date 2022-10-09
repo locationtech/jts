@@ -36,7 +36,6 @@ import org.locationtech.jts.index.strtree.AbstractNode;
 import org.locationtech.jts.index.strtree.Boundable;
 import org.locationtech.jts.index.strtree.GeometryItemDistance;
 import org.locationtech.jts.index.strtree.STRtree;
-//import org.locationtech.jts.triangulatepoly.VertexSequencePackedRtree;
 import org.locationtech.jts.math.MathUtil;
 
 

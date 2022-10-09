@@ -12,8 +12,11 @@
 
 package org.locationtech.jtstest.testbuilder.ui;
 
-import java.awt.*; 
-import java.awt.geom.*; 
+import java.awt.Dimension;
+import java.awt.Point;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.NoninvertibleTransformException;
+import java.awt.geom.Point2D;
 import java.text.NumberFormat;
 
 import org.locationtech.jts.awt.PointTransformation;
@@ -21,7 +24,6 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.math.MathUtil;
-import org.locationtech.jts.util.Assert;
 import org.locationtech.jtstest.testbuilder.GeometryEditPanel;
 
 

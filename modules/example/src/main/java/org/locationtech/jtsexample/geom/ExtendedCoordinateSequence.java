@@ -11,7 +11,9 @@
  */
 package org.locationtech.jtsexample.geom;
 
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateSequence;
+import org.locationtech.jts.geom.Envelope;
 
 /**
  * Demonstrates how to implement a CoordinateSequence for a new kind of

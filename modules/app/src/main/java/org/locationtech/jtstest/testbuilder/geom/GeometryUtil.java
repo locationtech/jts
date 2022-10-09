@@ -13,7 +13,12 @@
 package org.locationtech.jtstest.testbuilder.geom;
 
 import org.locationtech.jts.algorithm.Area;
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryCollection;
+import org.locationtech.jts.geom.GeometryComponentFilter;
+import org.locationtech.jts.geom.LinearRing;
+import org.locationtech.jts.geom.Polygon;
 
 public class GeometryUtil {
 

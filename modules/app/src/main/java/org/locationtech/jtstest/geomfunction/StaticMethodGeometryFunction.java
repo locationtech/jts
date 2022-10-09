@@ -12,11 +12,13 @@
 package org.locationtech.jtstest.geomfunction;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.*;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.util.Assert;
-import org.locationtech.jtstest.util.*;
+import org.locationtech.jtstest.util.ClassUtil;
+import org.locationtech.jtstest.util.StringUtil;
 
 
 /**

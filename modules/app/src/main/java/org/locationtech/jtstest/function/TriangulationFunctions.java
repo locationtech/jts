@@ -11,10 +11,15 @@
  */
 package org.locationtech.jtstest.function;
 
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.triangulate.*;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.triangulate.ConformingDelaunayTriangulationBuilder;
+import org.locationtech.jts.triangulate.DelaunayTriangulationBuilder;
+import org.locationtech.jts.triangulate.VertexTaggedGeometryDataMapper;
+import org.locationtech.jts.triangulate.VoronoiDiagramBuilder;
 import org.locationtech.jts.triangulate.quadedge.LocateFailureException;
-import org.locationtech.jtstest.util.*;
+import org.locationtech.jtstest.util.GeometryDataUtil;
 
 
 public class TriangulationFunctions 

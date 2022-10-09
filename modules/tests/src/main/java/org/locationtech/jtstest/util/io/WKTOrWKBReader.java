@@ -11,8 +11,11 @@
  */
 package org.locationtech.jtstest.util.io;
 
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.io.*;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.io.WKBReader;
+import org.locationtech.jts.io.WKTReader;
 
 /**
  * Reads a {@link Geometry} from a string which is in either WKT or WKBHex format

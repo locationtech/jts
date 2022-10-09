@@ -13,22 +13,18 @@
 package org.locationtech.jtstest.testbuilder.controller;
 
 
-import java.util.List;
-
 import javax.swing.JFileChooser;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.util.LinearComponentExtracter;
-import org.locationtech.jtstest.testbuilder.TestBuilderDialogs;
-import org.locationtech.jtstest.testbuilder.geom.ComponentLocater;
-import org.locationtech.jtstest.testbuilder.geom.GeometryLocation;
 import org.locationtech.jtstest.clean.CleanDuplicatePoints;
 import org.locationtech.jtstest.testbuilder.GeometryEditPanel;
 import org.locationtech.jtstest.testbuilder.JTSTestBuilder;
 import org.locationtech.jtstest.testbuilder.JTSTestBuilderFrame;
 import org.locationtech.jtstest.testbuilder.JTSTestBuilderToolBar;
 import org.locationtech.jtstest.testbuilder.SpatialFunctionPanel;
+import org.locationtech.jtstest.testbuilder.TestBuilderDialogs;
 import org.locationtech.jtstest.testbuilder.model.GeometryEditModel;
 import org.locationtech.jtstest.testbuilder.model.LayerList;
 import org.locationtech.jtstest.testbuilder.model.TestBuilderModel;

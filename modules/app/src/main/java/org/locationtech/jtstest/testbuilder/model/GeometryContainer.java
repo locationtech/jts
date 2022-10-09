@@ -12,7 +12,7 @@
 
 package org.locationtech.jtstest.testbuilder.model;
 
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Geometry;
 
 public interface GeometryContainer {
   Geometry getGeometry();

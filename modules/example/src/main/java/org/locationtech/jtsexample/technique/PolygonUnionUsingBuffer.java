@@ -12,7 +12,8 @@
 
 package org.locationtech.jtsexample.technique;
 
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.io.WKTReader;
 
 /**

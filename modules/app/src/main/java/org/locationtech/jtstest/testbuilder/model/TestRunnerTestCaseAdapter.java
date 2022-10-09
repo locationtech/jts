@@ -10,14 +10,17 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  */
 package org.locationtech.jtstest.testbuilder.model;
+
 import java.util.Arrays;
 import java.util.Iterator;
 
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.IntersectionMatrix;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTWriter;
 import org.locationtech.jts.util.Assert;
-import org.locationtech.jtstest.geomop.*;
+import org.locationtech.jtstest.geomop.GeometryMethodOperation;
 import org.locationtech.jtstest.test.Testable;
 import org.locationtech.jtstest.testrunner.BooleanResult;
 import org.locationtech.jtstest.testrunner.GeometryResult;

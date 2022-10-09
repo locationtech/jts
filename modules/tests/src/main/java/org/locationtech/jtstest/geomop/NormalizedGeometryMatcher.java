@@ -12,7 +12,7 @@
 
 package org.locationtech.jtstest.geomop;
 
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Geometry;
 
 
 public class NormalizedGeometryMatcher

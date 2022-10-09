@@ -12,7 +12,9 @@
 
 package org.locationtech.jtstest.testbuilder.ui.tools;
 
-import java.awt.*;
+import java.awt.Cursor;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
@@ -23,7 +25,7 @@ import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jtstest.testbuilder.AppConstants;
 import org.locationtech.jtstest.testbuilder.GeometryEditPanel;
 import org.locationtech.jtstest.testbuilder.JTSTestBuilder;
-import org.locationtech.jtstest.testbuilder.model.*;
+import org.locationtech.jtstest.testbuilder.model.GeometryEditModel;
 import org.locationtech.jtstest.testbuilder.ui.Viewport;
 
 

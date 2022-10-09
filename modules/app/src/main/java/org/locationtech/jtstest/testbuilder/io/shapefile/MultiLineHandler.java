@@ -21,10 +21,12 @@ package org.locationtech.jtstest.testbuilder.io.shapefile;
 
 import java.io.IOException;
 
-import org.locationtech.jts.geom.*;
-import org.locationtech.jtstest.testbuilder.io.shapefile.EndianDataInputStream;
-import org.locationtech.jtstest.testbuilder.io.shapefile.InvalidShapefileException;
-import org.locationtech.jtstest.testbuilder.io.shapefile.ShapeHandler;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.MultiLineString;
+import org.locationtech.jts.geom.PrecisionModel;
 
 /**
  * Wrapper for a Shapefile arc.

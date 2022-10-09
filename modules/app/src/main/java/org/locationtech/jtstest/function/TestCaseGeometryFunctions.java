@@ -11,7 +11,7 @@
  */
 package org.locationtech.jtstest.function;
 
-import org.locationtech.jts.densify.*;
+import org.locationtech.jts.densify.Densifier;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.operation.buffer.BufferOp;
 import org.locationtech.jts.operation.buffer.BufferParameters;

@@ -15,7 +15,7 @@ package org.locationtech.jtstest.geomfunction;
 import java.util.Arrays;
 
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jtstest.util.*;
+import org.locationtech.jtstest.util.ClassUtil;
 
 
 /**
