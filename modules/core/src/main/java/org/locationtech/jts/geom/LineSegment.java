@@ -18,6 +18,7 @@ import org.locationtech.jts.algorithm.Intersection;
 import org.locationtech.jts.algorithm.LineIntersector;
 import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.algorithm.RobustLineIntersector;
+import org.locationtech.jts.io.WKTConstants;
 
 
 /**
@@ -696,7 +697,7 @@ public class LineSegment
 
   public String toString()
   {
-    return "LINESTRING( " +
+    return WKTConstants.LINESTRING + " (" +
         p0.x + " " + p0.y
         + ", " +
         p1.x + " " + p1.y + ")";
