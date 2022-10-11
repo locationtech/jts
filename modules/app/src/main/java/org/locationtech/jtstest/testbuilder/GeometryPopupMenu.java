@@ -15,7 +15,6 @@ package org.locationtech.jtstest.testbuilder;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 

@@ -14,7 +14,12 @@ package org.locationtech.jtstest.testbuilder.io;
 import java.io.File;
 import java.util.Iterator;
 
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryCollection;
+import org.locationtech.jts.geom.Lineal;
+import org.locationtech.jts.geom.Polygonal;
+import org.locationtech.jts.geom.PrecisionModel;
+import org.locationtech.jts.geom.Puntal;
 import org.locationtech.jts.io.WKBWriter;
 import org.locationtech.jts.io.WKTWriter;
 import org.locationtech.jts.util.Assert;

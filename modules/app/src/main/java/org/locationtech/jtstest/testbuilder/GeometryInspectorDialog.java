@@ -12,7 +12,6 @@
 package org.locationtech.jtstest.testbuilder;
 
 import java.awt.Frame;
-
 import javax.swing.JDialog;
 
 import org.locationtech.jts.geom.Geometry;

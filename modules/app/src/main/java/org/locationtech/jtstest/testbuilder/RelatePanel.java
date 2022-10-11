@@ -12,16 +12,20 @@
 package org.locationtech.jtstest.testbuilder;
 
 
-
+import java.awt.Color;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-
-
-import java.awt.*;
-
-import javax.swing.*;
 
 import org.locationtech.jts.geom.IntersectionMatrix;
 import org.locationtech.jts.geom.Location;

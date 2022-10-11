@@ -11,9 +11,12 @@
  */
 package org.locationtech.jtsexample.linearref;
 
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.io.*;
-import org.locationtech.jts.linearref.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.io.WKTReader;
+import org.locationtech.jts.linearref.LengthIndexedLine;
 
 /**
  * Examples of Linear Referencing

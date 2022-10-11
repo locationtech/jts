@@ -12,18 +12,32 @@
 package org.locationtech.jtstest.testrunner;
 
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 
-import org.jdom2.*;
-import org.jdom2.input.*;
+import org.jdom2.Attribute;
+import org.jdom2.DataConversionException;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.input.SAXBuilder;
 import org.jdom2.located.LocatedElement;
 import org.jdom2.located.LocatedJDOMFactory;
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.io.*;
-import org.locationtech.jtstest.*;
-import org.locationtech.jtstest.geomop.*;
-import org.locationtech.jtstest.util.*;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.PrecisionModel;
+import org.locationtech.jts.io.ParseException;
+import org.locationtech.jtstest.TestCoordinateSequenceFactory;
+import org.locationtech.jtstest.geomop.GeometryOperation;
+import org.locationtech.jtstest.util.StringUtil;
 import org.locationtech.jtstest.util.io.WKTOrWKBReader;
 
 

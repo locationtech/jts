@@ -11,7 +11,9 @@
  */
 package org.locationtech.jtstest.test;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import org.locationtech.jtstest.testbuilder.model.TestCaseEdit;
 

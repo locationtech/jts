@@ -12,8 +12,8 @@
 
 package org.locationtech.jtstest;
 
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.geom.impl.*;
+import org.locationtech.jts.geom.CoordinateSequenceFactory;
+import org.locationtech.jts.geom.impl.CoordinateArraySequenceFactory;
 
 /**
  * Create the CoordinateSequenceFactory to be used in tests

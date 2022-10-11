@@ -12,7 +12,12 @@
 
 package org.locationtech.jtstest.testbuilder.geom;
 
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateSequence;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryComponentFilter;
+import org.locationtech.jts.geom.LineSegment;
+import org.locationtech.jts.geom.LineString;
 
 /**
  * Finds a vertex or a point on a segment of a Geometry

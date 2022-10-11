@@ -14,9 +14,7 @@
 package org.locationtech.jtstest;
 
 import org.locationtech.jts.geom.PrecisionModel;
-import org.locationtech.jtstest.testbuilder.JTSTestBuilderFrame;
 import org.locationtech.jtstest.testbuilder.io.XMLTestWriter;
-import org.locationtech.jtstest.testbuilder.model.*;
 
 import junit.framework.TestCase;
 

@@ -12,8 +12,11 @@
 
 package org.locationtech.jtstest.testbuilder.topostretch;
 
-import org.locationtech.jts.algorithm.*;
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.algorithm.Distance;
+import org.locationtech.jts.algorithm.Orientation;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateArrays;
+import org.locationtech.jts.geom.LineSegment;
 import org.locationtech.jts.math.MathUtil;
 import org.locationtech.jts.math.Vector2D;
 

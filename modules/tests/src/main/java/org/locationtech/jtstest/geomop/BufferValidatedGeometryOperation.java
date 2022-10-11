@@ -11,11 +11,13 @@
  */
 package org.locationtech.jtstest.geomop;
 
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.io.*;
-import org.locationtech.jts.operation.buffer.validate.*;
-import org.locationtech.jts.util.*;
-import org.locationtech.jtstest.testrunner.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.io.WKTWriter;
+import org.locationtech.jts.operation.buffer.validate.BufferResultValidator;
+import org.locationtech.jts.util.Assert;
+import org.locationtech.jtstest.testrunner.GeometryResult;
+import org.locationtech.jtstest.testrunner.Result;
 
 
 /**

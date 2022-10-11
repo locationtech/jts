@@ -12,9 +12,15 @@
 
 package org.locationtech.jtsexample.technique;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateArrays;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.MultiLineString;
 import org.locationtech.jts.io.WKTReader;
 
 /**

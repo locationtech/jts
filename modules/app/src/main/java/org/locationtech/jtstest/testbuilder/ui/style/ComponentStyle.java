@@ -14,7 +14,8 @@ package org.locationtech.jtstest.testbuilder.ui.style;
 
 import java.awt.Graphics2D;
 
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryCollection;
 import org.locationtech.jtstest.testbuilder.ui.Viewport;
 
 

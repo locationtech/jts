@@ -11,13 +11,14 @@
  */
 package org.locationtech.jtstest.testbuilder.ui.tools;
 
-import java.awt.*;
+import java.awt.Cursor;
+import java.awt.Point;
+import java.awt.Shape;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.swing.SwingUtilities;
 
 import org.locationtech.jts.geom.Coordinate;

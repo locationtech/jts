@@ -15,7 +15,6 @@ package org.locationtech.jtstest.testbuilder.controller;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.NumberFormat;
-
 import javax.swing.Timer;
 
 import org.locationtech.jts.geom.Geometry;

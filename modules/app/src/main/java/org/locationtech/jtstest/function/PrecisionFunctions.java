@@ -12,8 +12,11 @@
 
 package org.locationtech.jtstest.function;
 
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.precision.*;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.PrecisionModel;
+import org.locationtech.jts.precision.GeometryPrecisionReducer;
+import org.locationtech.jts.precision.MinimumClearance;
+import org.locationtech.jts.precision.SimpleMinimumClearance;
 import org.locationtech.jtstest.geomfunction.Metadata;
 
 public class PrecisionFunctions 

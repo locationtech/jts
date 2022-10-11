@@ -11,7 +11,7 @@
  */
 package org.locationtech.jtsexample.geom;
 
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Coordinate;
 
 
 /**

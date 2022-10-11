@@ -12,11 +12,15 @@
 
 package org.locationtech.jtstest.function;
 
-import org.locationtech.jts.*;
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.JTSVersion;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateList;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.operation.buffer.BufferOp;
 import org.locationtech.jts.operation.buffer.BufferParameters;
-import org.locationtech.jts.util.*;
+import org.locationtech.jts.util.GeometricShapeFactory;
 
 public class JTSFunctions 
 {

@@ -11,8 +11,11 @@
  */
 package org.locationtech.jtsexample.geom;
 
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.io.*;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.PrecisionModel;
+import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.io.WKTReader;
 
 /**
  * An example showing the results of using different precision models

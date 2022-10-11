@@ -11,8 +11,13 @@
  */
 package org.locationtech.jtstest.test;
 
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.io.*;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.IntersectionMatrix;
+import org.locationtech.jts.geom.PrecisionModel;
+import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.io.WKTReader;
+import org.locationtech.jts.io.WKTWriter;
 import org.locationtech.jts.util.Assert;
 
 

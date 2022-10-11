@@ -13,7 +13,6 @@ package org.locationtech.jtstest.testbuilder;
 
 
 import java.awt.BorderLayout;
-
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;

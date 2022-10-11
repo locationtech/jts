@@ -12,15 +12,16 @@
 
 package org.locationtech.jtstest.testbuilder.ui.tools;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Collections;
-
-import java.awt.*;
+import java.awt.Cursor;
+import java.awt.Shape;
 import java.awt.event.MouseEvent;
-import java.awt.geom.*;
+import java.awt.geom.GeneralPath;
+import java.awt.geom.Point2D;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Coordinate;
 
 public abstract class LineBandTool extends IndicatorTool 
 {

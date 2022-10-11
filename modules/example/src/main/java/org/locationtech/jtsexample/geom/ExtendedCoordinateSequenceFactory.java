@@ -11,7 +11,9 @@
  */
 package org.locationtech.jtsexample.geom;
 
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateSequence;
+import org.locationtech.jts.geom.CoordinateSequenceFactory;
 
 /**
  * Creates ExtendedCoordinateSequenceFactory internally represented

@@ -25,8 +25,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Vector;
-import org.apache.commons.lang3.StringEscapeUtils;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.locationtech.jts.util.Assert;
 
 

@@ -16,7 +16,6 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
-
 import javax.swing.AbstractButton;
 import javax.swing.Box;
 import javax.swing.ButtonGroup;

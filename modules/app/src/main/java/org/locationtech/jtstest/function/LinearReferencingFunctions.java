@@ -13,7 +13,9 @@
 package org.locationtech.jtstest.function;
 
 
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.linearref.LengthIndexedLine;
 import org.locationtech.jtstest.geomfunction.Metadata;
 

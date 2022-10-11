@@ -12,7 +12,6 @@
 package org.locationtech.jtstest.geomop;
 
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jtstest.util.*;
 
 
 /**

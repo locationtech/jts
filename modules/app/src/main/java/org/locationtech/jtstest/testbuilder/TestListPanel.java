@@ -15,7 +15,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.util.Iterator;
-
 import javax.swing.DefaultListModel;
 import javax.swing.JLabel;
 import javax.swing.JList;
