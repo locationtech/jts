@@ -351,9 +351,21 @@ class OverlayUtil {
    */
   public static Coordinate round(Point pt, PrecisionModel pm) {
     if (pt.isEmpty()) return null;
-    Coordinate p = pt.getCoordinate().copy();
+    return round( pt.getCoordinate(), pm );
+  }
+  
+  /**
+   * Rounds a coordinate if precision model is fixed.
+   * Note: return value is only copied if rounding is performed.
+   * 
+   * @param p the coordinate to round
+   * @return the rounded coordinate
+   */
+  public static Coordinate round(Coordinate p, PrecisionModel pm) {
     if (! isFloating(pm)) {
-      pm.makePrecise(p);
+      Coordinate pRound = p.copy();
+      pm.makePrecise(pRound);
+      return pRound;
     }
     return p;
   }

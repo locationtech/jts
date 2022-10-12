@@ -19,6 +19,7 @@ import java.util.Set;
 import org.locationtech.jts.algorithm.locate.IndexedPointInAreaLocator;
 import org.locationtech.jts.algorithm.locate.PointOnGeometryLocator;
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateFilter;
 import org.locationtech.jts.geom.CoordinateList;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -217,13 +218,15 @@ class OverlayMixedPoints {
   
   private static Coordinate[] extractCoordinates(Geometry points, PrecisionModel pm) {
     CoordinateList coords = new CoordinateList();
-    int n = points.getNumGeometries();
-    for (int i = 0; i < n; i++) {
-      Point point = (Point) points.getGeometryN(i);
-      if (point.isEmpty()) continue;
-      Coordinate coord = OverlayUtil.round(point, pm);
-      coords.add(coord, true);
-    }
+    points.apply(new CoordinateFilter() {
+
+      @Override
+      public void filter(Coordinate coord) {
+        Coordinate p = OverlayUtil.round(coord, pm);
+        coords.add(p, false);
+      }
+      
+    });
     return coords.toCoordinateArray();
   }
   

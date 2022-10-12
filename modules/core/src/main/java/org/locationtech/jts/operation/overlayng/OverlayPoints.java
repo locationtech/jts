@@ -17,8 +17,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateFilter;
 import org.locationtech.jts.geom.CoordinateSequence;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryComponentFilter;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.PrecisionModel;
@@ -154,25 +156,29 @@ class OverlayPoints {
     return geometryFactory.createPoint(seq2);
   }
 
-  private HashMap<Coordinate, Point> buildPointMap(Geometry geom) {
+  private HashMap<Coordinate, Point> buildPointMap(Geometry geoms) {
     HashMap<Coordinate, Point> map = new HashMap<Coordinate, Point>();
-    for (int i = 0; i < geom.getNumGeometries(); i++) {
-      Geometry elt = geom.getGeometryN(i);
-      if (! (elt instanceof Point) ) {
-        throw new IllegalArgumentException("Non-point geometry input to point overlay");
+    geoms.apply(new GeometryComponentFilter() {
+
+      @Override
+      public void filter(Geometry geom) {
+        if (! (geom instanceof Point))
+          return;
+        if (geom.isEmpty())
+          return;
+        
+        Point pt = (Point) geom;
+        Coordinate p = roundCoord(pt, pm);
+        /**
+         * Only add first occurrence of a point.
+         * This provides the merging semantics of overlay
+         */
+        if (! map.containsKey(p))
+          map.put(p, pt);
       }
-      // don't add empty points
-      if (elt.isEmpty()) continue;
       
-      Point pt = (Point) elt;
-      Coordinate p = roundCoord(pt, pm);
-      /**
-       * Only add first occurrence of a point.
-       * This provides the merging semantics of overlay
-       */
-      if (! map.containsKey(p))
-        map.put(p, pt);
-    }
+    });
+
     return map;
   }
 
