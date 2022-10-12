@@ -59,15 +59,13 @@ public class IndexedPointInAreaLocator
   
   /**
    * Creates a new locator for a given {@link Geometry}.
-   * {@link Polygonal} and {@link LinearRing} geometries
+   * Geometries containing {@link Polygon}s and {@link LinearRing} geometries
    * are supported.
    * 
    * @param g the Geometry to locate in
    */
   public IndexedPointInAreaLocator(Geometry g)
   {
-    if (! (g instanceof Polygonal  || g instanceof LinearRing))
-      throw new IllegalArgumentException("Argument must be Polygonal or LinearRing");
     geom = g;
   }
     
@@ -144,6 +142,10 @@ public class IndexedPointInAreaLocator
       List lines = LinearComponentExtracter.getLines(geom);
       for (Iterator i = lines.iterator(); i.hasNext(); ) {
         LineString line = (LineString) i.next();
+        //-- only include rings of Polygons or LinearRings
+        if (! line.isClosed())
+          continue;
+        
         Coordinate[] pts = line.getCoordinates();
         addLine(pts);
       }
