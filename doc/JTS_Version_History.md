@@ -27,6 +27,7 @@ Distributions for older JTS versions can be obtained at the
 * Add `CoverageGapFinder` (#900)
 * Add `CoverageUnion` (#900)
 * Add `CoverageSimplifier` (#911)
+* Add `OverlayNG` support for simple GeometryCollection inputs (#915)
 
 ### Bug Fixes
 
