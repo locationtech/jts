@@ -1,0 +1,127 @@
+<run>
+<desc>Tests for OverlayNG operations with simple GeometryCollection inputs.
+Covers topological situations with no precision collapse.
+Uses a floating precision model.
+</desc>
+
+<case>
+  <desc>AgA - simple overlapping</desc>
+  <a>
+    POLYGON ((2 8, 8 8, 8 2, 2 2, 2 8))
+  </a>
+  <b>
+    GEOMETRYCOLLECTION ( POLYGON ((1 1, 1 5, 5 5, 5 1, 1 1)), POLYGON ((9 9, 9 5, 5 5, 5 9, 9 9)) )
+  </b>
+<test>
+  <op name="intersectionNG" arg1="A" arg2="B">
+    MULTIPOLYGON (((2 2, 2 5, 5 5, 5 2, 2 2)), ((5 5, 5 8, 8 8, 8 5, 5 5)))
+  </op>
+</test>
+<test>
+  <op name="unionNG" arg1="A" arg2="B">
+    POLYGON ((1 1, 1 5, 2 5, 2 8, 5 8, 5 9, 9 9, 9 5, 8 5, 8 2, 5 2, 5 1, 1 1))
+  </op>
+</test>
+<test>
+  <op name="differenceNG" arg1="A" arg2="B">
+    MULTIPOLYGON (((5 8, 5 5, 2 5, 2 8, 5 8)), ((8 2, 5 2, 5 5, 8 5, 8 2)))
+  </op>
+</test>
+<test>
+  <op name="symdifferenceNG" arg1="A" arg2="B">
+    MULTIPOLYGON (((5 8, 5 5, 2 5, 2 8, 5 8)), ((8 8, 5 8, 5 9, 9 9, 9 5, 8 5, 8 8)), ((8 2, 5 2, 5 5, 8 5, 8 2)), ((2 2, 5 2, 5 1, 1 1, 1 5, 2 5, 2 2)))
+  </op>
+</test>
+</case>
+
+<case>
+  <desc>AgmP - simple partially overlapping</desc>
+  <a>
+    POLYGON ((0 0, 0 1, 1 1, 0 0))
+  </a>
+  <b>
+    GEOMETRYCOLLECTION ( MULTIPOINT ((0 0), (99 99)) )
+  </b>
+<test>
+  <op name="intersectionNG" arg1="A" arg2="B">
+    POINT (0 0)
+  </op>
+</test>
+<test>
+  <op name="unionNG" arg1="A" arg2="B">
+    GEOMETRYCOLLECTION (POINT (99 99), POLYGON ((0 0, 0 1, 1 1, 0 0)))
+  </op>
+</test>
+<test>
+  <op name="differenceNG" arg1="A" arg2="B">
+    POLYGON ((0 1, 1 1, 0 0, 0 1))
+  </op>
+</test>
+<test>
+  <op name="symdifferenceNG" arg1="A" arg2="B">
+    GEOMETRYCOLLECTION (POLYGON ((0 1, 1 1, 0 0, 0 1)), POINT (99 99))
+  </op>
+</test>
+</case>
+
+<case>
+  <desc>LgcA - simple overlapping</desc>
+  <a>
+    LINESTRING (0 0, 10 10)
+  </a>
+  <b>
+    GEOMETRYCOLLECTION ( POLYGON ((1 1, 1 5, 5 5, 5 1, 1 1)), POLYGON ((9 9, 9 5, 5 5, 5 9, 9 9)) )
+  </b>
+<test>
+  <op name="intersectionNG" arg1="A" arg2="B">
+    MULTILINESTRING ((1 1, 5 5), (5 5, 9 9))
+  </op>
+</test>
+<test>
+  <op name="unionNG" arg1="A" arg2="B">
+    GEOMETRYCOLLECTION (LINESTRING (0 0, 1 1), LINESTRING (9 9, 10 10), POLYGON ((1 1, 1 5, 5 5, 5 1, 1 1)), POLYGON ((5 5, 5 9, 9 9, 9 5, 5 5)))
+  </op>
+</test>
+<test>
+  <op name="differenceNG" arg1="A" arg2="B">
+    MULTILINESTRING ((0 0, 1 1), (9 9, 10 10))
+  </op>
+</test>
+<test>
+  <op name="symdifferenceNG" arg1="A" arg2="B">
+    GEOMETRYCOLLECTION (POLYGON ((1 5, 5 5, 5 1, 1 1, 1 5)), POLYGON ((9 5, 5 5, 5 9, 9 9, 9 5)), LINESTRING (0 0, 1 1), LINESTRING (9 9, 10 10))
+  </op>
+</test>
+</case>
+
+<case>
+  <desc>PgcA - simple covered</desc>
+  <a>
+    POINT(5 5)
+  </a>
+  <b>
+    GEOMETRYCOLLECTION ( MULTIPOLYGON (((1 1, 1 5, 5 5, 5 1, 1 1)), ((9 9, 9 5, 5 5, 5 9, 9 9))) )
+  </b>
+<test>
+  <op name="intersectionNG" arg1="A" arg2="B">
+    POINT (5 5)
+  </op>
+</test>
+<test>
+  <op name="unionNG" arg1="A" arg2="B">
+    MULTIPOLYGON (((1 1, 1 5, 5 5, 5 1, 1 1)), ((9 9, 9 5, 5 5, 5 9, 9 9)))
+  </op>
+</test>
+<test>
+  <op name="differenceNG" arg1="A" arg2="B">
+    POINT EMPTY
+  </op>
+</test>
+<test>
+  <op name="symdifferenceNG" arg1="A" arg2="B">
+    MULTIPOLYGON (((1 5, 5 5, 5 1, 1 1, 1 5)), ((9 5, 5 5, 5 9, 9 9, 9 5)))
+  </op>
+</test>
+</case>
+
+</run>
