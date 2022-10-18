@@ -162,28 +162,24 @@ class SubgraphDepthLocater
 
     public DepthSegment(LineSegment seg, int depth)
     {
-      // input seg is assumed to be normalized
+      // Assert: input seg is upward (p0.y <= p1.y)
       upwardSeg = new LineSegment(seg);
-      //upwardSeg.normalize();
       this.leftDepth = depth;
     }
+    
+    public boolean isUpward() {
+      return upwardSeg.p0.y <= upwardSeg.p1.y;
+    }
+    
     /**
-     * Defines a comparison operation on DepthSegments
-     * which orders them left to right.
-     * Assumes the segments are normalized.
+     * A comparison operation
+     * which orders segments left to right.
      * <p>
      * The definition of the ordering is:
      * <ul>
      * <li>-1 : if DS1.seg is left of or below DS2.seg (DS1 < DS2)
-     * <li>1 : if   DS1.seg is right of or above DS2.seg (DS1 > DS2) 
+     * <li>1 : if  DS1.seg is right of or above DS2.seg (DS1 > DS2) 
      * <li>0 : if the segments are identical 
-     * </ul>
-     *
-     * KNOWN BUGS:
-     * <ul>
-     * <li>The logic does not obey the {@link Comparator.compareTo} contract. 
-     * This is acceptable for the intended usage, but may cause problems if used with some
-     * utilities in the Java standard library (e.g. {@link Collections.sort()}.
      * </ul>
      * 
      * @param obj a DepthSegment
@@ -193,9 +189,48 @@ class SubgraphDepthLocater
     {
       DepthSegment other = (DepthSegment) obj;
       
+      /**
+       * If segment envelopes do not overlap, then
+       * can use standard segment lexicographic ordering.
+       */
+      if (upwardSeg.minX() >= other.upwardSeg.maxX()
+          || upwardSeg.maxX() <= other.upwardSeg.minX()
+          || upwardSeg.minY() >= other.upwardSeg.maxX()
+          || upwardSeg.maxY() <= other.upwardSeg.minY()) {
+        return upwardSeg.compareTo(other.upwardSeg);
+      };
+      
+      /**
+       * Otherwise if envelopes overlap, use relative segment orientation.
+       * 
+       * Collinear segments should be evaluated by previous logic
+       */
+      int orientIndex = upwardSeg.orientationIndex(other.upwardSeg);
+      if (orientIndex != 0) return orientIndex;
+
+      /**
+       * If comparison between this and other is indeterminate,
+       * try the opposite call order.
+       * The sign of the result needs to be flipped.
+       */
+      orientIndex = -1 * other.upwardSeg.orientationIndex(upwardSeg);
+      if (orientIndex != 0) return orientIndex;
+
+      /**
+       * If segment envelopes overlap and they are collinear,
+       * since segments do not cross they must be equal.
+       */
+      // assert: segments are equal
+      return 0;
+    }
+    
+    public int OLDcompareTo(Object obj)
+    {
+      DepthSegment other = (DepthSegment) obj;
+      
       // fast check if segments are trivially ordered along X
-      if (upwardSeg.minX() >= other.upwardSeg.maxX()) return 1;
-      if (upwardSeg.maxX() <= other.upwardSeg.minX()) return -1;
+      if (upwardSeg.minX() > other.upwardSeg.maxX()) return 1;
+      if (upwardSeg.maxX() < other.upwardSeg.minX()) return -1;
       
       /**
        * try and compute a determinate orientation for the segments.
@@ -212,28 +247,8 @@ class SubgraphDepthLocater
       orientIndex = -1 * other.upwardSeg.orientationIndex(upwardSeg);
       if (orientIndex != 0) return orientIndex;
 
-      // otherwise, use standard lexocographic segment ordering
+      // otherwise, use standard lexicographic segment ordering
       return upwardSeg.compareTo(other.upwardSeg);
-    }
-
-    /**
-     * Compare two collinear segments for left-most ordering.
-     * If segs are vertical, use vertical ordering for comparison.
-     * If segs are equal, return 0.
-     * Segments are assumed to be directed so that the second coordinate is >= to the first
-     * (e.g. up and to the right).
-     *
-     * @param seg0 a segment to compare
-     * @param seg1 a segment to compare
-     * @return
-     */
-    private int compareX(LineSegment seg0, LineSegment seg1)
-    {
-      int compare0 = seg0.p0.compareTo(seg1.p0);
-      if (compare0 != 0)
-        return compare0;
-      return seg0.p1.compareTo(seg1.p1);
-
     }
 
     public String toString()
