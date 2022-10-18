@@ -216,6 +216,10 @@ class SubgraphDepthLocater
       orientIndex = -1 * other.upwardSeg.orientationIndex(upwardSeg);
       if (orientIndex != 0) return orientIndex;
 
+      /**
+       * If segment envelopes overlap and they are collinear,
+       * since segments do not cross they must be equal.
+       */
       // assert: segments are equal
       return 0;
     }
