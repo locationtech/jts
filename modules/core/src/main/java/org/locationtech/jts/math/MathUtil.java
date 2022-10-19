@@ -11,6 +11,8 @@
  */
 package org.locationtech.jts.math;
 
+import java.util.Random;
+
 /**
  * Various utility functions for mathematical and numerical operations.
  * 
@@ -193,5 +195,28 @@ public class MathUtil
     double next = curr + alpha;
     if (next < 1) return next;
     return next - Math.floor(next);
+  }
+  
+  /**
+   * Generates a randomly-shuffled list of the integers from [0..n-1].
+   * <p>
+   * One use is to randomize points inserted into a {@link KDtree}.
+   * 
+   * @param n the number of integers to shuffle
+   * @return the shuffled array
+   */
+  public static int[] shuffle(int n) {
+    final Random rnd = new Random(13);
+    int[] ints = new int[n];
+    for (int i = 0; i < n; i++) {
+      ints[i] = i;
+    }
+    for (int i = n - 1; i >= 1; i--) {
+      int j = rnd.nextInt(i + 1);
+      int last = ints[i];
+      ints[i] = ints[j];
+      ints[j] = last;
+    }
+    return ints;
   }
 }
