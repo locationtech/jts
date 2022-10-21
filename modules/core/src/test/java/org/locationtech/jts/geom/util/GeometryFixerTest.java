@@ -12,10 +12,12 @@
 package org.locationtech.jts.geom.util;
 
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateArrays;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Point;
 
 import junit.textui.TestRunner;
+import org.locationtech.jts.io.WKTReader;
 import test.jts.GeometryTestCase;
 
 public class GeometryFixerTest extends GeometryTestCase {
@@ -344,7 +346,26 @@ public class GeometryFixerTest extends GeometryTestCase {
     checkFix("POLYGON ((50.69544005538049 4.587126197745181, 50.699035986722194 4.592752502415541, 50.699395579856365 4.592049214331746, 50.699125885005735 4.590501980547397, 50.69867639358802 4.591064611014433, 50.69795720731968 4.591064611014433, 50.69759761418551 4.590501980547397, 50.69759761418551 4.589376719613325, 50.69831680045385 4.588251458679252, 50.69723802105134 4.586563567278144, 50.69579964851466 4.586563567278144, 50.69544005538049 4.587126197745181))");
   }
 
-  
+  //----------------------------------------
+  public void testDimensionConsistence(){
+    // test 2d case
+    WKTReader reader = new WKTReader();
+    reader.setIsOldJtsCoordinateSyntaxAllowed(false);
+    Geometry geom2d = read(reader, "POLYGON((0 0, 1 0.1, 1 1, 0.5 1, 0.5 1.5, 1 1, 1.5 1.5, 1.5 1, 1 1, 1.5 0.5, 1 0.1, 2 0, 2 2,0 2, 0 0))");
+    assertEquals(2, CoordinateArrays.dimension(geom2d.getCoordinates()));
+
+    Geometry fix2d = GeometryFixer.fix(geom2d);
+    assertEquals(2, CoordinateArrays.dimension(fix2d.getCoordinates()));
+
+    // test 3d case
+    reader.setIsOldJtsCoordinateSyntaxAllowed(true);
+    Geometry geom3d = read(reader, "POLYGON((0 0, 1 0.1, 1 1, 0.5 1, 0.5 1.5, 1 1, 1.5 1.5, 1.5 1, 1 1, 1.5 0.5, 1 0.1, 2 0, 2 2,0 2, 0 0))");
+    assertEquals(3, CoordinateArrays.dimension(geom3d.getCoordinates()));
+
+    Geometry fix3d = GeometryFixer.fix(geom3d);
+    assertEquals(3, CoordinateArrays.dimension(fix3d.getCoordinates()));
+  }
+
   //================================================
 
   private void checkFix(String wkt) {
