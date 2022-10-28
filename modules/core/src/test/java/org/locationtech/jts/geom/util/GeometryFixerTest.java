@@ -14,7 +14,6 @@ package org.locationtech.jts.geom.util;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Point;
-import org.locationtech.jts.geom.ZInterpolating;
 
 import junit.textui.TestRunner;
 import test.jts.GeometryTestCase;
