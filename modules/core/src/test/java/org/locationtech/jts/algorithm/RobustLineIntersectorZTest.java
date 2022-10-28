@@ -35,16 +35,6 @@ public class RobustLineIntersectorZTest extends GeometryTestCase {
     super(name);
   }
 
-  @Override
-  protected void setUp() throws Exception {
-    ZInterpolating.setZInterpolating(true);
-  }
-
-  @Override
-  protected void tearDown() throws Exception {
-    ZInterpolating.setZInterpolating(false);
-  }
-
   public void testInterior() {
     checkIntersection( line(1, 1, 1, 3, 3, 3), line(1, 3, 10, 3, 1, 30), 
         pt(2, 2, 11));

@@ -26,16 +26,6 @@ public class OverlayNGZTest extends GeometryTestCase
   public OverlayNGZTest(String name) {
     super(name);
   }
-
-  @Override
-  protected void setUp() throws Exception {
-    ZInterpolating.setZInterpolating(true);
-  }
-
-  @Override
-  protected void tearDown() throws Exception {
-    ZInterpolating.setZInterpolating(false);
-  }
   
   public void testPointXYPointDifference() {
     checkDifference("MULTIPOINT ((1 1), (5 5))", "POINT Z (5 5 99)",

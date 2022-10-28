@@ -25,16 +25,6 @@ public class ElevationModelTest extends GeometryTestCase {
     TestRunner.run(ElevationModelTest.class);
   }
 
-  @Override
-  protected void setUp() throws Exception {
-    ZInterpolating.setZInterpolating(true);
-  }
-
-  @Override
-  protected void tearDown() throws Exception {
-    ZInterpolating.setZInterpolating(false);
-  }
-
   public ElevationModelTest(String name) {
     super(name);
   }
