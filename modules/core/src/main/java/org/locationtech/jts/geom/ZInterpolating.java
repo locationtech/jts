@@ -27,7 +27,7 @@ public class ZInterpolating {
     public static String ZINTERPOLATING_PROPERTY_NAME = "jts.zinterpolating";
     public static String ZINTERPOLATING_PROPERTY_VALUE_TRUE = "true";
     public static String ZINTERPOLATING_PROPERTY_VALUE_FALSE = "false";
-    public static boolean ZINTERPOLATING_DEFAULT = false;
+    public static boolean ZINTERPOLATING_DEFAULT = true;
     private static boolean isZInterpolating = ZINTERPOLATING_DEFAULT;
 
     static {
