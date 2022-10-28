@@ -33,7 +33,7 @@ public class RobustLineIntersectorZTest extends GeometryTestCase {
   public RobustLineIntersectorZTest(String name) {
     super(name);
   }
-
+  
   public void testInterior() {
     checkIntersection( line(1, 1, 1, 3, 3, 3), line(1, 3, 10, 3, 1, 30), 
         pt(2, 2, 11));
