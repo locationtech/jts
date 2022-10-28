@@ -14,7 +14,6 @@ package org.locationtech.jts.algorithm;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateXY;
 import org.locationtech.jts.geom.LineSegment;
-import org.locationtech.jts.geom.ZInterpolating;
 
 import junit.textui.TestRunner;
 import test.jts.GeometryTestCase;
