@@ -35,6 +35,7 @@ Distributions for older JTS versions can be obtained at the
 * Fix `WKBReader` parsing of WKB containing multiple empty elements (#905)
 * Fix `LineSegment.orientationIndex(LineSegment)` to correct orientation for non-collinear segments on right (#914) 
 * Fix DepthSegment compareTo method (#920)
+* Ensure GeometryFixer does not change coordinate dimension (#922)
 
 ### Performance Improvements
 
