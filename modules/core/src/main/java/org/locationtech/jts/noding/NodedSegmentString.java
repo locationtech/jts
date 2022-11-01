@@ -164,7 +164,7 @@ public class NodedSegmentString
    */
   public void addIntersection(LineIntersector li, int segmentIndex, int geomIndex, int intIndex)
   {
-    Coordinate intPt = new Coordinate(li.getIntersection(intIndex));
+    Coordinate intPt = li.getIntersection(intIndex).copy();
     addIntersection(intPt, segmentIndex);
   }
 

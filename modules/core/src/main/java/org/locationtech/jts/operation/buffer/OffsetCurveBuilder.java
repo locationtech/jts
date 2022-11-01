@@ -163,7 +163,7 @@ public class OffsetCurveBuilder
   {
     Coordinate[] copy = new Coordinate[pts.length];
     for (int i = 0; i < copy.length; i++) {
-      copy[i] = new Coordinate(pts[i]);
+      copy[i] = pts[i].copy();
     }
     return copy;
   }
@@ -177,7 +177,7 @@ public class OffsetCurveBuilder
    * Computes the distance tolerance to use during input
    * line simplification.
    * 
-   * @param distance the buffer distance
+   * @param bufDistance the buffer distance
    * @return the simplification tolerance
    */
   private double simplifyTolerance(double bufDistance)
