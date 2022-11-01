@@ -148,7 +148,7 @@ public class Vector2D {
 	}
 
 	public double length() {
-		return Math.sqrt(x * x + y * y);
+		return Math.hypot(x, y);
 	}
 
 	public double lengthSquared() {
@@ -196,7 +196,7 @@ public class Vector2D {
   {
     double delx = v.x - x;
     double dely = v.y - y;
-    return Math.sqrt(delx * delx + dely * dely);
+    return Math.hypot(delx, dely);
   }
   
 	/**

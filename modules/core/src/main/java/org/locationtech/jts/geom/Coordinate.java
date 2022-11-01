@@ -435,7 +435,7 @@ public class Coordinate implements Comparable<Coordinate>, Cloneable, Serializab
   public double distance(Coordinate c) {
     double dx = x - c.x;
     double dy = y - c.y;
-    return Math.sqrt(dx * dx + dy * dy);
+    return Math.hypot(dx, dy);
   }
 
   /**

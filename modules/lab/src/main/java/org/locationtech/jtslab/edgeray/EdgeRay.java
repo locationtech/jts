@@ -28,7 +28,7 @@ class EdgeRay {
 
     double dx = x1 - x0;
     double dy = y1 - y0;
-    double len = Math.sqrt(dx*dx + dy*dy);
+    double len = Math.hypot(dx, dy);
     
     double u0x = dx / len;
     double u0y = dy / len;
@@ -59,7 +59,7 @@ class EdgeRay {
 
     double dx = x1 - x0;
     double dy = y1 - y0;
-    double len = Math.sqrt(dx*dx + dy*dy);
+    double len = Math.hypot(dx, dy);
     
     if (len <= 0) return 0;
     

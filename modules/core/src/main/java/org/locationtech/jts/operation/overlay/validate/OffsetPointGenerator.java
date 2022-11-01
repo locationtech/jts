@@ -95,7 +95,7 @@ public class OffsetPointGenerator
   {
     double dx = p1.x - p0.x;
     double dy = p1.y - p0.y;
-    double len = Math.sqrt(dx * dx + dy * dy);
+    double len = Math.hypot(dx, dy);
     // u is the vector that is the length of the offset, in the direction of the segment
     double ux = offsetDistance * dx / len;
     double uy = offsetDistance * dy / len;
