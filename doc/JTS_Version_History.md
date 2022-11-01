@@ -29,7 +29,7 @@ Distributions for older JTS versions can be obtained at the
 * Add `OverlayNG` support for simple GeometryCollection inputs (#915)
 
 ### Functionality Improvements
-* Improve TopologyPreservingSimplifier to prevent edge-disjoint line collapse (#925)
+* Improve `TopologyPreservingSimplifier` to prevent edge-disjoint line collapse (#925)
 
 ### Bug Fixes
 * Fix `PreparedGeometry` handling of EMPTY elements (#904)
