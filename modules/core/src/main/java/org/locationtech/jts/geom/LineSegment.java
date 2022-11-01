@@ -505,15 +505,34 @@ public class LineSegment
    */
   public Coordinate closestPoint(Coordinate p)
   {
-    double factor = projectionFactor(p);
-    if (factor > 0 && factor < 1) {
-      return project(p, factor);
-    }
+	Coordinate orthogonal = orthogonalPoint(p);
+	if (orthogonal != null) {
+		return orthogonal;
+	}
     double dist0 = p0.distance(p);
     double dist1 = p1.distance(p);
     if (dist0 < dist1)
       return p0;
     return p1;
+  }
+  
+  /**
+   * Computes the orthogonal point on this line segment to another point.
+   * @param p the point to find the closest point to
+   * @return a Coordinate which is the orthogonal point on the line segment to the point p
+   */
+  public Coordinate orthogonalPoint(Coordinate p)
+  {
+    double factor = projectionFactor(p);
+    if (factor == 0.0) {
+    	return p0;
+    } else if (factor == 1.0) {
+    	return p1;
+    } else if (factor > 0 && factor < 1) {
+      return project(p, factor);
+    } else {    	
+      return null;
+    }
   }
   /**
    * Computes the closest points on two line segments.
