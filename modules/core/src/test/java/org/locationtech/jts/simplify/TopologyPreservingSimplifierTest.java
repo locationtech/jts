@@ -16,14 +16,14 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
 
-import junit.framework.TestCase;
+import test.jts.GeometryTestCase;
 
 
 /**
  * @version 1.7
  */
 public class TopologyPreservingSimplifierTest
-    extends TestCase
+    extends GeometryTestCase
 {
   public TopologyPreservingSimplifierTest(String name) {
     super(name);
@@ -186,6 +186,29 @@ public class TopologyPreservingSimplifierTest
       + ")"
       ,10.0))
         .test();
+  }
+  
+  public void testNoCollapse_mL() throws Exception {
+    checkTPS(
+      "MULTILINESTRING ((0 0, 100 0), (0 0, 60 1, 100 0))",
+        10.0,
+        "MULTILINESTRING ((0 0, 100 0), (0 0, 60 1, 100 0))"
+        );
+  }
+
+  public void testNoCollapseMany_mL() throws Exception {
+    checkTPS(
+      "MULTILINESTRING ((0 100, 400 100), (0 100, 105 122, 245 116, 280 110, 330 120, 400 100), (0 100, 155 79, 270 90, 350 70, 400 100), (0 100, 110 130, 205 138, 330 130, 400 100))",
+        100.0,
+        "MULTILINESTRING ((0 100, 400 100), (0 100, 105 122, 400 100), (0 100, 350 70, 400 100), (0 100, 110 130, 205 138, 400 100))"
+        );
+  }
+
+  private void checkTPS(String wkt, double tolerance, String wktExpected) {
+    Geometry geom = read(wkt);
+    Geometry actual = TopologyPreservingSimplifier.simplify(geom, tolerance);
+    Geometry expected = read(wktExpected);
+    checkEqual(expected, actual);
   }
 }
 
