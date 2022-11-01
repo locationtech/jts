@@ -358,7 +358,6 @@ public class GeometryFixerTest extends GeometryTestCase {
     assertEquals(2, CoordinateArrays.dimension(fix2d.getCoordinates()));
 
     // test 3d case
-    reader.setIsOldJtsCoordinateSyntaxAllowed(true);
     Geometry geom3d = read(reader, "POLYGON Z ((10 90 1, 60 90 6, 60 10 6, 10 10 1, 10 90 1), (20 80 2, 90 80 9, 90 20 9, 20 20 2, 20 80 2))");
     assertEquals(3, CoordinateArrays.dimension(geom3d.getCoordinates()));
 
