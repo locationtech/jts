@@ -35,7 +35,7 @@ public class AWTUtil
   public static Point2D vector(Point2D a, Point2D b, double size) {
     double dx = b.getX() - a.getX();
     double dy = b.getY() - a.getY();
-    double len = Math.sqrt(dx*dx + dy*dy);
+    double len = Math.hypot(dx, dy);
     return new Point2D.Double(size * dx/len, size * dy/len);
   }
 

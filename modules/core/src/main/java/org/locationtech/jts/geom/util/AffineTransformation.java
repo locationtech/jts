@@ -492,7 +492,7 @@ public class AffineTransformation
     }
     double dx = x1 - x0;
     double dy = y1 - y0;
-    double d = Math.sqrt(dx * dx + dy * dy);
+    double d = Math.hypot(dx, dy);
     double sin = dy / d;
     double cos = dx / d;
     double cs2 = 2 * sin * cos;
@@ -523,7 +523,7 @@ public class AffineTransformation
     // rotate vector to positive x axis direction
     double dx = x1 - x0;
     double dy = y1 - y0;
-    double d = Math.sqrt(dx * dx + dy * dy);
+    double d = Math.hypot(dx, dy);
     double sin = dy / d;
     double cos = dx / d;
     rotate(-sin, cos);
@@ -574,7 +574,7 @@ public class AffineTransformation
     }
     
     // rotate vector to positive x axis direction
-    double d = Math.sqrt(x * x + y * y);
+    double d = Math.hypot(x, y);
     double sin = y / d;
     double cos = x / d;
     rotate(-sin, cos);

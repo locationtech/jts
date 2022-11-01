@@ -161,7 +161,7 @@ public class Vertex
 
     /* magnitude of vector */
     double magn() {
-        return (Math.sqrt(p.x * p.x + p.y * p.y));
+        return (Math.hypot(p.x, p.y));
     }
 
     /* returns k X v (cross product). this is a vector perpendicular to v */

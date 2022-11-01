@@ -388,7 +388,7 @@ class OffsetSegmentGenerator
     int sideSign = side == Position.LEFT ? 1 : -1;
     double dx = seg.p1.x - seg.p0.x;
     double dy = seg.p1.y - seg.p0.y;
-    double len = Math.sqrt(dx * dx + dy * dy);
+    double len = Math.hypot(dx, dy);
     // u is the vector that is the length of the offset, in the direction of the segment
     double ux = sideSign * distance * dx / len;
     double uy = sideSign * distance * dy / len;

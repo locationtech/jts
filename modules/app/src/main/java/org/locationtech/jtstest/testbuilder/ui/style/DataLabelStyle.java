@@ -103,7 +103,7 @@ public class DataLabelStyle implements Style
     double offsetLen = 15;
     double nudgeX = 5;
     
-    double dirVecLen = Math.sqrt(dx*dx + dy*dy);
+    double dirVecLen = Math.hypot(dx, dy);
     
     double offsetX = offsetLen * dx / dirVecLen;
     double offsetY = offsetLen * dy / dirVecLen;
