@@ -22,19 +22,21 @@ Distributions for older JTS versions can be obtained at the
 *Release Date: TBD*
 
 ### New Features
-
 * Add `CoverageValidator` `CoveragePolygonValidator` (#900)
 * Add `CoverageGapFinder` (#900)
 * Add `CoverageUnion` (#900)
 * Add `CoverageSimplifier` (#911)
 * Add `OverlayNG` support for simple GeometryCollection inputs (#915)
 
-### Bug Fixes
+### Functionality Improvements
+* Improve `TopologyPreservingSimplifier` to prevent edge-disjoint line collapse (#925)
 
+### Bug Fixes
 * Fix `PreparedGeometry` handling of EMPTY elements (#904)
 * Fix `WKBReader` parsing of WKB containing multiple empty elements (#905)
 * Fix `LineSegment.orientationIndex(LineSegment)` to correct orientation for non-collinear segments on right (#914) 
 * Fix DepthSegment compareTo method (#920)
+* Ensure GeometryFixer does not change coordinate dimension (#922)
 
 ### Performance Improvements
 

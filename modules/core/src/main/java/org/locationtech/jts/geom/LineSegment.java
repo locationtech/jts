@@ -311,7 +311,7 @@ public class LineSegment
     
     double dx = p1.x - p0.x;
     double dy = p1.y - p0.y;
-    double len = Math.sqrt(dx * dx + dy * dy);
+    double len = Math.hypot(dx, dy);
     double ux = 0.0;
     double uy = 0.0;
     if (offsetDistance != 0.0) {
@@ -519,7 +519,7 @@ public class LineSegment
   /**
    * Computes the orthogonal point on this line segment to another point.
    * @param p the point to find the closest point to
-   * @return a Coordinate which is the orthogonal point on the line segment to the point p
+   * @return a Coordinate which is the orthogonal point on the line segment to the point p. Null if it does not exist.
    */
   public Coordinate orthogonalPoint(Coordinate p)
   {

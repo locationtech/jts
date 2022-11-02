@@ -303,7 +303,7 @@ public class Envelope
     }
     double w = getWidth();
     double h = getHeight();
-    return Math.sqrt(w*w + h*h);
+    return Math.hypot(w, h);
   }
   /**
    *  Returns the <code>Envelope</code>s minimum x-value. min x &gt; max x
@@ -780,7 +780,7 @@ public class Envelope
     // if either is zero, the envelopes overlap either vertically or horizontally
     if (dx == 0.0) return dy;
     if (dy == 0.0) return dx;
-    return Math.sqrt(dx * dx + dy * dy);
+    return Math.hypot(dx, dy);
   }
 
   public boolean equals(Object other) {

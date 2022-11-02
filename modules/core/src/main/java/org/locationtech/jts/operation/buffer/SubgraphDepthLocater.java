@@ -195,7 +195,7 @@ class SubgraphDepthLocater
        */
       if (upwardSeg.minX() >= other.upwardSeg.maxX()
           || upwardSeg.maxX() <= other.upwardSeg.minX()
-          || upwardSeg.minY() >= other.upwardSeg.maxX()
+          || upwardSeg.minY() >= other.upwardSeg.maxY()
           || upwardSeg.maxY() <= other.upwardSeg.minY()) {
         return upwardSeg.compareTo(other.upwardSeg);
       };

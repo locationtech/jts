@@ -103,7 +103,9 @@ public class TaggedLineStringSimplifier
     candidateSeg.p1 = linePts[j];
     sectionIndex[0] = i;
     sectionIndex[1] = j;
-    if (hasBadIntersection(line, sectionIndex, candidateSeg)) isValidToSimplify = false;
+    if (hasBadIntersection(line, sectionIndex, candidateSeg)) {
+      isValidToSimplify = false;
+    }
 
     if (isValidToSimplify) {
       LineSegment newSeg = flatten(i, j);
@@ -170,7 +172,7 @@ public class TaggedLineStringSimplifier
     List querySegs = outputIndex.query(candidateSeg);
     for (Iterator i = querySegs.iterator(); i.hasNext(); ) {
       LineSegment querySeg = (LineSegment) i.next();
-      if (hasInteriorIntersection(querySeg, candidateSeg)) {
+      if (hasInvalidIntersection(querySeg, candidateSeg)) {
           return true;
       }
     }
@@ -184,7 +186,8 @@ public class TaggedLineStringSimplifier
     List querySegs = inputIndex.query(candidateSeg);
     for (Iterator i = querySegs.iterator(); i.hasNext(); ) {
       TaggedLineSegment querySeg = (TaggedLineSegment) i.next();
-      if (hasInteriorIntersection(querySeg, candidateSeg)) {
+      if (hasInvalidIntersection(querySeg, candidateSeg)) {
+          //-- don't fail if the segment is part of parent line
           if (isInLineSection(parentLine, sectionIndex, querySeg))
             continue;
           return true;
@@ -214,8 +217,11 @@ public class TaggedLineStringSimplifier
     return false;
   }
 
-  private boolean hasInteriorIntersection(LineSegment seg0, LineSegment seg1)
+  private boolean hasInvalidIntersection(LineSegment seg0, LineSegment seg1)
   {
+    //-- segments must not be equal
+    if (seg0.equalsTopo(seg1))
+      return true;
     li.computeIntersection(seg0.p0, seg0.p1, seg1.p0, seg1.p1);
     return li.isInteriorIntersection();
   }
