@@ -18,7 +18,6 @@ import java.util.Stack;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.io.WKTReader;
 
@@ -69,76 +68,46 @@ public class ConvexHullTest extends GeometryTestCase {
     assertTrue(expectedGeometry.equalsExact(actualGeometry));
   }
 
-  public void test1() throws Exception {
-    WKTReader reader = new WKTReader(new GeometryFactory(new PrecisionModel(1), 0));
-    LineString lineString = (LineString) reader.read("LINESTRING (30 220, 240 220, 240 220)");
-    LineString convexHull = (LineString) reader.read("LINESTRING (30 220, 240 220)");
-    assertTrue(convexHull.equalsExact(lineString.convexHull()));
+  public void testLineCollinear() throws Exception {
+    checkConvexHull(
+        "LINESTRING (30 220, 240 220, 240 220)",
+        "LINESTRING (30 220, 240 220)");
   }
 
-  public void test2() throws Exception {
-    WKTReader reader = new WKTReader(new GeometryFactory(new PrecisionModel(1), 0));
-    Geometry geometry = reader.read("MULTIPOINT (130 240, 130 240, 130 240, 570 240, 570 240, 570 240, 650 240)");
-    LineString convexHull = (LineString) reader.read("LINESTRING (130 240, 650 240)");
-    assertTrue(convexHull.equalsExact(geometry.convexHull()));
+  public void testLineCollinear2() throws Exception {
+    checkConvexHull(
+        "MULTIPOINT (130 240, 130 240, 130 240, 570 240, 570 240, 570 240, 650 240)",
+        "LINESTRING (130 240, 650 240)");
+   }
+
+  public void testMultiCollinearEqual12() throws Exception {
+    checkConvexHull(
+        "MULTIPOINT (0 0, 0 0, 10 0)",
+        "LINESTRING (0 0, 10 0)");
   }
 
-  public void test3() throws Exception {
-    WKTReader reader = new WKTReader(new GeometryFactory(new PrecisionModel(1), 0));
-    Geometry geometry = reader.read("MULTIPOINT (0 0, 0 0, 10 0)");
-    LineString convexHull = (LineString) reader.read("LINESTRING (0 0, 10 0)");
-    assertTrue(convexHull.equalsExact(geometry.convexHull()));
+  public void testMultiPointCollinearEqual23() throws Exception {
+    checkConvexHull(
+        "MULTIPOINT (0 0, 10 0, 10 0)",
+        "LINESTRING (0 0, 10 0)");
   }
 
-  public void test4() throws Exception {
-    WKTReader reader = new WKTReader(new GeometryFactory(new PrecisionModel(1), 0));
-    Geometry geometry = reader.read("MULTIPOINT (0 0, 10 0, 10 0)");
-    LineString convexHull = (LineString) reader.read("LINESTRING (0 0, 10 0)");
-    assertTrue(convexHull.equalsExact(geometry.convexHull()));
+  public void testMultiPointCollinearEqualNone() throws Exception {
+    checkConvexHull(
+        "MULTIPOINT (0 0, 5 0, 10 0)",
+        "LINESTRING (0 0, 10 0)");
   }
 
-  public void test5() throws Exception {
-    WKTReader reader = new WKTReader(new GeometryFactory(new PrecisionModel(1), 0));
-    Geometry geometry = reader.read("MULTIPOINT (0 0, 5 0, 10 0)");
-    LineString convexHull = (LineString) reader.read("LINESTRING (0 0, 10 0)");
-    assertTrue(convexHull.equalsExact(geometry.convexHull()));
+  public void testMultiPoint() throws Exception {
+    checkConvexHull(
+        "MULTIPOINT (0 0, 5 1, 10 0)",
+        "POLYGON ((0 0, 5 1, 10 0, 0 0))");
   }
 
-  public void test6() throws Exception {
-    WKTReader reader = new WKTReader(new GeometryFactory(new PrecisionModel(1), 0));
-    Geometry actualGeometry = reader.read("MULTIPOINT (0 0, 5 1, 10 0)").convexHull();
-    Geometry expectedGeometry = reader.read("POLYGON ((0 0, 5 1, 10 0, 0 0))");
-    assertEquals(expectedGeometry.toString(), actualGeometry.toString());
-  }
-
-  public void testToArray() throws Exception {
-    ConvexHullEx convexHull = new ConvexHullEx(geometryFactory.createGeometryCollection(null));
-    Stack stack = new Stack();
-    stack.push(new Coordinate(0, 0));
-    stack.push(new Coordinate(1, 1));
-    stack.push(new Coordinate(2, 2));
-    Object[] array1 = convexHull.toCoordinateArray(stack);
-    assertEquals(3, array1.length);
-    assertEquals(new Coordinate(0, 0), array1[0]);
-    assertEquals(new Coordinate(1, 1), array1[1]);
-    assertEquals(new Coordinate(2, 2), array1[2]);
-    assertTrue(!array1[0].equals(array1[1]));
-  }
-
-  private static class ConvexHullEx extends ConvexHull {
-    public ConvexHullEx(Geometry geometry) {
-      super(geometry);
-    }
-    protected Coordinate[] toCoordinateArray(Stack stack) {
-      return super.toCoordinateArray(stack);
-    }
-  }
-
-  public void test7() throws Exception {
-    WKTReader reader = new WKTReader(new GeometryFactory(new PrecisionModel(1), 0));
-    Geometry geometry = reader.read("MULTIPOINT (0 0, 0 0, 5 0, 5 0, 10 0, 10 0)");
-    LineString convexHull = (LineString) reader.read("LINESTRING (0 0, 10 0)");
-    assertTrue(convexHull.equalsExact(geometry.convexHull()));
+  public void testMultiPointLinear() throws Exception {
+    checkConvexHull(
+        "MULTIPOINT (0 0, 0 0, 5 0, 5 0, 10 0, 10 0)",
+        "LINESTRING (0 0, 10 0)");
   }
 
   public void testCollinearPoints() throws Exception {
@@ -169,6 +138,8 @@ public class ConvexHullTest extends GeometryTestCase {
         "POLYGON ((-0.2 -0.1, -0.2 0.1, 0.2 0.1, 0.2 -0.1, -0.2 -0.1))");
   }
 
+  //==========================================================
+
   private void checkConvexHull(String wkt, String wktExpected) {
     Geometry geom = read(wkt);
     Geometry actual = geom.convexHull();
@@ -183,4 +154,28 @@ public class ConvexHullTest extends GeometryTestCase {
     checkEqual(expected, actual, tolerance);
   }
 
+  //==========================================================
+  
+  public void testToArray() throws Exception {
+    ConvexHullEx convexHull = new ConvexHullEx(geometryFactory.createGeometryCollection(null));
+    Stack<Coordinate> stack = new Stack<Coordinate>();
+    stack.push(new Coordinate(0, 0));
+    stack.push(new Coordinate(1, 1));
+    stack.push(new Coordinate(2, 2));
+    Object[] array1 = convexHull.toCoordinateArray(stack);
+    assertEquals(3, array1.length);
+    assertEquals(new Coordinate(0, 0), array1[0]);
+    assertEquals(new Coordinate(1, 1), array1[1]);
+    assertEquals(new Coordinate(2, 2), array1[2]);
+    assertTrue(!array1[0].equals(array1[1]));
+  }
+
+  private static class ConvexHullEx extends ConvexHull {
+    public ConvexHullEx(Geometry geometry) {
+      super(geometry);
+    }
+    protected Coordinate[] toCoordinateArray(Stack stack) {
+      return super.toCoordinateArray(stack);
+    }
+  }
 }

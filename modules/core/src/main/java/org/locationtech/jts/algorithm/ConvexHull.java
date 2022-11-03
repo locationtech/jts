@@ -394,10 +394,8 @@ public class ConvexHull
     }
     
     @Override
-    public int compare(Coordinate o1, Coordinate o2)
+    public int compare(Coordinate p1, Coordinate p2)
     {
-      Coordinate p1 = (Coordinate) o1;
-      Coordinate p2 = (Coordinate) o2;
       int comp = polarCompare(origin, p1, p2);      
       return comp;
     }
