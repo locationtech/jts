@@ -37,6 +37,7 @@ Distributions for older JTS versions can be obtained at the
 * Fix `LineSegment.orientationIndex(LineSegment)` to correct orientation for non-collinear segments on right (#914) 
 * Fix DepthSegment compareTo method (#920)
 * Ensure GeometryFixer does not change coordinate dimension (#922)
+* Improve ConvexHull radial sort robustness (#927)
 
 ### Performance Improvements
 
