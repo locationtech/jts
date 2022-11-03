@@ -23,9 +23,9 @@ import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.io.WKTReader;
 
 import junit.framework.Test;
-import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
+import test.jts.GeometryTestCase;
 
 
 
@@ -34,7 +34,7 @@ import junit.textui.TestRunner;
  *
  * @version 1.7
  */
-public class ConvexHullTest extends TestCase {
+public class ConvexHullTest extends GeometryTestCase {
 
   PrecisionModel precisionModel = new PrecisionModel(1000);
   GeometryFactory geometryFactory = new GeometryFactory(precisionModel, 0);
@@ -141,6 +141,26 @@ public class ConvexHullTest extends TestCase {
     assertTrue(convexHull.equalsExact(geometry.convexHull()));
   }
 
+  public void testCollinearPoints() throws Exception {
+    checkConvexHull("MULTIPOINT ((-0.2 -0.1), (0 -0.1), (0.2 -0.1), (0 -0.1), (-0.2 0.1), (0 0.1), (0.2 0.1), (0 0.1))",
+        "POLYGON ((-0.2 -0.1, -0.2 0.1, 0.2 0.1, 0.2 -0.1, -0.2 -0.1))");
+  }
 
+  public void testCollinearPointsTinyX() throws Exception {
+    checkConvexHull("MULTIPOINT (-0.2 -0.1, 1.38777878e-17 -0.1, 0.2 -0.1, -1.38777878e-17 -0.1, -0.2 0.1, 1.38777878e-17 0.1, 0.2 0.1, -1.38777878e-17 0.1)",
+        "POLYGON ((-0.2 -0.1, -0.2 0.1, 0.2 0.1, 0.2 -0.1, -0.2 -0.1))");
+  }
+
+  public void testCollinearPointsTinyXAlt() throws Exception {
+    checkConvexHull("MULTIPOINT (-0.2 -0.1, 1.38777878e-7 -0.1, 0.2 -0.1, -1.38777878e-7 -0.1, -0.2 0.1, 1.38777878e-7 0.1, 0.2 0.1, -1.38777878e-7 0.1)",
+        "POLYGON ((-0.2 -0.1, -0.2 0.1, 0.2 0.1, 0.2 -0.1, -0.2 -0.1))");
+  }
+
+  private void checkConvexHull(String wkt, String wktExpected) {
+    Geometry geom = read(wkt);
+    Geometry actual = geom.convexHull();
+    Geometry expected = read(wktExpected);
+    checkEqual(expected, actual);
+  }
 
 }
