@@ -138,6 +138,16 @@ public class ConvexHullTest extends GeometryTestCase {
         "POLYGON ((-0.2 -0.1, -0.2 0.1, 0.2 0.1, 0.2 -0.1, -0.2 -0.1))");
   }
 
+  /**
+   * Test case fails in GEOS due to incorrect fix to radial sorting.
+   * This did not trigger a failure in JTS, probably because the sorting
+   * is less strict.
+   */
+  public void testGEOSSortFailure() {
+    checkConvexHull("MULTIPOINT ((140 350), (510 140), (110 140), (250 290), (250 50), (300 370), (450 310), (440 160), (290 280), (220 160), (100 260), (320 230), (200 280), (360 130), (330 210), (380 80), (220 210), (380 310), (260 150), (260 110), (170 130))",
+        "POLYGON ((100 260, 140 350, 300 370, 450 310, 510 140, 380 80, 250 50, 110 140, 100 260))");
+  }
+  
   //==========================================================
 
   private void checkConvexHull(String wkt, String wktExpected) {

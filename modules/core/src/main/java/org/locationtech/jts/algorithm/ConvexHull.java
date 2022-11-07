@@ -194,13 +194,21 @@ public class ConvexHull
     return pad;
   }
     
+  /**
+   * Sorts the points radially CW around the point with minimum Y and then X.
+   * 
+   * @param pts the points to sort
+   * @return the sorted points
+   */
   private Coordinate[] preSort(Coordinate[] pts) {
     Coordinate t;
 
-    // find the lowest point in the set. If two or more points have
-    // the same minimum y coordinate choose the one with the minimu x.
-    // This focal point is put in array location pts[0].
-    for (int i = 1; i < pts.length; i++) {
+    /**
+     * find the lowest point in the set. If two or more points have
+     * the same minimum Y coordinate choose the one with the minimum X.
+     * This focal point is put in array location pts[0].
+     */
+   for (int i = 1; i < pts.length; i++) {
       if ((pts[i].y < pts[0].y) || ((pts[i].y == pts[0].y) && (pts[i].x < pts[0].x))) {
         t = pts[0];
         pts[0] = pts[i];
@@ -369,8 +377,9 @@ public class ConvexHull
   /**
    * Compares {@link Coordinate}s for their angle and distance
    * relative to an origin.
-   * The origin is assumed to be lower than
+   * The origin is assumed to be lower in Y and then X than
    * all other point inputs.
+   * The points are ordered CCW around the origin.
    *
    * @author Martin Davis
    * @version 1.7
@@ -382,9 +391,8 @@ public class ConvexHull
 
     /**
      * Creates a new comparator using a given origin.
-     * The origin must be less than or equal to all 
-     * compared points,
-     * using {@link Coordinate#compareTo(Coordinate)}.
+     * The origin must be lower in Y and then X to all 
+     * compared points.
      * 
      * @param origin the origin of the radial comparison
      */
@@ -403,7 +411,8 @@ public class ConvexHull
     /**
      * Given two points p and q compare them with respect to their radial
      * ordering about point o.  First checks radial ordering.
-     * If points are collinear, the comparison is based
+     * using a CCW orientation.
+     * If the points are collinear, the comparison is based
      * on their distance to the origin.
      * <p>
      * p < q iff
@@ -428,29 +437,22 @@ public class ConvexHull
        * The points are collinear,
        * so compare based on distance from the origin.  
        * The points p and q are >= to the origin,
-       * so they lie in the closed half-plane to the right of the origin.
-       * If they are not in a vertical line, 
-       * the X ordinate can be tested to determine distance.
+       * so they lie in the closed half-plane above the origin.
+       * If they are not in a horizontal line, 
+       * the Y ordinate can be tested to determine distance.
        * This is more robust than computing the distance explicitly.
        */
-      if (p.x > q.x) {
-        return 1;
-      }
-      if (p.x < q.x) {
-        return -1;
-      }
+      if (p.y > q.y) return 1;
+      if (p.y < q.y) return -1;
+
       /**
-       * The points lie in a vertical line, which should also contain the origin
+       * The points lie in a horizontal line, which should also contain the origin
        * (since they are collinear).
        * Also, they must be above the origin.
-       * Use the Y ordinate to determine distance. 
-       */
-      if (p.y > q.y) {
-        return 1;
-      }
-      if (p.y < q.y) {
-        return -1;
-      }
+       * Use the X ordinate to determine distance. 
+       */ 
+      if (p.x > q.x) return 1;
+      if (p.x < q.x) return -1;
       // Assert: p = q
       return 0;
     }
