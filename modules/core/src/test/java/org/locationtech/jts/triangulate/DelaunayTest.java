@@ -80,6 +80,14 @@ public class DelaunayTest extends TestCase {
     runDelaunayEdges(wkt, expected);
   }
   
+  public void testFrameTooSmallBug()
+  throws ParseException
+  {
+    String wkt = "MULTIPOINT ((0 194), (66 151), (203 80), (273 43), (340 0))";
+    String expected = "GEOMETRYCOLLECTION (POLYGON ((0 194, 66 151, 203 80, 0 194)), POLYGON ((0 194, 203 80, 273 43, 0 194)), POLYGON ((273 43, 203 80, 340 0, 273 43)), POLYGON ((340 0, 203 80, 66 151, 340 0)))";
+    runDelaunay(wkt, true, expected);
+  }
+  
 	static final double COMPARISON_TOLERANCE = 1.0e-7;
 	
   void runDelaunayEdges(String sitesWKT, String expectedWKT)
