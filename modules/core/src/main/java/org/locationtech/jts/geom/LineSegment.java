@@ -505,10 +505,24 @@ public class LineSegment
    */
   public Coordinate closestPoint(Coordinate p)
   {
-	Coordinate orthogonal = orthogonalPoint(p);
-	if (orthogonal != null) {
-		return orthogonal;
+    return closestPoint(p, false);
+  }
+  
+  /**
+   * Computes the closest point on this line segment to another point.
+   * @param p the point to find the closest point to
+   * @param skip0 If true, do not check p0. Client will have determined this is redundant.
+   * @return a Coordinate which is the closest point on the line segment to the point p
+   */
+  public Coordinate closestPoint(Coordinate p, boolean skip0)
+  {
+	Coordinate orthog = orthogonalPoint(p);
+	if (orthog != null) {
+		return orthog;
 	}
+    if (skip0) {
+    	return p1;
+    }
     double dist0 = p0.distance(p);
     double dist1 = p1.distance(p);
     if (dist0 < dist1)
