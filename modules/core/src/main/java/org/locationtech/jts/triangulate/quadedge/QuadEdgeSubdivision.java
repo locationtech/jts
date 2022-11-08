@@ -60,7 +60,8 @@ import org.locationtech.jts.io.WKTWriter;
  * @author Martin Davis
  */
 public class QuadEdgeSubdivision {
-	/**
+
+  /**
 	 * Gets the edges for the triangle to the left of the given {@link QuadEdge}.
 	 * 
 	 * @param startQE
@@ -78,6 +79,8 @@ public class QuadEdgeSubdivision {
 	}
 
 	private final static double EDGE_COINCIDENCE_TOL_FACTOR = 1000;
+	
+  private static final double FRAME_SIZE_FACTOR = 100.0;
 
 	// debugging only - preserve current subdiv statically
 	// private static QuadEdgeSubdivision currentSubdiv;
@@ -114,22 +117,29 @@ public class QuadEdgeSubdivision {
 		locator = new LastFoundQuadEdgeLocator(this);
 	}
 
+	/**
+	 * Creates a triangular frame which contains the vertices to be triangulated.
+	 * <p>
+	 * The frame must be large enough so that its vertices are not in the circumcircle
+	 * of any constructed triangle.  
+	 * This ensures that the vertices of the frame do not prevent the convex hull
+	 * of the input vertices from forming edges of the triangulation.
+	 * This is done by using a heuristic size 
+	 * of the frame.  However, it may be that this is not fully robust, 
+	 * for input points which contain very narry triangles.
+	 * 
+	 * @param env the envelope of the input points
+	 */
 	private void createFrame(Envelope env)
 	{
 		double deltaX = env.getWidth();
 		double deltaY = env.getHeight();
-		double offset = 0.0;
-		if (deltaX > deltaY) {
-			offset = deltaX * 10.0;
-		} else {
-			offset = deltaY * 10.0;
-		}
+		double frameSize = Math.max(deltaX, deltaY) * FRAME_SIZE_FACTOR;
 
-		frameVertex[0] = new Vertex((env.getMaxX() + env.getMinX()) / 2.0, env
-				.getMaxY()
-				+ offset);
-		frameVertex[1] = new Vertex(env.getMinX() - offset, env.getMinY() - offset);
-		frameVertex[2] = new Vertex(env.getMaxX() + offset, env.getMinY() - offset);
+		frameVertex[0] = new Vertex((env.getMaxX() + env.getMinX()) / 2.0, 
+		                              env.getMaxY()	+ frameSize);
+		frameVertex[1] = new Vertex(env.getMinX() - frameSize, env.getMinY() - frameSize);
+		frameVertex[2] = new Vertex(env.getMaxX() + frameSize, env.getMinY() - frameSize);
 
 		frameEnv = new Envelope(frameVertex[0].getCoordinate(), frameVertex[1]
 				.getCoordinate());

@@ -12,10 +12,8 @@
 package org.locationtech.jts.triangulate;
 
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.math.DD;
-import org.locationtech.jts.triangulate.quadedge.QuadEdgeSubdivision;
 
 import junit.textui.TestRunner;
 import test.jts.GeometryTestCase;
@@ -36,7 +34,7 @@ public class VoronoiTest extends GeometryTestCase {
   throws ParseException
   {
     String wkt = "MULTIPOINT ((10 10), (20 70), (60 30), (80 70))";
-    String expected = "GEOMETRYCOLLECTION (POLYGON ((-1162.076359832636 462.66344142259413, 50 419.375, 50 60, 27.857142857142854 37.857142857142854, -867 187, -1162.076359832636 462.66344142259413)), POLYGON ((-867 187, 27.857142857142854 37.857142857142854, 245 -505, 45 -725, -867 187)), POLYGON ((27.857142857142854 37.857142857142854, 50 60, 556.6666666666666 -193.33333333333331, 245 -505, 27.857142857142854 37.857142857142854)), POLYGON ((50 60, 50 419.375, 1289.1616314199396 481.3330815709969, 556.6666666666666 -193.33333333333331, 50 60)))";
+    String expected = "GEOMETRYCOLLECTION (POLYGON ((-82.19544457292888 56.1992407621548, -82.19544457292888 162.19544457292886, 50 162.19544457292886, 50 60, 27.857142857142858 37.857142857142854, -82.19544457292888 56.1992407621548)), POLYGON ((-82.19544457292888 -82.19544457292888, -82.19544457292888 56.1992407621548, 27.857142857142858 37.857142857142854, 75.87817782917156 -82.19544457292888, -82.19544457292888 -82.19544457292888)), POLYGON ((172.19544457292886 -1.0977222864644354, 172.19544457292886 -82.19544457292888, 75.87817782917156 -82.19544457292888, 27.857142857142858 37.857142857142854, 50 60, 172.19544457292886 -1.0977222864644354)), POLYGON ((50 162.19544457292886, 172.19544457292886 162.19544457292886, 172.19544457292886 -1.0977222864644354, 50 60, 50 162.19544457292886)))";
     runVoronoi(wkt, true, expected);
   }
   
@@ -63,19 +61,10 @@ public class VoronoiTest extends GeometryTestCase {
   void runVoronoi(String sitesWKT, boolean computePolys, String expectedWKT)
   {
   	Geometry sites = read(sitesWKT);
-  	DelaunayTriangulationBuilder builder = new DelaunayTriangulationBuilder();
+  	VoronoiDiagramBuilder builder = new VoronoiDiagramBuilder();
   	builder.setSites(sites);
   	
-    QuadEdgeSubdivision subdiv = builder.getSubdivision();
-    
-  	GeometryFactory geomFact = new GeometryFactory();
-  	Geometry result = null;
-  	if (computePolys) {
-  		result = subdiv.getVoronoiDiagram(geomFact);	
-  	}
-  	else {
-  		//result = builder.getEdges(geomFact);
-  	}
+  	Geometry result = builder.getDiagram(sites.getFactory()); 
  	
   	assertTrue("Found invalid geometry(s) in Voronoi result", result.isValid() );
   	
