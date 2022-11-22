@@ -317,6 +317,7 @@ public class AffineTransformation
    * @param dest1 the mapped point for source point 1
    * @param dest2 the mapped point for source point 2
    * 
+   * @deprecated use AffineTransformationFactory
    */
   public AffineTransformation(Coordinate src0,
       Coordinate src1,
@@ -325,6 +326,7 @@ public class AffineTransformation
       Coordinate dest1,
       Coordinate dest2)
   {
+    throw new UnsupportedOperationException("Use AffineTransformationFactory instead");
   }
   
   /**
