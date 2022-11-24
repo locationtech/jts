@@ -27,19 +27,20 @@ public class PolygonHoleJoinerTest extends GeometryTestCase {
   }
   
   /**
-   * A failing case revealing that joining holes by a zero-length cut
+   * A failing case revealing that joining a hole by a zero-length cut
    * was introducing duplicate vertices.
    */
   public void testZeroLenCutDuplicateVertices() {
     checkJoin(
-  "POLYGON ((71 12, 0 0, 7 47, 16 94, 71 52, 71 12), (7 38, 25 48, 7 47, 7 38), (13 59, 13 54, 26 53, 13 59))",
-  null
+  "POLYGON ((70 10, 0 0, 7 47, 16 94, 70 60, 70 10), (10 40, 30 49, 7 47, 10 40), (13 59, 13 54, 26 53, 13 59))",
+  "POLYGON ((0 0, 7 47, 10 40, 30 49, 7 47, 13 59, 13 54, 26 53, 13 59, 7 47, 16 94, 70 60, 70 10, 0 0))"
         );
   }
   
   /**
    * A failing case for hole joining with two touching holes.
-   * Fails due to PolygonHoleJoiner not handling holes which have same leftmost vertex.
+   * Fails due to PolygonHoleJoiner joining holes with same leftmost vertex
+   * so that the result linework self-crosses.
    * Note that input is normalized.
    */
   public void testTouchingHoles() {
@@ -63,10 +64,24 @@ public class PolygonHoleJoinerTest extends GeometryTestCase {
         );
   }
   
+  public void testHoleTouchesEdgeWithCloserVertex() {
+    checkJoin(
+  "POLYGON ((1 9, 9 9, 5 6, 9 6, 19 1, 9 1, 1 9), (8 5, 9 3, 5 5, 8 5))",
+  "POLYGON ((1 9, 9 9, 5 6, 9 6, 19 1, 9 1, 5 5, 9 3, 8 5, 5 5, 1 9))"
+        );
+  }
+  
   public void testHoleTouchesEdge() {
     checkJoin(
   "POLYGON ((5 5, 9 5, 9 0, 0 0, 5 5), (3 3, 6 1, 5 3, 3 3))",
   "POLYGON ((5 5, 9 5, 9 0, 0 0, 3 3, 6 1, 5 3, 3 3, 5 5))"
+        );
+  }
+  
+  public void testHoleTouchesVertex() {
+    checkJoin(
+  "POLYGON ((70 10, 0 0, 7 47, 20 90, 70 60, 70 10), (10 40, 30 50, 7 47, 10 40))",
+  "POLYGON ((70 10, 0 0, 7 47, 10 40, 30 50, 7 47, 20 90, 70 60, 70 10))"
         );
   }
   
@@ -75,7 +90,7 @@ public class PolygonHoleJoinerTest extends GeometryTestCase {
     Geometry actual = PolygonHoleJoiner.joinAsPolygon(geom);
     if (wktExpected == null) {
       System.out.println("Actual: " + actual);
-        return;
+      return;
     }
     Geometry expected = read(wktExpected);
     checkEqual(expected, actual);

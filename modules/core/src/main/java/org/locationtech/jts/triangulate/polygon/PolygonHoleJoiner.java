@@ -65,7 +65,9 @@ public class PolygonHoleJoiner {
   private Polygon inputPolygon;
 
   public PolygonHoleJoiner(Polygon inputPolygon) {
-    this.inputPolygon = inputPolygon;
+    //-- force polygon to be fully noded
+    //TODO: do this faster!
+    this.inputPolygon = (Polygon) inputPolygon.union(inputPolygon);
     polygonIntersector = createPolygonIntersector(inputPolygon);
   }
 
@@ -122,7 +124,7 @@ public class PolygonHoleJoiner {
     List<Coordinate> shellCoordsList = findShellJoinVertices(holeCoord);
     Coordinate shellCoord = shellCoordsList.get(0);
     
-    //--- pick the shell-hole vertex pair that has the shortest distance
+    //--- find the shell-hole vertex pair that has the shortest distance
     int shortestHoleVertexIndex = 0;
     if ( Math.abs(shellCoord.x - holeCoord.x) < EPS ) {
       double shortest = Double.MAX_VALUE;
@@ -144,11 +146,11 @@ public class PolygonHoleJoiner {
   }
 
   /**
-   * Get the ith shellvertex in shellCoords[] that the current should add after
+   * Gets the shell vertex index that the hole should join after.
    * 
-   * @param shellVertex Coordinate of the shell vertex
-   * @param holeVertex  Coordinate of the hole vertex
-   * @return the ith shellvertex
+   * @param shellVertex the shell vertex
+   * @param holeVertex  the hole vertex
+   * @return the shell vertex index to join after
    */
   private int findShellJoinIndex(Coordinate shellVertex, Coordinate holeVertex) {
     int numSkip = 0;
@@ -267,7 +269,9 @@ public class PolygonHoleJoiner {
   
   /**
    * Add hole vertices at proper position in shell vertex list.
-   * For a touching/zero-length join line, avoids adding the join vertices twice.
+   * This code assumes that if hole touches (shell or other hole),
+   * it touches at a node.  This requires an initial noding step.
+   * In this case, the code avoids duplicating join vertices.
    * 
    * Also adds hole points to ordered coordinates.
    * 
@@ -277,52 +281,56 @@ public class PolygonHoleJoiner {
    */
   private void addHoleToShell(int shellJoinIndex, Coordinate[] holeCoords, int holeJoinIndex) {
     Coordinate shellJoinPt = shellCoords.get(shellJoinIndex);
-    int shellPrevIndex = prev(shellCoords, shellJoinIndex);
-    Coordinate shellPrevPt = shellCoords.get(shellPrevIndex);
     Coordinate holeJoinPt = holeCoords[holeJoinIndex];
+    
     //-- check for touching (zero-length) join to avoid inserting duplicate vertices
     boolean isVertexTouch = shellJoinPt.equals2D(holeJoinPt);
-    boolean isEdgeTouch = ! isVertexTouch 
-        && Orientation.COLLINEAR == Orientation.index(shellJoinPt, shellPrevPt, holeJoinPt);
+    Coordinate addShellJoinPt = isVertexTouch ? null : shellJoinPt;
 
     //-- create new section of vertices to insert in shell
-    Coordinate dupShellJoinPt = shellJoinPt;
-    if (isVertexTouch || isEdgeTouch) {
-      dupShellJoinPt = null;
-    }
-    boolean isUseStartPt = ! isVertexTouch;
-    List<Coordinate> newSection = extractHolePts(holeCoords, holeJoinIndex, isUseStartPt, dupShellJoinPt);
+    List<Coordinate> newSection = createHoleSection(holeCoords, holeJoinIndex, addShellJoinPt);
     
-    int shellIndex = shellJoinIndex == 0 ? shellCoords.size() -1 : shellJoinIndex;
-    shellCoords.addAll(shellIndex, newSection);
+    //-- add section after shell join vertex
+    int shellAddIndex = shellJoinIndex + 1;
+    shellCoords.addAll(shellAddIndex, newSection);
     shellCoordsSorted.addAll(newSection);
   }
 
-  private int prev(List<Coordinate> coords, int index) {
-    if (index == 0)
-      return coords.size() - 2;
-    return index - 1;
-  }
-
-  private List<Coordinate> extractHolePts(Coordinate[] holeCoords, int holeJoinIndex, 
-      boolean isUseStartPt,
-      Coordinate shellPt) {
+  /**
+   * Creates the new section of vertices for the added hole.
+   * 
+   * @param holeCoords
+   * @param holeJoinIndex
+   * @param shellJoinPt
+   * @return
+   */
+  private List<Coordinate> createHoleSection(Coordinate[] holeCoords, int holeJoinIndex, 
+      Coordinate shellJoinPt) {
     List<Coordinate> newSection = new ArrayList<Coordinate>();
     
-    if (isUseStartPt) {
-      newSection.add(new Coordinate(holeCoords[holeJoinIndex]));
+    boolean isHoleDoesNotTouch = shellJoinPt != null;
+    /**
+     * Add all hole vertices, including duplicate at join vertex
+     * Except, if hole DOES touch, join vertex is already in shell ring
+     */
+    if (isHoleDoesNotTouch)
+      newSection.add(holeCoords[holeJoinIndex].copy());
+    
+    final int holeSize = holeCoords.length - 1;
+    
+    int index = holeJoinIndex;
+    for (int i = 0; i < holeSize; i++) {
+      index = (index + 1) % holeSize;
+      newSection.add(holeCoords[index].copy());
+    }
+    /**
+     * Add duplicate shell vertex at end of the 2nd join line.
+     * Except, if hole DOES touch, join line is zero-length so does not need end vertex
+     */
+    if (isHoleDoesNotTouch) { 
+      newSection.add(shellJoinPt.copy());
     }
     
-    final int nPts = holeCoords.length - 1;
-    int i = holeJoinIndex;
-    do {
-      i = (i + 1) % nPts;
-      newSection.add(new Coordinate(holeCoords[i]));
-    } while (i != holeJoinIndex);
-    
-    if (shellPt != null) { 
-      newSection.add(new Coordinate(shellPt));
-    }
     return newSection;
   }
 
