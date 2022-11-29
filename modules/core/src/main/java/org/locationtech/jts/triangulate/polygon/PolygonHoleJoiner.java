@@ -275,32 +275,35 @@ public class PolygonHoleJoiner {
     while (closest.x == holeX) {
       closest = shellCoordsSorted.higher(closest);
     }
-    
+    //-- find rightmost joinable shell vertex
     do {
       closest = shellCoordsSorted.lower(closest);
-    } while (! isJoinable(holeCoord, closest) && ! closest.equals(shellCoordsSorted.first()));
-
+    } while (crossesPolygon(holeCoord, closest) 
+        && ! closest.equals(shellCoordsSorted.first()));
     list.add(closest);
+    //-- if not same X as hole, return single vertex
     if ( closest.x != holeX )
       return list;
     
+    //-- return all joinable vertices with same X as hole vertex
     while (closest.x == holeX) {
       closest = shellCoordsSorted.lower(closest);
-      if ( closest == null )
-        return list;
+      if ( closest == null || closest.x != holeX )
+        break;
+      list.add(closest);
     }
     return list;
   }
 
   /**
    * Determine if a line segment between a hole vertex
-   * and a shell vertex lies inside the input polygon.
+   * and a shell vertex crosses the input polygon.
    * 
    * @param holeCoord a hole coordinate
    * @param shellCoord a shell coordinate
    * @return true if the line lies inside the polygon
    */
-  private boolean isJoinable(Coordinate holeCoord, Coordinate shellCoord) {
+  private boolean isCrossing(Coordinate holeCoord, Coordinate shellCoord) {
     /**
      * Since the line runs between a hole and the shell,
      * it is inside the polygon if it does not cross the polygon boundary.
