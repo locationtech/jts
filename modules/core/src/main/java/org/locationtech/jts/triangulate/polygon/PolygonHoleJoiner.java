@@ -53,8 +53,6 @@ public class PolygonHoleJoiner {
     return joiner.compute();
   }
   
-  private static final double EPS = 1.0E-4;
-  
   private List<Coordinate> shellCoords;
   // a sorted and searchable version of the shellCoords
   private TreeSet<Coordinate> shellCoordsSorted;
@@ -135,27 +133,27 @@ public class PolygonHoleJoiner {
     
     List<Integer> holeLeftVerticesIndex = findLeftVertices(hole);
     Coordinate holeLeftCoord = holeCoords[holeLeftVerticesIndex.get(0)];
-    List<Coordinate> shellJoinCoords = findShellJoinVertices(holeLeftCoord);
+    List<Coordinate> shellJoinCoords = findJoinableShellVertices(holeLeftCoord);
     
     //--- find the shell-hole vertex pair that has the shortest distance
-    int holeMinCutIndex = 0;
+    int holeJoinIndex = 0;
     Coordinate shellJoinCoord = shellJoinCoords.get(0);
     if (shellJoinCoord.x == holeLeftCoord.x) {
-      double minCutLen = Double.MAX_VALUE;
+      double minJoinLen = Double.MAX_VALUE;
       for (int i = 0; i < holeLeftVerticesIndex.size(); i++) {
         for (int j = 0; j < shellJoinCoords.size(); j++) {
           double currLen = Math.abs(shellJoinCoords.get(j).y - holeCoords[holeLeftVerticesIndex.get(i)].y);
-          if ( currLen < minCutLen ) {
-            minCutLen = currLen;
-            holeMinCutIndex = i;
+          if ( currLen < minJoinLen ) {
+            minJoinLen = currLen;
+            holeJoinIndex = holeLeftVerticesIndex.get(i);
             shellJoinCoord = shellJoinCoords.get(j);
           }
         }
       }
     }
-    int holeCutIndex = holeLeftVerticesIndex.get(holeMinCutIndex);
-    int shellCutIndex = findShellJoinIndex(shellJoinCoord, holeCoords[holeCutIndex]);
-    addHoleToShell(shellCutIndex, holeCoords, holeCutIndex);
+    Coordinate holeJoinCoord = holeCoords[holeJoinIndex];
+    int shellJoinIndex = findShellJoinIndex(shellJoinCoord, holeJoinCoord);
+    addHoleToShell(shellJoinIndex, holeCoords, holeJoinIndex);
   }
 
   private boolean joinTouchingHole(Coordinate[] holeCoords) {
@@ -249,7 +247,7 @@ public class PolygonHoleJoiner {
    */
   private int getShellCoordIndexSkip(Coordinate coord, int numSkip) {
     for (int i = 0; i < shellCoords.size(); i++) {
-      if ( shellCoords.get(i).equals2D(coord, EPS) ) {
+      if ( shellCoords.get(i).equals2D(coord) ) {
         if ( numSkip == 0 )
           return i;
         numSkip--;
@@ -259,29 +257,34 @@ public class PolygonHoleJoiner {
   }
 
   /**
-   * Gets a list of shell vertices that could be used to join with the hole.
-   * This list contains only one item if the chosen vertex does not share the same
-   * x value with holeCoord
+   * Gets a list of shell vertices that could be used to join a hole
+   * (i.e. the joining line does not cross the polygon boundary).
+   * 
+   * The list contains only one item if the chosen vertex does not have the same
+   * X value as holeCoord.
+   * Otherwise, the list contains all joinable shell vertices with the same X value.
    * 
    * @param holeCoord the hole coordinates
    * @return a list of candidate join vertices
    */
-  private List<Coordinate> findShellJoinVertices(Coordinate holeCoord) {
+  private List<Coordinate> findJoinableShellVertices(Coordinate holeCoord) {
     ArrayList<Coordinate> list = new ArrayList<Coordinate>();
+    double holeX = holeCoord.x;
+    //-- find highest shell vertex in half-plane left of hole pt
     Coordinate closest = shellCoordsSorted.higher(holeCoord);
-    while (closest.x == holeCoord.x) {
+    while (closest.x == holeX) {
       closest = shellCoordsSorted.higher(closest);
     }
+    
     do {
       closest = shellCoordsSorted.lower(closest);
-    } while (!isJoinable(holeCoord, closest) && !closest.equals(shellCoordsSorted.first()));
+    } while (! isJoinable(holeCoord, closest) && ! closest.equals(shellCoordsSorted.first()));
+
     list.add(closest);
-    if ( closest.x != holeCoord.x )
+    if ( closest.x != holeX )
       return list;
-    double chosenX = closest.x;
-    list.clear();
-    while (chosenX == closest.x) {
-      list.add(closest);
+    
+    while (closest.x == holeX) {
       closest = shellCoordsSorted.lower(closest);
       if ( closest == null )
         return list;
@@ -428,7 +431,6 @@ public class PolygonHoleJoiner {
     ArrayList<Integer> leftmostIndex = new ArrayList<Integer>();
     double leftX = ring.getEnvelopeInternal().getMinX();
     for (int i = 0; i < coords.length - 1; i++) {
-      //TODO: can this be strict equality?
       if ( coords[i].x == leftX ) {
         leftmostIndex.add(i);
       }
