@@ -132,13 +132,13 @@ public class PolygonHoleJoiner {
       return;
     
     List<Integer> holeLeftVerticesIndex = findLeftVertices(hole);
-    Coordinate holeCoord = holeCoords[holeLeftVerticesIndex.get(0)];
-    List<Coordinate> shellJoinCoords = findShellJoinVertices(holeCoord);
+    Coordinate holeLeftCoord = holeCoords[holeLeftVerticesIndex.get(0)];
+    List<Coordinate> shellJoinCoords = findShellJoinVertices(holeLeftCoord);
     
     //--- find the shell-hole vertex pair that has the shortest distance
     int holeMinCutIndex = 0;
     Coordinate shellJoinCoord = shellJoinCoords.get(0);
-    if ( Math.abs(shellJoinCoord.x - holeCoord.x) < EPS ) {
+    if ( Math.abs(shellJoinCoord.x - holeLeftCoord.x) < EPS ) {
       double minCutLen = Double.MAX_VALUE;
       for (int i = 0; i < holeLeftVerticesIndex.size(); i++) {
         for (int j = 0; j < shellJoinCoords.size(); j++) {
@@ -427,7 +427,7 @@ public class PolygonHoleJoiner {
     double leftX = ring.getEnvelopeInternal().getMinX();
     for (int i = 0; i < coords.length - 1; i++) {
       //TODO: can this be strict equality?
-      if ( Math.abs(coords[i].x - leftX) < EPS ) {
+      if ( coords[i].x == leftX ) {
         leftmostIndex.add(i);
       }
     }
@@ -440,11 +440,6 @@ public class PolygonHoleJoiner {
     return new MCIndexSegmentSetMutualIntersector(polySegStrings);
   }
   
-  /**
-   * 
-   * @author mdavis
-   *
-   */
   private static class EnvelopeComparator implements Comparator<Geometry> {
     public int compare(Geometry g1, Geometry g2) {
       Envelope e1 = g1.getEnvelopeInternal();
