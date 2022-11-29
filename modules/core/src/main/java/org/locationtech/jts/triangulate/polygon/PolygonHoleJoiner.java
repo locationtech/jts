@@ -127,6 +127,8 @@ public class PolygonHoleJoiner {
    */
   private void joinHole(LinearRing hole) {
     final Coordinate[] holeCoords = hole.getCoordinates();
+    
+    //-- first check if hole is touching
     boolean isTouching = joinTouchingHole(holeCoords);
     if (isTouching)
       return;
@@ -138,7 +140,7 @@ public class PolygonHoleJoiner {
     //--- find the shell-hole vertex pair that has the shortest distance
     int holeMinCutIndex = 0;
     Coordinate shellJoinCoord = shellJoinCoords.get(0);
-    if ( Math.abs(shellJoinCoord.x - holeLeftCoord.x) < EPS ) {
+    if (shellJoinCoord.x == holeLeftCoord.x) {
       double minCutLen = Double.MAX_VALUE;
       for (int i = 0; i < holeLeftVerticesIndex.size(); i++) {
         for (int j = 0; j < shellJoinCoords.size(); j++) {
