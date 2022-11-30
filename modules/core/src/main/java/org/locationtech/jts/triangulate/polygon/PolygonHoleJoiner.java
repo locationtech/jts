@@ -163,7 +163,7 @@ public class PolygonHoleJoiner {
     
     Coordinate holeJoinCoord = holeCoords[holeJoinIndex];
     int shellJoinIndex = findShellJoinIndex(shellJoinCoord, holeJoinCoord);
-    addJoin(shellJoinCoord, holeJoinCoord);
+    recordJoin(shellJoinCoord, holeJoinCoord);
     addHoleToShell(shellJoinIndex, holeCoords, holeJoinIndex);
   }
 
@@ -240,7 +240,7 @@ public class PolygonHoleJoiner {
     return getShellCoordIndexSkip(shellVertex, numSkip);
   }  
   
-  private void addJoin(Coordinate shellVertex, Coordinate holeVertex) {
+  private void recordJoin(Coordinate shellVertex, Coordinate holeVertex) {
     ArrayList<Coordinate> newValueList = new ArrayList<Coordinate>();
     newValueList.add(holeVertex);
     
