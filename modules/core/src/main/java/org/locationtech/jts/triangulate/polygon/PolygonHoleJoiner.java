@@ -59,8 +59,6 @@ public class PolygonHoleJoiner {
   private List<Coordinate> shellCoords;
   // a sorted and searchable version of the shellCoords
   private TreeSet<Coordinate> shellCoordsSorted;
-  // Key: starting end of the cut; Value: list of the other end of the cut
-  private HashMap<Coordinate, ArrayList<Coordinate>> joinMap;
   private SegmentSetMutualIntersector polygonIntersector;
 
   private Polygon inputPolygon;
@@ -107,7 +105,6 @@ public class PolygonHoleJoiner {
 
     shellCoordsSorted = new TreeSet<Coordinate>();
     shellCoordsSorted.addAll(shellCoords);
-    joinMap = new HashMap<Coordinate, ArrayList<Coordinate>>();
     List<LinearRing> orderedHoles = sortHoles(polygon);
     for (int i = 0; i < orderedHoles.size(); i++) {
       joinHole(orderedHoles.get(i));
@@ -141,45 +138,13 @@ public class PolygonHoleJoiner {
     int holeTouchIndex = findHoleTouchIndex(holeCoords);
     if (holeTouchIndex < 0)
       return false;
-    int shellTouchIndex = findShellTouchIndex(holeCoords, holeTouchIndex);
+    //-- use a hole segment to find shell join vertex it is interior at
+    Coordinate shellJoinPt = holeCoords[holeTouchIndex];
+    Coordinate holeSegPt = holeCoords[ prev(holeTouchIndex, holeCoords.length) ];
+    
+    int shellTouchIndex = findShellJoinIndex(shellJoinPt, holeSegPt);
     addHoleToShell(shellTouchIndex, holeCoords, holeTouchIndex);
     return true;
-  }
-
-  private int findShellTouchIndex(Coordinate[] holeCoords, int holeTouchIndex) {
-    //-- linear scan is slow but only done once per hole
-    Coordinate holeCoord = holeCoords[holeTouchIndex];
-    for (int i = 0; i < shellCoords.size(); i++) {
-      if (holeCoord.equals2D(shellCoords.get(i))) {
-        if (isLineInterior(shellCoords, i, holeCoords, holeTouchIndex)) {
-          return i;
-        }
-      }
-    }
-    return -1;
-  }
-
-  private boolean isLineInterior(List<Coordinate> shellCoords, int shellTouchindex, 
-      Coordinate[] holeCoords, int holeTouchIndex) {
-    Coordinate nodePt = shellCoords.get(shellTouchindex);
-    Coordinate shell0 = shellCoords.get( prev(shellTouchindex, shellCoords.size()) );
-    Coordinate shell1 = shellCoords.get( next(shellTouchindex, shellCoords.size()) );
-    Coordinate hole0 = holeCoords[ prev(holeTouchIndex, holeCoords.length) ];
-    return PolygonNodeTopology.isInteriorSegment(nodePt, shell0, shell1, hole0);
-  }
-
-  private static int prev(int i, int size) {
-    int prev = i - 1;
-    if (prev < 0)
-      return size - 2;
-    return prev;
-  }
-
-  private static int next(int i, int size) {
-    int next = i + 1;
-    if (next > size - 2)
-      return 0;
-    return next;
   }
 
   private int findHoleTouchIndex(Coordinate[] holeCoords) {
@@ -220,10 +185,16 @@ public class PolygonHoleJoiner {
     
     Coordinate holeJoinCoord = holeCoords[holeJoinIndex];
     int shellJoinIndex = findShellJoinIndex(shellJoinCoord, holeJoinCoord);
-    //recordJoin(shellJoinCoord, holeJoinCoord);
     addHoleToShell(shellJoinIndex, holeCoords, holeJoinIndex);
   }
 
+  /**
+   * Gets the shell vertex index that the hole should join after.
+   * 
+   * @param shellVertex the shell vertex
+   * @param holeVertex the hole vertex
+   * @return the shell vertex index to join after
+   */
   private int findShellJoinIndex(Coordinate shellJoinVertex, Coordinate holeJoinCoord) {
     //-- linear scan is slow but only done once per hole
     for (int i = 0; i < shellCoords.size() - 1; i++) {
@@ -244,41 +215,21 @@ public class PolygonHoleJoiner {
     Coordinate shell1 = shellCoords.get( next(shellIndex, shellCoords.size()) );
     return PolygonNodeTopology.isInteriorSegment(nodePt, shell0, shell1, linePt);
   }
-  
-  /**
-   * Gets the shell vertex index that the hole should join after.
-   * 
-   * @param shellVertex the shell vertex
-   * @param holeVertex the hole vertex
-   * @return the shell vertex index to join after
-   */
-  private int OLDfindShellJoinIndex(Coordinate shellVertex, Coordinate holeVertex) {
-    int numSkip = 0;
-    if ( joinMap.containsKey(shellVertex) ) {
-      for (Coordinate coord : joinMap.get(shellVertex)) {
-        if ( coord.y < holeVertex.y ) {
-          numSkip++;
-        }
-      }
-    } 
-    return getShellCoordIndexSkip(shellVertex, numSkip);
-  }  
-  
-  private void recordJoin(Coordinate shellVertex, Coordinate holeVertex) {
-    ArrayList<Coordinate> newValueList = new ArrayList<Coordinate>();
-    newValueList.add(holeVertex);
-    
-    if ( joinMap.containsKey(shellVertex) ) {
-      joinMap.get(shellVertex).add(holeVertex);
-    } 
-    else {
-      joinMap.put(shellVertex, newValueList);
-    }
-    if (! joinMap.containsKey(holeVertex) ) {
-      joinMap.put(holeVertex, new ArrayList<Coordinate>(newValueList));
-    }
+
+  private static int prev(int i, int size) {
+    int prev = i - 1;
+    if (prev < 0)
+      return size - 2;
+    return prev;
   }
 
+  private static int next(int i, int size) {
+    int next = i + 1;
+    if (next > size - 2)
+      return 0;
+    return next;
+  }
+  
   /**
    * Find the index of the coordinate in ShellCoords ArrayList,
    * skipping over some number of matches
