@@ -146,8 +146,8 @@ public class PolygonHoleJoiner {
     Coordinate shellJoinPt = holeCoords[holeTouchIndex];
     Coordinate holeSegPt = holeCoords[ prev(holeTouchIndex, holeCoords.length) ];
     
-    int shellTouchIndex = findShellJoinIndex(shellJoinPt, holeSegPt);
-    addHoleToShell(shellTouchIndex, holeCoords, holeTouchIndex);
+    int shellJoinIndex = findShellJoinIndex(shellJoinPt, holeSegPt);
+    addHoleToShell(shellJoinIndex, holeCoords, holeTouchIndex);
     return true;
   }
 
@@ -158,38 +158,44 @@ public class PolygonHoleJoiner {
     }
     return -1;
   }
-
+  
   private void joinNonTouchingHole(LinearRing hole, Coordinate[] holeCoords) {
-    List<Integer> holeLeftVerticesIndex = findLeftVertices(hole);
-    Coordinate holeLeftCoord = holeCoords[holeLeftVerticesIndex.get(0)];
-    List<Coordinate> shellJoinCoords = findJoinableShellVertices(holeLeftCoord);
-    
-    int holeJoinIndex = 0;
-    Coordinate shellJoinCoord = shellJoinCoords.get(0);
-    /**
-     * In the case of a vertical join line, there may be multiple
-     * shell vertices with the same X value,
-     * and some of the join lines may touch the polygon boundary. 
-     * Find the shortest join pair to ensure the join line 
-     * does not intersect the polygon boundary.
-     */
-    if (shellJoinCoord.x == holeLeftCoord.x) {
-      double minLen = Double.MAX_VALUE;
-      for (int i = 0; i < holeLeftVerticesIndex.size(); i++) {
-        for (int j = 0; j < shellJoinCoords.size(); j++) {
-          double currLen = Math.abs(shellJoinCoords.get(j).y - holeCoords[holeLeftVerticesIndex.get(i)].y);
-          if ( currLen < minLen ) {
-            minLen = currLen;
-            holeJoinIndex = holeLeftVerticesIndex.get(i);
-            shellJoinCoord = shellJoinCoords.get(j);
-          }
-        }
-      }
-    }
-    
+    int holeJoinIndex = findLowestLeftVertexIndex(hole);
     Coordinate holeJoinCoord = holeCoords[holeJoinIndex];
+    Coordinate shellJoinCoord = findJoinableShellVertex(holeJoinCoord);
     int shellJoinIndex = findShellJoinIndex(shellJoinCoord, holeJoinCoord);
     addHoleToShell(shellJoinIndex, holeCoords, holeJoinIndex);
+  }
+
+  /**
+   * Finds a shell vertex that is joinable to the hole join vertex.
+   * One must always exist, since the hole join vertex is on the left
+   * of the hole, and thus must always have at least one shell vertex visible to it.
+   * <p>
+   * Note that there is no attempt to optimize the selection of shell vertex 
+   * to join to (e.g. by choosing one with shortest distance)
+   * 
+   * @param holeJoinCoord the hole join vertex
+   * @return the shell vertex to join to
+   */
+  private Coordinate findJoinableShellVertex(Coordinate holeJoinCoord) {
+    //-- find highest shell vertex in half-plane left of hole pt
+    Coordinate candidate = shellCoordsSorted.higher(holeJoinCoord);
+    while (candidate.x == holeJoinCoord.x) {
+      candidate = shellCoordsSorted.higher(candidate);
+    }
+    //-- drop back to last vertex with same X as hole
+    candidate = shellCoordsSorted.lower(candidate);
+    
+    //-- find rightmost joinable shell vertex
+    while (intersectsBoundary(holeJoinCoord, candidate)) {
+      candidate = shellCoordsSorted.lower(candidate);
+      //Assert: candidate is not null, since a joinable candidate always exists 
+      if (candidate == null) {
+        throw new IllegalStateException("Unable to find joinable shell vertex");
+      }
+    } 
+    return candidate;
   }
 
   /**
@@ -231,57 +237,6 @@ public class PolygonHoleJoiner {
     if (next > size - 2)
       return 0;
     return next;
-  }
-
-  /**
-   * Gets a list of shell vertices that could be used to join a hole.
-   * This is a vertex or vertices in the half-place left of the hole vertex.
-   * <p>
-   * If the highest shell vertex in the plane is strictly left of the hole vertex
-   * and the joining line does not cross the polygon boundary,
-   * that single vertex is returned.
-   * <p>
-   * If there are shell vertices in the same vertical line as the hole vertex,
-   * all vertices on that line are returned.
-   * Join lines to some of them may touch the polygon boundary.
-   * A subsequent search finds the shortest join line to one of them,
-   * which will not intersect the boundary.
-   * 
-   * @param holeJoinCoord the hole coordinate to join to
-   * @return a list of candidate join shell vertices
-   */
-  private List<Coordinate> findJoinableShellVertices(Coordinate holeJoinCoord) {
-    ArrayList<Coordinate> list = new ArrayList<Coordinate>();
-    double holeX = holeJoinCoord.x;
-    //-- find highest shell vertex in half-plane left of hole pt
-    Coordinate candidate = shellCoordsSorted.higher(holeJoinCoord);
-    while (candidate.x == holeX) {
-      candidate = shellCoordsSorted.higher(candidate);
-    }
-    //-- find rightmost joinable shell vertex
-    do {
-      candidate = shellCoordsSorted.lower(candidate);
-    } while (intersectsBoundary(holeJoinCoord, candidate) 
-        && ! candidate.equals(shellCoordsSorted.first()));
-    list.add(candidate);
-    //-- if not same X as hole, return single vertex
-    if ( candidate.x != holeX )
-      return list;
-    
-    //-- include ALL vertices with same X as hole vertex
-    while (candidate.x == holeX) {
-      candidate = shellCoordsSorted.lower(candidate);
-      if ( candidate == null || candidate.x != holeX )
-        break;
-      //list.add(candidate);
-      if (intersectsBoundary(holeJoinCoord, candidate)) {
-        System.out.println("Crossing at " + WKTWriter.toLineString(holeJoinCoord, candidate));
-      }
-      else {
-        list.add(candidate);
-      }
-    }
-    return list;
   }
   
   /**
@@ -365,31 +320,30 @@ public class PolygonHoleJoiner {
     Collections.sort(holes, new EnvelopeComparator());
     return holes;
   }
-
-  /**
-   * Gets a list of indices of the leftmost vertices in a ring.
-   * 
-   * @param geom the hole ring
-   * @return indices of the leftmost vertices
-   */
-  private static List<Integer> findLeftVertices(LinearRing ring) {
+  
+  private static int findLowestLeftVertexIndex(LinearRing ring) {
     Coordinate[] coords = ring.getCoordinates();
-    ArrayList<Integer> leftmostIndex = new ArrayList<Integer>();
     double leftX = ring.getEnvelopeInternal().getMinX();
+    Coordinate lowestLeftCoord = null;
+    int lowestLeftIndex = -1;
     for (int i = 0; i < coords.length - 1; i++) {
       if ( coords[i].x == leftX ) {
-        leftmostIndex.add(i);
+        if (lowestLeftCoord == null || coords[i].compareTo(lowestLeftCoord) < 0) {
+          lowestLeftCoord = coords[i];
+          lowestLeftIndex = i;
+        }
       }
     }
-    return leftmostIndex;
+    return lowestLeftIndex;
   }
     
   /**
-   * Tests whether a line segment intersects the polygon boundary.
+   * Tests whether the interior of a line segment intersects the polygon boundary.
+   * If so, the line is not a valid join line.
    * 
    * @param p0 a vertex
    * @param p1 a vertex
-   * @return true if the line segment intersects the polygon boundary
+   * @return true if the line segment interior intersects the polygon boundary
    */
   private boolean intersectsBoundary(Coordinate p0, Coordinate p1) {
     SegmentString segString = new BasicSegmentString(
@@ -397,13 +351,16 @@ public class PolygonHoleJoiner {
     List<SegmentString> segStrings = new ArrayList<SegmentString>();
     segStrings.add(segString);
     
-    BoundaryIntersectionDetector segInt = new BoundaryIntersectionDetector();
+    InteriorIntersectionDetector segInt = new InteriorIntersectionDetector();
     polygonIntersector.process(segStrings, segInt);
-    
     return segInt.hasIntersection();
   }
   
-  private static class BoundaryIntersectionDetector implements SegmentIntersector {
+  /**
+   * Detects if any segments have an interior intersection in at least one of the segments. 
+   *
+   */
+  private static class InteriorIntersectionDetector implements SegmentIntersector {
 
     private LineIntersector li = new RobustLineIntersector();
     private boolean hasIntersection = false;
@@ -436,7 +393,6 @@ public class PolygonHoleJoiner {
     public boolean isDone() {
       return hasIntersection;
     }
-    
   }
   
   private static SegmentSetMutualIntersector createPolygonIntersector(Polygon polygon) {
