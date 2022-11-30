@@ -200,6 +200,9 @@ public class PolygonHoleJoiner {
 
   /**
    * Gets the shell vertex index that the hole should be joined after.
+   * A shell vertex can occur multiple times, so it is necessary
+   * to choose the one which forms a corner having the 
+   * join line in the shell interior.
    * 
    * @param shellJoinCoord the shell join vertex
    * @param holeJoinCoord the hole join vertex
