@@ -18,15 +18,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.TreeSet;
 
+import org.locationtech.jts.algorithm.LineIntersector;
 import org.locationtech.jts.algorithm.PolygonNodeTopology;
+import org.locationtech.jts.algorithm.RobustLineIntersector;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.io.WKTWriter;
 import org.locationtech.jts.noding.BasicSegmentString;
 import org.locationtech.jts.noding.MCIndexSegmentSetMutualIntersector;
 import org.locationtech.jts.noding.SegmentIntersectionDetector;
+import org.locationtech.jts.noding.SegmentIntersector;
 import org.locationtech.jts.noding.SegmentSetMutualIntersector;
 import org.locationtech.jts.noding.SegmentString;
 import org.locationtech.jts.noding.SegmentStringUtil;
@@ -189,23 +193,22 @@ public class PolygonHoleJoiner {
   }
 
   /**
-   * Gets the shell vertex index that the hole should join after.
+   * Gets the shell vertex index that the hole should be joined after.
    * 
-   * @param shellVertex the shell vertex
-   * @param holeVertex the hole vertex
+   * @param shellJoinCoord the shell join vertex
+   * @param holeJoinCoord the hole join vertex
    * @return the shell vertex index to join after
    */
-  private int findShellJoinIndex(Coordinate shellJoinVertex, Coordinate holeJoinCoord) {
+  private int findShellJoinIndex(Coordinate shellJoinCoord, Coordinate holeJoinCoord) {
     //-- linear scan is slow but only done once per hole
     for (int i = 0; i < shellCoords.size() - 1; i++) {
-      if (shellJoinVertex.equals2D(shellCoords.get(i))) {
+      if (shellJoinCoord.equals2D(shellCoords.get(i))) {
         if (isLineInterior(shellCoords, i, holeJoinCoord)) {
           return i;
         }
       }
     }
-    //TODO: replace with assert can't reach here?
-    return -1;
+    throw new IllegalStateException("Unable to find shell join index with interior join line");
   }
   
   private boolean isLineInterior(List<Coordinate> shellCoords, int shellIndex, 
@@ -228,24 +231,6 @@ public class PolygonHoleJoiner {
     if (next > size - 2)
       return 0;
     return next;
-  }
-  
-  /**
-   * Find the index of the coordinate in ShellCoords ArrayList,
-   * skipping over some number of matches
-   * 
-   * @param coord
-   * @return
-   */
-  private int getShellCoordIndexSkip(Coordinate coord, int numSkip) {
-    for (int i = 0; i < shellCoords.size(); i++) {
-      if ( shellCoords.get(i).equals2D(coord) ) {
-        if ( numSkip == 0 )
-          return i;
-        numSkip--;
-      }
-    }
-    throw new IllegalStateException("Vertex is not in shellcoords");
   }
 
   /**
@@ -276,7 +261,7 @@ public class PolygonHoleJoiner {
     //-- find rightmost joinable shell vertex
     do {
       candidate = shellCoordsSorted.lower(candidate);
-    } while (crossesPolygon(holeJoinCoord, candidate) 
+    } while (intersectsBoundary(holeJoinCoord, candidate) 
         && ! candidate.equals(shellCoordsSorted.first()));
     list.add(candidate);
     //-- if not same X as hole, return single vertex
@@ -288,29 +273,15 @@ public class PolygonHoleJoiner {
       candidate = shellCoordsSorted.lower(candidate);
       if ( candidate == null || candidate.x != holeX )
         break;
-      list.add(candidate);
+      //list.add(candidate);
+      if (intersectsBoundary(holeJoinCoord, candidate)) {
+        System.out.println("Crossing at " + WKTWriter.toLineString(holeJoinCoord, candidate));
+      }
+      else {
+        list.add(candidate);
+      }
     }
     return list;
-  }
-  
-  /**
-   * Tests whether a line segment crosses the polygon boundary.
-   * 
-   * @param p0 a vertex
-   * @param p1 a vertex
-   * @return true if the line segment crosses the polygon boundary
-   */
-  private boolean crossesPolygon(Coordinate p0, Coordinate p1) {
-    SegmentString segString = new BasicSegmentString(
-        new Coordinate[] { p0, p1 }, null);
-    List<SegmentString> segStrings = new ArrayList<SegmentString>();
-    segStrings.add(segString);
-    
-    SegmentIntersectionDetector segInt = new SegmentIntersectionDetector();
-    segInt.setFindProper(true);
-    polygonIntersector.process(segStrings, segInt);
-    
-    return segInt.hasProperIntersection();
   }
   
   /**
@@ -413,6 +384,61 @@ public class PolygonHoleJoiner {
     return leftmostIndex;
   }
     
+  /**
+   * Tests whether a line segment intersects the polygon boundary.
+   * 
+   * @param p0 a vertex
+   * @param p1 a vertex
+   * @return true if the line segment intersects the polygon boundary
+   */
+  private boolean intersectsBoundary(Coordinate p0, Coordinate p1) {
+    SegmentString segString = new BasicSegmentString(
+        new Coordinate[] { p0, p1 }, null);
+    List<SegmentString> segStrings = new ArrayList<SegmentString>();
+    segStrings.add(segString);
+    
+    BoundaryIntersectionDetector segInt = new BoundaryIntersectionDetector();
+    polygonIntersector.process(segStrings, segInt);
+    
+    return segInt.hasIntersection();
+  }
+  
+  private static class BoundaryIntersectionDetector implements SegmentIntersector {
+
+    private LineIntersector li = new RobustLineIntersector();
+    private boolean hasIntersection = false;
+
+    public boolean hasIntersection() {
+      return hasIntersection;
+    }
+    
+    @Override
+    public void processIntersections(SegmentString ss0, int segIndex0, SegmentString ss1, int segIndex1) {
+      Coordinate p00 = ss0.getCoordinate(segIndex0);
+      Coordinate p01 = ss0.getCoordinate(segIndex0 + 1);
+      Coordinate p10 = ss1.getCoordinate(segIndex1);
+      Coordinate p11 = ss1.getCoordinate(segIndex1 + 1);
+      
+      li.computeIntersection(p00, p01, p10, p11);
+      if (li.getIntersectionNum() == 0) {
+        return;
+      }
+      else if (li.getIntersectionNum() == 1) {
+        if (li.isInteriorIntersection())
+          hasIntersection = true;
+      }     
+      else { // li.getIntersectionNum() >= 2 - must be collinear
+        hasIntersection = true;
+      }
+   }
+
+    @Override
+    public boolean isDone() {
+      return hasIntersection;
+    }
+    
+  }
+  
   private static SegmentSetMutualIntersector createPolygonIntersector(Polygon polygon) {
     @SuppressWarnings("unchecked")
     List<SegmentString> polySegStrings = SegmentStringUtil.extractSegmentStrings(polygon);
