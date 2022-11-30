@@ -57,7 +57,7 @@ public class PolygonHoleJoiner {
   // a sorted and searchable version of the shellCoords
   private TreeSet<Coordinate> shellCoordsSorted;
   // Key: starting end of the cut; Value: list of the other end of the cut
-  private HashMap<Coordinate, ArrayList<Coordinate>> cutMap;
+  private HashMap<Coordinate, ArrayList<Coordinate>> joinMap;
   private SegmentSetMutualIntersector polygonIntersector;
 
   private Polygon inputPolygon;
@@ -104,7 +104,7 @@ public class PolygonHoleJoiner {
 
     shellCoordsSorted = new TreeSet<Coordinate>();
     shellCoordsSorted.addAll(shellCoords);
-    cutMap = new HashMap<Coordinate, ArrayList<Coordinate>>();
+    joinMap = new HashMap<Coordinate, ArrayList<Coordinate>>();
     List<LinearRing> orderedHoles = sortHoles(polygon);
     for (int i = 0; i < orderedHoles.size(); i++) {
       joinHole(orderedHoles.get(i));
@@ -130,29 +130,40 @@ public class PolygonHoleJoiner {
     boolean isTouching = joinTouchingHole(holeCoords);
     if (isTouching)
       return;
-    
+    joinNonTouchingHole(hole, holeCoords);
+  }
+  
+  private void joinNonTouchingHole(LinearRing hole, Coordinate[] holeCoords) {
     List<Integer> holeLeftVerticesIndex = findLeftVertices(hole);
     Coordinate holeLeftCoord = holeCoords[holeLeftVerticesIndex.get(0)];
     List<Coordinate> shellJoinCoords = findJoinableShellVertices(holeLeftCoord);
     
-    //--- find the shell-hole vertex pair that has the shortest distance
     int holeJoinIndex = 0;
     Coordinate shellJoinCoord = shellJoinCoords.get(0);
+    /**
+     * In the case of a vertical join line, there may be multiple
+     * shell vertices with the same X value,
+     * and some of the join lines may touch the polygon boundary. 
+     * Find the shortest join pair to ensure the join line 
+     * does not intersect the polygon boundary.
+     */
     if (shellJoinCoord.x == holeLeftCoord.x) {
-      double minJoinLen = Double.MAX_VALUE;
+      double minLen = Double.MAX_VALUE;
       for (int i = 0; i < holeLeftVerticesIndex.size(); i++) {
         for (int j = 0; j < shellJoinCoords.size(); j++) {
           double currLen = Math.abs(shellJoinCoords.get(j).y - holeCoords[holeLeftVerticesIndex.get(i)].y);
-          if ( currLen < minJoinLen ) {
-            minJoinLen = currLen;
+          if ( currLen < minLen ) {
+            minLen = currLen;
             holeJoinIndex = holeLeftVerticesIndex.get(i);
             shellJoinCoord = shellJoinCoords.get(j);
           }
         }
       }
     }
+    
     Coordinate holeJoinCoord = holeCoords[holeJoinIndex];
     int shellJoinIndex = findShellJoinIndex(shellJoinCoord, holeJoinCoord);
+    addJoin(shellJoinCoord, holeJoinCoord);
     addHoleToShell(shellJoinIndex, holeCoords, holeJoinIndex);
   }
 
@@ -171,7 +182,7 @@ public class PolygonHoleJoiner {
     Coordinate holeCoord = holeCoords[holeTouchIndex];
     for (int i = 0; i < shellCoords.size(); i++) {
       if (holeCoord.equals2D(shellCoords.get(i))) {
-        if (isInterior(shellCoords, i, holeCoords, holeTouchIndex)) {
+        if (isLineInterior(shellCoords, i, holeCoords, holeTouchIndex)) {
           return i;
         }
       }
@@ -179,10 +190,11 @@ public class PolygonHoleJoiner {
     return -1;
   }
 
-  private boolean isInterior(List<Coordinate> shellCoords, int i, Coordinate[] holeCoords, int holeTouchIndex) {
-    Coordinate nodePt = shellCoords.get(i);
-    Coordinate shell0 = shellCoords.get( prev(i, shellCoords.size()) );
-    Coordinate shell1 = shellCoords.get( next(i, shellCoords.size()) );
+  private boolean isLineInterior(List<Coordinate> shellCoords, int shellTouchindex, 
+      Coordinate[] holeCoords, int holeTouchIndex) {
+    Coordinate nodePt = shellCoords.get(shellTouchindex);
+    Coordinate shell0 = shellCoords.get( prev(shellTouchindex, shellCoords.size()) );
+    Coordinate shell1 = shellCoords.get( next(shellTouchindex, shellCoords.size()) );
     Coordinate hole0 = holeCoords[ prev(holeTouchIndex, holeCoords.length) ];
     return PolygonNodeTopology.isInteriorSegment(nodePt, shell0, shell1, hole0);
   }
@@ -209,33 +221,38 @@ public class PolygonHoleJoiner {
     return -1;
   }
 
-
-
   /**
    * Gets the shell vertex index that the hole should join after.
    * 
    * @param shellVertex the shell vertex
-   * @param holeVertex  the hole vertex
+   * @param holeVertex the hole vertex
    * @return the shell vertex index to join after
    */
   private int findShellJoinIndex(Coordinate shellVertex, Coordinate holeVertex) {
     int numSkip = 0;
-    ArrayList<Coordinate> newValueList = new ArrayList<Coordinate>();
-    newValueList.add(holeVertex);
-    if ( cutMap.containsKey(shellVertex) ) {
-      for (Coordinate coord : cutMap.get(shellVertex)) {
+    if ( joinMap.containsKey(shellVertex) ) {
+      for (Coordinate coord : joinMap.get(shellVertex)) {
         if ( coord.y < holeVertex.y ) {
           numSkip++;
         }
       }
-      cutMap.get(shellVertex).add(holeVertex);
-    } else {
-      cutMap.put(shellVertex, newValueList);
-    }
-    if ( !cutMap.containsKey(holeVertex) ) {
-      cutMap.put(holeVertex, new ArrayList<Coordinate>(newValueList));
-    }
+    } 
     return getShellCoordIndexSkip(shellVertex, numSkip);
+  }  
+  
+  private void addJoin(Coordinate shellVertex, Coordinate holeVertex) {
+    ArrayList<Coordinate> newValueList = new ArrayList<Coordinate>();
+    newValueList.add(holeVertex);
+    
+    if ( joinMap.containsKey(shellVertex) ) {
+      joinMap.get(shellVertex).add(holeVertex);
+    } 
+    else {
+      joinMap.put(shellVertex, newValueList);
+    }
+    if (! joinMap.containsKey(holeVertex) ) {
+      joinMap.put(holeVertex, new ArrayList<Coordinate>(newValueList));
+    }
   }
 
   /**
@@ -257,68 +274,48 @@ public class PolygonHoleJoiner {
   }
 
   /**
-   * Gets a list of shell vertices that could be used to join a hole
-   * (i.e. the joining line does not cross the polygon boundary).
+   * Gets a list of shell vertices that could be used to join a hole.
+   * This is a vertex or vertices in the half-place left of the hole vertex.
+   * <p>
+   * If the highest shell vertex in the plane is strictly left of the hole vertex
+   * and the joining line does not cross the polygon boundary,
+   * that single vertex is returned.
+   * <p>
+   * If there are shell vertices in the same vertical line as the hole vertex,
+   * all vertices on that line are returned.
+   * Join lines to some of them may touch the polygon boundary.
+   * A subsequent search finds the shortest join line to one of them,
+   * which will not intersect the boundary.
    * 
-   * The list contains only one item if the chosen vertex does not have the same
-   * X value as holeCoord.
-   * Otherwise, the list contains all joinable shell vertices with the same X value.
-   * 
-   * @param holeCoord the hole coordinates
-   * @return a list of candidate join vertices
+   * @param holeJoinCoord the hole coordinate to join to
+   * @return a list of candidate join shell vertices
    */
-  private List<Coordinate> findJoinableShellVertices(Coordinate holeCoord) {
+  private List<Coordinate> findJoinableShellVertices(Coordinate holeJoinCoord) {
     ArrayList<Coordinate> list = new ArrayList<Coordinate>();
-    double holeX = holeCoord.x;
+    double holeX = holeJoinCoord.x;
     //-- find highest shell vertex in half-plane left of hole pt
-    Coordinate closest = shellCoordsSorted.higher(holeCoord);
-    while (closest.x == holeX) {
-      closest = shellCoordsSorted.higher(closest);
+    Coordinate candidate = shellCoordsSorted.higher(holeJoinCoord);
+    while (candidate.x == holeX) {
+      candidate = shellCoordsSorted.higher(candidate);
     }
     //-- find rightmost joinable shell vertex
     do {
-      closest = shellCoordsSorted.lower(closest);
-    } while (crossesPolygon(holeCoord, closest) 
-        && ! closest.equals(shellCoordsSorted.first()));
-    list.add(closest);
+      candidate = shellCoordsSorted.lower(candidate);
+    } while (crossesPolygon(holeJoinCoord, candidate) 
+        && ! candidate.equals(shellCoordsSorted.first()));
+    list.add(candidate);
     //-- if not same X as hole, return single vertex
-    if ( closest.x != holeX )
+    if ( candidate.x != holeX )
       return list;
     
-    //-- return all joinable vertices with same X as hole vertex
-    while (closest.x == holeX) {
-      closest = shellCoordsSorted.lower(closest);
-      if ( closest == null || closest.x != holeX )
+    //-- include ALL vertices with same X as hole vertex
+    while (candidate.x == holeX) {
+      candidate = shellCoordsSorted.lower(candidate);
+      if ( candidate == null || candidate.x != holeX )
         break;
-      list.add(closest);
+      list.add(candidate);
     }
     return list;
-  }
-
-  /**
-   * Determine if a line segment between a hole vertex
-   * and a shell vertex crosses the input polygon.
-   * 
-   * @param holeCoord a hole coordinate
-   * @param shellCoord a shell coordinate
-   * @return true if the line lies inside the polygon
-   */
-  private boolean isCrossing(Coordinate holeCoord, Coordinate shellCoord) {
-    /**
-     * Since the line runs between a hole and the shell,
-     * it is inside the polygon if it does not cross the polygon boundary.
-     */
-    boolean isJoinable = ! crossesPolygon(holeCoord, shellCoord);
-    /*
-    //--- slow code for testing only
-    LineString join = geomFact.createLineString(new Coordinate[] { holeCoord, shellCoord });
-    boolean isJoinableSlow = inputPolygon.covers(join)
-    if (isJoinableSlow != isJoinable) {
-      System.out.println(WKTWriter.toLineString(holeCoord, shellCoord));
-    }
-    //Assert.isTrue(isJoinableSlow == isJoinable);
-    */
-    return isJoinable;
   }
   
   /**
@@ -349,23 +346,23 @@ public class PolygonHoleJoiner {
    * 
    * Also adds hole points to ordered coordinates.
    * 
-   * @param shellCutIndex index of join vertex in shell
+   * @param shellJoinIndex index of join vertex in shell
    * @param holeCoords the vertices of the hole to be inserted
-   * @param holeCutIndex index of join vertex in hole
+   * @param holeJoinIndex index of join vertex in hole
    */
-  private void addHoleToShell(int shellCutIndex, Coordinate[] holeCoords, int holeCutIndex) {
-    Coordinate shellCutPt = shellCoords.get(shellCutIndex);
-    Coordinate holeCutPt = holeCoords[holeCutIndex];
+  private void addHoleToShell(int shellJoinIndex, Coordinate[] holeCoords, int holeJoinIndex) {
+    Coordinate shellJoinPt = shellCoords.get(shellJoinIndex);
+    Coordinate holeJoinPt = holeCoords[holeJoinIndex];
     
     //-- check for touching (zero-length) join to avoid inserting duplicate vertices
-    boolean isVertexTouch = shellCutPt.equals2D(holeCutPt);
-    Coordinate addShellCutPt = isVertexTouch ? null : shellCutPt;
+    boolean isVertexTouch = shellJoinPt.equals2D(holeJoinPt);
+    Coordinate addShellJoinPt = isVertexTouch ? null : shellJoinPt;
 
     //-- create new section of vertices to insert in shell
-    List<Coordinate> newSection = createHoleSection(holeCoords, holeCutIndex, addShellCutPt);
+    List<Coordinate> newSection = createHoleSection(holeCoords, holeJoinIndex, addShellJoinPt);
     
     //-- add section after shell join vertex
-    int shellAddIndex = shellCutIndex + 1;
+    int shellAddIndex = shellJoinIndex + 1;
     shellCoords.addAll(shellAddIndex, newSection);
     shellCoordsSorted.addAll(newSection);
   }

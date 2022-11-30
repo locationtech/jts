@@ -74,6 +74,13 @@ public class PolygonHoleJoinerTest extends GeometryTestCase {
         );
   }
   
+  public void testHolesManyVertical() {
+    checkJoin(
+  "POLYGON ((10 90, 90 90, 90 10, 10 10, 50 20, 10 30, 50 50, 10 70, 53 80, 10 90), (60 70, 60 60, 50 60, 50 70, 60 70), (55 55, 55 50, 50 50, 50 55, 55 55), (61 45, 61 40, 50 40, 50 45, 61 45), (60 30, 50 30, 50 35, 60 35, 60 30), (50 15, 50 18, 60 18, 60 15, 50 15), (60 85, 50 85, 55 80, 50 75, 60 75, 60 85))",
+  "POLYGON ((10 90, 60 85, 50 85, 55 80, 50 75, 60 75, 60 85, 10 90, 90 90, 90 10, 10 10, 50 20, 50 18, 50 15, 60 15, 60 18, 50 18, 50 20, 50 30, 60 30, 60 35, 50 35, 50 30, 50 20, 10 30, 50 50, 50 45, 50 40, 61 40, 61 45, 50 45, 50 50, 55 50, 55 55, 50 55, 50 60, 60 60, 60 70, 50 70, 50 60, 50 55, 50 50, 10 70, 53 80, 10 90))"
+        );
+  }
+  
   /**
    * A failing case revealing that joining a hole by a zero-length cut
    * was introducing duplicate vertices.
@@ -85,6 +92,9 @@ public class PolygonHoleJoinerTest extends GeometryTestCase {
         );
   }
   
+  /**
+   * Revealed a bug due to original use of tolerance for coordinate comparison (now removed)
+   */
   public void testBugHoleJoinCrosses() {
     checkJoin(
   "POLYGON ((27.182 58.2714, 27.182 58.27, 27.1804 58.27, 27.1804 58.2714, 27.182 58.2714), (27.18097 58.2701, 27.18091 58.27009, 27.18086 58.27007, 27.18086 58.27004, 27.18097 58.2701), (27.18079 58.27099, 27.18074 58.27029, 27.18075 58.27024, 27.18079 58.27019, 27.18151 58.27021, 27.18085 58.27104, 27.18079 58.27099))",
