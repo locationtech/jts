@@ -106,7 +106,7 @@ public class PolygonTriangulatorTest extends GeometryTestCase {
   public void testBadHoleJoinHoleTouchesShellVertical() {
     checkTri(
   "POLYGON ((1 9, 9 9, 9 0, 1 0, 1 9), (1 5, 5 5, 6 8, 1 5))",
-  "GEOMETRYCOLLECTION (POLYGON ((1 0, 1 4, 5 1, 1 0)), POLYGON ((5 4, 1 4, 1 5, 5 4)), POLYGON ((6 8, 1 5, 1 9, 6 8)), POLYGON ((9 0, 1 0, 5 1, 9 0)), POLYGON ((5 4, 1 5, 5 5, 5 4)), POLYGON ((6 8, 1 9, 9 9, 6 8)), POLYGON ((9 9, 9 0, 5 1, 9 9)), POLYGON ((5 4, 5 5, 6 8, 5 4)), POLYGON ((6 8, 9 9, 5 1, 6 8)), POLYGON ((5 1, 5 4, 6 8, 5 1)))"
+  "GEOMETRYCOLLECTION (POLYGON ((1 0, 1 5, 5 5, 1 0)), POLYGON ((6 8, 1 5, 1 9, 6 8)), POLYGON ((9 9, 9 0, 1 0, 9 9)), POLYGON ((6 8, 1 9, 9 9, 6 8)), POLYGON ((9 9, 1 0, 5 5, 9 9)), POLYGON ((5 5, 6 8, 9 9, 5 5)))"
         );
   }
   
@@ -132,6 +132,10 @@ public class PolygonTriangulatorTest extends GeometryTestCase {
     Geometry geom = read(wkt);
     Geometry actual = PolygonTriangulator.triangulate(geom);
     Geometry actualUnion = actual.union();
-    checkEqual(geom, actualUnion);
+    
+    // compare to fully noded verstion of input polygon
+    Geometry nodedGeom = geom.union(geom);
+    
+    checkEqual(nodedGeom, actualUnion);
   }
 }
