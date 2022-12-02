@@ -146,13 +146,19 @@ public class PolygonHoleJoiner {
   private boolean joinTouchingHole(Coordinate[] holeCoords) {
     //TODO: find fast way to identify touching holes (perhaps during initial noding?)
     int holeTouchIndex = findHoleTouchIndex(holeCoords);
+    
+   //-- hole does not touch
     if (holeTouchIndex < 0)
       return false;
-    //-- use a hole segment to find shell join vertex it is interior at
-    Coordinate shellJoinPt = holeCoords[holeTouchIndex];
+    
+    /**
+     * Find shell corner which contains the hole,
+     * by finding corner which has a hole segment at the join pt in interior
+     */
+    Coordinate joinPt = holeCoords[holeTouchIndex];
     Coordinate holeSegPt = holeCoords[ prev(holeTouchIndex, holeCoords.length) ];
     
-    int shellJoinIndex = findShellJoinIndex(shellJoinPt, holeSegPt);
+    int shellJoinIndex = findShellJoinIndex(joinPt, holeSegPt);
     addHoleToShell(shellJoinIndex, holeCoords, holeTouchIndex);
     return true;
   }
