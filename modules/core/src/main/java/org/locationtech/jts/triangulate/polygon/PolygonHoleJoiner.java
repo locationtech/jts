@@ -150,7 +150,7 @@ public class PolygonHoleJoiner {
     boolean isTouching = joinTouchingHole(holeCoords);
     if (isTouching)
       return;
-    joinNonTouchingHole(hole, holeCoords);
+    joinNonTouchingHole(holeCoords);
   }
   
   private boolean joinTouchingHole(Coordinate[] holeCoords) {
@@ -175,8 +175,8 @@ public class PolygonHoleJoiner {
     return -1;
   }
   
-  private void joinNonTouchingHole(LinearRing hole, Coordinate[] holeCoords) {
-    int holeJoinIndex = findLowestLeftVertexIndex(hole);
+  private void joinNonTouchingHole(Coordinate[] holeCoords) {
+    int holeJoinIndex = findLowestLeftVertexIndex(holeCoords);
     Coordinate holeJoinCoord = holeCoords[holeJoinIndex];
     Coordinate shellJoinCoord = findJoinableShellVertex(holeJoinCoord);
     int shellJoinIndex = findShellJoinIndex(shellJoinCoord, holeJoinCoord);
@@ -340,17 +340,13 @@ public class PolygonHoleJoiner {
     return holes;
   }
   
-  private static int findLowestLeftVertexIndex(LinearRing ring) {
-    Coordinate[] coords = ring.getCoordinates();
-    double leftX = ring.getEnvelopeInternal().getMinX();
+  private static int findLowestLeftVertexIndex(Coordinate[] coords) {
     Coordinate lowestLeftCoord = null;
     int lowestLeftIndex = -1;
     for (int i = 0; i < coords.length - 1; i++) {
-      if ( coords[i].x == leftX ) {
-        if (lowestLeftCoord == null || coords[i].compareTo(lowestLeftCoord) < 0) {
-          lowestLeftCoord = coords[i];
-          lowestLeftIndex = i;
-        }
+      if (lowestLeftCoord == null || coords[i].compareTo(lowestLeftCoord) < 0) {
+        lowestLeftCoord = coords[i];
+        lowestLeftIndex = i;
       }
     }
     return lowestLeftIndex;
