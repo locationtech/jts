@@ -14,7 +14,6 @@ package org.locationtech.jts.triangulate.polygon;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.TreeSet;
 
@@ -26,10 +25,8 @@ import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.Polygon;
-import org.locationtech.jts.io.WKTWriter;
 import org.locationtech.jts.noding.BasicSegmentString;
 import org.locationtech.jts.noding.MCIndexSegmentSetMutualIntersector;
-import org.locationtech.jts.noding.SegmentIntersectionDetector;
 import org.locationtech.jts.noding.SegmentIntersector;
 import org.locationtech.jts.noding.SegmentSetMutualIntersector;
 import org.locationtech.jts.noding.SegmentString;
