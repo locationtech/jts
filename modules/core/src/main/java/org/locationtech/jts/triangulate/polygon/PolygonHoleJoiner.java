@@ -34,14 +34,15 @@ import org.locationtech.jts.noding.SegmentStringUtil;
 
 /**
  * Transforms a polygon with holes into a single self-touching (invalid) ring
- * by joining holes to the exterior shell or to another hole. 
+ * by joining holes to the exterior shell or to another hole
+ * with out-and-back line segments. 
  * The holes are added in order of their envelopes (leftmost/lowest first). 
- * As the resulting shell develops, a hole may be added to what was
+ * As the result shell develops, a hole may be added to what was
  * originally another hole.
  * <p>
  * There is no attempt to optimize the quality of the join lines.
  * In particular, holes may be joined by lines longer than is optimal.
- * However, holes which touch the shell or other holes are connected at the touch point.
+ * However, holes which touch the shell or other holes are joined at the touch point.
  * <p>
  * The class requires the input polygon to have normal orientation
  * (shell CW and rings CCW).
@@ -71,12 +72,12 @@ public class PolygonHoleJoiner {
     return joiner.compute();
   }
   
+  private Polygon inputPolygon;
+  
   private List<Coordinate> shellCoords;
   // a sorted and searchable version of the shellCoords
   private TreeSet<Coordinate> shellCoordsSorted;
   private SegmentSetMutualIntersector polygonIntersector;
-
-  private Polygon inputPolygon;
 
   /**
    * Creates a new hole joiner.
@@ -115,34 +116,23 @@ public class PolygonHoleJoiner {
     Coordinate[] coords = ring.getCoordinates();
     List<Coordinate> coordList = new ArrayList<Coordinate>();
     for (Coordinate p : coords) {
-      coordList.add(p);
+      coordList.add(p.copy());
     }
     return coordList;
   }
   
   private void joinHoles(Polygon polygon) {
     polygonIntersector = createPolygonIntersector(polygon);
-
+    
     shellCoordsSorted = new TreeSet<Coordinate>();
     shellCoordsSorted.addAll(shellCoords);
-    List<LinearRing> orderedHoles = sortHoles(polygon);
-    for (int i = 0; i < orderedHoles.size(); i++) {
-      joinHole(orderedHoles.get(i));
+    
+    List<LinearRing> sortedHoles = sortHoles(polygon);
+    for (int i = 0; i < sortedHoles.size(); i++) {
+      joinHole(sortedHoles.get(i));
     }
   }
 
-  /**
-   * Joins a single hole to the current shellRing.
-   * 
-   * 1) Get a list of the leftmost Hole Vertex indices. 
-   * 2) Get a list of candidate joining shell vertices. 
-   * 3) Get the pair that has the shortest distance between them. 
-   * This pair is the endpoints of the cut 
-   * 4) The selected ShellVertex may occurs multiple times in
-   * shellCoords[], so find the proper one and add the hole after it.
-   * 
-   * @param hole the hole to join
-   */
   private void joinHole(LinearRing hole) {
     final Coordinate[] holeCoords = hole.getCoordinates();
     
@@ -175,6 +165,11 @@ public class PolygonHoleJoiner {
     return -1;
   }
   
+  /**
+   * Joins a single non-touching hole to the current shell.
+   * 
+   * @param hole the hole to join
+   */
   private void joinNonTouchingHole(Coordinate[] holeCoords) {
     int holeJoinIndex = findLowestLeftVertexIndex(holeCoords);
     Coordinate holeJoinCoord = holeCoords[holeJoinIndex];
@@ -188,8 +183,8 @@ public class PolygonHoleJoiner {
    * One must always exist, since the hole join vertex is on the left
    * of the hole, and thus must always have at least one shell vertex visible to it.
    * <p>
-   * Note that there is no attempt to optimize the selection of shell vertex 
-   * to join to (e.g. by choosing one with shortest distance)
+   * There is no attempt to optimize the selection of shell vertex 
+   * to join to (e.g. by choosing one with shortest distance).
    * 
    * @param holeJoinCoord the hole join vertex
    * @return the shell vertex to join to
@@ -288,41 +283,42 @@ public class PolygonHoleJoiner {
   }
 
   /**
-   * Creates the new section of vertices for the added hole.
+   * Creates the new section of vertices for ad added hole,
+   * including any required vertices from the shell at the join point,
+   * and ensuring join vertices are not duplicated.
    * 
-   * @param holeCoords
-   * @param holeCutIndex
-   * @param shellCutPt
-   * @return
+   * @param holeCoords the hole vertices
+   * @param holeJoinIndex the index of the join vertex
+   * @param shellJoinPt the shell join vertex
+   * @return a list of new vertices to be added
    */
-  private List<Coordinate> createHoleSection(Coordinate[] holeCoords, int holeCutIndex, 
-      Coordinate shellCutPt) {
-    List<Coordinate> newSection = new ArrayList<Coordinate>();
+  private List<Coordinate> createHoleSection(Coordinate[] holeCoords, int holeJoinIndex, 
+      Coordinate shellJoinPt) {
+    List<Coordinate> section = new ArrayList<Coordinate>();
     
-    boolean isHoleDoesNotTouch = shellCutPt != null;
+    boolean isNonTouchingHole = shellJoinPt != null;
     /**
-     * Add all hole vertices, including duplicate at cut vertex
-     * Except, if hole DOES touch, cut vertex is already in shell ring
+     * Add all hole vertices, including duplicate at hole join vertex
+     * Except if hole DOES touch, join vertex is already in shell ring
      */
-    if (isHoleDoesNotTouch)
-      newSection.add(holeCoords[holeCutIndex].copy());
+    if (isNonTouchingHole)
+      section.add(holeCoords[holeJoinIndex].copy());
     
     final int holeSize = holeCoords.length - 1;
-    
-    int index = holeCutIndex;
+    int index = holeJoinIndex;
     for (int i = 0; i < holeSize; i++) {
       index = (index + 1) % holeSize;
-      newSection.add(holeCoords[index].copy());
+      section.add(holeCoords[index].copy());
     }
     /**
-     * Add duplicate shell vertex at end of the 2nd cut line.
-     * Except, if hole DOES touch, cut line is zero-length so does not need end vertex
+     * Add duplicate shell vertex at end of the return join line.
+     * Except if hole DOES touch, join line is zero-length so do not need dup vertex
      */
-    if (isHoleDoesNotTouch) { 
-      newSection.add(shellCutPt.copy());
+    if (isNonTouchingHole) { 
+      section.add(shellJoinPt.copy());
     }
     
-    return newSection;
+    return section;
   }
 
   /**
