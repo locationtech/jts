@@ -35,25 +35,39 @@ import org.locationtech.jts.noding.SegmentStringUtil;
 /**
  * Transforms a polygon with holes into a single self-touching (invalid) ring
  * by joining holes to the exterior shell or to another hole. 
- * The holes are added from the lowest upwards. 
- * As the resulting shell develops, a hole might be added to what was
+ * The holes are added in order of their envelopes (leftmost/lowest first). 
+ * As the resulting shell develops, a hole may be added to what was
  * originally another hole.
  * <p>
  * There is no attempt to optimize the quality of the join lines.
- * In particular, a hole which already touches at a vertex may be
- * joined at a different vertex.
+ * In particular, holes may be joined by lines longer than is optimal.
+ * However, holes which touch the shell or other holes are connected at the touch point.
  * <p>
  * The class requires the input polygon to have normal orientation
  * (shell CW and rings CCW).
  */
 public class PolygonHoleJoiner {
   
-  public static Polygon joinAsPolygon(Polygon inputPolygon) {
-    return inputPolygon.getFactory().createPolygon(join(inputPolygon));
+  /**
+   * Joins the shell and holes of a polygon 
+   * and returns the result as an (invalid) Polygon.
+   * 
+   * @param inputPolygon the polygon to join
+   * @return the result polygon
+   */
+  public static Polygon joinAsPolygon(Polygon polygon) {
+    return polygon.getFactory().createPolygon(join(polygon));
   }
   
-  public static Coordinate[] join(Polygon inputPolygon) {
-    PolygonHoleJoiner joiner = new PolygonHoleJoiner(inputPolygon);
+  /**
+   * Joins the shell and holes of a polygon 
+   * and returns the result as sequence of Coordinates.
+   * 
+   * @param inputPolygon the polygon to join
+   * @return the result coordinates
+   */
+  public static Coordinate[] join(Polygon polygon) {
+    PolygonHoleJoiner joiner = new PolygonHoleJoiner(polygon);
     return joiner.compute();
   }
   
@@ -64,6 +78,11 @@ public class PolygonHoleJoiner {
 
   private Polygon inputPolygon;
 
+  /**
+   * Creates a new hole joiner.
+   * 
+   * @param polygon the polygon to join
+   */
   public PolygonHoleJoiner(Polygon polygon) {
     this.inputPolygon = polygon;
   }
@@ -341,8 +360,8 @@ public class PolygonHoleJoiner {
    * Tests whether the interior of a line segment intersects the polygon boundary.
    * If so, the line is not a valid join line.
    * 
-   * @param p0 a vertex
-   * @param p1 a vertex
+   * @param p0 a segment vertex
+   * @param p1 the other segment vertex
    * @return true if the line segment interior intersects the polygon boundary
    */
   private boolean intersectsBoundary(Coordinate p0, Coordinate p1) {
@@ -357,8 +376,7 @@ public class PolygonHoleJoiner {
   }
   
   /**
-   * Detects if any segments have an interior intersection in at least one of the segments. 
-   *
+   * Detects if a segment has an interior intersection with another segment. 
    */
   private static class InteriorIntersectionDetector implements SegmentIntersector {
 
