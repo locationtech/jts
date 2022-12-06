@@ -100,4 +100,34 @@ public class InteriorPointTest extends GeometryTestCase
     assertTrue(ip.getCoordinate().equals2D(expectedPt));
   }
 
+  /**
+  public void testPointInteriorPoint() throws ParseException {
+    Geometry point = rdr.read("Point(10 10)");
+    assertTrue(point.getInteriorPoint().equals(rdr.read("POINT(10 10)")));
+  }
+
+  public void testMultiPointInteriorPoint() throws ParseException {
+    Geometry point = rdr.read("MULTIPOINT ((60 300), (200 200), (240 240), (200 300), (40 140), (80 240), (140 240), (100 160), (140 200), (60 200))");
+    assertTrue(point.getInteriorPoint().equals(rdr.read("POINT (140 240)")));
+  }
+
+  public void testRelate() throws ParseException {
+    Geometry point = rdr.read("POINT (10 10)");
+    Geometry line = rdr.read("LINESTRING (10 10, 10 10)");
+    assertTrue(point.equalsTopo(line));
+  }
+
+  public void testGeometryCollection() throws ParseException {
+    Geometry gc = rdr.read("GEOMETRYCOLLECTION (POLYGON ((10 10, 10 10, 10 10, 10 10)), \n" +
+            "  LINESTRING (20 20, 30 30))");
+    assertTrue(gc.getInteriorPoint().equals(rdr.read("POINT(20 20)")));
+  }
+
+
+  public void testZeroLengthLineStringInteriorPoint() throws ParseException {
+    Geometry line = rdr.read("LineString(10 10, 10 10)");
+    assertTrue(line.getInteriorPoint().equals(rdr.read("POINT(10 10)")));
+  }
+   **/
+
 }

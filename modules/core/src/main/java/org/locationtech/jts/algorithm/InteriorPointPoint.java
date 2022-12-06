@@ -14,7 +14,6 @@ package org.locationtech.jts.algorithm;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryCollection;
-import org.locationtech.jts.geom.Point;
 
 /**
  * Computes a point in the interior of an point geometry.
@@ -56,14 +55,14 @@ public class InteriorPointPoint {
    */
   private void add(Geometry geom)
   {
-    if (geom instanceof Point) {
-      add(geom.getCoordinate());
-    }
-    else if (geom instanceof GeometryCollection) {
+    if (geom instanceof GeometryCollection) {
       GeometryCollection gc = (GeometryCollection) geom;
       for (int i = 0; i < gc.getNumGeometries(); i++) {
         add(gc.getGeometryN(i));
       }
+    }
+    else if (geom.getDimension() == 0) {
+      add(geom.getCoordinate());
     }
   }
   private void add(Coordinate point)

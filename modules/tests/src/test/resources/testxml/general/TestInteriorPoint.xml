@@ -110,7 +110,9 @@
   <a>    GEOMETRYCOLLECTION (POLYGON ((10 10, 10 10, 10 10, 10 10)), 
   LINESTRING (20 20, 30 30))
 	</a>
-<test><op name="getInteriorPoint" arg1="A" >    POINT (10 10)   </op></test>
+    <!-- Change result from 10 10 to 20 20 as interior point should belong
+    to the component with highest dimension -->
+<test><op name="getInteriorPoint" arg1="A" >    POINT (20 20)   </op></test>
 </case>
 
 <case>

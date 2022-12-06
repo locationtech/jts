@@ -55,9 +55,15 @@ public class MultiLineString
     super(lineStrings, factory);
   }
 
+
   public int getDimension() {
-    return 1;
+    if (isEmpty())
+      return 1;
+    else
+      // super will get the heighest dimension of components
+      return super.getDimension();
   }
+
 
   public int getBoundaryDimension() {
     if (isClosed()) {
