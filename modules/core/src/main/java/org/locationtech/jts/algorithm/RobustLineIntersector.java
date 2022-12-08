@@ -214,11 +214,11 @@ public class RobustLineIntersector
     if (! Double.isNaN(z)) {
       pCopy.setZ( z );
     }
-    return pCopy;    
+    return pCopy;
   }
   
   private static Coordinate copy(Coordinate p) {
-    return new Coordinate(p);    
+    return p.copy();
   }
   
   /**

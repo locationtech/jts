@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Martin Davis
+ * Copyright (c) 2022 Martin Davis
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -11,18 +11,18 @@
  */
 package org.locationtech.jts.operation.overlayarea;
 
-import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Polygon;
 
 import junit.textui.TestRunner;
 import test.jts.GeometryTestCase;
 
-public class OverlayAreaTest extends GeometryTestCase {
+public class SimpleOverlayAreaTest extends GeometryTestCase {
 
   public static void main(String args[]) {
-    TestRunner.run(OverlayAreaTest.class);
+    TestRunner.run(SimpleOverlayAreaTest.class);
   }
   
-  public OverlayAreaTest(String name) {
+  public SimpleOverlayAreaTest(String name) {
     super(name);
   }
 
@@ -31,14 +31,14 @@ public class OverlayAreaTest extends GeometryTestCase {
         "POLYGON ((10 90, 40 90, 40 60, 10 60, 10 90))",
         "POLYGON ((90 10, 50 10, 50 50, 90 50, 90 10))");
   }
-  
+
   //TODO: fix this bug
   public void xtestTouching() {
     checkIntersectionArea(
         "POLYGON ((10 90, 50 90, 50 50, 10 50, 10 90))",
         "POLYGON ((90 10, 50 10, 50 50, 90 50, 90 10))");
   }
-  
+
   public void testRectangleAContainsB() {
     checkIntersectionArea(
         "POLYGON ((100 300, 300 300, 300 100, 100 100, 100 300))",
@@ -69,30 +69,11 @@ public class OverlayAreaTest extends GeometryTestCase {
         "POLYGON ((400 350, 150 250, 350 200, 200 150, 350 100, 180 50, 400 50, 400 350))");
   }
 
-  public void testAOverlapBWithHole() {
-    checkIntersectionArea(
-        "POLYGON ((100 300, 305 299, 150 200, 300 150, 150 100, 300 50, 100 50, 100 300))",
-        "POLYGON ((185 206, 350 206, 350 100, 185 100, 185 206), (230 190, 310 190, 310 120, 230 120, 230 190))");
-  }
-
-  public void testAOverlapBMulti() {
-    checkIntersectionArea(
-        "POLYGON ((50 250, 250 250, 250 50, 50 50, 50 250))",
-        "MULTIPOLYGON (((100 200, 100 100, 0 100, 0 200, 100 200)), ((200 200, 300 200, 300 100, 200 100, 200 200)))");
-  }
-
-  public void testAOverlapBMultiHole() {
-    checkIntersectionArea(
-        "POLYGON ((60 200, 250 280, 111 135, 320 120, 50 40, 30 120, 60 200))",
-        "MULTIPOLYGON (((55 266, 150 150, 170 290, 55 266)), ((100 0, 70 130, 260 160, 291 45, 100 0), (150 40, 125 98, 220 110, 150 40)))");
-  }
-
   private void checkIntersectionArea(String wktA, String wktB) {
-    Geometry a = read(wktA);
-    Geometry b = read(wktB);
+    Polygon a = (Polygon) read(wktA);
+    Polygon b = (Polygon) read(wktB);
     
-    OverlayArea ova = new OverlayArea(a);
-    double ovIntArea = ova.intersectionArea(b);
+    double ovIntArea = SimpleOverlayArea.intersectionArea(a, b);
     
     double intAreaFull = a.intersection(b).getArea();
     

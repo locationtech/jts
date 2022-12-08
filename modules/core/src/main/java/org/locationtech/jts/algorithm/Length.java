@@ -49,7 +49,7 @@ public class Length {
       double dx = x1 - x0;
       double dy = y1 - y0;
   
-      len += Math.sqrt(dx * dx + dy * dy);
+      len += Math.hypot(dx, dy);
   
       x0 = x1;
       y0 = y1;

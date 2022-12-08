@@ -31,7 +31,7 @@ public class SegmentNode
 
   public SegmentNode(NodedSegmentString segString, Coordinate coord, int segmentIndex, int segmentOctant) {
     this.segString = segString;
-    this.coord = new Coordinate(coord);
+    this.coord = coord.copy();
     this.segmentIndex = segmentIndex;
     this.segmentOctant = segmentOctant;
     isInterior = ! coord.equals2D(segString.getCoordinate(segmentIndex));
