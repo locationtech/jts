@@ -27,6 +27,7 @@ Distributions for older JTS versions can be obtained at the
 * Add `CoverageUnion` (#900)
 * Add `CoverageSimplifier` (#911)
 * Add `OverlayNG` support for simple GeometryCollection inputs (#915)
+* Add `Geometry.hasDimension(int dim)` method {#944}
 
 ### Functionality Improvements
 * Improve `TopologyPreservingSimplifier` to prevent edge-disjoint line collapse (#925)
@@ -39,6 +40,7 @@ Distributions for older JTS versions can be obtained at the
 * Ensure GeometryFixer does not change coordinate dimension (#922)
 * Improve ConvexHull radial sort robustness (#927)
 * Improve robustness of Delaunay Triangulation frame size heuristic (#931)
+* Fix `PreparedLineString.intersects` to handle mixed GCs correctly (#944)
 
 ### Performance Improvements
 
