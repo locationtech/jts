@@ -556,17 +556,22 @@ public abstract class Geometry
    * For example, a 0-dimensional geometry (e.g. a Point)
    * may have a coordinate dimension of 3 (X,Y,Z).
    *
-   *@return the topological dimension of this geometry.
+   * @return the topological dimension of this geometry.
+   *
+   * @see #hasDimension(int) 
    */
   public abstract int getDimension();
 
   /**
-   * Tests whether any element of this geometry
+   * Tests whether an atomic geometry or any element of a collection
    * has the specified dimension.
-   * In particular, this can be used with mixed-dimension {@link GeometryCollection}s.
+   * In particular, this can be used with mixed-dimension {@link GeometryCollection}s
+   * to test if they contain an element of the specified dimension.
    * 
    * @param dim the dimension to test
    * @return true if the geometry has or contains an element with the dimension
+   * 
+   * @see #getDimension()
    */
   public boolean hasDimension(int dim) {
     return dim == getDimension();
