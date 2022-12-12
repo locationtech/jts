@@ -100,6 +100,14 @@ public class GeometryCollection extends Geometry {
     return dimension;
   }
 
+  public boolean hasDimension(int dim) {
+    for (int i = 0; i < geometries.length; i++) {
+      if (geometries[i].hasDimension(dim))
+        return true;
+    }
+    return false;
+  }
+  
   public int getBoundaryDimension() {
     int dimension = Dimension.FALSE;
     for (int i = 0; i < geometries.length; i++) {

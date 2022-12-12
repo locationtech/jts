@@ -68,6 +68,10 @@ public class MultiPolygon
     return 2;
   }
 
+  public boolean hasDimension(int dim) {
+    return dim == 2;
+  }
+  
   public int getBoundaryDimension() {
     return 1;
   }

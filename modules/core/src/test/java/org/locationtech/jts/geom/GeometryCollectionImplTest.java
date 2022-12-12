@@ -19,6 +19,7 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
+import test.jts.GeometryTestCase;
 
 
 /**
@@ -26,7 +27,7 @@ import junit.textui.TestRunner;
  *
  * @version 1.7
  */
-public class GeometryCollectionImplTest extends TestCase {
+public class GeometryCollectionImplTest extends GeometryTestCase {
 
   PrecisionModel precisionModel = new PrecisionModel(1000);
   GeometryFactory geometryFactory = new GeometryFactory(precisionModel, 0);
@@ -43,6 +44,29 @@ public class GeometryCollectionImplTest extends TestCase {
   public void testGetDimension() throws Exception {
     GeometryCollection g = (GeometryCollection) reader.read("GEOMETRYCOLLECTION (POINT (10 10), POINT (30 30), LINESTRING (15 15, 20 20))");
     assertEquals(1, g.getDimension());
+  }
+  
+  public void testHasDimension() {
+    Geometry mixedGC = read("GEOMETRYCOLLECTION (POINT (10 10), LINESTRING (15 15, 20 20), POLYGON ((10 20, 20 20, 20 10, 10 10, 10 20)))");
+    assertTrue(mixedGC.hasDimension(0));
+    assertTrue(mixedGC.hasDimension(1));
+    assertTrue(mixedGC.hasDimension(2));
+    
+    Geometry mA = read("MULTIPOLYGON (((10 20, 20 20, 20 10, 10 10, 10 20)), ((30 30, 30 20, 20 20, 20 30, 30 30)))");
+    assertFalse(mA.hasDimension(0));
+    assertFalse(mA.hasDimension(1));
+    assertTrue(mA.hasDimension(2));
+    
+    Geometry mL = read("MULTILINESTRING ((5 5, 10 5), (15 5, 20 5))");
+    assertFalse(mL.hasDimension(0));
+    assertTrue(mL.hasDimension(1));
+    assertFalse(mL.hasDimension(2));
+    
+    Geometry mP = read("MULTIPOINT ((10 10), (20 20))");
+    assertTrue(mP.hasDimension(0));
+    assertFalse(mP.hasDimension(1));
+    assertFalse(mP.hasDimension(2));
+    
   }
 
   public void testGetCoordinates() throws Exception {

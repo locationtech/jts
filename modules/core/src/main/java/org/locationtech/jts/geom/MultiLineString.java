@@ -59,6 +59,10 @@ public class MultiLineString
     return 1;
   }
 
+  public boolean hasDimension(int dim) {
+    return dim == 1;
+  }
+  
   public int getBoundaryDimension() {
     if (isClosed()) {
       return Dimension.FALSE;
