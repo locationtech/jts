@@ -737,7 +737,7 @@ public class QuadEdgeSubdivision {
 		private List triList = new ArrayList();
 
 		public void visit(QuadEdge[] triEdges) {
-			triList.add(triEdges);
+			triList.add(new QuadEdge[]{triEdges[0], triEdges[1], triEdges[2]});
 		}
 
 		public List getTriangleEdges() {
