@@ -54,6 +54,10 @@ public class MultiPoint
     return 0;
   }
 
+  public boolean hasDimension(int dim) {
+    return dim == 0;
+  }
+  
   public int getBoundaryDimension() {
     return Dimension.FALSE;
   }

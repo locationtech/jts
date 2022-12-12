@@ -561,6 +561,18 @@ public abstract class Geometry
   public abstract int getDimension();
 
   /**
+   * Tests whether any element of this geometry
+   * has the specified dimension.
+   * In particular, this can be used with mixed-dimension {@link GeometryCollection}s.
+   * 
+   * @param dim the dimension to test
+   * @return true if the geometry has or contains an element with the dimension
+   */
+  public boolean hasDimension(int dim) {
+    return dim == getDimension();
+  }
+  
+  /**
    * Returns the boundary, or an empty geometry of appropriate dimension
    * if this <code>Geometry</code>  is empty.
    * (In the case of zero-dimensional geometries, '

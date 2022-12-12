@@ -78,10 +78,6 @@ class PreparedLineStringIntersects
   		if (segsIntersect) 
         return true;
     }
-		/**
-		 * For L/L case we are done
-		 */
-		if (geom.getDimension() == 1) return false;
 		
 		/**
 		 * For L/A case, need to check for proper inclusion of the target in the test
@@ -92,7 +88,7 @@ class PreparedLineStringIntersects
 		/** 
 		 * For L/P case, need to check if any points lie on line(s)
 		 */
-		if (geom.getDimension() == 0)
+		if (geom.hasDimension(0))
 			return isAnyTestPointInTarget(geom);
 		
 		return false;
