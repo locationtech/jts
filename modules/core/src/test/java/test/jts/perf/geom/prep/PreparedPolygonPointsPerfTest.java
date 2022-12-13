@@ -12,7 +12,6 @@
 package test.jts.perf.geom.prep;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.locationtech.jts.algorithm.locate.IndexedPointInAreaLocator;
@@ -20,7 +19,6 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.geom.prep.PreparedGeometry;
@@ -28,16 +26,15 @@ import org.locationtech.jts.geom.prep.PreparedGeometryFactory;
 import org.locationtech.jts.geom.util.SineStarFactory;
 import org.locationtech.jts.io.WKTReader;
 import org.locationtech.jts.io.WKTWriter;
-import org.locationtech.jts.util.GeometricShapeFactory;
 import org.locationtech.jts.util.Stopwatch;
 
 import test.jts.perf.PerformanceTestCase;
 import test.jts.perf.PerformanceTestRunner;
 
 
-public class PreparedPolygonCoversPerfTest extends PerformanceTestCase
+public class PreparedPolygonPointsPerfTest extends PerformanceTestCase
 {
-  static final int NUM_ITER = 10_000;
+  static final int NUM_ITER = 1;
   
   static final int NUM_PTS = 2000;
   
@@ -49,10 +46,8 @@ public class PreparedPolygonCoversPerfTest extends PerformanceTestCase
   Stopwatch sw = new Stopwatch();
 
   public static void main(String[] args) {
-    PerformanceTestRunner.run(PreparedPolygonCoversPerfTest.class);
+    PerformanceTestRunner.run(PreparedPolygonPointsPerfTest.class);
   }
-
-  boolean testFailed = false;
 
   private PreparedGeometry prepGeom;
 
@@ -60,24 +55,26 @@ public class PreparedPolygonCoversPerfTest extends PerformanceTestCase
 
   private Geometry sinePoly;
 
-  public PreparedPolygonCoversPerfTest(String name) {
+  private IndexedPointInAreaLocator ipa;
+
+  public PreparedPolygonPointsPerfTest(String name) {
     super(name);
     setRunSize(new int[] { 1000});
-    setRunIterations(1);
+    setRunIterations(NUM_ITER);
   }
 
   public void startRun(int nPts)
   {
-    System.out.println("Running with size " + nPts);
-    System.out.println("Iterations per run = " + NUM_ITER);
-
 //  	Geometry poly = createCircle(new Coordinate(0, 0), 100, nPts);
   	sinePoly = createSineStar(new Coordinate(0, 0), 100, nPts);
 //  	System.out.println(poly);
 //  	Geometry target = sinePoly.getBoundary();
     prepGeom = (new PreparedGeometryFactory()).create(sinePoly);
+    ipa = new IndexedPointInAreaLocator(sinePoly);
     
     testPoints = createPoints(sinePoly.getEnvelopeInternal(), NUM_PTS);
+    
+    System.out.println("\n-------  Running with polygon size = " + nPts);
   }
 
   Geometry createSineStar(Coordinate origin, double size, int nPts) {
@@ -111,22 +108,48 @@ public class PreparedPolygonCoversPerfTest extends PerformanceTestCase
   	return geoms;
   }
   
-  public void runPreparedPolygon() {
-    for (int i = 0; i < NUM_ITER; i++) {
-      prepGeom = (new PreparedGeometryFactory()).create(sinePoly);
-      for (Point pt : testPoints) {
-        prepGeom.covers(pt);
-        //prepGeom.contains(pt);
-      }
+  public void runCoversNonPrep() {
+    for (Point pt : testPoints) {
+      sinePoly.covers(pt);
     }
   }
+  
+  public void runCoversPrepared() {
+    for (Point pt : testPoints) {
+      prepGeom.covers(pt);
+    }
+  }
+  
+  public void runCoversPrepNoCache() {
+    for (Point pt : testPoints) {
+      PreparedGeometry pg = (new PreparedGeometryFactory()).create(sinePoly);
+      pg.covers(pt);
+    }
+  }
+  
   public void runIndexPointInAreaLocator() {
-    for (int i = 0; i < NUM_ITER; i++) {
-      IndexedPointInAreaLocator ipa = new IndexedPointInAreaLocator(sinePoly);
-      for (Point pt : testPoints) {
-        ipa.locate(pt.getCoordinate());
-      }
+    for (Point pt : testPoints) {
+      ipa.locate(pt.getCoordinate());
     }
   }
     
+  public void runIntersectsNonPrep() {
+    for (Point pt : testPoints) {
+      sinePoly.intersects(pt);
+    }
+  }
+  
+  public void runIntersectsPrepared() {
+    for (Point pt : testPoints) {
+      prepGeom.intersects(pt);
+    }
+  }
+  
+  public void runIntersectsPrepNoCache() {
+    for (Point pt : testPoints) {
+      PreparedGeometry pg = (new PreparedGeometryFactory()).create(sinePoly);
+      pg.intersects(pt);
+    }
+  }
+
 }
