@@ -28,8 +28,15 @@ public class CoverageUnionTest extends GeometryTestCase
   
   public void testChessboard4() {
     checkUnion(
-        "MULTIPOLYGON (((1 9, 5 9, 5 5, 1 5, 1 9)), ((5 9, 9 9, 9 5, 5 5, 5 9)), ((1 5, 5 5, 5 1, 1 1, 1 5)), ((5 5, 9 5, 9 1, 5 1, 5 5)))",
+        "GEOMETRYCOLLECTION (POLYGON ((1 9, 5 9, 5 5, 1 5, 1 9)), POLYGON ((5 9, 9 9, 9 5, 5 5, 5 9)), POLYGON ((1 5, 5 5, 5 1, 1 1, 1 5)), POLYGON ((5 5, 9 5, 9 1, 5 1, 5 5)))",
         "POLYGON ((5 9, 9 9, 9 5, 9 1, 5 1, 1 1, 1 5, 1 9, 5 9))"
+            );
+  }
+
+  public void testEmpty() {
+    checkUnion(
+        "GEOMETRYCOLLECTION EMPTY",
+        null
             );
   }
 
@@ -37,6 +44,10 @@ public class CoverageUnionTest extends GeometryTestCase
     Geometry covGeom = read(wktCoverage);
     Geometry[] coverage = toArray(covGeom);
     Geometry actual = CoverageUnion.union(coverage);
+    if (wktExpected == null) {
+      assertTrue(actual == null);
+      return;
+    }
     Geometry expected = read(wktExpected);
     checkEqual(expected, actual);
   }

@@ -31,8 +31,10 @@ public class CoverageUnion {
    * @return the union of the coverage polygons
    */
   public static Geometry union(Geometry[] coverage) {
+    // union of an empty coverage is null, since no factory is available
     if (coverage.length == 0)
       return null;
+    
     GeometryFactory geomFact = coverage[0].getFactory();
     GeometryCollection geoms = geomFact.createGeometryCollection(coverage);
     return org.locationtech.jts.operation.overlayng.CoverageUnion.union(geoms);
