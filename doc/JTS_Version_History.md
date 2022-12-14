@@ -41,6 +41,7 @@ Distributions for older JTS versions can be obtained at the
 * Improve ConvexHull radial sort robustness (#927)
 * Improve robustness of Delaunay Triangulation frame size heuristic (#931)
 * Fix `PreparedLineString.intersects` to handle mixed GCs correctly (#944)
+* Fix `QuadEdgeSubdivision.TriangleEdgesListVisitor` (#945)
 
 ### Performance Improvements
 
