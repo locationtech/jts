@@ -27,6 +27,7 @@ import org.locationtech.jts.noding.SegmentStringUtil;
 
 /**
  * Adds node vertices to a polygon where holes touch the shell or each other.
+ * The structure of the polygon is preserved.
  * This does not fix invalid polygon topology. Invalid input 
  * does not trigger an error, but remains invalid after noding.
  */
@@ -65,8 +66,8 @@ class PolygonNoder {
   private List<NodedSegmentString> addNodes(Polygon polygon) {
     @SuppressWarnings("unchecked")
     List<NodedSegmentString> segStrings = SegmentStringUtil.extractNodedSegmentStrings(polygon);
-    SegmentIntersector intAdder = new VertexIntersectionAdder();
-    MCIndexNoder noder = new MCIndexNoder(intAdder);
+    SegmentIntersector nodeAdder = new NodeAdder();
+    MCIndexNoder noder = new MCIndexNoder(nodeAdder);
     noder.computeNodes(segStrings);
     return segStrings;
   }
@@ -79,7 +80,7 @@ class PolygonNoder {
    * @author mdavis
    *
    */
-  private static class VertexIntersectionAdder implements SegmentIntersector {
+  private static class NodeAdder implements SegmentIntersector {
 
     private LineIntersector li = new RobustLineIntersector();
     
