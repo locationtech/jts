@@ -95,6 +95,7 @@ public class PolygonHoleJoiner {
    */
   public Coordinate[] compute() {
     Polygon polygon = node(inputPolygon);
+    //Polygon polygon = PolygonNoder.node(inputPolygon);
     //--- copy the input polygon shell coords
     shellCoords = ringCoordinates(polygon.getExteriorRing());
     if (polygon.getNumInteriorRing() != 0) {
@@ -413,7 +414,7 @@ public class PolygonHoleJoiner {
   
   private static SegmentSetMutualIntersector createPolygonIntersector(Polygon polygon) {
     @SuppressWarnings("unchecked")
-    List<SegmentString> polySegStrings = SegmentStringUtil.extractSegmentStrings(polygon);
+    List<SegmentString> polySegStrings = SegmentStringUtil.extractBasicSegmentStrings(polygon);
     return new MCIndexSegmentSetMutualIntersector(polySegStrings);
   }
   
