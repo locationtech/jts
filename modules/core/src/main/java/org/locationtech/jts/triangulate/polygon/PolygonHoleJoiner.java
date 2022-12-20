@@ -94,13 +94,12 @@ public class PolygonHoleJoiner {
    * @return the points in the joined ring
    */
   public Coordinate[] compute() {
-    Polygon polygon = node(inputPolygon);
-    //Polygon polygon = PolygonNoder.node(inputPolygon);
+    Polygon polygonNoded = node(inputPolygon);
+    //-- ensure rings have required orientation
+    Polygon polygon = (Polygon) polygonNoded.norm();
     //--- copy the input polygon shell coords
     shellCoords = ringCoordinates(polygon.getExteriorRing());
-    if (polygon.getNumInteriorRing() != 0) {
-      joinHoles(polygon);
-    }
+    joinHoles(polygon);
     return shellCoords.toArray(new Coordinate[0]);
   }
 
@@ -108,11 +107,11 @@ public class PolygonHoleJoiner {
     if (polygon.getNumInteriorRing() == 0) {
       return polygon;
     }
-    //-- force polygon to be fully noded
-    //TODO: do this faster!
-    return (Polygon) polygon.union(polygon);
+    //-- ensure polygon is fully noded
+    return PolygonNoder.node(inputPolygon);
+    //return (Polygon) polygon.union(polygon);
   }
-
+  
   private static List<Coordinate> ringCoordinates(LinearRing ring) {
     Coordinate[] coords = ring.getCoordinates();
     List<Coordinate> coordList = new ArrayList<Coordinate>();
@@ -123,6 +122,9 @@ public class PolygonHoleJoiner {
   }
   
   private void joinHoles(Polygon polygon) {
+    if (polygon.getNumInteriorRing() == 0) {
+      return;
+    }
     polygonIntersector = createPolygonIntersector(polygon);
     
     shellCoordsSorted = new TreeSet<Coordinate>();
@@ -144,6 +146,13 @@ public class PolygonHoleJoiner {
     joinNonTouchingHole(holeCoords);
   }
   
+  /**
+   * Joins a hole to the shell only if the hole touches the shell.
+   * Otherwise, reports the hole is non-touching.
+   * 
+   * @param holeCoords the hole to join
+   * @return true if the hole was touching, false if not
+   */
   private boolean joinTouchingHole(Coordinate[] holeCoords) {
     //TODO: find fast way to identify touching holes (perhaps during initial noding?)
     int holeTouchIndex = findHoleTouchIndex(holeCoords);
@@ -217,7 +226,7 @@ public class PolygonHoleJoiner {
   }
 
   /**
-   * Gets the shell vertex index that the hole should be joined after.
+   * Gets the shell vertex index that the hole is joined after.
    * A shell vertex can occur multiple times, so it is necessary
    * to choose the one which forms a corner having the 
    * join line in the shell interior.

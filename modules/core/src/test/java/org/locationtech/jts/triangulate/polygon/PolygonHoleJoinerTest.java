@@ -53,6 +53,9 @@ public class PolygonHoleJoinerTest extends GeometryTestCase {
         );
   }
   
+  /**
+   * Hole ring is CW, to test ring orientation handling.
+   */
   public void testHoleTouchesEdgeWithCloserVertex() {
     checkJoin(
   "POLYGON ((1 9, 9 9, 5 6, 9 6, 19 1, 9 1, 1 9), (8 5, 9 3, 5 5, 8 5))",
