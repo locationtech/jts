@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Martin Davis.
+ * Copyright (c) 2022 Martin Davis.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -25,8 +25,20 @@ import org.locationtech.jts.noding.SegmentIntersector;
 import org.locationtech.jts.noding.SegmentString;
 import org.locationtech.jts.noding.SegmentStringUtil;
 
+/**
+ * Adds node vertices to a polygon where holes touch the shell or each other.
+ * This does not fix invalid polygon topology. Invalid input 
+ * does not trigger an error, but remains invalid after noding.
+ */
 class PolygonNoder {
 
+  /**
+   * Adds node vertices to a polygon where holes touch the shell or each other.
+   * The input is always copied, even if no nodes are added.
+   * 
+   * @param polygon the polygon to node
+   * @return a fully-noded polygon
+   */
   public static Polygon node(Polygon polygon) {
     PolygonNoder noder = new PolygonNoder(polygon);
     return noder.node();
@@ -35,7 +47,7 @@ class PolygonNoder {
   private Polygon inputPolygon;
   private GeometryFactory geomFactory;
 
-  public PolygonNoder(Polygon polygon) {
+  private PolygonNoder(Polygon polygon) {
     inputPolygon = polygon;
     geomFactory = inputPolygon.getFactory();
   }
@@ -59,6 +71,14 @@ class PolygonNoder {
     return segStrings;
   }
 
+  /**
+   * A {@link SegmentIntersector} that added node vertices
+   * to {@link NodedSegmentStrings} where a segment touches another
+   * segment in its interior.
+   * 
+   * @author mdavis
+   *
+   */
   private static class VertexIntersectionAdder implements SegmentIntersector {
 
     private LineIntersector li = new RobustLineIntersector();
