@@ -86,6 +86,10 @@ class PolygonNoder {
     
     @Override
     public void processIntersections(SegmentString ss0, int segIndex0, SegmentString ss1, int segIndex1) {
+      //-- input is assumed valid, so rings do not self-intersect
+      if (ss0 == ss1)
+        return;
+      
       Coordinate p00 = ss0.getCoordinate(segIndex0);
       Coordinate p01 = ss0.getCoordinate(segIndex0 + 1);
       Coordinate p10 = ss1.getCoordinate(segIndex1);

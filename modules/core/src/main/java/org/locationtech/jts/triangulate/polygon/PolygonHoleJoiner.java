@@ -157,7 +157,7 @@ public class PolygonHoleJoiner {
     //TODO: find fast way to identify touching holes (perhaps during initial noding?)
     int holeTouchIndex = findHoleTouchIndex(holeCoords);
     
-   //-- hole does not touch
+    //-- hole does not touch
     if (holeTouchIndex < 0)
       return false;
     
@@ -173,6 +173,15 @@ public class PolygonHoleJoiner {
     return true;
   }
 
+  /**
+   * Finds the vertex index of a hole where it touches the 
+   * current shell (if it does).
+   * If a hole does touch, it must touch at a single vertex
+   * (otherwise, the polygon is invalid).
+   * 
+   * @param holeCoords the hole
+   * @return the index of the touching vertex, or -1 if no touch
+   */
   private int findHoleTouchIndex(Coordinate[] holeCoords) {
     for (int i = 0; i < holeCoords.length; i++) {
       if (shellCoordsSorted.contains(holeCoords[i])) 
