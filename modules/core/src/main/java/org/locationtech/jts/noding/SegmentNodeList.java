@@ -39,6 +39,15 @@ public class SegmentNodeList
     this.edge = edge;
   }
 
+  /**
+   * Gets the number of nodes in the list
+   * 
+   * @return the size of the list
+   */
+  public int size() {
+    return nodeMap.size();
+  }
+  
   public NodedSegmentString getEdge() { return edge; }
 
   /**
