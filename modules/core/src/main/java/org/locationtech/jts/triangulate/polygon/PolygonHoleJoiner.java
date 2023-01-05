@@ -45,8 +45,9 @@ import org.locationtech.jts.noding.SegmentString;
  * In particular, holes may be joined by lines longer than is optimal.
  * However, holes which touch the shell or other holes are joined at the touch point.
  * <p>
- * The class requires the input polygon to have normal orientation
- * (shell CW and rings CCW).
+ * The class does not require the input polygon to have normal
+ * orientation (shell CW and rings CCW).
+ * The output ring is always CW.
  */
 public class PolygonHoleJoiner {
   
@@ -74,7 +75,7 @@ public class PolygonHoleJoiner {
   }
   
   private Polygon inputPolygon;
-  //-- normalized, noded, sorted polygon rings
+  //-- normalized, sorted and noded polygon rings
   private Coordinate[] shellRing;
   private Coordinate[][] holeRings;
   
@@ -85,8 +86,6 @@ public class PolygonHoleJoiner {
   // a sorted and searchable version of the joinedRing
   private TreeSet<Coordinate> joinedPts;
   private SegmentSetMutualIntersector boundaryIntersector;
-
-
 
   /**
    * Creates a new hole joiner.
@@ -123,7 +122,8 @@ public class PolygonHoleJoiner {
 
   private static Coordinate[] extractOrientedRing(LinearRing ring, boolean isCW) {
     Coordinate[] pts = ring.getCoordinates();
-    if (isCW != Orientation.isCCW(pts))
+    boolean isRingCW = ! Orientation.isCCW(pts);
+    if (isCW == isRingCW)
       return pts;
       //-- reverse a copy of the points
     Coordinate[] ptsRev = pts.clone();

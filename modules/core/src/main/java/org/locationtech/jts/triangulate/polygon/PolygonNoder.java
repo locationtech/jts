@@ -26,8 +26,11 @@ import org.locationtech.jts.noding.SegmentString;
  * Adds node vertices to the rings of a polygon 
  * where holes touch the shell or each other.
  * The structure of the polygon is preserved.
- * This does not fix invalid polygon topology. Invalid input 
- * does not trigger an error, but remains invalid after noding.
+ * <p>
+ * This does not fix invalid polygon topology
+ * (such as self-touching or crossing rings). 
+ * Invalid input remains invalid after noding,
+ * and does not trigger an error.
  */
 class PolygonNoder {
 

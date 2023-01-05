@@ -38,11 +38,11 @@ public class PolygonTriangulatorTest extends GeometryTestCase {
   
   public void testHoleCW() {
     checkTri("POLYGON ((10 90, 90 90, 90 20, 10 10, 10 90), (30 70, 80 70, 50 30, 30 70))"
-        ,"GEOMETRYCOLLECTION (POLYGON ((10 10, 10 90, 30 70, 10 10)), POLYGON ((80 70, 30 70, 10 90, 80 70)), POLYGON ((10 10, 30 70, 50 30, 10 10)), POLYGON ((80 70, 10 90, 90 90, 80 70)), POLYGON ((90 20, 10 10, 50 30, 90 20)), POLYGON ((80 70, 90 90, 90 20, 80 70)), POLYGON ((90 20, 50 30, 80 70, 90 20)))");
+        ,"GEOMETRYCOLLECTION (POLYGON ((10 10, 10 90, 50 30, 10 10)), POLYGON ((10 10, 50 30, 90 20, 10 10)), POLYGON ((10 90, 30 70, 50 30, 10 90)), POLYGON ((10 90, 80 70, 30 70, 10 90)), POLYGON ((10 90, 90 90, 80 70, 10 90)), POLYGON ((50 30, 80 70, 90 20, 50 30)), POLYGON ((80 70, 90 90, 90 20, 80 70)))");
   }
   
   public void testTouchingHoles() {
-    checkTri("POLYGON ((10 90, 90 90, 90 10, 10 10, 10 90), (20 80, 50 70, 30 30, 20 80), (70 20, 50 70, 80 80, 70 20))"
+    checkTri("POLYGON ((10 10, 10 90, 90 90, 90 10, 10 10), (20 80, 30 30, 50 70, 20 80), (50 70, 70 20, 80 80, 50 70))"
         ,"GEOMETRYCOLLECTION (POLYGON ((10 10, 10 90, 20 80, 10 10)), POLYGON ((30 30, 50 70, 70 20, 30 30)), POLYGON ((80 80, 50 70, 20 80, 80 80)), POLYGON ((20 80, 10 90, 90 90, 20 80)), POLYGON ((10 10, 20 80, 30 30, 10 10)), POLYGON ((80 80, 20 80, 90 90, 80 80)), POLYGON ((90 10, 10 10, 30 30, 90 10)), POLYGON ((70 20, 80 80, 90 90, 70 20)), POLYGON ((90 10, 30 30, 70 20, 90 10)), POLYGON ((70 20, 90 90, 90 10, 70 20)))");
   }
   
@@ -57,7 +57,7 @@ public class PolygonTriangulatorTest extends GeometryTestCase {
   }
   
   public void testMultiPolygon() {
-    checkTri("MULTIPOLYGON (((10 10, 20 50, 50 50, 40 20, 10 10)), ((20 60, 60 60, 90 20, 90 90, 20 60)), ((10 90, 10 70, 40 70, 50 90, 10 90)))"
+    checkTri("MULTIPOLYGON (((10 10, 20 50, 50 50, 40 20, 10 10)), ((10 70, 10 90, 50 90, 40 70, 10 70)), ((20 60, 90 90, 90 20, 60 60, 20 60)))"
         ,"GEOMETRYCOLLECTION (POLYGON ((10 10, 20 50, 50 50, 10 10)), POLYGON ((50 50, 40 20, 10 10, 50 50)), POLYGON ((90 90, 90 20, 60 60, 90 90)), POLYGON ((60 60, 20 60, 90 90, 60 60)), POLYGON ((10 70, 10 90, 50 90, 10 70)), POLYGON ((50 90, 40 70, 10 70, 50 90)))");
   }
   
