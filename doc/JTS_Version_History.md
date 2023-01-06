@@ -42,6 +42,8 @@ Distributions for older JTS versions can be obtained at the
 * Improve robustness of Delaunay Triangulation frame size heuristic (#931)
 * Fix `PreparedLineString.intersects` to handle mixed GCs correctly (#944)
 * Fix `QuadEdgeSubdivision.TriangleEdgesListVisitor` (#945)
+* Fix `PolygonHoleJoiner` to handle all valid inputs 
+  (allows `PolygonTriangulator`, `ConstrainedDelaunayTriangulator`, and `ConcaveHullOfPolygons` to work correctly) (#946)
 
 ### Performance Improvements
 
