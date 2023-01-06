@@ -127,6 +127,14 @@ public class NodedSegmentString
   }
 
   /**
+   * Tests whether any nodes have been added.
+   * 
+   * @return true if the segment string has nodes
+   */
+  public boolean hasNodes() {
+    return nodeList.size() > 0;
+  }
+  /**
    * Gets the octant of the segment starting at vertex {@code index}.
    *
    * @param index the index of the vertex starting the segment.  Must not be

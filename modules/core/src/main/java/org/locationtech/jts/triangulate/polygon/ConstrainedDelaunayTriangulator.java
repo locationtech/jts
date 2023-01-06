@@ -97,13 +97,7 @@ public class ConstrainedDelaunayTriangulator {
    * @return list of Tris forming the triangulation
    */
   List<Tri> triangulatePolygon(Polygon poly) {
-    /**
-     * Normalize to ensure that shell and holes have canonical orientation.
-     * 
-     * TODO: perhaps better to just correct orientation of rings?
-     */
-    Polygon polyNorm = (Polygon) poly.norm();
-    Coordinate[] polyShell = PolygonHoleJoiner.join(polyNorm);
+    Coordinate[] polyShell = PolygonHoleJoiner.join(poly);
     List<Tri> triList = PolygonEarClipper.triangulate(polyShell);
     
     //long start = System.currentTimeMillis();
