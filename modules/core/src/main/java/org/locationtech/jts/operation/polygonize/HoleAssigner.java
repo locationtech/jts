@@ -11,7 +11,6 @@
  */
 package org.locationtech.jts.operation.polygonize;
 
-import java.util.Iterator;
 import java.util.List;
 
 import org.locationtech.jts.geom.Envelope;
@@ -35,7 +34,7 @@ public class HoleAssigner
    * @param holes list of hole rings to assign
    * @param shells list of shell rings
    */
-  public static void assignHolesToShells(List holes, List shells) {
+  public static void assignHolesToShells(List<EdgeRing> holes, List<EdgeRing> shells) {
     HoleAssigner assigner = new HoleAssigner(shells);
     assigner.assignHolesToShells(holes);
   }
@@ -67,8 +66,7 @@ public class HoleAssigner
    */
   public void assignHolesToShells(List<EdgeRing> holeList)
   {
-    for (Iterator i = holeList.iterator(); i.hasNext(); ) {
-      EdgeRing holeER = (EdgeRing) i.next();
+    for (EdgeRing holeER : holeList) {
       assignHoleToShell(holeER);
     }
   }
@@ -81,6 +79,7 @@ public class HoleAssigner
     }
   }
   
+  @SuppressWarnings("unchecked")
   private List<EdgeRing> queryOverlappingShells(Envelope ringEnv) {
     return (List<EdgeRing>) shellIndex.query(ringEnv);
   }
