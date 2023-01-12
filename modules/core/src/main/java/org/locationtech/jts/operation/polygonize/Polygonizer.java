@@ -241,9 +241,10 @@ public class Polygonizer
     //Debug.printTime("Build Edge Rings");
 
     List<EdgeRing> validEdgeRingList = new ArrayList<EdgeRing>();
-    invalidRingLines = new ArrayList<LineString>();
+    List<EdgeRing> invalidRings = new ArrayList<EdgeRing>();
     if (isCheckingRingsValid) {
-      findValidRings(edgeRingList, validEdgeRingList, invalidRingLines);
+      findValidRings(edgeRingList, validEdgeRingList, invalidRings);
+      invalidRingLines = extractInvalidLines(invalidRings);
     }
     else {
       validEdgeRingList = edgeRingList;
@@ -266,13 +267,15 @@ public class Polygonizer
     polyList = extractPolygons(shellList, includeAll);
   }
 
-  private void findValidRings(List<EdgeRing> edgeRingList, List<EdgeRing> validEdgeRingList, List<LineString> invalidRingList)
+
+  private void findValidRings(List<EdgeRing> edgeRingList, List<EdgeRing> validEdgeRingList, List<EdgeRing> invalidRingList)
   {
     for (EdgeRing er : edgeRingList) {
+      er.computeValid();
       if (er.isValid())
         validEdgeRingList.add(er);
       else
-        invalidRingList.add(er.getLineString());
+        invalidRingList.add(er);
     }
   }
 
@@ -323,6 +326,66 @@ public class Polygonizer
     }
   }
   
+  /**
+   * Extracts unique lines for invalid rings, 
+   * discarding rings which correspond to outer rings and hence contain
+   * duplicate linework.
+   * 
+   * @param invalidRings
+   * @return
+   */
+  private List<LineString> extractInvalidLines(List<EdgeRing> invalidRings) {
+    /**
+     * Sort rings by increasing envelope area.
+     * This causes inner rings to be processed before the outer rings
+     * containing them, which allows outer invalid rings to be discarded
+     * since their linework is already reported in the inner rings.
+     */
+    Collections.sort(invalidRings, new EdgeRing.EnvelopeAreaComparator());
+    /**
+     * Scan through rings.  Keep only rings which have an adjacent EdgeRing
+     * which is either valid or marked as not processed.  
+     * This avoids including outer rings which have linework which is duplicated.
+     */
+    List<LineString> invalidLines = new ArrayList<LineString>();
+    for (EdgeRing er : invalidRings) {
+      if (isIncludedInvalid(er)) {
+        invalidLines.add(er.getLineString());
+      }
+      er.setProcessed(true);
+    }
+    return invalidLines;
+  }
+
+  /**
+   * Tests if a invalid ring should be included in
+   * the list of reported invalid rings.
+   * 
+   * Rings are included only if they contain 
+   * linework which is not already in a valid ring,
+   * or in an already-included ring.
+   * 
+   * Because the invalid rings list is sorted by extent area,
+   * this results in outer rings being discarded, 
+   * since all their linework is reported in the rings they contain.
+   * 
+   * @param invalidRing the ring to test
+   * @return true if the ring should be included
+   */
+  private boolean isIncludedInvalid(EdgeRing invalidRing) {
+    for (PolygonizeDirectedEdge de : invalidRing.getEdges()) {
+      PolygonizeDirectedEdge deAdj = (PolygonizeDirectedEdge) de.getSym();
+      EdgeRing erAdj = deAdj.getRing();
+      /**
+       * 
+       */
+      boolean isEdgeIncluded = erAdj.isValid() || erAdj.isProcessed();
+      if ( ! isEdgeIncluded) 
+        return true;
+    }
+    return false;
+  }
+
   private static List<Polygon> extractPolygons(List<EdgeRing> shellList, boolean includeAll) {
     List<Polygon> polyList = new ArrayList<Polygon>();
     for (EdgeRing er : shellList) {

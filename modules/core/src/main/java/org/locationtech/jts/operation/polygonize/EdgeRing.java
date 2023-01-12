@@ -104,9 +104,11 @@ class EdgeRing {
   private List<LinearRing> holes;
   private EdgeRing shell;
   private boolean isHole;
+  private boolean isValid = false;
   private boolean isProcessed = false;
   private boolean isIncludedSet = false;
   private boolean isIncluded = false;
+
 
   public EdgeRing(GeometryFactory factory)
   {
@@ -133,6 +135,10 @@ class EdgeRing {
     deList.add((PolygonizeDirectedEdge) de);
   }
 
+  public List<PolygonizeDirectedEdge> getEdges() {
+    return deList;
+  }
+  
   /**
    * Tests whether this ring is a hole.
    * @return <code>true</code> if this ring is a hole
@@ -198,12 +204,22 @@ class EdgeRing {
    * 
    * @return true if the ring is valid
    */
-  public boolean isValid()
-  {
+  public boolean isValid() {
+    return isValid;
+  }
+  
+  /**
+   * Computes the validity of the ring.
+   * Must be called prior to calling {@link #isValid}.
+   */
+  public void computeValid() {
     getCoordinates();
-    if (ringPts.length <= 3) return false;
+    if (ringPts.length <= 3) { 
+      isValid = false;
+      return;
+    }
     getRing();
-    return ring.isValid();
+    isValid = ring.isValid();
   }
 
   public boolean isIncludedSet() {
@@ -461,7 +477,21 @@ class EdgeRing {
     public int compare(EdgeRing r0, EdgeRing r1) {
       return r0.getRing().getEnvelope().compareTo(r1.getRing().getEnvelope());
     }
-    
   }
 
+  /**
+   * Compares EdgeRings based on the area of their envelopes.
+   * Smaller envelopes sort before bigger ones.
+   * This effectively sorts EdgeRings in order of containment.
+   * 
+   * @author mdavis
+   *
+   */
+  static class EnvelopeAreaComparator implements Comparator<EdgeRing> {
+    public int compare(EdgeRing r0, EdgeRing r1) {
+      return Double.compare(
+          r0.getRing().getEnvelope().getArea(),
+          r1.getRing().getEnvelope().getArea() );
+    }
+  }
 }

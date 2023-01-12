@@ -14,6 +14,8 @@ package org.locationtech.jts.operation.polygonize;
 import java.util.Collection;
 import java.util.List;
 
+import org.locationtech.jts.geom.Geometry;
+
 import test.jts.GeometryTestCase;
 
 /**
@@ -160,6 +162,21 @@ public class PolygonizerTest extends GeometryTestCase {
     });
   }
   
+  public void testUniqueInvalidRings() {
+    checkPolygonizeInvalidRings(    
+        "MULTILINESTRING ((0 0, 2 0, 2 2, 0 2, 0 0), (0 0, 1 1), (2 2, 4 4, 2 4, 4 2, 2 2))",
+        "LINESTRING (2 2, 4 2, 2 4, 4 4, 2 2)"
+        );
+  }
+
+  public void testUniqueInvalidRings2() {
+    checkPolygonizeInvalidRings(    
+        "MULTILINESTRING ((3 8, 7 8), (7 8, 7 3), (7 3, 3 3), (3 3, 3 8), (7 3, 9 6, 9 5, 7 8), (3 8, 1 5), (1 5, 1 6), (1 6, 3 3))",
+        "MULTILINESTRING ((3 8, 3 3, 1 6, 1 5, 3 8), (7 3, 7 8, 9 5, 9 6, 7 3))"
+        );
+  }
+
+
 /*
   public void test2() {
     doTest(new String[]{
@@ -182,6 +199,10 @@ public class PolygonizerTest extends GeometryTestCase {
     checkPolygonize(false, inputWKT, expectedWKT);
   }
 
+  private void checkPolygonize(String inputWKT, String[] expectedWKT) {
+    checkPolygonize(false, new String[] { inputWKT }, expectedWKT);
+  }
+
   private void checkPolygonize(boolean extractOnlyPolygonal, String[] inputWKT, String[] expectedWKT) {
     Polygonizer polygonizer = new Polygonizer(extractOnlyPolygonal);
     polygonizer.add(readList(inputWKT));
@@ -200,5 +221,18 @@ public class PolygonizerTest extends GeometryTestCase {
       ex.printStackTrace();
       fail("Polygonizer threw an unexpected error");
     }
+  }
+  
+  private void checkPolygonizeInvalidRings(String inputWKT, String expectedWKT) {
+    Polygonizer polygonizer = new Polygonizer();
+    polygonizer.add(read(inputWKT));
+    Collection actualList = polygonizer.getInvalidRingLines();
+    Geometry expected = read(expectedWKT);
+    Geometry actual = expected.getFactory().buildGeometry(actualList);
+    /**
+     * Use topological equality to handle differences in ring orientation and order
+     */
+    boolean isSameLinework = expected.equalsTopo(actual);
+    assertTrue(isSameLinework);
   }
 }
