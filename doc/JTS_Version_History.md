@@ -28,6 +28,7 @@ Distributions for older JTS versions can be obtained at the
 * Add `CoverageSimplifier` (#911)
 * Add `OverlayNG` support for simple GeometryCollection inputs (#915)
 * Add `Geometry.hasDimension(int dim)` method {#944}
+* Add `ConcaveHull.alphaShape` function (#952)
 
 ### Functionality Improvements
 * Improve `TopologyPreservingSimplifier` to prevent edge-disjoint line collapse (#925)
