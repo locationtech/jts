@@ -103,6 +103,26 @@ public class Triangle
   }
 
   /**
+   * Computes the radius of the circumcircle of a triangle.
+   * <p>
+   * Formula is as per https://math.stackexchange.com/a/3610959
+   * 
+   * @param a a vertex of the triangle
+   * @param b a vertex of the triangle
+   * @param c a vertex of the triangle
+   * @return the circumradius of the triangle
+   */
+  public static double circumradius(Coordinate a, Coordinate b, Coordinate c) {
+    double A = a.distance(b);
+    double B = b.distance(c);
+    double C = c.distance(a);
+    double area = area(a, b, c);
+    if (area == 0.0)
+      return Double.POSITIVE_INFINITY;
+    return (A * B * C) / (4 * area);
+  }
+  
+  /**
    * Computes the circumcentre of a triangle. The circumcentre is the centre of
    * the circumcircle, the smallest circle which encloses the triangle. It is
    * also the common intersection point of the perpendicular bisectors of the
@@ -543,8 +563,8 @@ public class Triangle
   
   /**
    * Computes the circumcentre of this triangle. The circumcentre is the centre
-   * of the circumcircle, the smallest circle which encloses the triangle. It is
-   * also the common intersection point of the perpendicular bisectors of the
+   * of the circumcircle, the smallest circle which passes through all the triangle vertices. 
+   * It is also the common intersection point of the perpendicular bisectors of the
    * sides of the triangle, and is the only point which has equal distance to
    * all three vertices of the triangle.
    * <p>
@@ -561,6 +581,16 @@ public class Triangle
     return circumcentre(p0, p1, p2);
   }
 
+  /**
+   * Computes the radius of the circumcircle of a triangle.
+   * 
+   * @return the triangle circumradius
+   */
+  public double circumradius()
+  {
+    return circumradius(p0, p1, p2);
+  }
+  
   /**
    * Computes the centroid (centre of mass) of this triangle. This is also the
    * point at which the triangle's three medians intersect (a triangle median is

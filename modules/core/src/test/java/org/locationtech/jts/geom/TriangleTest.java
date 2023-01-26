@@ -144,6 +144,16 @@ public class TriangleTest extends GeometryTestCase
         15.0, 13.75));
   }
 
+  public void testCircumradius() throws Exception
+  {
+    // right triangle
+    checkCircumradius("POLYGON((10 10, 20 20, 20 10, 10 10))");
+    // CCW right tri
+    checkCircumradius("POLYGON((10 10, 20 10, 20 20, 10 10))");
+    // acute
+    checkCircumradius("POLYGON((10 10, 20 10, 15 20, 10 10))");
+  }
+
   public void testCentroid() throws Exception
   {
     // right triangle
@@ -193,6 +203,23 @@ public class TriangleTest extends GeometryTestCase
     assertEquals(expectedValue.toString(), circumcentre.toString());
   }
 
+  public void checkCircumradius(String wkt)
+      throws Exception
+  {
+    Geometry g = reader.read(wkt);
+    Coordinate[] pt = g.getCoordinates();
+
+    Coordinate circumcentre = Triangle.circumcentre(pt[0], pt[1], pt[2]);
+    double circumradius = Triangle.circumradius(pt[0], pt[1], pt[2]);
+    //System.out.println("(Static) circumcentre = " + circumcentre);
+    double rad0 = pt[0].distance(circumcentre);
+    double rad1 = pt[1].distance(circumcentre);
+    double rad2 = pt[2].distance(circumcentre);
+    assertEquals(rad0, circumradius, 0.00001);
+    assertEquals(rad1, circumradius, 0.00001);
+    assertEquals(rad2, circumradius, 0.00001);
+  }
+  
   public void testLongestSideLength() throws Exception
   {
     // right triangle

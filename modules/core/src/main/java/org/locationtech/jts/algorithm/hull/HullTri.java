@@ -55,6 +55,14 @@ class HullTri extends Tri
     size = lengthOfBoundary();
   }
   
+  public void setSizeToLongestEdge() {
+    size = lengthOfLongestEdge();
+  }
+  
+  public void setSizeToCircumradius() {
+    size = Triangle.circumradius(p2, p1, p0);
+  }
+  
   public boolean isMarked() {
     return isMarked;
   }
@@ -168,14 +176,15 @@ class HullTri extends Tri
   }
 
   /**
-   * PriorityQueues sort in ascending order.
-   * To sort with the largest at the head,
+   * Sorts tris in decreasing order.
+   * Since PriorityQueues sort in <i>ascending</i> order,
+   * to sort with the largest at the head,
    * smaller sizes must compare as greater than larger sizes.
    * (i.e. the normal numeric comparison is reversed).
    * If the sizes are identical (which should be an infrequent case),
    * the areas are compared, with larger areas sorting before smaller.
    * (The rationale is that larger areas indicate an area of lower point density,
-   * which is more likely to be in the exterior of the computed shape.)
+   * which is more likely to be in the exterior of the computed hull.)
    * This improves the determinism of the queue ordering. 
    */
   @Override
@@ -268,4 +277,6 @@ class HullTri extends Tri
     removedTri.setMarked(true);
     return isAllMarked(triList);
   }
+
+
 }

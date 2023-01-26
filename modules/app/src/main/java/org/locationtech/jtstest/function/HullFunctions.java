@@ -43,6 +43,18 @@ public class HullFunctions {
     return ConcaveHull.concaveHullByLengthRatio(geom, maxLenRatio, true);
   }
   
+  public static Geometry alphaShape(Geometry geom, 
+      @Metadata(title="Alpha (Radius)")
+      double alpha) {
+    return ConcaveHull.alphaShape(geom, alpha, false);
+  }
+  
+  public static Geometry alphaShapeWithHoles(Geometry geom, 
+      @Metadata(title="Alpha (Radius)")
+      double alpha) {
+    return ConcaveHull.alphaShape(geom, alpha, true);
+  }
+  
   public static double concaveHullLenGuess(Geometry geom) {
     return ConcaveHull.uniformGridEdgeLength(geom);
   }
