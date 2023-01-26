@@ -46,6 +46,12 @@ public class TriangleFunctions {
       }});
   }
   
+  public static double circumradius(Geometry g)
+  {
+      Coordinate[] pts = trianglePts(g);
+      return Triangle.circumradius(pts[0], pts[1], pts[2]);
+  }
+  
   public static Geometry circumcentreDD(Geometry g)
   {
     return GeometryMapper.map(g, 
