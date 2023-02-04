@@ -151,11 +151,14 @@ public class GeometryPainter
 		Shape shape = converter.toShape(geometry);
     
 		// handle points in a special way for appearance and speed
+		//-- MD disable raw point drawing, rely on Vertex style alone
 		if (geometry instanceof Point) {
+		  /*
 		  BasicStroke ptStroke = createPointStroke(stroke);
 			g.setStroke(ptStroke);
 		  g.setColor(lineColor);
 	    g.draw(shape);
+	    */
 			return;
 		}
 
