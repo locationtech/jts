@@ -68,7 +68,7 @@ public class OffsetCurve {
    * Computes the offset curve of a geometry at a given distance.
    * 
    * @param geom a geometry
-   * @param distance the offset distance (positive = left, negative = right)
+   * @param distance the offset distance (positive for left, negative for right)
    * @return the offset curve
    */
   public static Geometry getCurve(Geometry geom, double distance) {
@@ -81,7 +81,7 @@ public class OffsetCurve {
    * and for a specified quadrant segments, join style and mitre limit.
    * 
    * @param geom a geometry
-   * @param distance the offset distance (positive = left, negative = right)
+   * @param distance the offset distance (positive for left, negative for right)
    * @param quadSegs the quadrant segments (-1 for default)
    * @param joinStyle the join style (-1 for default)
    * @param mitreLimit the mitre limit (-1 for default)
@@ -108,7 +108,7 @@ public class OffsetCurve {
    * and join style ({@link BufferParameters#JOIN_STYLE}).
    * 
    * @param geom the geometry to offset
-   * @param distance the offset distance (positive = left, negative = right)
+   * @param distance the offset distance (positive for left, negative for right)
    * 
    * @see BufferParameters
    */
@@ -121,9 +121,9 @@ public class OffsetCurve {
    * allowing the quadrant segments and join style and mitre limit to be set
    * via {@link BufferParameters}.
    * 
-   * @param geom
-   * @param distance
-   * @param bufParams
+   * @param geom the geometry to offset
+   * @param distance the offset distance (positive for left, negative for right)
+   * @param bufParams the buffer parameters to use
    */
   public OffsetCurve(Geometry geom, double distance, BufferParameters bufParams) {
     this.inputGeom = geom;
@@ -175,39 +175,38 @@ public class OffsetCurve {
   }
   
   /**
-   * Gets the raw offset line.
-   * The quadrant segments and join style and mitre limit to be set
+   * Gets the raw offset curve for a line at a given distance.
+   * The quadrant segments, join style and mitre limit can be specified
    * via {@link BufferParameters}.
    * <p>
    * The raw offset line may contain loops and other artifacts which are 
    * not present in the true offset curve.
-   * The raw offset line is matched to the buffer ring (which is clean)
-   * to extract the offset curve.
    * 
-   * @param geom the linestring to offset
-   * @param distance the offset distance
+   * @param line the line to offset
+   * @param distance the offset distance (positive for left, negative for right)
    * @param bufParams the buffer parameters to use
-   * @return the raw offset line
+   * @return the raw offset curve points
    */
-  public static Coordinate[] rawOffset(LineString geom, double distance, BufferParameters bufParams)
+  public static Coordinate[] rawOffset(LineString line, double distance, BufferParameters bufParams)
   {
     OffsetCurveBuilder ocb = new OffsetCurveBuilder(
-        geom.getFactory().getPrecisionModel(), bufParams
+        line.getFactory().getPrecisionModel(), bufParams
         );
-    Coordinate[] pts = ocb.getOffsetCurve(geom.getCoordinates(), distance);
+    Coordinate[] pts = ocb.getOffsetCurve(line.getCoordinates(), distance);
     return pts;
   }
   
   /**
-   * Gets the raw offset line, with default buffer parameters.
+   * Gets the raw offset curve for a line at a given distance, 
+   * with default buffer parameters.
    * 
-   * @param geom the linestring to offset
-   * @param distance the offset distance
-   * @return the raw offset line
+   * @param line the line to offset
+   * @param distance the offset distance (positive for left, negative for right)
+   * @return the raw offset curve points
    */
-  public static Coordinate[] rawOffset(LineString geom, double distance)
+  public static Coordinate[] rawOffset(LineString line, double distance)
   {
-    return rawOffset(geom, distance, new BufferParameters());
+    return rawOffset(line, distance, new BufferParameters());
   }
 
   private LineString computeCurve(LineString lineGeom, double distance) {
