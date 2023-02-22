@@ -36,7 +36,7 @@ import junit.framework.TestCase;
 
 public abstract class GeometryTestCase extends TestCase{
 
-  private static final String CHECK_EQUAL_FAIL = "FAIL - %sExpected = %s -- Actual = %s\n";
+  private static final String CHECK_EQUAL_FAIL = "FAIL - Expected = %s -- Actual = %s\n";
 
   final GeometryFactory geomFactory;
   
