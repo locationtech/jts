@@ -40,6 +40,11 @@ public class OffsetCurveFunctions {
     return OffsetCurve.getCurve(geom, distance, quadrantSegments, joinStyle, mitreLimit);
   }
 
+  public static Geometry offsetCurveJoined(Geometry geom, double distance)
+  {
+    return OffsetCurve.getCurveJoined(geom, distance);
+  }
+
   public static Geometry offsetCurveBoth(Geometry geom, double distance)
   {
     Geometry curve1 = OffsetCurve.getCurve(geom, distance);
