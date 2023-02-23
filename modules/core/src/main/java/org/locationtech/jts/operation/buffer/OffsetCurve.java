@@ -16,6 +16,7 @@ import java.util.List;
 
 import org.locationtech.jts.algorithm.Distance;
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateArrays;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -227,11 +228,13 @@ public class OffsetCurve {
    */
   public static Coordinate[] rawOffsetCurve(LineString line, double distance, BufferParameters bufParams)
   {
+    Coordinate[] pts = line.getCoordinates();
+    Coordinate[] cleanPts = CoordinateArrays.removeRepeatedOrInvalidPoints(pts);
     OffsetCurveBuilder ocb = new OffsetCurveBuilder(
         line.getFactory().getPrecisionModel(), bufParams
         );
-    Coordinate[] pts = ocb.getOffsetCurve(line.getCoordinates(), distance);
-    return pts;
+    Coordinate[] rawPts = ocb.getOffsetCurve(cleanPts, distance);
+    return rawPts;
   }
   
   /**

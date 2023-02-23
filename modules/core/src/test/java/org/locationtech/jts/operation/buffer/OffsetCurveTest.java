@@ -18,7 +18,8 @@ import test.jts.GeometryTestCase;
 /**
  * 
  * Note: most expected results are rounded to precision of 100, to reduce
- * size and improve robustness.
+ * size and improve robustness.  
+ * The test cases are chosen so that this has no effect on comparing expected to actual.
  * 
  * @author Martin Davis
  *
@@ -231,6 +232,17 @@ public class OffsetCurveTest extends GeometryTestCase {
     checkOffsetCurve(
         "LINESTRING (21 101, -1 78, 12 43, 50 112, 73 -5, 19 2, 87 85, -7 38, 105 40)", 4,
         null
+    );
+  }
+  
+  /**
+   * Test bug fix for removing repeated points in input for raw curve.
+   * See https://github.com/locationtech/jts/issues/957
+   */
+  public void testRepeatedPoint() {
+    checkOffsetCurve(
+        "LINESTRING (4 9, 1 2, 7 5, 7 5, 4 9)", 1,
+        "LINESTRING (4.24 7.02, 2.99 4.12, 5.48 5.36, 4.24 7.02)"
     );
   }
   
