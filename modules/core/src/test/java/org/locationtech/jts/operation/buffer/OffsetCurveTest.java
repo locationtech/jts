@@ -123,6 +123,26 @@ public class OffsetCurveTest extends GeometryTestCase {
         );
   }
 
+  public void testAsymmetricU() {
+    String wkt = "LINESTRING (1 1, 9 1, 9 2, 5 2)";
+    checkOffsetCurve( wkt, 1,
+        "LINESTRING (1 2, 4 2)"
+        );
+    checkOffsetCurve( wkt, -1,
+        "LINESTRING (1 0, 9 0, 9.2 0.02, 9.38 0.08, 9.56 0.17, 9.71 0.29, 9.83 0.44, 9.92 0.62, 9.98 0.8, 10 1, 10 2, 9.98 2.2, 9.92 2.38, 9.83 2.56, 9.71 2.71, 9.56 2.83, 9.38 2.92, 9.2 2.98, 9 3, 5 3)"
+        );
+  }
+  
+  public void testSymmetricU() {
+    String wkt = "LINESTRING (1 1, 9 1, 9 2, 1 2)";
+    checkOffsetCurve( wkt, 1,
+        "LINESTRING EMPTY"
+        );
+    checkOffsetCurve( wkt, -1,
+        "LINESTRING (1 0, 9 0, 9.2 0.02, 9.38 0.08, 9.56 0.17, 9.71 0.29, 9.83 0.44, 9.92 0.62, 9.98 0.8, 10 1, 10 2, 9.98 2.2, 9.92 2.38, 9.83 2.56, 9.71 2.71, 9.56 2.83, 9.38 2.92, 9.2 2.98, 9 3, 1 3)"
+        );
+  }
+  
   public void testEmptyResult() {
     checkOffsetCurve(
         "LINESTRING (3 5, 5 7, 7 5)", -4,
