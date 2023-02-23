@@ -25,6 +25,7 @@ import test.jts.GeometryTestCase;
  *
  */
 public class OffsetCurveTest extends GeometryTestCase {
+
   public static void main(String[] args) {
     junit.textui.TestRunner.run(OffsetCurveTest.class);
   }
@@ -54,6 +55,17 @@ public class OffsetCurveTest extends GeometryTestCase {
         );
   }
 
+  /**
+   * Test bug fix for removing repeated points in input for raw curve.
+   * See https://github.com/locationtech/jts/issues/957
+   */
+  public void testRepeatedPoint() {
+    checkOffsetCurve(
+        "LINESTRING (4 9, 1 2, 7 5, 7 5, 4 9)", 1,
+        "LINESTRING (4.24 7.02, 2.99 4.12, 5.48 5.36, 4.24 7.02)"
+    );
+  }
+  
   public void testSegment1Short() {
     checkOffsetCurve(
         "LINESTRING (2 2, 2 2.0000001)", 1,
@@ -228,21 +240,22 @@ public class OffsetCurveTest extends GeometryTestCase {
   
   //-------------------------------------------------
   
+  public void testJoined() {
+    String input = "LINESTRING (0 50, 100 50, 50 100, 50 0)";
+    checkOffsetCurveJoined( input, 10,
+        "LINESTRING (0 60, 75.85 60, 60 75.85, 60 0)"
+        );
+    checkOffsetCurveJoined( input, -10,
+        "LINESTRING (0 40, 100 40, 101.95 40.19, 103.83 40.76, 105.56 41.69, 107.07 42.93, 108.31 44.44, 109.24 46.17, 109.81 48.05, 110 50, 109.81 51.95, 109.24 53.83, 108.31 55.56, 107.07 57.07, 57.07 107.07, 55.56 108.31, 53.83 109.24, 51.95 109.81, 50 110, 48.05 109.81, 46.17 109.24, 44.44 108.31, 42.93 107.07, 41.69 105.56, 40.76 103.83, 40.19 101.95, 40 100, 40 0))"
+        );
+  }
+  
+  //-------------------------------------------------
+  
   public void testInfiniteLoop() {
     checkOffsetCurve(
         "LINESTRING (21 101, -1 78, 12 43, 50 112, 73 -5, 19 2, 87 85, -7 38, 105 40)", 4,
         null
-    );
-  }
-  
-  /**
-   * Test bug fix for removing repeated points in input for raw curve.
-   * See https://github.com/locationtech/jts/issues/957
-   */
-  public void testRepeatedPoint() {
-    checkOffsetCurve(
-        "LINESTRING (4 9, 1 2, 7 5, 7 5, 4 9)", 1,
-        "LINESTRING (4.24 7.02, 2.99 4.12, 5.48 5.36, 4.24 7.02)"
     );
   }
   
@@ -274,6 +287,8 @@ public class OffsetCurveTest extends GeometryTestCase {
   
   //=======================================
   
+  private static final double EQUALS_TOL = 0.05;
+
   private void checkOffsetCurve(String wkt, double distance, String wktExpected) {
     checkOffsetCurve(wkt, distance, wktExpected, 0.05);
   }
@@ -282,7 +297,19 @@ public class OffsetCurveTest extends GeometryTestCase {
       int quadSegs, int joinStyle, double mitreLimit,
       String wktExpected) 
   {
-    checkOffsetCurve(wkt, distance, quadSegs, joinStyle, mitreLimit, wktExpected, 0.05);
+    checkOffsetCurve(wkt, distance, quadSegs, joinStyle, mitreLimit, wktExpected, EQUALS_TOL);
+  }
+  
+  private void checkOffsetCurveJoined(String wkt, double distance, String wktExpected) {
+    Geometry geom = read(wkt);
+    Geometry result = OffsetCurve.getCurveJoined(geom, distance);
+    //System.out.println(result);
+    
+    if (wktExpected == null)
+      return;
+    
+    Geometry expected = read(wktExpected);
+    checkEqual(expected, result, EQUALS_TOL);
   }
   
   private void checkOffsetCurve(String wkt, double distance, String wktExpected, double tolerance) {
