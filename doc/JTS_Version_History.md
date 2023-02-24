@@ -29,9 +29,11 @@ Distributions for older JTS versions can be obtained at the
 * Add `OverlayNG` support for simple GeometryCollection inputs (#915)
 * Add `Geometry.hasDimension(int dim)` method {#944}
 * Add `ConcaveHull.alphaShape` function (#952)
+* Add `OffsetCurve` Joined mode (#956)
 
 ### Functionality Improvements
 * Improve `TopologyPreservingSimplifier` to prevent edge-disjoint line collapse (#925)
+* Improve `OffsetCurve` to return more linework for some input situations (#956)
 
 ### Bug Fixes
 * Fix `PreparedGeometry` handling of EMPTY elements (#904)
@@ -45,6 +47,7 @@ Distributions for older JTS versions can be obtained at the
 * Fix `QuadEdgeSubdivision.TriangleEdgesListVisitor` (#945)
 * Fix `PolygonHoleJoiner` to handle all valid inputs 
   (allows `PolygonTriangulator`, `ConstrainedDelaunayTriangulator`, and `ConcaveHullOfPolygons` to work correctly) (#946)
+* Fix `OffsetCurve` handling of input with repeated points (#956)
 
 ### Performance Improvements
 
