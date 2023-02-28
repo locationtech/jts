@@ -38,13 +38,16 @@ class OffsetSegmentGenerator
 {
 
   /**
-   * Factor which controls how close offset segments can be to
-   * skip adding a filler or mitre.
+   * Factor controlling how close offset segments can be to
+   * skip adding a fillet or mitre.
+   * This eliminates very short fillet segments, 
+   * reduces the number of offset curve vertices.
+   * and improves the robustness of mitre construction.
    */
-  private static final double OFFSET_SEGMENT_SEPARATION_FACTOR = 1.0E-3;
+  private static final double OFFSET_SEGMENT_SEPARATION_FACTOR = .05;
   
   /**
-   * Factor which controls how close curve vertices on inside turns can be to be snapped 
+   * Factorcontrolling how close curve vertices on inside turns can be to be snapped 
    */
   private static final double INSIDE_TURN_VERTEX_SNAP_DISTANCE_FACTOR = 1.0E-3;
 
@@ -269,13 +272,19 @@ class OffsetSegmentGenerator
   {
     /**
      * Heuristic: If offset endpoints are very close together, 
-     * just use one of them as the corner vertex.
-     * This avoids problems with computing mitre corners in the case
-     * where the two segments are almost parallel 
+     * use an endpoint as the offset corner vertex.
+     * This eliminates very short single-segment joins,
+     * and reduces the number of offset curve vertices.
+     * It also avoids problems with computing mitre corners 
+     * for nearly-parallel segments  
      * (which is hard to compute a robust intersection for).
      */
     if (offset0.p1.distance(offset1.p0) < distance * OFFSET_SEGMENT_SEPARATION_FACTOR) {
-      segList.addPt(offset0.p1);
+      //-- use endpoint of longest segment, to reduce change in area
+      double segLen0 = s0.distance(s1);
+      double segLen1 = s1.distance(s2);
+      Coordinate offsetPt = (segLen0 > segLen1) ? offset0.p1 : offset1.p0;
+      segList.addPt(offsetPt);
       return;
     }
     
