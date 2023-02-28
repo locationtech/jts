@@ -34,6 +34,7 @@ Distributions for older JTS versions can be obtained at the
 ### Functionality Improvements
 * Improve `TopologyPreservingSimplifier` to prevent edge-disjoint line collapse (#925)
 * Improve `OffsetCurve` to return more linework for some input situations (#956)
+* Reduce buffer curve short fillet segments (#960)
 
 ### Bug Fixes
 * Fix `PreparedGeometry` handling of EMPTY elements (#904)
