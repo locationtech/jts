@@ -295,9 +295,10 @@ class OffsetSegmentGenerator
       addBevelJoin(offset0, offset1);
     }
     else {
-    // add a circular fillet connecting the endpoints of the offset segments
-     if (addStartPoint) segList.addPt(offset0.p1);
-      // TESTING - comment out to produce beveled joins
+      //-- add a circular fillet connecting the endpoints of the offset segments
+      if (addStartPoint) {
+        segList.addPt(offset0.p1);
+      }
       addCornerFillet(s1, offset0.p1, offset1.p0, orientation, distance);
       segList.addPt(offset1.p0);
     }
