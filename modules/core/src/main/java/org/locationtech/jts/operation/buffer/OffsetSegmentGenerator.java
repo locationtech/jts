@@ -47,7 +47,7 @@ class OffsetSegmentGenerator
   private static final double OFFSET_SEGMENT_SEPARATION_FACTOR = .05;
   
   /**
-   * Factorcontrolling how close curve vertices on inside turns can be to be snapped 
+   * Factor controlling how close curve vertices on inside turns can be to be snapped 
    */
   private static final double INSIDE_TURN_VERTEX_SNAP_DISTANCE_FACTOR = 1.0E-3;
 
@@ -146,14 +146,14 @@ class OffsetSegmentGenerator
   
   private void init(double distance)
   {
-    this.distance = distance;
-    maxCurveSegmentError = distance * (1 - Math.cos(filletAngleQuantum / 2.0));
+    this.distance = Math.abs(distance);
+    maxCurveSegmentError = this.distance * (1 - Math.cos(filletAngleQuantum / 2.0));
     segList = new OffsetSegmentString();
     segList.setPrecisionModel(precisionModel);
     /**
      * Choose the min vertex separation as a small fraction of the offset distance.
      */
-    segList.setMinimumVertexDistance(distance * CURVE_VERTEX_SNAP_DISTANCE_FACTOR);
+    segList.setMinimumVertexDistance(this.distance * CURVE_VERTEX_SNAP_DISTANCE_FACTOR);
   }
 
 
@@ -271,13 +271,13 @@ class OffsetSegmentGenerator
   private void addOutsideTurn(int orientation, boolean addStartPoint)
   {
     /**
-     * Heuristic: If offset endpoints are very close together, 
-     * use an endpoint as the offset corner vertex.
-     * This eliminates very short single-segment joins,
+     * Heuristic: If offset endpoints are very close together,
+     * (which happens for nearly-parallel segments),
+     * use an endpoint as the single offset corner vertex.
+     * This eliminates very short single-segment joins
      * and reduces the number of offset curve vertices.
-     * It also avoids problems with computing mitre corners 
-     * for nearly-parallel segments  
-     * (which is hard to compute a robust intersection for).
+     * This also avoids robustness problems with computing mitre corners 
+     * for nearly-parallel segments.
      */
     if (offset0.p1.distance(offset1.p0) < distance * OFFSET_SEGMENT_SEPARATION_FACTOR) {
       //-- use endpoint of longest segment, to reduce change in area
