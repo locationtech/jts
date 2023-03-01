@@ -167,7 +167,7 @@ class CoverageRingEdges {
   
   private CoverageEdge createEdge(LinearRing ring, int start, int end, HashMap<LineSegment, CoverageEdge> uniqueEdgeMap) {
     CoverageEdge edge;
-    LineSegment edgeKey = CoverageEdge.key(ring, start, end);
+    LineSegment edgeKey = (end == start) ? CoverageEdge.key(ring) : CoverageEdge.key(ring, start, end);
     if (uniqueEdgeMap.containsKey(edgeKey)) {
       edge = uniqueEdgeMap.get(edgeKey);
     }
