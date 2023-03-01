@@ -172,6 +172,8 @@ public class LineSegmentTest extends TestCase {
   	
   	checkOrientationIndex(seg, 200, 200, 210, 210, 0);
   	
+  	checkOrientationIndex(seg, 105, 105, 110, 100, -1);
+  	
   }
   
   void checkOrientationIndex(double x0, double y0, double x1, double y1, double px, double py, 
@@ -197,7 +199,11 @@ public class LineSegmentTest extends TestCase {
   {
   	LineSegment seg2 = new LineSegment(s0x, s0y, s1x, s1y);
   	int orient = seg.orientationIndex(seg2);
-  	assertTrue(orient == expectedOrient);
+  	String msg = "";
+  	if (orient != expectedOrient) {
+  	  msg = "orientationIndex of " + seg + " and " + seg2;
+  	}
+  	assertEquals(msg, expectedOrient, orient);
   }
   
 

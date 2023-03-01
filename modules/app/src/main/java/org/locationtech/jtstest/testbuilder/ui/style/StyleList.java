@@ -12,12 +12,13 @@
 
 package org.locationtech.jtstest.testbuilder.ui.style;
 
-import java.util.*;
 import java.awt.Graphics2D;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jtstest.testbuilder.ui.Viewport;
-import org.locationtech.jtstest.testbuilder.ui.render.*;
 
 
 /**

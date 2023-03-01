@@ -11,11 +11,13 @@
  */
 package org.locationtech.jtstest.geomop;
 
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.WKTWriter;
 import org.locationtech.jts.operation.overlay.OverlayOp;
 import org.locationtech.jts.operation.overlay.validate.OverlayResultValidator;
-import org.locationtech.jtstest.testrunner.*;
+import org.locationtech.jtstest.testrunner.GeometryResult;
+import org.locationtech.jtstest.testrunner.Result;
 
 
 /**

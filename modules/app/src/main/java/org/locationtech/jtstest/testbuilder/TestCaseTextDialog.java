@@ -15,17 +15,21 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
+import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JDialog;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 
-import javax.swing.*;
-
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.io.*;
-import org.locationtech.jts.io.gml2.*;
 import org.locationtech.jtstest.testbuilder.io.IOUtil;
 import org.locationtech.jtstest.testbuilder.io.JavaTestWriter;
 import org.locationtech.jtstest.testbuilder.io.SVGTestWriter;
 import org.locationtech.jtstest.testbuilder.io.XMLTestWriter;
-import org.locationtech.jtstest.testbuilder.model.*;
+import org.locationtech.jtstest.testbuilder.model.TestCaseEdit;
 
 
 

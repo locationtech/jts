@@ -60,6 +60,8 @@ public class ComponentCoordinateExtracter
 
   public void filter(Geometry geom)
   {
+    if (geom.isEmpty())
+      return;
     // add coordinates from connected components
     if (geom instanceof LineString
         || geom instanceof Point) 

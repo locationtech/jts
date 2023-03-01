@@ -12,11 +12,10 @@
 package org.locationtech.jtstest.function;
 
 import static org.locationtech.jts.operation.overlayng.OverlayNG.INTERSECTION;
+import static org.locationtech.jts.operation.overlayng.OverlayNG.SYMDIFFERENCE;
 import static org.locationtech.jts.operation.overlayng.OverlayNG.UNION;
 
 import java.util.List;
-
-import static org.locationtech.jts.operation.overlayng.OverlayNG.SYMDIFFERENCE;
 
 import org.locationtech.jts.algorithm.LineIntersector;
 import org.locationtech.jts.algorithm.RobustLineIntersector;
@@ -31,9 +30,9 @@ import org.locationtech.jts.noding.IntersectionAdder;
 import org.locationtech.jts.noding.MCIndexNoder;
 import org.locationtech.jts.noding.Noder;
 import org.locationtech.jts.noding.ValidatingNoder;
-import org.locationtech.jts.operation.overlayng.RingClipper;
 import org.locationtech.jts.operation.overlayng.LineLimiter;
 import org.locationtech.jts.operation.overlayng.OverlayNG;
+import org.locationtech.jts.operation.overlayng.RingClipper;
 
 public class OverlayNGTestFunctions {
   

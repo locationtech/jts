@@ -12,13 +12,22 @@
 
 package org.locationtech.jtstest.testbuilder.ui;
 
-import java.awt.geom.*;
-import java.util.*;
+import java.util.Iterator;
+import java.util.List;
 
 import org.locationtech.jts.algorithm.Orientation;
-import org.locationtech.jts.geom.*;
-import org.locationtech.jtstest.testbuilder.geom.*;
-import org.locationtech.jtstest.testbuilder.model.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryCollection;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.LinearRing;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jtstest.testbuilder.geom.ComponentLocater;
+import org.locationtech.jtstest.testbuilder.geom.FacetLocater;
+import org.locationtech.jtstest.testbuilder.geom.GeometryLocation;
+import org.locationtech.jtstest.testbuilder.geom.VertexLocater;
+import org.locationtech.jtstest.testbuilder.model.Layer;
+import org.locationtech.jtstest.testbuilder.model.LayerList;
 
 
 public class GeometryLocationsWriter 

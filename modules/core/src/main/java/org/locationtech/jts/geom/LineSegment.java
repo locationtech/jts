@@ -18,6 +18,7 @@ import org.locationtech.jts.algorithm.Intersection;
 import org.locationtech.jts.algorithm.LineIntersector;
 import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.algorithm.RobustLineIntersector;
+import org.locationtech.jts.io.WKTConstants;
 
 
 /**
@@ -159,7 +160,7 @@ public class LineSegment
       return Math.max(orient0, orient1);
     // this handles the case where the points are R or collinear
     if (orient0 <= 0 && orient1 <= 0)
-      return Math.max(orient0, orient1);
+      return Math.min(orient0, orient1);
     // points lie on opposite sides ==> indeterminate orientation
     return 0;
   }
@@ -310,7 +311,7 @@ public class LineSegment
     
     double dx = p1.x - p0.x;
     double dy = p1.y - p0.y;
-    double len = Math.sqrt(dx * dx + dy * dy);
+    double len = Math.hypot(dx, dy);
     double ux = 0.0;
     double uy = 0.0;
     if (offsetDistance != 0.0) {
@@ -409,11 +410,17 @@ public class LineSegment
     if (p.equals(p0) || p.equals(p1)) return p.copy();
 
     double r = projectionFactor(p);
+    return project(p, r);
+  }
+  
+  private Coordinate project(Coordinate p, double projectionFactor)
+  {
     Coordinate coord = p.copy();
-    coord.x = p0.x + r * (p1.x - p0.x);
-    coord.y = p0.y + r * (p1.y - p0.y);
+    coord.x = p0.x + projectionFactor * (p1.x - p0.x);
+    coord.y = p0.y + projectionFactor * (p1.y - p0.y);
     return coord;
   }
+  
   /**
    * Project a line segment onto this line segment and return the resulting
    * line segment.  The returned line segment will be a subset of
@@ -434,11 +441,11 @@ public class LineSegment
     if (pf0 >= 1.0 && pf1 >= 1.0) return null;
     if (pf0 <= 0.0 && pf1 <= 0.0) return null;
 
-    Coordinate newp0 = project(seg.p0);
+    Coordinate newp0 = project(seg.p0, pf0);
     if (pf0 < 0.0) newp0 = p0;
     if (pf0 > 1.0) newp0 = p1;
 
-    Coordinate newp1 = project(seg.p1);
+    Coordinate newp1 = project(seg.p1, pf1);
     if (pf1 < 0.0) newp1 = p0;
     if (pf1 > 1.0) newp1 = p1;
 
@@ -500,7 +507,7 @@ public class LineSegment
   {
     double factor = projectionFactor(p);
     if (factor > 0 && factor < 1) {
-      return project(p);
+      return project(p, factor);
     }
     double dist0 = p0.distance(p);
     double dist1 = p1.distance(p);
@@ -696,7 +703,7 @@ public class LineSegment
 
   public String toString()
   {
-    return "LINESTRING( " +
+    return WKTConstants.LINESTRING + " (" +
         p0.x + " " + p0.y
         + ", " +
         p1.x + " " + p1.y + ")";

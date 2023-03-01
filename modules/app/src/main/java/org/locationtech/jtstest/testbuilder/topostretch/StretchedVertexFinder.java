@@ -12,11 +12,17 @@
 
 package org.locationtech.jtstest.testbuilder.topostretch;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
-import org.locationtech.jts.algorithm.*;
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.geom.util.*;
+import org.locationtech.jts.algorithm.Orientation;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateArrays;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.LineSegment;
+import org.locationtech.jts.geom.LineString;
 
 class StretchedVertexFinder 
 {

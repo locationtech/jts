@@ -14,7 +14,6 @@ package org.locationtech.jts.operation.buffer;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateArrays;
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.LineSegment;
 import org.locationtech.jts.geom.Position;
 import org.locationtech.jts.geom.PrecisionModel;
 
@@ -27,6 +26,11 @@ import org.locationtech.jts.geom.PrecisionModel;
  * of all the noded raw curves and tracing outside contours.
  * The points in the raw curve are rounded 
  * to a given {@link PrecisionModel}.
+ * <p>
+ * Note: this may not produce correct results if the input
+ * contains repeated or invalid points.
+ * Repeated points should be removed before calling.
+ * See {@link CoordinateArrays#removeRepeatedOrInvalidPoints(Coordinate[])}.
  *
  * @version 1.7
  */
@@ -163,7 +167,7 @@ public class OffsetCurveBuilder
   {
     Coordinate[] copy = new Coordinate[pts.length];
     for (int i = 0; i < copy.length; i++) {
-      copy[i] = new Coordinate(pts[i]);
+      copy[i] = pts[i].copy();
     }
     return copy;
   }
@@ -177,7 +181,7 @@ public class OffsetCurveBuilder
    * Computes the distance tolerance to use during input
    * line simplification.
    * 
-   * @param distance the buffer distance
+   * @param bufDistance the buffer distance
    * @return the simplification tolerance
    */
   private double simplifyTolerance(double bufDistance)

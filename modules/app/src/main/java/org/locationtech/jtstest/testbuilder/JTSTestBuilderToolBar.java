@@ -16,7 +16,6 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
-
 import javax.swing.AbstractButton;
 import javax.swing.Box;
 import javax.swing.ButtonGroup;
@@ -59,6 +58,7 @@ public class JTSTestBuilderToolBar {
   JToggleButton btnEditVertex;
   JToggleButton extractComponentButton;
   JToggleButton deleteVertexButton;
+  JToggleButton btnMove;
 
   private final ImageIcon leftIcon = new ImageIcon(this.getClass().getResource("Left.png"));
   private final ImageIcon rightIcon = new ImageIcon(this.getClass().getResource("Right.png"));
@@ -81,7 +81,6 @@ public class JTSTestBuilderToolBar {
   private final ImageIcon zoomToInputBIcon = new ImageIcon(this.getClass().getResource("ZoomInputB.png"));
   private final ImageIcon zoomToResultIcon = new ImageIcon(this.getClass().getResource("ZoomResult.png"));
   private final ImageIcon zoomToFullExtentIcon = new ImageIcon(this.getClass().getResource("ZoomAll.png"));
-  private final ImageIcon selectIcon = new ImageIcon(this.getClass().getResource("Select.gif"));
   private final ImageIcon moveVertexIcon = new ImageIcon(this.getClass().getResource("MoveVertex.png"));
   private final ImageIcon panIcon = new ImageIcon(this.getClass().getResource("Hand.gif"));
 
@@ -361,6 +360,14 @@ public class JTSTestBuilderToolBar {
           }
         });
 
+      btnMove = createToggleButton(
+          AppStrings.TIP_MOVE, AppIcons.MOVE,
+        new java.awt.event.ActionListener() {
+          public void actionPerformed(ActionEvent e) {
+            controller().modeMove();
+          }
+        });
+
       extractComponentButton = createToggleButton(
           AppStrings.TIP_EXTRACT_COMPONENTS,
           new ImageIcon(this.getClass().getResource("ExtractComponent.png")), 
@@ -386,6 +393,7 @@ public class JTSTestBuilderToolBar {
           ,panButton
           ,zoomButton
           ,btnEditVertex
+          ,btnMove
           ,deleteVertexButton
           ,infoButton
           ,extractComponentButton
@@ -410,7 +418,9 @@ public class JTSTestBuilderToolBar {
         
         strut(20),
         drawRectangleButton,drawPolygonButton,drawLineStringButton,
-        drawPointButton, btnEditVertex,
+        drawPointButton, 
+        strut(20),
+        btnMove, btnEditVertex,
         deleteVertexButton
       );
       

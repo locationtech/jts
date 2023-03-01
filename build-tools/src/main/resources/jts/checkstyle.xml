@@ -12,7 +12,7 @@
   </module>
   <!--module name="JavadocPackage"/-->
   <module name="TreeWalker">
-    <!--module name="AvoidStarImport"/-->
+    <module name="AvoidStarImport"/>
     <!--module name="InvalidJavadocPosition"/--> <!-- 402 violations -->
     <!--module name="JavadocBlockTagLocation"/--> <!-- 14 violations -->
     <!--module name="JavadocContentLocationCheck"/--> <!-- 6 violations -->

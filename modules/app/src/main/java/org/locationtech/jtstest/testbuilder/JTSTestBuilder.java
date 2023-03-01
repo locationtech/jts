@@ -14,7 +14,6 @@ package org.locationtech.jtstest.testbuilder;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.lang.reflect.InvocationTargetException;
-
 import javax.swing.UIManager;
 
 import org.locationtech.jts.geom.GeometryFactory;

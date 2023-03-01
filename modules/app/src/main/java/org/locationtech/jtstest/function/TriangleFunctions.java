@@ -11,7 +11,12 @@
  */
 package org.locationtech.jtstest.function;
 
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LineSegment;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.Triangle;
 import org.locationtech.jts.geom.util.GeometryMapper;
 
 
@@ -39,6 +44,12 @@ public class TriangleFunctions {
         GeometryFactory geomFact = FunctionsUtil.getFactoryOrDefault(g);
         return geomFact.createPoint(cc);
       }});
+  }
+  
+  public static double circumradius(Geometry g)
+  {
+      Coordinate[] pts = trianglePts(g);
+      return Triangle.circumradius(pts[0], pts[1], pts[2]);
   }
   
   public static Geometry circumcentreDD(Geometry g)

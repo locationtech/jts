@@ -33,14 +33,15 @@ import org.locationtech.jts.triangulate.tri.Tri;
 /**
  * Constructs a concave hull of a set of polygons, respecting 
  * the polygons as constraints.
- * A concave hull is a possibly non-convex polygon containing all the input polygons.
+ * A concave hull is a concave or convex polygon containing all the input polygons,
+ * whose vertices are a subset of the vertices in the input.
  * A given set of polygons has a sequence of hulls of increasing concaveness,
  * determined by a numeric target parameter.
  * The computed hull "fills the gap" between the polygons,
  * and does not intersect their interior.
  * <p>
  * The concave hull is constructed by removing the longest outer edges 
- * of the Delaunay Triangulation of the space between the polygons,
+ * of the constrained Delaunay Triangulation of the space between the polygons,
  * until the target criterion parameter is reached.
  * <p>
  * The target criteria are:
@@ -57,15 +58,14 @@ import org.locationtech.jts.triangulate.tri.Tri;
  * via {@link #setHolesAllowed(boolean)}.
  * <p>
  * The hull can be specified as being "tight", via {@link #setTight(boolean)}.
- * This causes the result to follow the outer boundaries
- * of the input polygons. 
+ * This causes the result to follow the outer boundaries of the input polygons. 
  * <p>
  * Instead of the complete hull, the "fill area" between the input polygons 
  * can be computed using {@link #getFill()}.
  * <p>
  * The input polygons must form a valid {@link MultiPolygon}
  * (i.e. they must be non-overlapping and non-edge-adjacent).
- * If needed, a collection of polygons 
+ * If needed, a set of possibly-overlapping Polygons 
  * can be converted to a valid MultiPolygon
  * by using {@link Geometry#union()};
  * 
@@ -73,7 +73,7 @@ import org.locationtech.jts.triangulate.tri.Tri;
  *
  */
 public class ConcaveHullOfPolygons {
-  
+ 
   /**
    * Computes a concave hull of set of polygons
    * using the target criterion of maximum edge length.
@@ -169,10 +169,12 @@ public class ConcaveHullOfPolygons {
   }
   
   private static final int FRAME_EXPAND_FACTOR = 4;
-  
+  private static final int NOT_SPECIFIED = -1;
+  private static final int NOT_FOUND = -1;
+
   private Geometry inputPolygons;
-  private double maxEdgeLength = -1;
-  private double maxEdgeLengthRatio = -1;
+  private double maxEdgeLength = 0.0;
+  private double maxEdgeLengthRatio = NOT_SPECIFIED;
   private boolean isHolesAllowed = false;
   private boolean isTight = false;
   
@@ -217,7 +219,7 @@ public class ConcaveHullOfPolygons {
     if (edgeLength < 0)
       throw new IllegalArgumentException("Edge length must be non-negative");
     this.maxEdgeLength = edgeLength;
-    maxEdgeLengthRatio = -1;
+    maxEdgeLengthRatio = NOT_SPECIFIED;
   }
   
   /**
@@ -353,21 +355,26 @@ public class ConcaveHullOfPolygons {
     borderTriQue = new ArrayDeque<Tri>();
     for (Tri tri : tris) {
       int index = vertexIndex(tri, frameCorners);
-      boolean isFrameTri = index >= 0;
+      boolean isFrameTri = index != NOT_FOUND;
       if (isFrameTri) {
         /**
          * Frame tris are adjacent to at most one border tri,
          * which is opposite the frame corner vertex.
-         * The opposite tri may be another frame tri. 
-         * This is detected when it is processed,
-         * since it is not in the hullTri set.
+         * Or, the opposite tri may be another frame tri,
+         * which is not added as a border tri.
          */
         int oppIndex = Tri.oppEdge(index);
-        addBorderTri(tri, oppIndex);
+        Tri oppTri = tri.getAdjacent(oppIndex);
+        boolean isBorderTri = oppTri != null && ! isFrameTri(oppTri, frameCorners);
+        if (isBorderTri) {
+          addBorderTri(tri, oppIndex);
+        }
+        //-- remove the frame tri
         tri.remove();
       }
       else {
         hullTris.add(tri);
+        //System.out.println(tri);
       }
     }
     return hullTris;
@@ -387,7 +394,7 @@ public class ConcaveHullOfPolygons {
       if (index >= 0) 
         return index;
     }
-    return -1;
+    return NOT_FOUND;
   }
   
   private void removeBorderTris() {
@@ -400,13 +407,14 @@ public class ConcaveHullOfPolygons {
       if (isRemovable(tri)) {
         addBorderTris(tri);
         removeBorderTri(tri);
+        //System.out.println(tri);
       }
     }
   }
 
   private void removeHoleTris() {
     while (true) {
-      Tri holeTri = findHoleTri(hullTris);
+      Tri holeTri = findHoleSeedTri(hullTris);
       if (holeTri == null)
         return;
       addBorderTris(holeTri);
@@ -415,19 +423,29 @@ public class ConcaveHullOfPolygons {
     }
   }
   
-  private Tri findHoleTri(Set<Tri> tris) {
+  private Tri findHoleSeedTri(Set<Tri> tris) {
     for (Tri tri : tris) {
-      if (isHoleTri(tri))
+      if (isHoleSeedTri(tri))
         return tri;
     }
     return null;
   }
 
-  private boolean isHoleTri(Tri tri) {
+  private boolean isHoleSeedTri(Tri tri) {
+    if (isBorderTri(tri))
+      return false;
     for (int i = 0; i < 3; i++) {
       if (tri.hasAdjacent(i)
           && tri.getLength(i) > maxEdgeLength)
          return true;
+    }
+    return false;
+  }
+
+  private boolean isBorderTri(Tri tri) {
+    for (int i = 0; i < 3; i++) {
+      if (! tri.hasAdjacent(i))
+          return true;
     }
     return false;
   }

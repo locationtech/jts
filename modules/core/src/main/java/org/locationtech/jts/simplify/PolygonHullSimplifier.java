@@ -9,7 +9,7 @@
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
  */
-package org.locationtech.jts.algorithm.hull;
+package org.locationtech.jts.simplify;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +24,7 @@ import org.locationtech.jts.geom.Polygonal;
 import org.locationtech.jts.math.MathUtil;
 
 /**
- * Computes hulls which respect the boundaries of polygonal geometry.
+ * Computes topology-preserving simplified hulls of polygonal geometry.
  * Both outer and inner hulls can be computed.
  * Outer hulls contain the input geometry and are larger in area.
  * Inner hulls are contained by the input geometry and are smaller in area.
@@ -32,14 +32,15 @@ import org.locationtech.jts.math.MathUtil;
  * The hull construction attempts to minimize the area difference
  * with the input geometry.
  * Hulls are generally concave if the input is.
- * Computed hulls do not contain any self-intersections or overlaps, 
+ * Computed hulls are topology-preserving: 
+ * they do not contain any self-intersections or overlaps, 
  * so the result polygonal geometry is valid.
  * <p>
  * Polygons with holes and MultiPolygons are supported. 
  * The result has the same geometric type and structure as the input.
  * <p>
  * The number of vertices in the computed hull is determined by a target parameter.
- * Two different parameters are supported:
+ * Two parameters are supported:
  * <ol>
  * <li><b>Vertex Number fraction:</b> the fraction of the input vertices retained in the result.
  * Value 1 produces the original geometry.
@@ -54,50 +55,48 @@ import org.locationtech.jts.math.MathUtil;
  * </ol> 
  * The algorithm ensures that the result does not cause the target parameter 
  * to be exceeded.  This allows computing outer or inner hulls
- * with a small area delta ratio to be an effective way of removing 
+ * with a small area delta ratio as an effective way of removing 
  * narrow gores and spikes.   
  * 
  * @author Martin Davis
  *
  */
-public class PolygonHull {
+public class PolygonHullSimplifier {
   
   /**
-   * Computes a boundary-respecting hull of a polygonal geometry,
+   * Computes a topology-preserving simplified hull of a polygonal geometry,
    * with hull shape determined by a target parameter 
    * specifying the fraction of the input vertices retained in the result.
    * Larger values compute less concave results.
    * A value of 1 produces the convex hull; a value of 0 produces the original geometry.
-   * An outer hull is computed if the parameter is positive, 
-   * an inner hull is computed if it is negative.
+   * Either outer or inner hulls can be computed.
    * 
    * @param geom the polygonal geometry to process
+   * @param isOuter indicates whether to compute an outer or inner hull
    * @param vertexNumFraction the target fraction of number of input vertices in result
    * @return the hull geometry
    */
-  public static Geometry hull(Geometry geom, double vertexNumFraction) {
-    boolean isOuter = vertexNumFraction >= 0;
-    PolygonHull hull = new PolygonHull(geom, isOuter);
+  public static Geometry hull(Geometry geom, boolean isOuter, double vertexNumFraction) {
+    PolygonHullSimplifier hull = new PolygonHullSimplifier(geom, isOuter);
     hull.setVertexNumFraction( Math.abs(vertexNumFraction));
     return hull.getResult();
   }
 
   /**
-   * Computes a boundary-respecting hull of a polygonal geometry,
+   * Computes a topology-preserving simplified hull of a polygonal geometry,
    * with hull shape determined by a target parameter 
    * specifying the ratio of maximum difference in area to original area.
    * Larger values compute less concave results.
    * A value of 0 produces the original geometry.
-   * An outer hull is computed if the parameter is positive, 
-   * an inner hull is computed if it is negative.
+   * Either outer or inner hulls can be computed.
    * 
    * @param geom the polygonal geometry to process
+   * @param isOuter indicates whether to compute an outer or inner hull
    * @param areaDeltaRatio the target ratio of area difference to original area
    * @return the hull geometry
    */
-  public static Geometry hullByAreaDelta(Geometry geom, double areaDeltaRatio) {
-    boolean isOuter = areaDeltaRatio >= 0;
-    PolygonHull hull = new PolygonHull(geom, isOuter);
+  public static Geometry hullByAreaDelta(Geometry geom, boolean isOuter, double areaDeltaRatio) {
+    PolygonHullSimplifier hull = new PolygonHullSimplifier(geom, isOuter);
     hull.setAreaDeltaRatio( Math.abs(areaDeltaRatio));
     return hull.getResult();
   }
@@ -110,14 +109,14 @@ public class PolygonHull {
   
   /**
    * Creates a new instance
-   * to compute a hull of a polygonal geometry.
+   * to compute a simplified hull of a polygonal geometry.
    * An outer or inner hull is computed 
    * depending on the value of <code>isOuter</code>. 
    * 
    * @param inputGeom the polygonal geometry to process
    * @param isOuter indicates whether to compute an outer or inner hull
    */
-  public PolygonHull(Geometry inputGeom, boolean isOuter) {
+  public PolygonHullSimplifier(Geometry inputGeom, boolean isOuter) {
     this.inputGeom = inputGeom; 
     this.geomFactory = inputGeom.getFactory();
     this.isOuter = isOuter;

@@ -13,14 +13,12 @@ package org.locationtech.jts.operation.polygonize;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
 
 import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.algorithm.locate.IndexedPointInAreaLocator;
 import org.locationtech.jts.algorithm.locate.PointOnGeometryLocator;
 import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.CoordinateArrays;
 import org.locationtech.jts.geom.CoordinateList;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -57,51 +55,20 @@ class EdgeRing {
    * make the passed shellList as small as possible (e.g.
    * by using a spatial index filter beforehand).
    * 
-   * @return containing EdgeRing, if there is one
-   * or null if no containing EdgeRing is found
+   * @return containing EdgeRing, or null if no containing EdgeRing is found
    */
-  public static EdgeRing findEdgeRingContaining(EdgeRing testEr, List erList)
+  public static EdgeRing findEdgeRingContaining(EdgeRing testEr, List<EdgeRing> erList)
   {
-    LinearRing testRing = testEr.getRing();
-    Envelope testEnv = testRing.getEnvelopeInternal();
-    Coordinate testPt = testRing.getCoordinateN(0);
-
-    EdgeRing minRing = null;
-    Envelope minRingEnv = null;
-    for (Iterator it = erList.iterator(); it.hasNext(); ) {
-      EdgeRing tryEdgeRing = (EdgeRing) it.next();
-      LinearRing tryRing = tryEdgeRing.getRing();
-      Envelope tryShellEnv = tryRing.getEnvelopeInternal();
-      // the hole envelope cannot equal the shell envelope
-      // (also guards against testing rings against themselves)
-      if (tryShellEnv.equals(testEnv)) continue;
-      
-      // hole must be contained in shell
-      if (! tryShellEnv.contains(testEnv)) continue;
-      
-      testPt = CoordinateArrays.ptNotInList(testRing.getCoordinates(), tryEdgeRing.getCoordinates());
- 
-      /**
-       * If testPt is null it indicates that the hole is exactly surrounded by the tryShell.
-       * This should not happen for fully noded/dissolved linework.
-       * For now just ignore this hole and continue - this should produce
-       * "best effort" output.
-       * In futher could flag this as an error (invalid ring).
-       */
-      if (testPt == null) continue;
-      
-      boolean isContained =  tryEdgeRing.isInRing(testPt);
-
-      // check if the new containing ring is smaller than the current minimum ring
-      if (isContained) {
-        if (minRing == null
-            || minRingEnv.contains(tryShellEnv)) {
-          minRing = tryEdgeRing;
-          minRingEnv = minRing.getRing().getEnvelopeInternal();
+    EdgeRing minContainingRing = null;
+    for (EdgeRing edgeRing : erList) {
+      if (edgeRing.contains(testEr)) {
+        if (minContainingRing == null
+            || minContainingRing.getEnvelope().contains(edgeRing.getEnvelope())) {
+          minContainingRing = edgeRing;
         }
       }
     }
-    return minRing;
+    return minContainingRing;
   }
   
   /**
@@ -112,10 +79,10 @@ class EdgeRing {
    * @param startDE the DirectedEdge to start traversing at
    * @return a List of DirectedEdges that form a ring
    */
-  public static List findDirEdgesInRing(PolygonizeDirectedEdge startDE)
+  public static List<PolygonizeDirectedEdge> findDirEdgesInRing(PolygonizeDirectedEdge startDE)
   {
     PolygonizeDirectedEdge de = startDE;
-    List edges = new ArrayList();
+    List<PolygonizeDirectedEdge> edges = new ArrayList<PolygonizeDirectedEdge>();
     do {
       edges.add(de);
       de = de.getNext();
@@ -127,20 +94,21 @@ class EdgeRing {
   
   private GeometryFactory factory;
 
-  private List deList = new ArrayList();
-  private DirectedEdge lowestEdge = null;
+  private List<PolygonizeDirectedEdge> deList = new ArrayList<PolygonizeDirectedEdge>();
   
   // cache the following data for efficiency
   private LinearRing ring = null;
   private IndexedPointInAreaLocator locator;
   
   private Coordinate[] ringPts = null;
-  private List holes;
+  private List<LinearRing> holes;
   private EdgeRing shell;
   private boolean isHole;
+  private boolean isValid = false;
   private boolean isProcessed = false;
   private boolean isIncludedSet = false;
   private boolean isIncluded = false;
+
 
   public EdgeRing(GeometryFactory factory)
   {
@@ -164,9 +132,13 @@ class EdgeRing {
    */
   private void add(DirectedEdge de)
   {
-    deList.add(de);
+    deList.add((PolygonizeDirectedEdge) de);
   }
 
+  public List<PolygonizeDirectedEdge> getEdges() {
+    return deList;
+  }
+  
   /**
    * Tests whether this ring is a hole.
    * @return <code>true</code> if this ring is a hole
@@ -193,7 +165,7 @@ class EdgeRing {
    */
   public void addHole(LinearRing hole) {
     if (holes == null)
-      holes = new ArrayList();
+      holes = new ArrayList<LinearRing>();
     holes.add(hole);
   }
 
@@ -205,7 +177,7 @@ class EdgeRing {
     holeER.setShell(this);
     LinearRing hole = holeER.getRing();
     if (holes == null)
-      holes = new ArrayList();
+      holes = new ArrayList<LinearRing>();
     holes.add(hole);
   }
 
@@ -232,12 +204,22 @@ class EdgeRing {
    * 
    * @return true if the ring is valid
    */
-  public boolean isValid()
-  {
+  public boolean isValid() {
+    return isValid;
+  }
+  
+  /**
+   * Computes the validity of the ring.
+   * Must be called prior to calling {@link #isValid}.
+   */
+  public void computeValid() {
     getCoordinates();
-    if (ringPts.length <= 3) return false;
+    if (ringPts.length <= 3) { 
+      isValid = false;
+      return;
+    }
     getRing();
-    return ring.isValid();
+    isValid = ring.isValid();
   }
 
   public boolean isIncludedSet() {
@@ -260,12 +242,44 @@ class EdgeRing {
     return locator;
   }
   
-  public boolean isInRing(Coordinate pt) {
+  public int locate(Coordinate pt) {
     /**
      * Use an indexed point-in-polygon for performance
      */
-    return Location.EXTERIOR != getLocator().locate(pt);
-    //return PointLocation.isInRing(pt, getCoordinates());
+    return getLocator().locate(pt);
+  }
+  
+  /**
+   * Tests if an edgeRing is properly contained in this ring.
+   * Relies on property that edgeRings never overlap (although they may
+   * touch at single vertices).
+   * 
+   * @param ring ring to test
+   * @return true if ring is properly contained
+   */
+  private boolean contains(EdgeRing ring) {
+    // the test envelope must be properly contained
+    // (guards against testing rings against themselves)
+    Envelope env = getEnvelope();
+    Envelope testEnv = ring.getEnvelope();
+    if (! env.containsProperly(testEnv))
+      return false;
+    return isPointInOrOut(ring);
+  }
+  
+  private boolean isPointInOrOut(EdgeRing ring) {
+    // in most cases only one or two points will be checked
+    for (Coordinate pt : ring.getCoordinates()) {
+      int loc = locate(pt);
+      if (loc == Location.INTERIOR) {
+        return true;
+      }
+      if (loc == Location.EXTERIOR) {
+        return false;
+      }
+      // pt is on BOUNDARY, so keep checking for a determining location
+    }
+    return false;
   }
   
   /**
@@ -278,8 +292,7 @@ class EdgeRing {
   {
     if (ringPts == null) {
       CoordinateList coordList = new CoordinateList();
-      for (Iterator i = deList.iterator(); i.hasNext(); ) {
-        DirectedEdge de = (DirectedEdge) i.next();
+      for (PolygonizeDirectedEdge de : deList) {
         PolygonizeEdge edge = (PolygonizeEdge) de.getEdge();
         addEdge(edge.getLine().getCoordinates(), de.getEdgeDirection(), coordList);
       }
@@ -319,6 +332,10 @@ class EdgeRing {
     return ring;
   }
 
+  private Envelope getEnvelope() {
+    return getRing().getEnvelopeInternal();
+  }
+  
   private static void addEdge(Coordinate[] coords, boolean isForward, CoordinateList coordList)
   {
     if (isForward) {
@@ -456,13 +473,25 @@ class EdgeRing {
    * @author mbdavis
    *
    */
-  static class EnvelopeComparator implements Comparator {
-    public int compare(Object obj0, Object obj1) {
-      EdgeRing r0 = (EdgeRing) obj0;
-      EdgeRing r1 = (EdgeRing) obj1;
+  static class EnvelopeComparator implements Comparator<EdgeRing> {
+    public int compare(EdgeRing r0, EdgeRing r1) {
       return r0.getRing().getEnvelope().compareTo(r1.getRing().getEnvelope());
     }
-    
   }
 
+  /**
+   * Compares EdgeRings based on the area of their envelopes.
+   * Smaller envelopes sort before bigger ones.
+   * This effectively sorts EdgeRings in order of containment.
+   * 
+   * @author mdavis
+   *
+   */
+  static class EnvelopeAreaComparator implements Comparator<EdgeRing> {
+    public int compare(EdgeRing r0, EdgeRing r1) {
+      return Double.compare(
+          r0.getRing().getEnvelope().getArea(),
+          r1.getRing().getEnvelope().getArea() );
+    }
+  }
 }

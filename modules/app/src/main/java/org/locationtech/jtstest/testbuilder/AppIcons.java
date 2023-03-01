@@ -41,6 +41,7 @@ public class AppIcons {
   public final static ImageIcon PASTE = load("Paste.png");
   public final static ImageIcon CUT = load("Delete_small.png");
   public final static ImageIcon GEOM_LOAD = load("LoadWKTToTest.png");
+  public final static ImageIcon MOVE = load("Move.png");
   
   public final static ImageIcon ICON_COLLECTION 	= load("Icon_GeomCollection.png");
   public final static ImageIcon ICON_COLLECTION_B 	= load("Icon_GeomCollection_B.png");

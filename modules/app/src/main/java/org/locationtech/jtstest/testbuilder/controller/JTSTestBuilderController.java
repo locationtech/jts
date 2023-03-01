@@ -18,13 +18,13 @@ import javax.swing.JFileChooser;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.util.LinearComponentExtracter;
-import org.locationtech.jtstest.testbuilder.TestBuilderDialogs;
 import org.locationtech.jtstest.clean.CleanDuplicatePoints;
 import org.locationtech.jtstest.testbuilder.GeometryEditPanel;
 import org.locationtech.jtstest.testbuilder.JTSTestBuilder;
 import org.locationtech.jtstest.testbuilder.JTSTestBuilderFrame;
 import org.locationtech.jtstest.testbuilder.JTSTestBuilderToolBar;
 import org.locationtech.jtstest.testbuilder.SpatialFunctionPanel;
+import org.locationtech.jtstest.testbuilder.TestBuilderDialogs;
 import org.locationtech.jtstest.testbuilder.model.GeometryEditModel;
 import org.locationtech.jtstest.testbuilder.model.LayerList;
 import org.locationtech.jtstest.testbuilder.model.TestBuilderModel;
@@ -36,6 +36,7 @@ import org.locationtech.jtstest.testbuilder.ui.tools.EditVertexTool;
 import org.locationtech.jtstest.testbuilder.ui.tools.ExtractComponentTool;
 import org.locationtech.jtstest.testbuilder.ui.tools.InfoTool;
 import org.locationtech.jtstest.testbuilder.ui.tools.LineStringTool;
+import org.locationtech.jtstest.testbuilder.ui.tools.MoveTool;
 import org.locationtech.jtstest.testbuilder.ui.tools.PanTool;
 import org.locationtech.jtstest.testbuilder.ui.tools.PointTool;
 import org.locationtech.jtstest.testbuilder.ui.tools.RectangleTool;
@@ -265,6 +266,9 @@ public class JTSTestBuilderController
   }
   public void modeEditVertex() {
     setTool(EditVertexTool.getInstance());
+  }
+  public void modeMove() {
+    setTool(MoveTool.getInstance());
   }
   public void modeZoomIn() {
     setTool(ZoomTool.getInstance());

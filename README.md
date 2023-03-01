@@ -32,6 +32,10 @@ Currently JTS targets Java 1.8 and above.
 * [Mailing List](https://accounts.eclipse.org/mailing-list/jts-dev)
 * [Gitter Channel](https://gitter.im/locationtech/jts)
 
+### Forums
+* [Stack Overflow](https://stackoverflow.com/questions/tagged/jts)
+* [GIS Stack Exchange](https://gis.stackexchange.com/questions/tagged/jts-topology-suite)
+
 ## License
 
 JTS is open source software.  It is dual-licensed under:
@@ -70,6 +74,7 @@ If you are interested in contributing to JTS please read the [**Contributing Gui
 * [**GEOS**](https://trac.osgeo.org/geos) - C++
 * [**NetTopologySuite**](https://github.com/NetTopologySuite/NetTopologySuite) - .NET
 * [**JSTS**](https://github.com/bjornharrtell/jsts) - JavaScript
+* [**dart_jts]([https://pub.dev/packages/dart_jts](https://github.com/moovida/dart_jts)) - Dart
 
 ### Via GEOS
 * [**Shapely**](https://github.com/Toblerity/Shapely) - Python wrapper of GEOS

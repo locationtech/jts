@@ -17,35 +17,80 @@ Distributions for older JTS versions can be obtained at the
 
 <!-- ================================================================ -->
 
+# Version 1.x
+
+*Release Date: TBD*
+
+### New Features
+* Add `CoverageValidator` `CoveragePolygonValidator` (#900)
+* Add `CoverageGapFinder` (#900)
+* Add `CoverageUnion` (#900)
+* Add `CoverageSimplifier` (#911)
+* Add `OverlayNG` support for simple GeometryCollection inputs (#915)
+* Add `Geometry.hasDimension(int dim)` method {#944}
+* Add `ConcaveHull.alphaShape` function (#952)
+* Add `OffsetCurve` Joined mode (#956)
+
+### Functionality Improvements
+* Improve `TopologyPreservingSimplifier` to prevent edge-disjoint line collapse (#925)
+* Improve `OffsetCurve` to return more linework for some input situations (#956)
+* Reduce buffer curve short fillet segments (#960)
+
+### Bug Fixes
+* Fix `PreparedGeometry` handling of EMPTY elements (#904)
+* Fix `WKBReader` parsing of WKB containing multiple empty elements (#905)
+* Fix `LineSegment.orientationIndex(LineSegment)` to correct orientation for non-collinear segments on right (#914) 
+* Fix `DepthSegment` compareTo method (#920)
+* Ensure `GeometryFixer` does not change coordinate dimension (#922)
+* Improve `ConvexHull` radial sort robustness (#927)
+* Improve robustness of Delaunay Triangulation frame size heuristic (#931)
+* Fix `PreparedLineString.intersects` to handle mixed GCs correctly (#944)
+* Fix `QuadEdgeSubdivision.TriangleEdgesListVisitor` (#945)
+* Fix `PolygonHoleJoiner` to handle all valid inputs 
+  (allows `PolygonTriangulator`, `ConstrainedDelaunayTriangulator`, and `ConcaveHullOfPolygons` to work correctly) (#946)
+* Fix `OffsetCurve` handling of input with repeated points (#956)
+
+### Performance Improvements
+
+* Improve `Polygonizer` performance in some cases with many islands (#906)
+
 # Version 1.19
 
-* Release Date: TBD *
+*Release Date: 06/21/2022*
+
+### New Features
+
+* Add `ConstrainedDelaunayTriangulator` and `PolygonTriangulator` (#775, #862)
+* Add `Tri` data structure for representing triangulations (#775)
+* Add `DiscreteFrechetDistance` (#764, #783)
+* Add `OffsetCurve` class (#810, #816)
+* Add `ConcaveHull` class for points (#823, #829)
+* Add `ConcaveHullOfPolygons` class (#870)
+* Add `PolygonHullSimplifier` class (#861, #880)
+* TWKB read and write implementation (#854)
 
 ### Functionality Improvements
 
 * Improve `GeometryFixer` behaviour for holes outside polygons (#772)
-* Add `ConstrainedDelaunayTriangulator` and `PolygonTriangulator` (#775, #862)
-* Add `Tri` data structure for representing triangulations (#775)
 * Simplify and fix logic of `BufferParameters.setQuadSegs` (#778)
 * Improve `KdTree` query code to avoid recursion (#779)
 * Add `KdTree` seeding to`SnappingNoder` (#780)
-* Add `DiscreteFrechetDistance` (#764, #783)
 * Add `GeometryFixer` option to preserve `Multi` geometry types when collapses occur (#791)
 * Make `QuadTree` thread-safe (#792)
 * Allow specifying a fixed `PrecisionModel` via grid size (#804)
-* Add `OffsetCurve` class (#810, #816)
-* Add `ConcaveHull` class for points (#823, #829)
 * Improve `Densifier` to interpolate Z values (#835)
-* Add support for GeoJSON Feature and FeatureCollection types (#837)
+* Add support for GeoJSON `Feature` and `FeatureCollection` types (#837)
 * Add `WKTReader.setFixStructure` to fix WKT input (#848)
-* Add `PolygonHull` class (#861)
-* Add `ConcaveHullOfPolygons` (#870)
 * Improve `LineSegment.hashCode` to reduce collisions (#872)
+
+### Performance Improvements
+
+* Improve performance of `CoveageUnion` by using boundary chains (#891)
 
 ### Bug Fixes
 
 * Fix `WKTReader` geometry typename parsing (#786)
-* Fix `CoordinateArrays.reverse` to handle zero-length arrays #787
+* Fix `CoordinateArrays.reverse` to handle zero-length arrays (#787)
 * Fix `GeometryFixer` to appply `isKeepCollapsed` flag to `GeometryCollection` elements (#790)
 * Fix `RectangleIntersects` to handle XYZM geometry (#794)
 * Fix various operations to handle XYZM geometry (#795)
@@ -58,6 +103,10 @@ Distributions for older JTS versions can be obtained at the
 * Fix IsValidOp for repeated node points (#845)
 * Fix `IsSimpleOp` for repeated endpoints (#851)
 * Fix `GeometryFixer` via noding check for zero-distance buffers (#867)
+* Fix `MinimumDiameter.minimumRectangle` for flat inputs (#875)
+* Fix `BufferOp` inverted ring check optimization (#878)
+* Fix `STRtree` nearest-neighbour queries on empty trees to avoid NPE (#886)
+* Remove transitive compile dependency on `junit` from `jts-io-commmon` (#855)
 
 # Version 1.18.2
 
@@ -67,9 +116,12 @@ Distributions for older JTS versions can be obtained at the
 
 * Move `IsSimpleOp` to `org.locationtech.jts.operation.valid` package (#717)
 
-### Functionality Improvements
+### New Features
 
 * Add `GeometryFixer` class (#704)
+
+### Functionality Improvements
+
 * Improve design and performance of `IsSimpleOp` (#717, #754)
 * Improve design and perforance of `IsValidOp` (#743, #748, #755, #756, #757)
 * Fix `SortedPackedIntervalRtree` to be thread-safe (fixes `PreparedPolygon` too) (#746)
@@ -135,23 +187,26 @@ Distributions for older JTS versions can be obtained at the
 * Removed `SimpleSnapRounder` - use `SnapRoundingNoder` instead
 * Deprecated `MCIndexSnapRounder` - use `SnapRoundingNoder` instead
 
-### Functionality Improvements
+### New Features
 
-* Improve Orientation.isCCW to handle flat topology collapse (#588)
 * Add `KMLReader` (#593)
-* Add `Densifier.setValidated` method to allow disabling expensive polygon validation (#595)
 * Add `OverlayNG` codebase (#599)
 * Add Z support in OverlayNG (#645)
 * Add system property `jts.overlay=ng` to enable use of OverlayNG in `Geometry` methods (#615)
 * Add `SnapRoundingNoder` (#599)
 * Add `SnappingNoder` (#599)
+* Add `Orientation.isCCWArea` (#655)
+
+### Functionality Improvements
+
+* Improve `Orientation.isCCW` to handle flat topology collapse (#588)
+* Add `Densifier.setValidated` method to allow disabling expensive polygon validation (#595)
 * Change `GeometryPrecisionReducer` to use OverlayNG with Snap-Rounding
 * Change `GeometryNoder` to use `SnapRoundingNoder`
 * Add `KdTree` `size` and `depth` methods (#603)
 * Improve `WKBWriter` to write empty Polygons using a more compact representation (#623)
 * Support read and initialize internal structure of `STRtree` and `Quadtree` (#634)
 * Improve `GeometryPrecisionReducer` to handle GeometryCollections (#648)
-* Add `Orientation.isCCWArea` (#655)
 
 ### Performance Improvements
 
@@ -230,7 +285,7 @@ Distributions for older JTS versions can be obtained at the
 * Change `Polygon` `getExteriorRing` and `getInteriorRingN` accessors to return `LinearRing`.
   * *This is a binary incompatible change to the method signature.  Recompilation is necessary. No source code changes are required.*
 
-### Functionality Improvements
+### New Features
 
 * Added `IndexedFacetDistance.isWithinDistance`
 * Added `OrdinateFormat` to ensure that ordinate text output is accurate and consistent
@@ -238,21 +293,24 @@ Distributions for older JTS versions can be obtained at the
 * Added `DD.determinant` methods
 * Added `Envelope` methods `getDiameter`, `copy`, `disjoint` (#483)
 * Added `Intersection` class, refactored library to use it (#468)
-* Added `CascadedPolygonUnion` union-by-buffer on error capability (#470)
-* Added `HalfEdge` support for direction points (#479)
 * Added `CoordinateList.toCoordinateArray(isForward)` (#482)
-* Addded `HPRtree` Hilbert Packed R-tree (#494)
+* Added `HPRtree` Hilbert Packed R-tree (#494)
 * Added `VariableBuffer` class for computing varying-distance buffers (#495)
 * Added `LineSegment.reflect` method (#495)
 * Added `MaximumInscribedCircle` algorithm (#530)
 * Added `LargestEmptyCircle` algorithm (#530)
+
+### Functionality Improvements
+
+* Added `CascadedPolygonUnion` union-by-buffer on error capability (#470)
+* Added `HalfEdge` support for direction points (#479)
 
 ### Performance Improvements
 
 * Improve performance of `UniqueCoordinateFilter` (#422)
 * Improve performance of `Polygonizer` (#431)
 * Avoid use of `ArrayList` in MonotoneChain builders
-* Add DistanceOp line-line envelope short-circuit optimizations (#534)
+* Add `DistanceOp` line-line envelope short-circuit optimizations (#534)
 
 ### Bug Fixes
 

@@ -12,7 +12,7 @@
 
 package org.locationtech.jtstest.function;
 
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.shape.fractal.HilbertCurveBuilder;
 import org.locationtech.jts.shape.fractal.KochSnowflakeBuilder;
 import org.locationtech.jts.shape.fractal.MortonCurveBuilder;

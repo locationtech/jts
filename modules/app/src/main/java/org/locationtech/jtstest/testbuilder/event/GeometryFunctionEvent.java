@@ -13,7 +13,6 @@ package org.locationtech.jtstest.testbuilder.event;
 
 import java.util.EventObject;
 
-import org.locationtech.jtstest.function.*;
 import org.locationtech.jtstest.geomfunction.GeometryFunction;
 
 /**

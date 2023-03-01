@@ -13,9 +13,13 @@ package org.locationtech.jtstest.geomop;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Geometry;
 
 
 /**

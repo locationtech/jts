@@ -12,8 +12,11 @@
 
 package org.locationtech.jtstest.testbuilder.ui;
 
-import java.awt.*;
-import java.awt.datatransfer.*;
+import java.awt.Toolkit;
+import java.awt.datatransfer.ClipboardOwner;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 
 public class ClipImage implements Transferable, ClipboardOwner {
 

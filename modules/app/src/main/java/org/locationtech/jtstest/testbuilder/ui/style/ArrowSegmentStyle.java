@@ -101,7 +101,7 @@ public class ArrowSegmentStyle
     double dx = p1.getX() - p0.getX();
     double dy = p1.getY() - p0.getY();
 
-    double len = Math.sqrt(dx * dx + dy * dy);
+    double len = Math.hypot(dx, dy);
     
     double vy = dy / len;
     double vx = dx / len;
@@ -162,7 +162,7 @@ public class ArrowSegmentStyle
     double dx = p1.getX() - origin.getX();
     double dy = p1.getY() - origin.getY();
     
-    double vlen = Math.sqrt(dx * dx + dy * dy);
+    double vlen = Math.hypot(dx, dy);
     
     if (vlen <= 0) return null;
     
@@ -206,7 +206,7 @@ public class ArrowSegmentStyle
     double dx = p1.getX() - p0.getX();
     double dy = p1.getY() - p0.getY();
     
-    double len = Math.sqrt(dx * dx + dy * dy);
+    double len = Math.hypot(dx, dy);
     
     return len < minLen;
   }

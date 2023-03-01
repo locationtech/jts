@@ -44,6 +44,9 @@
  * <li>Input geometries may have different dimension.</li>
  * <li>Collections must be homogeneous
  * (all elements must have the same dimension).</li>
+ * <li>Inputs may be <b>simple</b> {@link GeometryCollection}s.
+ * A GeometryCollection is simple if it can be flattened into a valid Multi-geometry;
+ * i.e. it is homogeneous and does not contain any overlapping Polygons.</li>  
  * <li>In general, inputs must be valid geometries.</li>
  * <li>However, polygonal inputs may contain the following two kinds of "mild" invalid topology:
  * <ul>

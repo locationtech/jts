@@ -321,6 +321,8 @@ implements SpatialIndex, Serializable
    */
   public Object nearestNeighbour(Envelope env, Object item, ItemDistance itemDist)
   {
+    if (isEmpty()) return null;
+
     Boundable bnd = new ItemBoundable(env, item);
     BoundablePair bp = new BoundablePair(this.getRoot(), bnd, itemDist);
     return nearestNeighbour(bp)[0];
@@ -497,7 +499,7 @@ implements SpatialIndex, Serializable
   }
  
   /**
-   * Finds k items in this tree which are the top k nearest neighbors to the given {@code item}, 
+   * Finds up to k items in this tree which are the nearest neighbors to the given {@code item}, 
    * using {@code itemDist} as the distance metric.
    * A Branch-and-Bound tree traversal algorithm is used
    * to provide an efficient search.
@@ -510,15 +512,20 @@ implements SpatialIndex, Serializable
    * contained in the tree, but it does 
    * have to be compatible with the {@code itemDist} 
    * distance metric. 
+   * <p>
+   * If the tree size is smaller than k fewer items will be returned.
+   * If the tree is empty an array of size 0 is returned.
    * 
    * @param env the envelope of the query item
-   * @param item the item to find the nearest neighbour of
+   * @param item the item to find the nearest neighbours of
    * @param itemDist a distance metric applicable to the items in this tree and the query item
-   * @param k the K nearest items in kNearestNeighbour
-   * @return the K nearest items in this tree
+   * @param k the maximum number of nearest items to search for
+   * @return an array of the nearest items found (with length between 0 and K)
    */
   public Object[] nearestNeighbour(Envelope env, Object item, ItemDistance itemDist,int k)
   {
+    if (isEmpty()) return new Object[0];
+
     Boundable bnd = new ItemBoundable(env, item);
     BoundablePair bp = new BoundablePair(this.getRoot(), bnd, itemDist);
     return nearestNeighbourK(bp,k);

@@ -11,9 +11,11 @@
  */
 package org.locationtech.jtstest.geomop;
 
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.geom.prep.*;
-import org.locationtech.jtstest.testrunner.*;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.prep.PreparedGeometry;
+import org.locationtech.jts.geom.prep.PreparedGeometryFactory;
+import org.locationtech.jtstest.testrunner.BooleanResult;
+import org.locationtech.jtstest.testrunner.Result;
 
 
 /**

@@ -91,7 +91,16 @@ public class FunctionsUtil {
     if (geoms.length > 0) {
       gf = getFactoryOrDefault(geoms[0]);
     }
-    return gf.createGeometryCollection(geoms);
+    
+    List<Geometry> geomList = new ArrayList<Geometry>();
+    for (Geometry geom : geoms) {
+      if (geom != null) {
+        geomList.add(geom);
+        if (gf == null) 
+          gf = geom.getFactory();
+      }
+    }
+    return gf.buildGeometry(geomList);
   }
   
   public static Geometry buildGeometry(Geometry a, Geometry b) {

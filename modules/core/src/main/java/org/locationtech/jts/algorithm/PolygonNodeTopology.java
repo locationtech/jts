@@ -9,9 +9,8 @@
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
  */
-package org.locationtech.jts.operation.valid;
+package org.locationtech.jts.algorithm;
 
-import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Quadrant;
 
@@ -22,19 +21,19 @@ import org.locationtech.jts.geom.Quadrant;
  * @author mdavis
  *
  */
-class PolygonNode 
+public class PolygonNodeTopology 
 {
   /**
-   * Check if the edges at a node between two rings (or one ring) cross.
-   * The node is topologically valid if the ring edges do not cross.
-   * This function assumes that the edges are not collinear. 
+   * Check if the segments at a node between two rings (or one ring) cross.
+   * The node is topologically valid if the rings do not cross.
+   * This function assumes that the segments are not collinear. 
    *  
    * @param nodePt the node location
-   * @param a0 the previous edge endpoint in a ring
-   * @param a1 the next edge endpoint in a ring
-   * @param b0 the previous edge endpoint in the other ring
-   * @param b1 the next edge endpoint in the other ring
-   * @return true if the edges cross at the node
+   * @param a0 the previous segment endpoint in a ring
+   * @param a1 the next segment endpoint in a ring
+   * @param b0 the previous segment endpoint in the other ring
+   * @param b1 the next segment endpoint in the other ring
+   * @return true if the rings cross at the node
    */
   public static boolean isCrossing(Coordinate nodePt, Coordinate a0, Coordinate a1, Coordinate b0, Coordinate b1) {
     Coordinate aLo = a0;
@@ -54,16 +53,17 @@ class PolygonNode
   }
 
   /**
-   * Tests whether an edge node-b lies in the interior or exterior
-   * of a corner of a ring given by a0-node-a1.
-   * The ring interior is assumed to be on the right of the corner (a CW ring).
-   * The edge must not be collinear with the corner segments.
+   * Tests whether an segment node-b lies in the interior or exterior
+   * of a corner of a ring formed by the two segments a0-node-a1.
+   * The ring interior is assumed to be on the right of the corner 
+   * (i.e. a CW shell or CCW hole).
+   * The test segment must not be collinear with the corner segments.
    * 
    * @param nodePt the node location
    * @param a0 the first vertex of the corner
    * @param a1 the second vertex of the corner
-   * @param b the destination vertex of the edge
-   * @return true if the edge is interior to the ring corner
+   * @param b the other vertex of the test segment
+   * @return true if the segment is interior to the ring corner
    */
   public static boolean isInteriorSegment(Coordinate nodePt, Coordinate a0, Coordinate a1, Coordinate b) {
     Coordinate aLo = a0;

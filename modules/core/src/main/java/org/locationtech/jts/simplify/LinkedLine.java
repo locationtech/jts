@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Martin Davis.
+ * Copyright (c) 2022 Martin Davis.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -9,42 +9,57 @@
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
  */
-package org.locationtech.jts.algorithm.hull;
+package org.locationtech.jts.simplify;
 
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateArrays;
 import org.locationtech.jts.geom.CoordinateList;
+import org.locationtech.jts.io.WKTWriter;
 
-class LinkedRing {
+public class LinkedLine {
   
   private static final int NO_COORD_INDEX = -1;
 
   private final Coordinate[] coord;
+  private boolean isRing;
+  private int size;
   private int[] next = null;
   private int[] prev = null;
-  private int size;
-  
-  public LinkedRing(Coordinate[] pts) {
+
+  public LinkedLine(Coordinate[] pts) {
     coord = pts;
-    size = pts.length - 1;
+    isRing = CoordinateArrays.isRing(pts);
+    size = isRing ? pts.length - 1 : pts.length;
     next = createNextLinks(size);
     prev = createPrevLinks(size);
   }
 
-  private static int[] createNextLinks(int size) {
+  public boolean isRing() {
+    return isRing;
+  }
+  
+  public boolean isCorner(int i) {
+    if (! isRing() 
+        && (i == 0 || i == coord.length - 1))
+        return false;
+    return true;
+  }
+  
+  private int[] createNextLinks(int size) {
     int[] next = new int[size];
     for (int i = 0; i < size; i++) {
       next[i] = i + 1;
     }
-    next[size - 1] = 0;
+    next[size - 1] = isRing ? 0 : size;
     return next;
   }
   
-  private static int[] createPrevLinks(int size) {
+  private int[] createPrevLinks(int size) {
     int[] prev = new int[size];
     for (int i = 0; i < size; i++) {
       prev[i] = i - 1;
     }
-    prev[0] = size - 1;
+    prev[0] = isRing ? size - 1 : NO_COORD_INDEX;
     return prev;
   }
   
@@ -73,15 +88,19 @@ class LinkedRing {
   }  
   
   public boolean hasCoordinate(int index) {
-    return index >= 0 && index < prev.length 
+    //-- if not a ring, endpoints are alway present
+    if (! isRing && (index == 0 || index == coord.length - 1))
+        return true;
+    return index >= 0 
+        && index < prev.length
         && prev[index] != NO_COORD_INDEX;
   }
   
   public void remove(int index) {
     int iprev = prev[index];
     int inext = next[index];
-    next[iprev] = inext;
-    prev[inext] = iprev;
+    if (iprev != NO_COORD_INDEX) next[iprev] = inext;
+    if (inext != NO_COORD_INDEX) prev[inext] = iprev;
     prev[index] = NO_COORD_INDEX;
     next[index] = NO_COORD_INDEX;
     size--;
@@ -89,12 +108,19 @@ class LinkedRing {
   
   public Coordinate[] getCoordinates() {
     CoordinateList coords = new CoordinateList();
-    for (int i = 0; i < coord.length - 1; i++) {
-      if (prev[i] != NO_COORD_INDEX) {
+    int len = isRing ? coord.length - 1 : coord.length;
+    for (int i = 0; i < len; i++) {
+      if (hasCoordinate(i)) {
         coords.add(coord[i].copy(), false);
       }
     }
-    coords.closeRing();
+    if (isRing) {
+      coords.closeRing();
+    }
     return coords.toCoordinateArray();
+  }
+  
+  public String toString() {
+    return WKTWriter.toLineString(getCoordinates());
   }
 }

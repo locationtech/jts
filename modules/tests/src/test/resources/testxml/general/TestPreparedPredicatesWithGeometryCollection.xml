@@ -76,6 +76,16 @@
 <test>  <op name="intersects"     arg1="A" arg2="B">   true  </op> </test>
 </case>
 
-
+<case>
+  <desc>LineString against GC, with point at endpoint
+  </desc>
+  <a>
+  LINESTRING (0 0, 1 1)
+  </a>
+  <b>
+    GEOMETRYCOLLECTION (POINT (1 1), LINESTRING (2 2, 3 3))
+  </b>
+<test>  <op name="intersects"     arg1="A" arg2="B">   true  </op> </test>
+</case>
 
 </run>

@@ -11,11 +11,6 @@
  */
 package org.locationtech.jtstest.geomop;
 
-import static org.locationtech.jts.operation.overlayng.OverlayNG.DIFFERENCE;
-import static org.locationtech.jts.operation.overlayng.OverlayNG.INTERSECTION;
-import static org.locationtech.jts.operation.overlayng.OverlayNG.SYMDIFFERENCE;
-import static org.locationtech.jts.operation.overlayng.OverlayNG.UNION;
-
 import java.util.Collection;
 
 import org.locationtech.jts.densify.Densifier;

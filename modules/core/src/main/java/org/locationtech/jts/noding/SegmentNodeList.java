@@ -39,6 +39,15 @@ public class SegmentNodeList
     this.edge = edge;
   }
 
+  /**
+   * Gets the number of nodes in the list
+   * 
+   * @return the size of the list
+   */
+  public int size() {
+    return nodeMap.size();
+  }
+  
   public NodedSegmentString getEdge() { return edge; }
 
   /**
@@ -255,11 +264,11 @@ public class SegmentNodeList
 
     Coordinate[] pts = new Coordinate[npts];
     int ipt = 0;
-    pts[ipt++] = new Coordinate(ei0.coord);
+    pts[ipt++] = ei0.coord.copy();
     for (int i = ei0.segmentIndex + 1; i <= ei1.segmentIndex; i++) {
       pts[ipt++] = edge.getCoordinate(i);
     }
-    if (useIntPt1) pts[ipt] = new Coordinate(ei1.coord);
+    if (useIntPt1) pts[ipt] = ei1.coord.copy();
     return pts;
   }
 

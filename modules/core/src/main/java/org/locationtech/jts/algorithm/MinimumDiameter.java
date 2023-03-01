@@ -13,6 +13,7 @@ package org.locationtech.jts.algorithm;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineSegment;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.LinearRing;
@@ -22,10 +23,8 @@ import org.locationtech.jts.geom.Polygon;
 /**
  * Computes the minimum diameter of a {@link Geometry}.
  * The minimum diameter is defined to be the
- * width of the smallest band that
- * contains the geometry,
- * where a band is a strip of the plane defined
- * by two parallel lines.
+ * width of the smallest band that contains the geometry,
+ * where a band is a strip of the plane defined by two parallel lines.
  * This can be thought of as the smallest hole that the geometry can be
  * moved through, with a single rotation.
  * <p>
@@ -33,12 +32,16 @@ import org.locationtech.jts.geom.Polygon;
  * If the input Geometry is known to be convex, a hint can be supplied to
  * avoid this computation.
  * <p>
- * This class can also be used to compute a line segment representing 
- * the minimum diameter, the supporting line segment of the minimum diameter,
- * and a minimum rectangle enclosing the input geometry.
- * This rectangle will
- * have width equal to the minimum diameter, and have one side
+ * This class can also be used to compute:
+ * <ul>
+ * <li>a line segment representing the minimum diameter
+ * <li>the <b>supporting line segment</b> of the minimum diameter
+ * <li>the <b>minimum enclosing rectangle</b> of the input geometry.
+ * The rectangle has width equal to the minimum diameter, and has one side
  * parallel to the supporting segment.
+ * In degenerate cases the minimum enclosing geometry may be a LineString or a Point.
+ * </ul>
+ * 
  *
  * @see ConvexHull
  *
@@ -47,7 +50,14 @@ import org.locationtech.jts.geom.Polygon;
 public class MinimumDiameter
 {
   /**
-   * Gets the minimum rectangle enclosing a geometry.
+   * Gets the minimum rectangular {@link Polygon} which encloses the input geometry.
+   * The rectangle has width equal to the minimum diameter, 
+   * and a longer length.
+   * If the convex hull of the input is degenerate (a line or point)
+   * a {@link LineString} or {@link Point} is returned.
+   * <p>
+   * The minimum rectangle can be used as an extremely generalized representation
+   * for the given geometry.
    * 
    * @param geom the geometry
    * @return the minimum rectangle enclosing the geometry
@@ -226,6 +236,8 @@ public class MinimumDiameter
       maxIndex = nextIndex;
 
       nextIndex = nextIndex(pts, maxIndex);
+      if (nextIndex == startIndex)
+        break;
       nextPerpDistance = seg.distancePerpendicular(pts[nextIndex]);
     }
     // found maximum width for this segment - update global min dist if appropriate
@@ -265,20 +277,17 @@ public class MinimumDiameter
   
     // check if minimum rectangle is degenerate (a point or line segment)
     if (minWidth == 0.0) {
+      //-- Min rectangle is a point
       if (minBaseSeg.p0.equals2D(minBaseSeg.p1)) {
         return inputGeom.getFactory().createPoint(minBaseSeg.p0);
       }
-      return minBaseSeg.toGeometry(inputGeom.getFactory());
+      //-- Min rectangle is a line. Use the diagonal of the extent
+      return computeMaximumLine(convexHullPts, inputGeom.getFactory());
     }
     
     // deltas for the base segment of the minimum diameter
     double dx = minBaseSeg.p1.x - minBaseSeg.p0.x;
     double dy = minBaseSeg.p1.y - minBaseSeg.p0.y;
-    
-    /*
-    double c0 = computeC(dx, dy, minBaseSeg.p0);
-    double c1 = computeC(dx, dy, minBaseSeg.p1);
-    */
     
     double minPara = Double.MAX_VALUE;
     double maxPara = -Double.MAX_VALUE;
@@ -315,6 +324,34 @@ public class MinimumDiameter
 
   }
   
+  /**
+   * Creates a line of maximum extent from the provided vertices
+   * @param pts the vertices
+   * @param factory the geometry factory
+   * @return the line of maximum extent
+   */
+  private static LineString computeMaximumLine(Coordinate[] pts, GeometryFactory factory) {
+    //-- find max and min pts for X and Y
+    Coordinate ptMinX = null;
+    Coordinate ptMaxX = null;
+    Coordinate ptMinY = null;
+    Coordinate ptMaxY = null;
+    for (Coordinate p : pts) {
+      if (ptMinX == null || p.getX() < ptMinX.getX()) ptMinX = p;
+      if (ptMaxX == null || p.getX() > ptMaxX.getX()) ptMaxX = p;
+      if (ptMinY == null || p.getY() < ptMinY.getY()) ptMinY = p;
+      if (ptMaxY == null || p.getY() > ptMaxY.getY()) ptMaxY = p;
+    }
+    Coordinate p0 = ptMinX;
+    Coordinate p1 = ptMaxX;
+    //-- line is vertical - use Y pts
+    if (p0.getX() == p1.getX()) {
+      p0 = ptMinY;
+      p1 = ptMaxY;
+    }
+    return factory.createLineString(new Coordinate[] { p0.copy(), p1.copy() });
+  }
+
   private static double computeC(double a, double b, Coordinate p)
   {
     return a * p.y - b * p.x;

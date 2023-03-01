@@ -14,6 +14,8 @@ package org.locationtech.jts.algorithm;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
+import java.util.Set;
 import java.util.Stack;
 import java.util.TreeSet;
 
@@ -101,7 +103,7 @@ public class ConvexHull
     Coordinate[] sortedPts = preSort(reducedPts);
 
     // Use Graham scan to find convex hull.
-    Stack cHS = grahamScan(sortedPts);
+    Stack<Coordinate> cHS = grahamScan(sortedPts);
 
     // Convert stack to an array.
     Coordinate[] cH = toCoordinateArray(cHS);
@@ -114,7 +116,7 @@ public class ConvexHull
    * An alternative to Stack.toArray, which is not present in earlier versions
    * of Java.
    */
-  protected Coordinate[] toCoordinateArray(Stack stack) {
+  protected Coordinate[] toCoordinateArray(Stack<Coordinate> stack) {
     Coordinate[] coordinates = new Coordinate[stack.size()];
     for (int i = 0; i < stack.size(); i++) {
       Coordinate coordinate = (Coordinate) stack.get(i);
@@ -156,7 +158,7 @@ public class ConvexHull
 //    System.out.println(ring);
 
     // add points defining polygon
-    TreeSet reducedSet = new TreeSet();
+    Set<Coordinate> reducedSet = new TreeSet<Coordinate>();
     for (int i = 0; i < polyPts.length; i++) {
       reducedSet.add(polyPts[i]);
     }
@@ -192,13 +194,21 @@ public class ConvexHull
     return pad;
   }
     
+  /**
+   * Sorts the points radially CW around the point with minimum Y and then X.
+   * 
+   * @param pts the points to sort
+   * @return the sorted points
+   */
   private Coordinate[] preSort(Coordinate[] pts) {
     Coordinate t;
 
-    // find the lowest point in the set. If two or more points have
-    // the same minimum y coordinate choose the one with the minimu x.
-    // This focal point is put in array location pts[0].
-    for (int i = 1; i < pts.length; i++) {
+    /**
+     * find the lowest point in the set. If two or more points have
+     * the same minimum Y coordinate choose the one with the minimum X.
+     * This focal point is put in array location pts[0].
+     */
+   for (int i = 1; i < pts.length; i++) {
       if ((pts[i].y < pts[0].y) || ((pts[i].y == pts[0].y) && (pts[i].x < pts[0].x))) {
         t = pts[0];
         pts[0] = pts[i];
@@ -209,7 +219,6 @@ public class ConvexHull
     // sort the points radially around the focal point.
     Arrays.sort(pts, 1, pts.length, new RadialComparator(pts[0]));
 
-    //radialSort(pts);
     return pts;
   }
 
@@ -219,22 +228,23 @@ public class ConvexHull
    * @param c a list of points, with at least 3 entries
    * @return a Stack containing the ordered points of the convex hull ring
    */
-  private Stack grahamScan(Coordinate[] c) {
+  private Stack<Coordinate> grahamScan(Coordinate[] c) {
     Coordinate p;
-    Stack ps = new Stack();
+    Stack<Coordinate> ps = new Stack<Coordinate>();
     ps.push(c[0]);
     ps.push(c[1]);
     ps.push(c[2]);
     for (int i = 3; i < c.length; i++) {
+      Coordinate cp = c[i];
       p = (Coordinate) ps.pop();
       // check for empty stack to guard against robustness problems
       while (
           ! ps.empty() && 
-          Orientation.index((Coordinate) ps.peek(), p, c[i]) > 0) {
-        p = (Coordinate) ps.pop();
+          Orientation.index((Coordinate) ps.peek(), p, cp) > 0) {
+         p = (Coordinate) ps.pop();
       }
       ps.push(p);
-      ps.push(c[i]);
+      ps.push(cp);
     }
     ps.push(c[0]);
     return ps;
@@ -316,66 +326,6 @@ public class ConvexHull
 
   }
 
-/*
-  // MD - no longer used, but keep for reference purposes
-  private Coordinate[] computeQuad(Coordinate[] inputPts) {
-    BigQuad bigQuad = bigQuad(inputPts);
-
-    // Build a linear ring defining a big poly.
-    ArrayList bigPoly = new ArrayList();
-    bigPoly.add(bigQuad.westmost);
-    if (! bigPoly.contains(bigQuad.northmost)) {
-      bigPoly.add(bigQuad.northmost);
-    }
-    if (! bigPoly.contains(bigQuad.eastmost)) {
-      bigPoly.add(bigQuad.eastmost);
-    }
-    if (! bigPoly.contains(bigQuad.southmost)) {
-      bigPoly.add(bigQuad.southmost);
-    }
-    // points must all lie in a line
-    if (bigPoly.size() < 3) {
-      return null;
-    }
-    // closing point
-    bigPoly.add(bigQuad.westmost);
-
-    Coordinate[] bigPolyArray = CoordinateArrays.toCoordinateArray(bigPoly);
-
-    return bigPolyArray;
-  }
-
-  private BigQuad bigQuad(Coordinate[] pts) {
-    BigQuad bigQuad = new BigQuad();
-    bigQuad.northmost = pts[0];
-    bigQuad.southmost = pts[0];
-    bigQuad.westmost = pts[0];
-    bigQuad.eastmost = pts[0];
-    for (int i = 1; i < pts.length; i++) {
-      if (pts[i].x < bigQuad.westmost.x) {
-        bigQuad.westmost = pts[i];
-      }
-      if (pts[i].x > bigQuad.eastmost.x) {
-        bigQuad.eastmost = pts[i];
-      }
-      if (pts[i].y < bigQuad.southmost.y) {
-        bigQuad.southmost = pts[i];
-      }
-      if (pts[i].y > bigQuad.northmost.y) {
-        bigQuad.northmost = pts[i];
-      }
-    }
-    return bigQuad;
-  }
-
-  private static class BigQuad {
-    public Coordinate northmost;
-    public Coordinate southmost;
-    public Coordinate westmost;
-    public Coordinate eastmost;
-  }
-  */
-
   /**
    *@param  vertices  the vertices of a linear ring, which may or may not be
    *      flattened (i.e. vertices collinear)
@@ -403,7 +353,7 @@ public class ConvexHull
    */
   private Coordinate[] cleanRing(Coordinate[] original) {
     Assert.equals(original[0], original[original.length - 1]);
-    ArrayList cleanedRing = new ArrayList();
+    List<Coordinate> cleanedRing = new ArrayList<Coordinate>();
     Coordinate previousDistinctCoordinate = null;
     for (int i = 0; i <= original.length - 2; i++) {
       Coordinate currentCoordinate = original[i];
@@ -427,30 +377,42 @@ public class ConvexHull
   /**
    * Compares {@link Coordinate}s for their angle and distance
    * relative to an origin.
+   * The origin is assumed to be lower in Y and then X than
+   * all other point inputs.
+   * The points are ordered CCW around the origin.
    *
    * @author Martin Davis
    * @version 1.7
    */
   private static class RadialComparator
-      implements Comparator
+      implements Comparator<Coordinate>
   {
     private Coordinate origin;
 
+    /**
+     * Creates a new comparator using a given origin.
+     * The origin must be lower in Y and then X to all 
+     * compared points.
+     * 
+     * @param origin the origin of the radial comparison
+     */
     public RadialComparator(Coordinate origin)
     {
       this.origin = origin;
     }
-    public int compare(Object o1, Object o2)
+    
+    @Override
+    public int compare(Coordinate p1, Coordinate p2)
     {
-      Coordinate p1 = (Coordinate) o1;
-      Coordinate p2 = (Coordinate) o2;
-      return polarCompare(origin, p1, p2);
+      int comp = polarCompare(origin, p1, p2);      
+      return comp;
     }
 
     /**
      * Given two points p and q compare them with respect to their radial
      * ordering about point o.  First checks radial ordering.
-     * If points are collinear, the comparison is based
+     * using a CCW orientation.
+     * If the points are collinear, the comparison is based
      * on their distance to the origin.
      * <p>
      * p < q iff
@@ -467,41 +429,32 @@ public class ConvexHull
      */
     private static int polarCompare(Coordinate o, Coordinate p, Coordinate q)
     {
-      double dxp = p.x - o.x;
-      double dyp = p.y - o.y;
-      double dxq = q.x - o.x;
-      double dyq = q.y - o.y;
-
-/*
-      // MD - non-robust
-      int result = 0;
-      double alph = Math.atan2(dxp, dyp);
-      double beta = Math.atan2(dxq, dyq);
-      if (alph < beta) {
-        result = -1;
-      }
-      if (alph > beta) {
-        result = 1;
-      }
-      if (result !=  0) return result;
-      //*/
-
       int orient = Orientation.index(o, p, q);
-
       if (orient == Orientation.COUNTERCLOCKWISE) return 1;
       if (orient == Orientation.CLOCKWISE) return -1;
 
-      // points are collinear - check distance
-      double op = dxp * dxp + dyp * dyp;
-      double oq = dxq * dxq + dyq * dyq;
-      if (op < oq) {
-        return -1;
-      }
-      if (op > oq) {
-        return 1;
-      }
+      /** 
+       * The points are collinear,
+       * so compare based on distance from the origin.  
+       * The points p and q are >= to the origin,
+       * so they lie in the closed half-plane above the origin.
+       * If they are not in a horizontal line, 
+       * the Y ordinate can be tested to determine distance.
+       * This is more robust than computing the distance explicitly.
+       */
+      if (p.y > q.y) return 1;
+      if (p.y < q.y) return -1;
+
+      /**
+       * The points lie in a horizontal line, which should also contain the origin
+       * (since they are collinear).
+       * Also, they must be above the origin.
+       * Use the X ordinate to determine distance. 
+       */ 
+      if (p.x > q.x) return 1;
+      if (p.x < q.x) return -1;
+      // Assert: p = q
       return 0;
     }
-
   }
 }

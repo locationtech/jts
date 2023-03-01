@@ -11,8 +11,12 @@
  */
 package org.locationtech.jtsexample.geom.prep;
 
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.geom.prep.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.prep.PreparedGeometry;
+import org.locationtech.jts.geom.prep.PreparedGeometryFactory;
 
 
 /**

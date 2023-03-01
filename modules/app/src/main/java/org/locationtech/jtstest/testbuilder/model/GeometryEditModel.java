@@ -12,14 +12,24 @@
 
 package org.locationtech.jtstest.testbuilder.model;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
 
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateArrays;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.WKTWriter;
 import org.locationtech.jts.util.Assert;
-import org.locationtech.jtstest.*;
 import org.locationtech.jtstest.testbuilder.JTSTestBuilder;
-import org.locationtech.jtstest.testbuilder.geom.*;
+import org.locationtech.jtstest.testbuilder.geom.AdjacentVertexFinder;
+import org.locationtech.jtstest.testbuilder.geom.ComponentLocater;
+import org.locationtech.jtstest.testbuilder.geom.GeometryCombiner;
+import org.locationtech.jtstest.testbuilder.geom.GeometryLocation;
+import org.locationtech.jtstest.testbuilder.geom.GeometryPointLocater;
+import org.locationtech.jtstest.testbuilder.geom.GeometryUtil;
+import org.locationtech.jtstest.testbuilder.geom.GeometryVertexMover;
 
 
 /**
@@ -324,6 +334,13 @@ public class GeometryEditModel
     Geometry geom = getGeometry();
     if (geom == null) return null;
     return GeometryPointLocater.locateVertex(getGeometry(), testPt, tolerance);
+  }
+  
+  public List<GeometryLocation> getComponents(Coordinate testPt, double tolerance)
+  {
+    Geometry geom = getGeometry();
+    if (geom == null) return null;
+    return ComponentLocater.getComponents(getGeometry(), testPt, tolerance);
   }
   
   public Coordinate locateVertexPt(Coordinate testPt, double tolerance)

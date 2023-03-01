@@ -11,7 +11,7 @@
  */
 package org.locationtech.jtstest.testbuilder.ui.tools;
 
-import org.locationtech.jtstest.testbuilder.model.*;
+import org.locationtech.jtstest.testbuilder.model.GeometryType;
 
 
 /**

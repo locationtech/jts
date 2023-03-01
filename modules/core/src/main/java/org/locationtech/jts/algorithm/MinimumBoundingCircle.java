@@ -367,7 +367,7 @@ public class MinimumBoundingCircle
 			double dx = p.x - P.x;
 			double dy = p.y - P.y;
 			if (dy < 0) dy = -dy;
-			double len = Math.sqrt(dx * dx + dy * dy);
+			double len = Math.hypot(dx, dy);
 			double sin = dy / len;
 			
 			if (sin < minSin) {

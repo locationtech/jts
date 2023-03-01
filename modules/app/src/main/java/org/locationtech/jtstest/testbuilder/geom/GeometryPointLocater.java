@@ -12,7 +12,12 @@
 
 package org.locationtech.jtstest.testbuilder.geom;
 
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateSequence;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryComponentFilter;
+import org.locationtech.jts.geom.LineSegment;
+import org.locationtech.jts.geom.LineString;
 
 /**
  * Finds a vertex or a point on a segment of a Geometry
@@ -39,6 +44,13 @@ public class GeometryPointLocater
     if (geomLoc == null) return null;
     if (geomLoc.isVertex()) return geomLoc;
     return null;
+  }
+
+  public static GeometryLocation locate(Geometry geom, Coordinate testPt, double tolerance)
+  {
+    GeometryPointLocater finder = new GeometryPointLocater(geom);
+    GeometryLocation geomLoc = finder.getLocation(testPt, true, tolerance);
+    return geomLoc;
   }
 
   private Geometry geom;

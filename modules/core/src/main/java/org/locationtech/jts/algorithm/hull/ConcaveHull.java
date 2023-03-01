@@ -23,27 +23,32 @@ import org.locationtech.jts.geom.Polygon;
 
 /**
  * Constructs a concave hull of a set of points.
- * A concave hull is a possibly non-convex polygon containing all the input points.
+ * A concave hull is a concave or convex polygon containing all the input points,
+ * whose vertices are a subset of the vertices in the input.
  * A given set of points has a sequence of hulls of increasing concaveness,
  * determined by a numeric target parameter.
  * <p>
- * The concave hull is constructed by removing the longest outer edges 
+ * The hull is constructed by removing border triangles 
  * of the Delaunay Triangulation of the points,
- * until the target criterion parameter is reached.
+ * as long as their "size" is larger than the target criterion.
  * <p>
  * The target criteria are:
  * <ul>
  * <li><b>Maximum Edge Length</b> - the length of the longest edge of the hull is no larger
  * than this value.
- * <li><b>Maximum Edge Length Ratio</b> - determine the Maximum Edge Length 
- * as a fraction of the difference between the longest and shortest edge lengths 
+ * <li><b>Maximum Edge Length Ratio</b> - determines the Maximum Edge Length 
+ * by a fraction of the difference between the longest and shortest edge lengths 
  * in the Delaunay Triangulation.  
  * This normalizes the <b>Maximum Edge Length</b> to be scale-free.
  * A value of 1 produces the convex hull; a value of 0 produces maximum concaveness.
+ * <li><b>Alpha</b> - produces Alpha-shapes, 
+ * by removing border triangles with a circumradius greater than alpha. 
+ * Large values produce the convex hull; a value of 0 produces maximum concaveness. 
  * </ul>
  * The preferred criterion is the <b>Maximum Edge Length Ratio</b>, since it is 
  * scale-free and local (so that no assumption needs to be made about the 
  * total amount of concaveness present).
+ * <p>
  * Other length criteria can be used by setting the Maximum Edge Length directly.
  * For example, use a length relative  to the longest edge length
  * in the Minimum Spanning Tree of the point set.
@@ -53,9 +58,7 @@ import org.locationtech.jts.geom.Polygon;
  * (unless it is degenerate, in which case it will be a {@link Point} or a {@link LineString}).
  * This constraint may cause the concave hull to fail to meet the target criterion.
  * <p>
- * Optionally the concave hull can be allowed to contain holes.
- * Note that when using the area-based criterion 
- * this may result in substantially slower computation.
+ * Optionally the concave hull can be allowed to contain holes by calling {@link #setHolesAllowed(boolean)}.
  * 
  * @author Martin Davis
  *
@@ -144,10 +147,32 @@ public class ConcaveHull
     return hull.getHull();
   }
   
+  /**
+   * Computes the alpha shape of a geometry as a polygon.
+   * The alpha parameter is the radius of the eroding disc.
+   * 
+   * @param geom the input geometry
+   * @param alpha the radius of the eroding disc
+   * @param isHolesAllowed whether holes are allowed in the result
+   * @return the alpha shape polygon
+   */
+  public static Geometry alphaShape(Geometry geom, double alpha, boolean isHolesAllowed) {
+    ConcaveHull hull = new ConcaveHull(geom);
+    hull.setAlpha(alpha);
+    hull.setHolesAllowed(isHolesAllowed);
+    return hull.getHull();
+  }
+  
+  private static int PARAM_EDGE_LENGTH = 1;
+  private static int PARAM_ALPHA = 2;
+  
   private Geometry inputGeometry;
-  private double maxEdgeLength = 0.0;
   private double maxEdgeLengthRatio = -1;
+  private double alpha = -1;
   private boolean isHolesAllowed = false;
+  
+  private int criteriaType = PARAM_EDGE_LENGTH;
+  private double maxSizeInHull = 0.0;
   private GeometryFactory geomFactory;
 
 
@@ -181,8 +206,9 @@ public class ConcaveHull
   public void setMaximumEdgeLength(double edgeLength) {
     if (edgeLength < 0)
       throw new IllegalArgumentException("Edge length must be non-negative");
-    this.maxEdgeLength = edgeLength;
+    this.maxSizeInHull = edgeLength;
     maxEdgeLengthRatio = -1;
+    criteriaType = PARAM_EDGE_LENGTH;
   }
   
   /**
@@ -203,6 +229,20 @@ public class ConcaveHull
     if (edgeLengthRatio < 0 || edgeLengthRatio > 1)
       throw new IllegalArgumentException("Edge length ratio must be in range [0,1]");
     this.maxEdgeLengthRatio = edgeLengthRatio;
+    criteriaType = PARAM_EDGE_LENGTH;
+  }
+  
+  /**
+   * Sets the alpha parameter to compute an alpha shape of the input.
+   * Alpha is the radius of the eroding disc.
+   * Border triangles with circumradius greater than alpha are removed.
+   * 
+   * @param alpha the alpha radius
+   */
+  public void setAlpha(double alpha) {
+    this.alpha = alpha;
+    maxSizeInHull = alpha;
+    criteriaType = PARAM_ALPHA;
   }
   
   /**
@@ -224,8 +264,10 @@ public class ConcaveHull
       return geomFactory.createPolygon();
     }
     List<HullTri> triList = HullTriangulation.createDelaunayTriangulation(inputGeometry);
+    setSize(triList);
+    
     if (maxEdgeLengthRatio >= 0) {
-      maxEdgeLength = computeTargetEdgeLength(triList, maxEdgeLengthRatio);
+      maxSizeInHull = computeTargetEdgeLength(triList, maxEdgeLengthRatio);
     }
     if (triList.isEmpty())
       return inputGeometry.convexHull();
@@ -234,6 +276,17 @@ public class ConcaveHull
 
     Geometry hull = toGeometry(triList, geomFactory);
     return hull;
+  }
+
+  private void setSize(List<HullTri> triList) {
+    for (HullTri tri : triList) {
+      if (criteriaType == PARAM_EDGE_LENGTH) {
+        tri.setSizeToLongestEdge();
+      }
+      else {
+        tri.setSizeToCircumradius();
+      }
+    }
   }
 
   private static double computeTargetEdgeLength(List<HullTri> triList, 
@@ -276,11 +329,11 @@ public class ConcaveHull
   
   private void computeHullBorder(List<HullTri> triList) {
     PriorityQueue<HullTri> queue = createBorderQueue(triList);
-    // remove tris in order of decreasing size (edge length)
+    // process tris in order of decreasing size (edge length or circumradius)
     while (! queue.isEmpty()) {
       HullTri tri = queue.poll();
       
-      if (isBelowLengthThreshold(tri)) 
+      if (isInHull(tri)) 
         break;
       
       if (isRemovableBorder(tri)) {
@@ -302,12 +355,7 @@ public class ConcaveHull
   private PriorityQueue<HullTri> createBorderQueue(List<HullTri> triList) {
     PriorityQueue<HullTri> queue = new PriorityQueue<HullTri>();
     for (HullTri tri : triList) {
-      //-- add only border triangles which could be eroded
-      // (if tri has only 1 adjacent it can't be removed because that would isolate a vertex)
-      if (tri.numAdjacent() != 2)
-        continue;
-      tri.setSizeToBoundary();
-      queue.add(tri);
+      addBorderTri(tri, queue);
     }
     return queue;
   }
@@ -315,8 +363,9 @@ public class ConcaveHull
   /**
    * Adds a Tri to the queue.
    * Only add tris with a single border edge,
-   * sice otherwise that would risk isolating a vertex.
-   * Sets the ordering size to the length of the border edge.
+   * since otherwise that would risk isolating a vertex if
+   * the tri ends up being eroded from the hull.
+   * Sets the tri size according to the threshold parameter being used.
    * 
    * @param tri the Tri to add
    * @param queue the priority queue to add to
@@ -324,16 +373,30 @@ public class ConcaveHull
   private void addBorderTri(HullTri tri, PriorityQueue<HullTri> queue) {
     if (tri == null) return;
     if (tri.numAdjacent() != 2) return;
-    tri.setSizeToBoundary();
+    setSize(tri);
     queue.add(tri);
   }
 
-  private boolean isBelowLengthThreshold(HullTri tri) {
-    return tri.lengthOfBoundary() < maxEdgeLength;
+  private void setSize(HullTri tri) {
+    if (criteriaType == PARAM_EDGE_LENGTH)
+      tri.setSizeToBoundary();
+    else 
+      tri.setSizeToCircumradius();
+  }
+  
+  /**
+   * Tests if a tri is included in the hull.
+   * Tris with size less than the maximum are included in the hull.
+   * 
+   * @param tri the tri to test
+   * @return true if the tri is included in the hull
+   */
+  private boolean isInHull(HullTri tri) {
+    return tri.getSize() < maxSizeInHull;
   }
   
   private void computeHullHoles(List<HullTri> triList) {
-    List<HullTri> candidateHoles = findCandidateHoles(triList, maxEdgeLength);
+    List<HullTri> candidateHoles = findCandidateHoles(triList, maxSizeInHull);
     // remove tris in order of decreasing size (edge length)
     for (HullTri tri : candidateHoles) {
       if (tri.isRemoved() 
@@ -349,22 +412,24 @@ public class ConcaveHull
    * Only tris which have a long enough edge and which do not touch the current hull
    * boundary are included.
    * This avoids the risk of disconnecting the result polygon.
-   * The list is sorted in decreasing order of edge length.
+   * The list is sorted in decreasing order of size.
    * 
    * @param triList
-   * @param minEdgeLen minimum length of edges to consider
+   * @param maxSizeInHull maximum tri size which is not in a hole
    * @return
    */
-  private static List<HullTri> findCandidateHoles(List<HullTri> triList, double minEdgeLen) {
+  private static List<HullTri> findCandidateHoles(List<HullTri> triList, double maxSizeInHull) {
     List<HullTri> candidates = new ArrayList<HullTri>();
     for (HullTri tri : triList) {
-      if (tri.getSize() < minEdgeLen) continue;
+      //-- tris below the size threshold are in the hull, so NOT in a hole
+      if (tri.getSize() < maxSizeInHull) continue;
+      
       boolean isTouchingBoundary = tri.isBorder() || tri.hasBoundaryTouch();
       if (! isTouchingBoundary) {
         candidates.add(tri);
       }
     }
-    // sort by HullTri comparator - longest edge length first
+    // sort by HullTri comparator - larger sizes first
     candidates.sort(null);
     return candidates;
   }
@@ -382,7 +447,7 @@ public class ConcaveHull
     while (! queue.isEmpty()) {
       HullTri tri = queue.poll();
       
-      if (tri != triHole && isBelowLengthThreshold(tri)) 
+      if (tri != triHole && isInHull(tri)) 
         break;
       
       if (tri == triHole || isRemovableHole(tri)) {

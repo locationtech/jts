@@ -18,7 +18,11 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineSegment;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.shape.GeometricShapeBuilder;
-import static org.locationtech.jts.shape.fractal.HilbertCode.*;
+
+import static org.locationtech.jts.shape.fractal.HilbertCode.decode;
+import static org.locationtech.jts.shape.fractal.HilbertCode.level;
+import static org.locationtech.jts.shape.fractal.HilbertCode.maxOrdinate;
+import static org.locationtech.jts.shape.fractal.HilbertCode.size;
 
 /**
  * Generates a {@link LineString} representing the Hilbert Curve

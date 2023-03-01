@@ -337,10 +337,10 @@ public class WKTReader
     boolean hasM = ordinateFlags.contains(Ordinate.M);
     if (hasZ && hasM) 
       return new CoordinateXYZM();
+    if (hasM)
+      return new CoordinateXYM();
     if (hasZ || this.isAllowOldJtsCoordinateSyntax) 
       return new Coordinate();
-    if (hasM) 
-      return new CoordinateXYM();
     return new CoordinateXY();
   }
 

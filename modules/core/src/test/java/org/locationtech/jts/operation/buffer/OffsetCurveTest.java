@@ -18,12 +18,14 @@ import test.jts.GeometryTestCase;
 /**
  * 
  * Note: most expected results are rounded to precision of 100, to reduce
- * size and improve robustness.
+ * size and improve robustness.  
+ * The test cases are chosen so that this has no effect on comparing expected to actual.
  * 
  * @author Martin Davis
  *
  */
 public class OffsetCurveTest extends GeometryTestCase {
+
   public static void main(String[] args) {
     junit.textui.TestRunner.run(OffsetCurveTest.class);
   }
@@ -53,6 +55,17 @@ public class OffsetCurveTest extends GeometryTestCase {
         );
   }
 
+  /**
+   * Test bug fix for removing repeated points in input for raw curve.
+   * See https://github.com/locationtech/jts/issues/957
+   */
+  public void testRepeatedPoint() {
+    checkOffsetCurve(
+        "LINESTRING (4 9, 1 2, 7 5, 7 5, 4 9)", 1,
+        "LINESTRING (4.24 7.02, 2.99 4.12, 5.48 5.36, 4.24 7.02)"
+    );
+  }
+  
   public void testSegment1Short() {
     checkOffsetCurve(
         "LINESTRING (2 2, 2 2.0000001)", 1,
@@ -89,6 +102,13 @@ public class OffsetCurveTest extends GeometryTestCase {
         );
   }
   
+  public void testRightAngle() {
+    checkOffsetCurve(
+        "LINESTRING (2 8, 8 8, 8 1)", 1,
+        "LINESTRING (2 9, 8 9, 8.2 8.98, 8.38 8.92, 8.56 8.83, 8.71 8.71, 8.83 8.56, 8.92 8.38, 8.98 8.2, 9 8, 9 1)"
+        );
+  }
+
   public void testZigzagOneEndCurved4() {
     checkOffsetCurve(
         "LINESTRING (1 3, 6 3, 4 5, 9 5)", 4,
@@ -103,6 +123,26 @@ public class OffsetCurveTest extends GeometryTestCase {
         );
   }
 
+  public void testAsymmetricU() {
+    String wkt = "LINESTRING (1 1, 9 1, 9 2, 5 2)";
+    checkOffsetCurve( wkt, 1,
+        "LINESTRING (1 2, 4 2)"
+        );
+    checkOffsetCurve( wkt, -1,
+        "LINESTRING (1 0, 9 0, 9.2 0.02, 9.38 0.08, 9.56 0.17, 9.71 0.29, 9.83 0.44, 9.92 0.62, 9.98 0.8, 10 1, 10 2, 9.98 2.2, 9.92 2.38, 9.83 2.56, 9.71 2.71, 9.56 2.83, 9.38 2.92, 9.2 2.98, 9 3, 5 3)"
+        );
+  }
+  
+  public void testSymmetricU() {
+    String wkt = "LINESTRING (1 1, 9 1, 9 2, 1 2)";
+    checkOffsetCurve( wkt, 1,
+        "LINESTRING EMPTY"
+        );
+    checkOffsetCurve( wkt, -1,
+        "LINESTRING (1 0, 9 0, 9.2 0.02, 9.38 0.08, 9.56 0.17, 9.71 0.29, 9.83 0.44, 9.92 0.62, 9.98 0.8, 10 1, 10 2, 9.98 2.2, 9.92 2.38, 9.83 2.56, 9.71 2.71, 9.56 2.83, 9.38 2.92, 9.2 2.98, 9 3, 1 3)"
+        );
+  }
+  
   public void testEmptyResult() {
     checkOffsetCurve(
         "LINESTRING (3 5, 5 7, 7 5)", -4,
@@ -113,13 +153,37 @@ public class OffsetCurveTest extends GeometryTestCase {
   public void testSelfCross() {
     checkOffsetCurve(
         "LINESTRING (50 90, 50 10, 90 50, 10 50)", 10,
-        "LINESTRING (60 90, 60 60)" );
+        "MULTILINESTRING ((60 90, 60 60), (60 40, 60 34.14, 65.85 40, 60 40), (40 40, 10 40))" );
   }
 
   public void testSelfCrossNeg() {
     checkOffsetCurve(
         "LINESTRING (50 90, 50 10, 90 50, 10 50)", -10,
-        "LINESTRING (40 90, 40 60, 10 60)" );
+        "MULTILINESTRING ((40 90, 40 60, 10 60), (40 40, 40 10, 40.19 8.05, 40.76 6.17, 41.69 4.44, 42.93 2.93, 44.44 1.69, 46.17 0.76, 48.05 0.19, 50 0, 51.95 0.19, 53.83 0.76, 55.56 1.69, 57.07 2.93, 97.07 42.93, 98.31 44.44, 99.24 46.17, 99.81 48.05, 100 50, 99.81 51.95, 99.24 53.83, 98.31 55.56, 97.07 57.07, 95.56 58.31, 93.83 59.24, 91.95 59.81, 90 60, 60 60))" );
+  }
+
+  public void testSelfCrossCWNeg() {
+    checkOffsetCurve(
+        "LINESTRING (0 70, 100 70, 40 0, 40 100)", -10,
+        "MULTILINESTRING ((0 60, 30 60), (50 60, 50 27.03, 78.25 60, 50 60), (50 80, 50 100))" );
+  }
+
+  public void testSelfCrossDartInside() {
+    checkOffsetCurve(
+        "LINESTRING (60 50, 10 80, 50 10, 90 80, 40 50)", 10,
+        "MULTILINESTRING ((54.86 41.43, 50 44.34, 45.14 41.43), (43.9 40.83, 50 30.16, 56.1 40.83))" );
+  }
+
+  public void testSelfCrossDartOutside() {
+    checkOffsetCurve(
+        "LINESTRING (60 50, 10 80, 50 10, 90 80, 40 50)", -10,
+        "LINESTRING (50 67.66, 15.14 88.57, 13.32 89.43, 11.35 89.91, 9.33 89.98, 7.34 89.64, 5.46 88.91, 3.76 87.82, 2.32 86.4, 1.19 84.73, 0.42 82.86, 0.04 80.88, 0.07 78.86, 0.5 76.88, 1.32 75.04, 41.32 5.04, 42.42 3.48, 43.8 2.16, 45.4 1.12, 47.17 0.41, 49.05 0.05, 50.95 0.05, 52.83 0.41, 54.6 1.12, 56.2 2.16, 57.58 3.48, 58.68 5.04, 98.68 75.04, 99.5 76.88, 99.93 78.86, 99.96 80.88, 99.58 82.86, 98.81 84.73, 97.68 86.4, 96.24 87.82, 94.54 88.91, 92.66 89.64, 90.67 89.98, 88.65 89.91, 86.68 89.43, 84.86 88.57, 50 67.66)" );
+  }
+
+  public void testSelfCrossDart2Inside() {
+    checkOffsetCurve(
+        "LINESTRING (64 45, 10 80, 50 10, 90 80, 35 45)", 10,
+        "LINESTRING (55.00 38.91, 49.58 42.42, 44.74 39.34, 50 30.15, 55.00 38.91)" );
   }
 
   public void testRing() {
@@ -135,11 +199,41 @@ public class OffsetCurveTest extends GeometryTestCase {
     );
   }
   
+  public void testOverlapTriangleInside() {
+    checkOffsetCurve(
+        "LINESTRING (70 80, 10 80, 50 10, 90 80, 40 80))", 10,
+        "LINESTRING (70 70, 40 70, 27.23 70, 50 30.15, 72.76 70, 70 70)"
+        );
+  }
+  
+  public void testOverlapTriangleOutside() {
+    checkOffsetCurve(
+        "LINESTRING (70 80, 10 80, 50 10, 90 80, 40 80))", -10,
+        "LINESTRING (70 90, 40 90, 10 90, 8.11 89.82, 6.29 89.29, 4.6 88.42, 3.11 87.25, 1.87 85.82, 0.91 84.18, 0.29 82.39, 0.01 80.51, 0.1 78.61, 0.54 76.77, 1.32 75.04, 41.32 5.04, 42.42 3.48, 43.8 2.16, 45.4 1.12, 47.17 0.41, 49.05 0.05, 50.95 0.05, 52.83 0.41, 54.6 1.12, 56.2 2.16, 57.58 3.48, 58.68 5.04, 98.68 75.04, 99.46 76.77, 99.9 78.61, 99.99 80.51, 99.71 82.39, 99.09 84.18, 98.13 85.82, 96.89 87.25, 95.4 88.42, 93.71 89.29, 91.89 89.82, 90 90, 70 90)"
+        );
+  }
+  
+  //--------------------------------------------------------
+  
+  public void testMultiPoint() {
+    checkOffsetCurve(
+        "MULTIPOINT ((0 0), (1 1))", 1,
+        "LINESTRING EMPTY"
+        );
+  }
+  
   public void testMultiLine() {
     checkOffsetCurve(
         "MULTILINESTRING ((20 30, 60 10, 80 60), (40 50, 80 30))", 10,
         "MULTILINESTRING ((24.47 38.94, 54.75 23.8, 70.72 63.71), (44.47 58.94, 84.47 38.94))"
     );
+  }
+  
+  public void testMixedWithPoint() {
+    checkOffsetCurve(
+        "GEOMETRYCOLLECTION (LINESTRING (20 30, 60 10, 80 60), POINT (0 0))", 10,
+        "LINESTRING (24.47 38.94, 54.75 23.8, 70.72 63.71)"
+        );
   }
   
   public void testPolygon() {
@@ -162,7 +256,27 @@ public class OffsetCurveTest extends GeometryTestCase {
         "POLYGON ((20 80, 80 80, 80 20, 20 20, 20 80), (30 70, 70 70, 70 30, 30 30, 30 70))", -10,
         "LINESTRING EMPTY"
     );
-
+  }
+  
+  //-------------------------------------------------
+  
+  public void testJoined() {
+    String input = "LINESTRING (0 50, 100 50, 50 100, 50 0)";
+    checkOffsetCurveJoined( input, 10,
+        "LINESTRING (0 60, 75.85 60, 60 75.85, 60 0)"
+        );
+    checkOffsetCurveJoined( input, -10,
+        "LINESTRING (0 40, 100 40, 101.95 40.19, 103.83 40.76, 105.56 41.69, 107.07 42.93, 108.31 44.44, 109.24 46.17, 109.81 48.05, 110 50, 109.81 51.95, 109.24 53.83, 108.31 55.56, 107.07 57.07, 57.07 107.07, 55.56 108.31, 53.83 109.24, 51.95 109.81, 50 110, 48.05 109.81, 46.17 109.24, 44.44 108.31, 42.93 107.07, 41.69 105.56, 40.76 103.83, 40.19 101.95, 40 100, 40 0))"
+        );
+  }
+  
+  //-------------------------------------------------
+  
+  public void testInfiniteLoop() {
+    checkOffsetCurve(
+        "LINESTRING (21 101, -1 78, 12 43, 50 112, 73 -5, 19 2, 87 85, -7 38, 105 40)", 4,
+        null
+    );
   }
   
   //---------------------------------------
@@ -193,6 +307,8 @@ public class OffsetCurveTest extends GeometryTestCase {
   
   //=======================================
   
+  private static final double EQUALS_TOL = 0.05;
+
   private void checkOffsetCurve(String wkt, double distance, String wktExpected) {
     checkOffsetCurve(wkt, distance, wktExpected, 0.05);
   }
@@ -201,7 +317,19 @@ public class OffsetCurveTest extends GeometryTestCase {
       int quadSegs, int joinStyle, double mitreLimit,
       String wktExpected) 
   {
-    checkOffsetCurve(wkt, distance, quadSegs, joinStyle, mitreLimit, wktExpected, 0.05);
+    checkOffsetCurve(wkt, distance, quadSegs, joinStyle, mitreLimit, wktExpected, EQUALS_TOL);
+  }
+  
+  private void checkOffsetCurveJoined(String wkt, double distance, String wktExpected) {
+    Geometry geom = read(wkt);
+    Geometry result = OffsetCurve.getCurveJoined(geom, distance);
+    //System.out.println(result);
+    
+    if (wktExpected == null)
+      return;
+    
+    Geometry expected = read(wktExpected);
+    checkEqual(expected, result, EQUALS_TOL);
   }
   
   private void checkOffsetCurve(String wkt, double distance, String wktExpected, double tolerance) {

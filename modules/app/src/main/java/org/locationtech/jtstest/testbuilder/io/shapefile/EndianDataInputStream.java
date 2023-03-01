@@ -12,9 +12,9 @@
 
 package org.locationtech.jtstest.testbuilder.io.shapefile;
 
+import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.io.BufferedInputStream;
 
 /**
  *  A class that gives most of the functionality of DataInputStream, but is endian aware.
