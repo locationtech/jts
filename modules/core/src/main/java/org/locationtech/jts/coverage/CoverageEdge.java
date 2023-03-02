@@ -26,12 +26,16 @@ class CoverageEdge {
 
   public static CoverageEdge createEdge(LinearRing ring) {
     Coordinate[] pts = extractEdgePoints(ring, 0, ring.getNumPoints() - 1);
-    return new CoverageEdge(pts);
+    CoverageEdge edge = new CoverageEdge(pts);
+    edge.nodeCount = 0;
+    return edge;
   }
 
   public static CoverageEdge createEdge(LinearRing ring, int start, int end) {
     Coordinate[] pts = extractEdgePoints(ring, start, end);
-    return new CoverageEdge(pts);
+    CoverageEdge edge = new CoverageEdge(pts);
+    edge.nodeCount = start == end ? 1 : 2;
+    return edge;
   }
 
   private static Coordinate[] extractEdgePoints(LinearRing ring, int start, int end) {
@@ -119,6 +123,7 @@ class CoverageEdge {
 
   private Coordinate[] pts;
   private int ringCount = 0;
+  private int nodeCount = 0;
   
   public CoverageEdge(Coordinate[] pts) {
     this.pts = pts;
@@ -130,6 +135,10 @@ class CoverageEdge {
   
   public int getRingCount() {
     return ringCount;
+  }
+
+  public int getNodeCount() {
+    return nodeCount;
   }
   
   public void setCoordinates(Coordinate[] pts) {

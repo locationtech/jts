@@ -52,41 +52,49 @@ class TPVWSimplifier {
    * @param distanceTolerance the simplification tolerance
    * @return the simplified lines
    */
-  public static MultiLineString simplify(MultiLineString lines, double distanceTolerance) {
-    TPVWSimplifier simp = new TPVWSimplifier(lines, distanceTolerance);
-    MultiLineString result = (MultiLineString) simp.simplify();
-    return result;
-  }
+//  public static MultiLineString simplify(MultiLineString lines, double distanceTolerance) {
+//    TPVWSimplifier simp = new TPVWSimplifier(lines, distanceTolerance);
+//    MultiLineString result = (MultiLineString) simp.simplify();
+//    return result;
+//  }
   
   /**
    * Simplifies a set of lines, preserving the topology of the lines between
    * themselves and a set of linear constraints.
    * 
-   * @param lines the lines to simplify
+   * @param edges the edges to simplify
    * @param constraints the linear constraints
    * @param distanceTolerance the simplification tolerance
    * @return the simplified lines
    */
-  public static MultiLineString simplify(MultiLineString lines, 
-      MultiLineString constraints, double distanceTolerance) {
-    TPVWSimplifier simp = new TPVWSimplifier(lines, distanceTolerance);
+  public static MultiLineString simplify(List<CoverageEdge> edges,
+                                         List<CoverageEdge> constraints,
+                                         double distanceTolerance,
+                                         GeometryFactory geomFactory) {
+    TPVWSimplifier simp = new TPVWSimplifier(edges, distanceTolerance, geomFactory);
     simp.setConstraints(constraints);
     MultiLineString result = (MultiLineString) simp.simplify();
     return result;
   }
  
-  private MultiLineString input;
+  private List<CoverageEdge> input;
   private double areaTolerance;
   private GeometryFactory geomFactory;
-  private MultiLineString constraints = null;
+  private List<CoverageEdge> constraints;
 
-  private TPVWSimplifier(MultiLineString lines, double distanceTolerance) {
-    this.input = lines;
+//  private TPVWSimplifier(MultiLineString lines, double distanceTolerance) {
+//    this.input = lines;
+//    this.areaTolerance = distanceTolerance * distanceTolerance;
+//    geomFactory = input.getFactory();
+//  }
+
+  private TPVWSimplifier(List<CoverageEdge> edges, double distanceTolerance, GeometryFactory geomFactory) {
+    this.input = edges;
     this.areaTolerance = distanceTolerance * distanceTolerance;
-    geomFactory = input.getFactory();
+    this.geomFactory = geomFactory;
   }
   
-  private void setConstraints(MultiLineString constraints) {
+  private void setConstraints(List<CoverageEdge> constraints) {
     this.constraints = constraints;
   }
 
@@ -107,13 +115,14 @@ class TPVWSimplifier {
     return geomFactory.createMultiLineString(result);
   }
 
-  private List<Edge> createEdges(MultiLineString lines) {
+  private List<Edge> createEdges(List<CoverageEdge> covEdges) {
     List<Edge> edges = new ArrayList<Edge>();
-    if (lines == null)
+    if (covEdges == null)
       return edges;
-    for (int i = 0 ; i < lines.getNumGeometries(); i++) {
-      LineString line = (LineString) lines.getGeometryN(i);
-      edges.add(new Edge(line, areaTolerance));
+    for (CoverageEdge covEdge : covEdges) {
+      Edge edge = new Edge(covEdge.getCoordinates(), areaTolerance);
+      edge.nodeCount = covEdge.getNodeCount();
+      edges.add(edge);
     }
     return edges;
   }
@@ -122,16 +131,21 @@ class TPVWSimplifier {
     private double areaTolerance;
     private LinkedLine linkedLine;
     private int minEdgeSize;
+    private int nodeCount;
+    private int nbPts;
 
     private VertexSequencePackedRtree vertexIndex;
     private Envelope envelope;
     
-    Edge(LineString inputLine, double areaTolerance) {
+    //Edge(LineString inputLine, double areaTolerance) {
+    Edge(Coordinate[] pts, double areaTolerance) {
       this.areaTolerance = areaTolerance;
-      this.envelope = inputLine.getEnvelopeInternal();
-      Coordinate[] pts = inputLine.getCoordinates();
+      this.envelope = new Envelope();
+      this.nbPts = pts.length;
+      for (Coordinate c : pts) this.envelope.expandToInclude(c);
       linkedLine = new LinkedLine(pts);
       minEdgeSize = linkedLine.isRing() ? 3 : 2;
+      nodeCount = linkedLine.isRing() ? 0 : 2;
       
       vertexIndex = new VertexSequencePackedRtree(pts);
       //-- remove ring duplicate final vertex
@@ -154,14 +168,12 @@ class TPVWSimplifier {
     
     private Coordinate[] simplify(EdgeIndex edgeIndex) {        
       PriorityQueue<Corner> cornerQueue = createQueue();
-
-      while (! cornerQueue.isEmpty() 
+      while (! cornerQueue.isEmpty()
           && size() > minEdgeSize) {
         Corner corner = cornerQueue.poll();
         //-- a corner may no longer be valid due to removal of adjacent corners
         if (corner.isRemoved())
           continue;
-        //System.out.println(corner.toLineString(edge));
         //-- done when all small corners are removed
         if (corner.getArea() > areaTolerance)
           break;
@@ -181,11 +193,11 @@ class TPVWSimplifier {
     }
     
     private void addCorner(int i, PriorityQueue<Corner> cornerQueue) {
-      if (! linkedLine.isCorner(i))
-        return;
-      Corner corner = new Corner(linkedLine, i);
-      if (corner.getArea() <= areaTolerance) {
-        cornerQueue.add(corner);
+      if ((linkedLine.isRing() && nodeCount == 0) || (i != 0 && i != nbPts-1)) {
+        Corner corner = new Corner(linkedLine, i);
+        if (corner.getArea() <= areaTolerance) {
+          cornerQueue.add(corner);
+        }
       }
     }  
     
@@ -213,7 +225,7 @@ class TPVWSimplifier {
      * 
      * @param corner the corner vertices
      * @param cornerEnv the envelope of the corner
-     * @param hull the hull to test
+     * @param edge the edge to test
      * @return true if there is an intersecting vertex
      */
     private boolean hasIntersectingVertex(Corner corner, Envelope cornerEnv, 
