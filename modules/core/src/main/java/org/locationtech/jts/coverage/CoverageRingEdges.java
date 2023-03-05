@@ -85,6 +85,7 @@ class CoverageRingEdges {
   private void build() {
     Set<Coordinate> nodes = findNodes(coverage);
     Set<LineSegment> boundarySegs = CoverageBoundarySegmentFinder.findBoundarySegments(coverage);
+    nodes.addAll(findBoundaryNodes(boundarySegs));
     HashMap<LineSegment, CoverageEdge> uniqueEdgeMap = new HashMap<LineSegment, CoverageEdge>();
     for (Geometry geom : coverage) {
       for (int ipoly = 0; ipoly < geom.getNumGeometries(); ipoly++) {
@@ -167,7 +168,7 @@ class CoverageRingEdges {
   
   private CoverageEdge createEdge(LinearRing ring, int start, int end, HashMap<LineSegment, CoverageEdge> uniqueEdgeMap) {
     CoverageEdge edge;
-    LineSegment edgeKey = CoverageEdge.key(ring, start, end);
+    LineSegment edgeKey = (end == start) ? CoverageEdge.key(ring) : CoverageEdge.key(ring, start, end);
     if (uniqueEdgeMap.containsKey(edgeKey)) {
       edge = uniqueEdgeMap.get(edgeKey);
     }
@@ -212,6 +213,22 @@ class CoverageRingEdges {
       if (vertexCount.get(v) > 2) {
         nodes.add(v);
       }
+    }
+    return nodes;
+  }
+
+  private Set<Coordinate> findBoundaryNodes(Set<LineSegment> lineSegments) {
+    Map<Coordinate, Integer> boundaryVertexCounter = new HashMap<>();
+    Set<Coordinate> nodes = new HashSet<Coordinate>();
+    for (LineSegment line : lineSegments) {
+      int count = boundaryVertexCounter.getOrDefault(line.p0, 0);
+      boundaryVertexCounter.put(line.p0, count+1);
+      count = boundaryVertexCounter.getOrDefault(line.p1, 0);
+      boundaryVertexCounter.put(line.p1, count+1);
+    }
+    for (Map.Entry<Coordinate, Integer> entry : boundaryVertexCounter.entrySet()) {
+      if (entry.getValue() > 2)
+        nodes.add(entry.getKey());
     }
     return nodes;
   }

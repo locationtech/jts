@@ -51,6 +51,7 @@ public class LinkedLine {
       next[i] = i + 1;
     }
     next[size - 1] = isRing ? 0 : size;
+    next[size - 1] = isRing ? 0 : NO_COORD_INDEX;
     return next;
   }
   
