@@ -37,6 +37,7 @@ import junit.framework.TestCase;
 public abstract class GeometryTestCase extends TestCase{
 
   private static final String CHECK_EQUAL_FAIL = "FAIL - Expected = %s -- Actual = %s\n";
+  private static final String CHECK_ARRAY_EQUAL_FAIL = "FAIL at %s - Expected = %s -- Actual = %s\n";
 
   final GeometryFactory geomFactory;
   
@@ -88,7 +89,7 @@ public abstract class GeometryTestCase extends TestCase{
       equal = actualNorm.equalsExact(expectedNorm);
     }
     if (! equal) {
-      System.out.format(CHECK_EQUAL_FAIL, msg + ": ", expectedNorm, actualNorm );
+      System.out.format(CHECK_ARRAY_EQUAL_FAIL, msg + ": ", expectedNorm, actualNorm );
     }
     assertTrue(equal);
   }

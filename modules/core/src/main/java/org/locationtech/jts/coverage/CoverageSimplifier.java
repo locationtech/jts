@@ -11,6 +11,7 @@
  */
 package org.locationtech.jts.coverage;
 
+import java.util.BitSet;
 import java.util.List;
 
 import org.locationtech.jts.geom.Geometry;
@@ -108,7 +109,7 @@ public class CoverageSimplifier {
     List<CoverageEdge> innerEdges = cov.selectEdges(2);
     List<CoverageEdge> outerEdges = cov.selectEdges(1);
     MultiLineString constraint = createLines(outerEdges);
-    
+
     simplifyEdges(innerEdges, constraint, tolerance);
     Geometry[] result = cov.buildCoverage();
     return result;
@@ -130,10 +131,14 @@ public class CoverageSimplifier {
 
   private MultiLineString createLines(List<CoverageEdge> edges) {
     LineString lines[] = new LineString[edges.size()];
+    BitSet freeRings = new BitSet(edges.size());
     for (int i = 0; i < edges.size(); i++) {
-      lines[i] = geomFactory.createLineString(edges.get(i).getCoordinates());
+      CoverageEdge edge = edges.get(i);
+      lines[i] = geomFactory.createLineString(edge.getCoordinates());
+      freeRings.set(i, edge.isConstraintFree());
     }
     MultiLineString mls = geomFactory.createMultiLineString(lines);
+    mls.setUserData(freeRings);
     return mls;
   }
   
