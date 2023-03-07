@@ -17,6 +17,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateList;
@@ -217,20 +218,16 @@ class CoverageRingEdges {
     return nodes;
   }
 
+
   private Set<Coordinate> findBoundaryNodes(Set<LineSegment> lineSegments) {
-    Map<Coordinate, Integer> boundaryVertexCounter = new HashMap<>();
-    Set<Coordinate> nodes = new HashSet<Coordinate>();
+    Map<Coordinate, Integer> counter = new HashMap<>();
     for (LineSegment line : lineSegments) {
-      int count = boundaryVertexCounter.getOrDefault(line.p0, 0);
-      boundaryVertexCounter.put(line.p0, count+1);
-      count = boundaryVertexCounter.getOrDefault(line.p1, 0);
-      boundaryVertexCounter.put(line.p1, count+1);
+      counter.put(line.p0, counter.getOrDefault(line.p0, 0) + 1);
+      counter.put(line.p1, counter.getOrDefault(line.p1, 0) + 1);
     }
-    for (Map.Entry<Coordinate, Integer> entry : boundaryVertexCounter.entrySet()) {
-      if (entry.getValue() > 2)
-        nodes.add(entry.getKey());
-    }
-    return nodes;
+    return counter.entrySet().stream()
+        .filter(e->e.getValue()>2)
+        .map(Map.Entry::getKey).collect(Collectors.toSet());
   }
 
   /**
