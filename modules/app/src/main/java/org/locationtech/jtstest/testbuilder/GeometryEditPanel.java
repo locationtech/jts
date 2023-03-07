@@ -195,6 +195,12 @@ public class GeometryEditPanel extends JPanel
     return tbModel.getLayers();
   }
   
+  public void setShowingGrid(boolean isEnabled)
+  {
+    viewStyle.setGridEnabled(isEnabled);
+    forceRepaint();
+  }
+  
   public void setShowingInput(boolean isEnabled)
   {
     if (tbModel == null) return;
