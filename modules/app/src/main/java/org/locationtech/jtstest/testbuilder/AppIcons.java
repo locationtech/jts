@@ -29,6 +29,7 @@ public class AppIcons {
   public final static ImageIcon GEOM_EXCHANGE = load("ExchangeGeoms.png");
   
   public final static ImageIcon GEOFUNC_BINARY = load("BinaryGeomFunction.png");
+  public final static ImageIcon EDIT_GRID = load("DrawingGrid.png");
   
   public final static ImageIcon DOWN = load("Down.png");
   public final static ImageIcon UP = load("Up.png");

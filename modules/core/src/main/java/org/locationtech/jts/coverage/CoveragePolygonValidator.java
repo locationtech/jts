@@ -34,7 +34,7 @@ import org.locationtech.jts.noding.MCIndexSegmentSetMutualIntersector;
  * with the set of polygons surrounding it.  
  * If the polygon is coverage-valid an empty {@link LineString} is returned.
  * Otherwise, the result is a linear geometry containing 
- * the polygon boundary linework causing the invalidity.
+ * the target polygon boundary linework causing the invalidity.
  * <p>
  * A polygon is coverage-valid if:
  * <ol>
