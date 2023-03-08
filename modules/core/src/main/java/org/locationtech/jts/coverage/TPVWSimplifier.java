@@ -67,15 +67,17 @@ class TPVWSimplifier {
    * @param distanceTolerance the simplification tolerance
    * @return the simplified lines
    */
-  public static MultiLineString simplify(MultiLineString lines, 
+  public static MultiLineString simplify(MultiLineString lines, BitSet freeRingsIndices,
       MultiLineString constraints, double distanceTolerance) {
     TPVWSimplifier simp = new TPVWSimplifier(lines, distanceTolerance);
+    simp.setFreeRingIndices(freeRingsIndices);
     simp.setConstraints(constraints);
     MultiLineString result = (MultiLineString) simp.simplify();
     return result;
   }
  
   private MultiLineString input;
+  private BitSet freeRingIndices;
   private double areaTolerance;
   private GeometryFactory geomFactory;
   private MultiLineString constraints = null;
@@ -88,6 +90,10 @@ class TPVWSimplifier {
   
   private void setConstraints(MultiLineString constraints) {
     this.constraints = constraints;
+  }
+
+  public void setFreeRingIndices(BitSet freeRingIndices) {
+    this.freeRingIndices = freeRingIndices;
   }
 
   private Geometry simplify() {
@@ -111,11 +117,11 @@ class TPVWSimplifier {
     List<Edge> edges = new ArrayList<Edge>();
     if (lines == null)
       return edges;
-    BitSet freeRings = (lines.getUserData() != null && lines.getUserData() instanceof BitSet) ?
-        (BitSet)lines.getUserData() : new BitSet(lines.getNumGeometries());
+    if (freeRingIndices == null)
+      freeRingIndices = new BitSet(lines.getNumGeometries());
     for (int i = 0 ; i < lines.getNumGeometries(); i++) {
       LineString line = (LineString) lines.getGeometryN(i);
-      edges.add(new Edge(line, freeRings.get(i), areaTolerance));
+      edges.add(new Edge(line, freeRingIndices.get(i), areaTolerance));
     }
     return edges;
   }
@@ -179,15 +185,16 @@ class TPVWSimplifier {
 
     private PriorityQueue<Corner> createQueue() {
       PriorityQueue<Corner> cornerQueue = new PriorityQueue<Corner>();
-      int maxIndex = (linkedLine.isRing() && constraintFree) ? nbPts-1 : nbPts-2;
-      for (int i = 1; i <= maxIndex; i++) {
+      int minIndex = (linkedLine.isRing() && constraintFree) ? 0 : 1;
+      int maxIndex = nbPts - 1;
+      for (int i = minIndex; i < maxIndex; i++) {
         addCorner(i, cornerQueue);
       }
       return cornerQueue;
     }
     
     private void addCorner(int i, PriorityQueue<Corner> cornerQueue) {
-      if ((i == 0 && constraintFree) || (i != 0 && i != nbPts-1)) {
+      if (constraintFree || (i != 0 && i != nbPts-1)) {
         Corner corner = new Corner(linkedLine, i);
         if (corner.getArea() <= areaTolerance) {
           cornerQueue.add(corner);

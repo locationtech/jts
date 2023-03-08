@@ -179,6 +179,37 @@ public class CoverageSimplifierTest extends GeometryTestCase {
     );
   }
 
+  public void testShellSimplificationAtStartingNode() {
+    checkResult(readArray(
+            "POLYGON (( 1 5, 1 7, 5 7, 5 3, 2 3, 1 5 ))"),
+        1.5,
+        readArray(
+            "POLYGON ((1 7, 5 7, 5 3, 2 3, 1 7))")
+    );
+  }
+
+  public void testSimplifyInnerAtStartingNode() {
+    checkResultInner(readArray(
+        "POLYGON (( 0 5, 0 9, 6 9, 6 2, 1 2, 0 5 ), ( 1 5, 2 3, 5 3, 5 7, 1 7, 1 5 ))",
+            "POLYGON (( 1 5, 1 7, 5 7, 5 3, 2 3, 1 5 ))"),
+        1.5,
+        readArray(
+            "POLYGON ((0 5, 0 9, 6 9, 6 2, 1 2, 0 5), (1 7, 2 3, 5 3, 5 7, 1 7))",
+            "POLYGON ((1 7, 5 7, 5 3, 2 3, 1 7))")
+    );
+  }
+
+  public void testSimplifyAllAtStartingNode() {
+    checkResult(readArray(
+            "POLYGON (( 0 5, 0 9, 6 9, 6 2, 1 2, 0 5 ), ( 1 5, 2 3, 5 3, 5 7, 1 7, 1 5 ))",
+            "POLYGON (( 1 5, 1 7, 5 7, 5 3, 2 3, 1 5 ))"),
+        1.5,
+        readArray(
+            "POLYGON ((0 9, 6 9, 6 2, 1 2, 0 9), (1 7, 2 3, 5 3, 5 7, 1 7))",
+            "POLYGON ((1 7, 5 7, 5 3, 2 3, 1 7))")
+    );
+  }
+
   //---------------------------------
   
   public void testInnerSimple() {

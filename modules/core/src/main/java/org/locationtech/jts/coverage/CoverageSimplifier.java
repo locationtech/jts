@@ -117,7 +117,8 @@ public class CoverageSimplifier {
 
   private void simplifyEdges(List<CoverageEdge> edges, MultiLineString constraints, double tolerance) {
     MultiLineString lines = createLines(edges);
-    MultiLineString linesSimp = TPVWSimplifier.simplify(lines, constraints, tolerance);
+    BitSet freeRingsIndices = getFreeRingIndices(edges);
+    MultiLineString linesSimp = TPVWSimplifier.simplify(lines, freeRingsIndices, constraints, tolerance);
     //Assert: mlsSimp.getNumGeometries = edges.length
     
     setCoordinates(edges, linesSimp);
@@ -131,15 +132,20 @@ public class CoverageSimplifier {
 
   private MultiLineString createLines(List<CoverageEdge> edges) {
     LineString lines[] = new LineString[edges.size()];
-    BitSet freeRings = new BitSet(edges.size());
     for (int i = 0; i < edges.size(); i++) {
       CoverageEdge edge = edges.get(i);
       lines[i] = geomFactory.createLineString(edge.getCoordinates());
-      freeRings.set(i, edge.isConstraintFree());
     }
     MultiLineString mls = geomFactory.createMultiLineString(lines);
-    mls.setUserData(freeRings);
     return mls;
+  }
+
+  private BitSet getFreeRingIndices(List<CoverageEdge> edges) {
+    BitSet freeRings = new BitSet(edges.size());
+    for (int i = 0 ; i < edges.size() ; i++) {
+      freeRings.set(i, edges.get(i).isConstraintFree());
+    }
+    return freeRings;
   }
   
 }
