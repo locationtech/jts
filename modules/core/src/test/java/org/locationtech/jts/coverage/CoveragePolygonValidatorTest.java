@@ -127,6 +127,12 @@ public class CoveragePolygonValidatorTest extends GeometryTestCase {
         "POLYGON ((1 9, 9 9, 9 1, 1 1, 1 9))",
         "LINESTRING (3 7, 7 7, 7 3, 3 3, 3 7)");
   }
+  
+  public void testFullyCoveredAndMatched() {
+    checkInvalid("POLYGON ((1 3, 2 3, 2 2, 1 2, 1 3))",
+        "MULTIPOLYGON (((1 1, 1 2, 2 2, 2 1, 1 1)), ((3 1, 2 1, 2 2, 3 2, 3 1)), ((3 3, 3 2, 2 2, 2 3, 3 3)), ((2 3, 3 3, 3 2, 3 1, 2 1, 1 1, 1 2, 1 3, 2 3)))",
+        "LINESTRING (1 2, 2 2, 2 3)");
+  }
 
   //========  Gap cases   =============================
   

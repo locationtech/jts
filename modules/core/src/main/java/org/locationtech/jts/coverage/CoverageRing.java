@@ -16,6 +16,7 @@ import java.util.List;
 
 import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateArrays;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
@@ -49,14 +50,17 @@ class CoverageRing extends BasicSegmentString {
 
   private static CoverageRing createRing(LinearRing ring, boolean isShell) {
     Coordinate[] pts = ring.getCoordinates();
+    if (CoordinateArrays.hasRepeatedOrInvalidPoints(pts)) {
+      pts = CoordinateArrays.removeRepeatedOrInvalidPoints(pts);
+    }
     boolean isCCW = Orientation.isCCW(pts);
     boolean isInteriorOnRight = isShell ? ! isCCW : isCCW;
     return new CoverageRing(pts, isInteriorOnRight);
   }
   
-  public static boolean isValid(List<CoverageRing> rings) {
+  public static boolean isMatched(List<CoverageRing> rings) {
     for (CoverageRing ring : rings) {
-      if (! ring.isValid())
+      if (! ring.isMatched())
         return false;
     }
     return true;
@@ -64,13 +68,13 @@ class CoverageRing extends BasicSegmentString {
   
   private boolean isInteriorOnRight;
   private boolean[] isInvalid;
-  private boolean[] isValid;
+  private boolean[] isMatched;
 
   public CoverageRing(Coordinate[] pts, boolean isInteriorOnRight) {
     super(pts, null);
     this.isInteriorOnRight = isInteriorOnRight;
     isInvalid = new boolean[size() - 1];
-    isValid = new boolean[size() - 1];
+    isMatched = new boolean[size() - 1];
   }
   
   public boolean isInteriorOnRight() {
@@ -78,13 +82,13 @@ class CoverageRing extends BasicSegmentString {
   }
   
   /**
-   * Tests if a segment is marked valid.
+   * Tests if a segment is matched.
    * 
    * @param index the segment index
-   * @return true if the segment is valid
+   * @return true if the segment is matched
    */
-  public boolean isValid(int index) {
-    return isValid[index];
+  public boolean isMatched(int index) {
+    return isMatched[index];
   }
 
   /**
@@ -102,9 +106,9 @@ class CoverageRing extends BasicSegmentString {
    * 
    * @return true if all segments are valid
    */
-  public boolean isValid() {
-    for (int i = 0; i < isValid.length; i++) {
-      if (! isValid[i])
+  public boolean isMatched() {
+    for (int i = 0; i < isMatched.length; i++) {
+      if (! isMatched[i])
         return false;
     }
     return true;
@@ -137,13 +141,13 @@ class CoverageRing extends BasicSegmentString {
   }
 
   /**
-   * Tests whether the validity state of a ring segment is known.
+   * Tests whether the matched/invalid state of a ring segment is known.
    * 
    * @param i the index of the ring segment
-   * @return true if the segment validity state is known
+   * @return true if the segment state is known
    */
   public boolean isKnown(int i) {
-    return isValid[i] || isInvalid[i];
+    return isMatched[i] || isInvalid[i];
   } 
   
   /**
@@ -211,8 +215,6 @@ class CoverageRing extends BasicSegmentString {
    * @param i the segment index
    */
   public void markInvalid(int i) {
-    if (isValid[i])
-      throw new IllegalStateException("Setting valid edge to invalid");
     isInvalid[i] = true;
   }
 
@@ -221,10 +223,10 @@ class CoverageRing extends BasicSegmentString {
    * 
    * @param i the segment index
    */
-  public void markValid(int i) {
+  public void markMatched(int i) {
     if (isInvalid[i])
-      throw new IllegalStateException("Setting invalid edge to valid");
-    isValid[i] = true;
+      throw new IllegalStateException("Setting invalid edge to matched");
+    isMatched[i] = true;
   }
 
   public void createInvalidLines(GeometryFactory geomFactory, List<LineString> lines) {

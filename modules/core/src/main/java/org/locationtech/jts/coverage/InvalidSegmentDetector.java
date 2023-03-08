@@ -53,9 +53,12 @@ class InvalidSegmentDetector implements SegmentIntersector {
     // note the source of the edges is important
     CoverageRing target = (CoverageRing) ssTarget;
     CoverageRing adj = (CoverageRing) ssAdj;
+
+    //-- Assert: rings are not equal (because used with SegmentSetMutualIntersector
     
     //-- skip target segments with known status
-    if (target.isKnown(iTarget)) return;
+    //if (target.isKnown(iTarget)) return;
+    if (target.isInvalid(iTarget)) return;
     
     Coordinate t0 = target.getCoordinate(iTarget);
     Coordinate t1 = target.getCoordinate(iTarget + 1);
@@ -69,6 +72,8 @@ class InvalidSegmentDetector implements SegmentIntersector {
     //-- skip zero-length segments
     if (t0.equals2D(t1) || adj0.equals2D(adj1))
       return;
+    if (isEqual(t0, t1, adj0, adj1))
+      return;
 
     /*
     //-- skip segments beyond distance tolerance
@@ -81,6 +86,14 @@ class InvalidSegmentDetector implements SegmentIntersector {
     if (isInvalid) {
       target.markInvalid(iTarget);
     }
+  }
+
+  private boolean isEqual(Coordinate t0, Coordinate t1, Coordinate adj0, Coordinate adj1) {
+    if (t0.equals2D(adj0) && t1.equals2D(adj1))
+      return true;
+    if (t0.equals2D(adj1) && t1.equals2D(adj0))
+      return true;
+    return false;
   }
 
   private boolean isInvalid(Coordinate tgt0, Coordinate tgt1, 
@@ -149,6 +162,12 @@ class InvalidSegmentDetector implements SegmentIntersector {
     //-- find adjacent-ring vertices on either side of intersection vertex
     Coordinate adjPrev = adj.findVertexPrev(indexAdj, intVertex);
     Coordinate adjNext = adj.findVertexNext(indexAdj, intVertex);
+    
+    //-- don't check if test segment is equal to either corner segment
+    if (tgtEnd.equals2D(adjPrev) || tgtEnd.equals2D(adjNext)) {
+      return false;
+    }
+    
     //-- if needed, re-orient corner to have interior on right
     if (! adj.isInteriorOnRight()) {
       Coordinate temp = adjPrev;
