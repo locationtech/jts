@@ -31,7 +31,9 @@ import org.locationtech.jts.simplify.LinkedLine;
  * Computes a Topology-Preserving Visvalingnam-Whyatt simplification
  * of a set of input lines.
  * The simplified lines will contain no more intersections than are present
- * in the original input, and line endpoints are preserved.
+ * in the original input.
+ * Line and ring endpoints are preserved, except for rings 
+ * which are flagged as "free".
  * <p>
  * The amount of simplification is determined by a tolerance value, 
  * which is a non-zero quantity. 
@@ -61,44 +63,49 @@ class TPVWSimplifier {
   /**
    * Simplifies a set of lines, preserving the topology of the lines between
    * themselves and a set of linear constraints.
+   * The endpoints of lines are preserved.
+   * The endpoint of rings are preserved as well, unless
+   * the ring is indicated as "free" via a bit flag with the same index.
    * 
    * @param lines the lines to simplify
-   * @param constraints the linear constraints
+   * @param freeRings flags indicating which ring edges do not have node endpoints
+   * @param constraintLines the linear constraints
    * @param distanceTolerance the simplification tolerance
    * @return the simplified lines
    */
-  public static MultiLineString simplify(MultiLineString lines, BitSet freeRingsIndices,
-      MultiLineString constraints, double distanceTolerance) {
+  public static MultiLineString simplify(MultiLineString lines, BitSet freeRings,
+      MultiLineString constraintLines, double distanceTolerance) {
     TPVWSimplifier simp = new TPVWSimplifier(lines, distanceTolerance);
-    simp.setFreeRingIndices(freeRingsIndices);
-    simp.setConstraints(constraints);
+    simp.setFreeRingIndices(freeRings);
+    simp.setConstraints(constraintLines);
     MultiLineString result = (MultiLineString) simp.simplify();
     return result;
   }
  
-  private MultiLineString input;
-  private BitSet freeRingIndices;
+  private MultiLineString inputLines;
+  private BitSet isFreeRing;
   private double areaTolerance;
   private GeometryFactory geomFactory;
-  private MultiLineString constraints = null;
+  private MultiLineString constraintLines = null;
 
   private TPVWSimplifier(MultiLineString lines, double distanceTolerance) {
-    this.input = lines;
+    this.inputLines = lines;
     this.areaTolerance = distanceTolerance * distanceTolerance;
-    geomFactory = input.getFactory();
+    geomFactory = inputLines.getFactory();
   }
   
   private void setConstraints(MultiLineString constraints) {
-    this.constraints = constraints;
+    this.constraintLines = constraints;
   }
 
-  public void setFreeRingIndices(BitSet freeRingIndices) {
-    this.freeRingIndices = freeRingIndices;
+  public void setFreeRingIndices(BitSet isFreeRing) {
+    //Assert: bit set has same size as number of lines.
+    this.isFreeRing = isFreeRing;
   }
 
   private Geometry simplify() {
-    List<Edge> edges = createEdges(input);
-    List<Edge> constraintEdges = createEdges(constraints);
+    List<Edge> edges = createEdges(inputLines);
+    List<Edge> constraintEdges = createEdges(constraintLines);
 
     EdgeIndex edgeIndex = new EdgeIndex();
     edgeIndex.add(edges);
@@ -117,11 +124,11 @@ class TPVWSimplifier {
     List<Edge> edges = new ArrayList<Edge>();
     if (lines == null)
       return edges;
-    if (freeRingIndices == null)
-      freeRingIndices = new BitSet(lines.getNumGeometries());
+    if (isFreeRing == null)
+      isFreeRing = new BitSet(lines.getNumGeometries());
     for (int i = 0 ; i < lines.getNumGeometries(); i++) {
       LineString line = (LineString) lines.getGeometryN(i);
-      edges.add(new Edge(line, freeRingIndices.get(i), areaTolerance));
+      edges.add(new Edge(line, isFreeRing.get(i), areaTolerance));
     }
     return edges;
   }
@@ -130,15 +137,24 @@ class TPVWSimplifier {
     private double areaTolerance;
     private LinkedLine linkedLine;
     private int minEdgeSize;
-    private boolean constraintFree;
+    private boolean isFreeRing;
     private int nbPts;
 
     private VertexSequencePackedRtree vertexIndex;
     private Envelope envelope;
 
-    Edge(LineString inputLine, boolean constraintFree, double areaTolerance) {
+    /**
+     * Creates a new edge.
+     * The endpoints of the edge are preserved during simplification,
+     * unless it is a ring and the {@Link #isFreeRing} flag is set.
+     * 
+     * @param inputLine the line or ring
+     * @param isFreeRing whether a ring endpoint can be removed
+     * @param areaTolerance the simplification tolerance
+     */
+    Edge(LineString inputLine, boolean isFreeRing, double areaTolerance) {
       this.areaTolerance = areaTolerance;
-      this.constraintFree = constraintFree;
+      this.isFreeRing = isFreeRing;
       this.envelope = inputLine.getEnvelopeInternal();
       Coordinate[] pts = inputLine.getCoordinates();
       this.nbPts = pts.length;
@@ -185,7 +201,7 @@ class TPVWSimplifier {
 
     private PriorityQueue<Corner> createQueue() {
       PriorityQueue<Corner> cornerQueue = new PriorityQueue<Corner>();
-      int minIndex = (linkedLine.isRing() && constraintFree) ? 0 : 1;
+      int minIndex = (linkedLine.isRing() && isFreeRing) ? 0 : 1;
       int maxIndex = nbPts - 1;
       for (int i = minIndex; i < maxIndex; i++) {
         addCorner(i, cornerQueue);
@@ -194,7 +210,7 @@ class TPVWSimplifier {
     }
     
     private void addCorner(int i, PriorityQueue<Corner> cornerQueue) {
-      if (constraintFree || (i != 0 && i != nbPts-1)) {
+      if (isFreeRing || (i != 0 && i != nbPts-1)) {
         Corner corner = new Corner(linkedLine, i);
         if (corner.getArea() <= areaTolerance) {
           cornerQueue.add(corner);

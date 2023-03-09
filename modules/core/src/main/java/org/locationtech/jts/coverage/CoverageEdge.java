@@ -18,6 +18,8 @@ import org.locationtech.jts.io.WKTWriter;
 
 /**
  * An edge of a polygonal coverage formed from all or a section of a polygon ring.
+ * An edge may be a free ring, which is a ring which has not node points
+ * (i.e. does not touch any other rings in the parent coverage).
  * 
  * @author mdavis
  *
@@ -26,15 +28,13 @@ class CoverageEdge {
 
   public static CoverageEdge createEdge(LinearRing ring) {
     Coordinate[] pts = extractEdgePoints(ring, 0, ring.getNumPoints() - 1);
-    CoverageEdge edge = new CoverageEdge(pts);
-    edge.constraintFree = true;
+    CoverageEdge edge = new CoverageEdge(pts, true);
     return edge;
   }
 
   public static CoverageEdge createEdge(LinearRing ring, int start, int end) {
     Coordinate[] pts = extractEdgePoints(ring, start, end);
-    CoverageEdge edge = new CoverageEdge(pts);
-    edge.constraintFree = false;
+    CoverageEdge edge = new CoverageEdge(pts, false);
     return edge;
   }
 
@@ -123,10 +123,11 @@ class CoverageEdge {
 
   private Coordinate[] pts;
   private int ringCount = 0;
-  private boolean constraintFree = true;
+  private boolean isFreeRing = true;
 
-  public CoverageEdge(Coordinate[] pts) {
+  public CoverageEdge(Coordinate[] pts, boolean isFreeRing) {
     this.pts = pts;
+    this.isFreeRing = isFreeRing;
   }
 
   public void incRingCount() {
@@ -137,8 +138,14 @@ class CoverageEdge {
     return ringCount;
   }
 
-  public boolean isConstraintFree() {
-    return constraintFree;
+  /**
+   * Returns whether this edge is a free ring;
+   * i.e. one with no constrained nodes.
+   * 
+   * @return true if this is a free ring
+   */
+  public boolean isFreeRing() {
+    return isFreeRing;
   }
 
   public void setCoordinates(Coordinate[] pts) {
