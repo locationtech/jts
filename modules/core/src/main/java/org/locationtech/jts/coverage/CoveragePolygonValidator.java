@@ -31,7 +31,7 @@ import org.locationtech.jts.noding.MCIndexSegmentSetMutualIntersector;
 
 /**
  * Validates that a polygon forms a valid polygonal coverage 
- * with the set of polygons surrounding it.  
+ * with the set of polygons adjacent to it.  
  * If the polygon is coverage-valid an empty {@link LineString} is returned.
  * Otherwise, the result is a linear geometry containing 
  * the target polygon boundary linework causing the invalidity.
@@ -46,7 +46,9 @@ import org.locationtech.jts.noding.MCIndexSegmentSetMutualIntersector;
  * The algorithm detects the following coverage errors:
  * <ol>
  * <li>the polygon is a duplicate of another one
- * <li>a polygon boundary segment is collinear with and overlaps an adjacent segment 
+ * <li>a polygon boundary segment equals an adjacent segment (with same orientation).
+ *     This determines that the polygons overlap 
+ * <li>a polygon boundary segment is collinear and overlaps an adjacent segment 
  *     but is not equal to it
  * <li>a polygon boundary segment touches an adjacent segment at a non-vertex point
  * <li>a polygon boundary segment crosses into an adjacent polygon
@@ -56,7 +58,7 @@ import org.locationtech.jts.noding.MCIndexSegmentSetMutualIntersector;
  * If any of these errors is present, the target polygon
  * does not form a valid coverage with the adjacent polygons.
  * <p>
- * The validity rules does not preclude properly-noded gaps between coverage polygons.
+ * The validity rules do not preclude properly-noded gaps between coverage polygons.
  * However, this class can detect narrow gaps, 
  * by specifying a maximum gap width using {@link #setGapWidth(double)}.
  * Note that this will also identify narrow gaps separating disjoint coverage regions, 
@@ -73,6 +75,9 @@ import org.locationtech.jts.noding.MCIndexSegmentSetMutualIntersector;
  * which are not coverage-valid relative to other ones in the set.
  * A coverage is valid only if every polygon in the coverage is coverage-valid.
  * Use {@link CoverageValidator} to validate an entire set of polygons.
+ * <p>
+ * The adjacent set may contain polygons which do not intersect the target polygon.
+ * These are effectively ignored during validation (but may decrease performance).
  * 
  * @see CoverageValidator
  * 
@@ -116,8 +121,9 @@ public class CoveragePolygonValidator {
   private Geometry targetGeom;
   private double gapWidth = 0.0;
   private GeometryFactory geomFactory;
-  private IndexedPointInAreaLocator[] adjPolygonLocators;
   private Geometry[] adjGeoms;
+  private List<Polygon> adjPolygons;
+  private IndexedPointInAreaLocator[] adjPolygonLocators;
 
   /**
    * Create a new validator.
@@ -152,13 +158,8 @@ public class CoveragePolygonValidator {
    * @return a linear geometry containing the segments causing invalidity (if any)
    */
   public Geometry validate() {
-    List<Polygon> adjPolygons = extractPolygons(adjGeoms);
+    adjPolygons = extractPolygons(adjGeoms);
     adjPolygonLocators = new IndexedPointInAreaLocator[adjPolygons.size()];
-    
-    if (hasDuplicateGeom(targetGeom, adjPolygons)) {
-      //TODO: convert to LineString copies
-      return targetGeom.getBoundary();
-    }
     
     List<CoverageRing> targetRings = CoverageRing.createRings(targetGeom);
     List<CoverageRing> adjRings = CoverageRing.createRings(adjPolygons);
@@ -170,20 +171,33 @@ public class CoveragePolygonValidator {
      */
     Envelope targetEnv = targetGeom.getEnvelopeInternal().copy();
     targetEnv.expandBy(gapWidth);
+    
+    checkTargetRings(targetRings, adjRings, targetEnv);
+    
+    return createInvalidLines(targetRings);
+  }
+
+  private void checkTargetRings(List<CoverageRing> targetRings, List<CoverageRing> adjRings, Envelope targetEnv) {
     markMatchedSegments(targetRings, adjRings, targetEnv);
 
-    //-- check if target is fully matched and thus forms a clean coverage 
-    //if (CoverageRing.isMatched(targetRings))
-    //  return createEmptyResult();
+    /**
+     * Short-circuit if target is fully known (matched or invalid).
+     * This often happens in clean coverages,
+     * when the target is surrounded by matching polygons.
+     * It can also happen in invalid coverages 
+     * which have polygons which are duplicates, 
+     * or perfectly overlap other polygons.
+     * 
+     */
+    if (CoverageRing.isKnown(targetRings))
+      return;
     
     /**
-     * Here we know target has at least one unmatched segment.
+     * Here target has at least one unmatched segment.
      * Do further checks to see if any of them are are invalid.
      */
     markInvalidInteractingSegments(targetRings, adjRings, gapWidth);
     markInvalidInteriorSegments(targetRings, adjPolygons);
-    
-    return createInvalidLines(targetRings);
   }
 
   private static List<Polygon> extractPolygons(Geometry[] geoms) {
@@ -199,31 +213,14 @@ public class CoveragePolygonValidator {
   }
 
   /**
-   * Check if an adjacent geometry is a duplicate of the target.
-   * This situation is not detected by segment alignment checking, 
-   * since all segments are matches.
-
-   * @param geom
-   * @param adjPolygons 
-   * @return
-   */
-  private boolean hasDuplicateGeom(Geometry geom, List<Polygon> adjPolygons) {
-    for (Polygon adjPoly : adjPolygons) {
-      if (adjPoly.getEnvelopeInternal().equals(geom.getEnvelopeInternal())) {
-        if (adjPoly.equalsTopo(geom))
-          return true;
-      }
-    }
-    return false;
-  }
-
-  /**
    * Marks matched segments.
    * This improves the efficiency of validity testing, since in valid coverages 
-   * all segments (except exterior ones) will be matched, 
+   * all segments (except exterior ones) are matched, 
    * and hence do not need to be tested further.
-   * In fact, the entire target polygon may be marked valid,
-   * which allows avoiding some further tests.
+   * Segments which are equal and have same orientation
+   * are detected and marked invalid.
+   * In fact, the entire target polygon may be matched and valid,
+   * which allows avoiding further tests.
    * Segments matched between adjacent polygons are also marked valid, 
    * since this prevents them from being detected as misaligned,
    * if this is being done.
@@ -258,7 +255,7 @@ public class CoveragePolygonValidator {
         if (! envLimit.intersects(p0, p1)) {
           continue;
         }
-        //-- if segments match, mark them as matched
+        //-- if segment keys match, mark them as matched (or invalid)
         CoverageRingSegment seg = CoverageRingSegment.create(ring, i);
         if (segmentMap.containsKey(seg)) {
           CoverageRingSegment segMatch = segmentMap.get(seg);
@@ -266,10 +263,10 @@ public class CoveragePolygonValidator {
            * Since inputs should be valid, 
            * the segments are assumed to be in different rings.
            */
-          segMatch.markMatched();
-          seg.markMatched();
+          seg.match(segMatch);
         }
         else {
+          //-- store the segment as key and value, to allow retrieving when matched
           segmentMap.put(seg, seg);
         }
       }
@@ -277,32 +274,78 @@ public class CoveragePolygonValidator {
   }
 
   /**
-   * A LineSegment representing a segment in a ring.
+   * Models a segment in a CoverageRing.
    * The segment is normalized so it can be compared with segments
    * in any orientation.
-   * 
-   * @author mdavis
-   *
+   * Records valid matching segments in a coverage,
+   * which must have opposite orientations.
+   * Also detects equal segments with identical
+   * orientation, and marks them as coverage-invalid.
    */
   private static class CoverageRingSegment extends LineSegment {
     public static CoverageRingSegment create(CoverageRing ring, int index) {
       Coordinate p0 = ring.getCoordinate(index);
       Coordinate p1 = ring.getCoordinate(index + 1);
-      return new CoverageRingSegment(p0, p1, ring, index);
+      //-- orient segment as if ring is in canonical orientation
+      if (ring.isInteriorOnRight()) {
+        return new CoverageRingSegment(p0, p1, ring, index);
+      }
+      else {
+        return new CoverageRingSegment(p1, p0, ring, index);
+      }
     }
     
-    private CoverageRing ring;
-    private int index;
+    private CoverageRing ringForward = null;
+    private int indexForward = -1;
+    private CoverageRing ringOpp = null;
+    private int indexOpp = -1;
 
-    public CoverageRingSegment(Coordinate p0, Coordinate p1, CoverageRing ring, int index) {
+
+    private CoverageRingSegment(Coordinate p0, Coordinate p1, CoverageRing ring, int index) {
       super(p0, p1);
-      normalize();
-      this.ring = ring;
-      this.index = index;
+      
+      if (p1.compareTo(p0) < 0) {
+        reverse();
+        ringOpp = ring;
+        indexOpp = index;
+      }
+      else {
+        ringForward = ring;
+        indexForward = index;        
+      }
     }
     
-    public void markMatched() {
-      ring.markMatched(index);
+    public void match(CoverageRingSegment seg) {
+      boolean isInvalid = checkInvalid(seg);
+      if (isInvalid) {
+        return;
+      }
+      //-- record the match
+      if (ringForward == null) {
+        ringForward = seg.ringForward;
+        indexForward = seg.indexForward;
+      }
+      else {
+        ringOpp = seg.ringOpp;
+        indexOpp = seg.indexOpp;
+      }
+      //-- mark ring segments as matched
+      ringForward.markMatched(indexForward);
+      ringOpp.markMatched(indexOpp);
+    }
+    
+    private boolean checkInvalid(CoverageRingSegment seg) {
+      if (ringForward != null && seg.ringForward != null) {
+        ringForward.markInvalid(indexForward);
+        seg.ringForward.markInvalid(seg.indexForward);
+        return true;
+      }
+      if (ringOpp != null && seg.ringOpp != null) {
+        ringOpp.markInvalid(indexOpp);
+        seg.ringOpp.markInvalid(seg.indexOpp);
+        return true;
+      }
+      return false;
     }
   }
   

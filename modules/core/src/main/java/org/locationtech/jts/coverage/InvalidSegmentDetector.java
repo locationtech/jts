@@ -24,6 +24,9 @@ import org.locationtech.jts.noding.SegmentString;
  * must be {@link CoverageRing}s.
  * If an invalid situation is detected the input target segment is 
  * marked invalid using {@link CoverageRing#markInvalid(int)}.
+ * <p>
+ * This class assumes it is used with {@link SegmentSetMutualIntersector},
+ * so that segments in the same ring are not evaluated.
  * 
  * @author Martin Davis
  *
@@ -54,11 +57,10 @@ class InvalidSegmentDetector implements SegmentIntersector {
     CoverageRing target = (CoverageRing) ssTarget;
     CoverageRing adj = (CoverageRing) ssAdj;
 
-    //-- Assert: rings are not equal (because used with SegmentSetMutualIntersector
+    //-- Assert: rings are not equal (because this is used with SegmentSetMutualIntersector)
     
     //-- skip target segments with known status
-    //if (target.isKnown(iTarget)) return;
-    if (target.isInvalid(iTarget)) return;
+    if (target.isKnown(iTarget)) return;
     
     Coordinate t0 = target.getCoordinate(iTarget);
     Coordinate t1 = target.getCoordinate(iTarget + 1);
