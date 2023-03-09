@@ -12,6 +12,7 @@
 package org.locationtech.jts.coverage;
 
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.List;
 import java.util.PriorityQueue;
 
@@ -48,7 +49,6 @@ class TPVWSimplifier {
    * Simplifies a set of lines, preserving the topology of the lines.
    * 
    * @param lines the lines to simplify
-   * @param constraints the linear constraints
    * @param distanceTolerance the simplification tolerance
    * @return the simplified lines
    */
@@ -67,15 +67,17 @@ class TPVWSimplifier {
    * @param distanceTolerance the simplification tolerance
    * @return the simplified lines
    */
-  public static MultiLineString simplify(MultiLineString lines, 
+  public static MultiLineString simplify(MultiLineString lines, BitSet freeRingsIndices,
       MultiLineString constraints, double distanceTolerance) {
     TPVWSimplifier simp = new TPVWSimplifier(lines, distanceTolerance);
+    simp.setFreeRingIndices(freeRingsIndices);
     simp.setConstraints(constraints);
     MultiLineString result = (MultiLineString) simp.simplify();
     return result;
   }
  
   private MultiLineString input;
+  private BitSet freeRingIndices;
   private double areaTolerance;
   private GeometryFactory geomFactory;
   private MultiLineString constraints = null;
@@ -90,14 +92,18 @@ class TPVWSimplifier {
     this.constraints = constraints;
   }
 
+  public void setFreeRingIndices(BitSet freeRingIndices) {
+    this.freeRingIndices = freeRingIndices;
+  }
+
   private Geometry simplify() {
     List<Edge> edges = createEdges(input);
     List<Edge> constraintEdges = createEdges(constraints);
-    
+
     EdgeIndex edgeIndex = new EdgeIndex();
     edgeIndex.add(edges);
     edgeIndex.add(constraintEdges);
-    
+
     LineString[] result = new LineString[edges.size()];
     for (int i = 0 ; i < edges.size(); i++) {
       Edge edge = edges.get(i);
@@ -111,9 +117,11 @@ class TPVWSimplifier {
     List<Edge> edges = new ArrayList<Edge>();
     if (lines == null)
       return edges;
+    if (freeRingIndices == null)
+      freeRingIndices = new BitSet(lines.getNumGeometries());
     for (int i = 0 ; i < lines.getNumGeometries(); i++) {
       LineString line = (LineString) lines.getGeometryN(i);
-      edges.add(new Edge(line, areaTolerance));
+      edges.add(new Edge(line, freeRingIndices.get(i), areaTolerance));
     }
     return edges;
   }
@@ -122,14 +130,18 @@ class TPVWSimplifier {
     private double areaTolerance;
     private LinkedLine linkedLine;
     private int minEdgeSize;
+    private boolean constraintFree;
+    private int nbPts;
 
     private VertexSequencePackedRtree vertexIndex;
     private Envelope envelope;
-    
-    Edge(LineString inputLine, double areaTolerance) {
+
+    Edge(LineString inputLine, boolean constraintFree, double areaTolerance) {
       this.areaTolerance = areaTolerance;
+      this.constraintFree = constraintFree;
       this.envelope = inputLine.getEnvelopeInternal();
       Coordinate[] pts = inputLine.getCoordinates();
+      this.nbPts = pts.length;
       linkedLine = new LinkedLine(pts);
       minEdgeSize = linkedLine.isRing() ? 3 : 2;
       
@@ -154,8 +166,7 @@ class TPVWSimplifier {
     
     private Coordinate[] simplify(EdgeIndex edgeIndex) {        
       PriorityQueue<Corner> cornerQueue = createQueue();
-
-      while (! cornerQueue.isEmpty() 
+      while (! cornerQueue.isEmpty()
           && size() > minEdgeSize) {
         Corner corner = cornerQueue.poll();
         //-- a corner may no longer be valid due to removal of adjacent corners
@@ -174,27 +185,29 @@ class TPVWSimplifier {
 
     private PriorityQueue<Corner> createQueue() {
       PriorityQueue<Corner> cornerQueue = new PriorityQueue<Corner>();
-      for (int i = 1; i < linkedLine.size() - 1; i++) {
+      int minIndex = (linkedLine.isRing() && constraintFree) ? 0 : 1;
+      int maxIndex = nbPts - 1;
+      for (int i = minIndex; i < maxIndex; i++) {
         addCorner(i, cornerQueue);
       }
       return cornerQueue;
     }
     
     private void addCorner(int i, PriorityQueue<Corner> cornerQueue) {
-      if (! linkedLine.isCorner(i))
-        return;
-      Corner corner = new Corner(linkedLine, i);
-      if (corner.getArea() <= areaTolerance) {
-        cornerQueue.add(corner);
+      if (constraintFree || (i != 0 && i != nbPts-1)) {
+        Corner corner = new Corner(linkedLine, i);
+        if (corner.getArea() <= areaTolerance) {
+          cornerQueue.add(corner);
+        }
       }
-    }  
+    }
     
     private boolean isRemovable(Corner corner, EdgeIndex edgeIndex) {
       Envelope cornerEnv = corner.envelope();
       //-- check nearby lines for violating intersections
       //-- the query also returns this line for checking
       for (Edge edge : edgeIndex.query(cornerEnv)) {
-        if (hasIntersectingVertex(corner, cornerEnv, edge)) 
+        if (hasIntersectingVertex(corner, cornerEnv, edge))
           return false;
         //-- check if corner base equals line (2-pts)
         //-- if so, don't remove corner, since that would collapse to the line
@@ -213,15 +226,14 @@ class TPVWSimplifier {
      * 
      * @param corner the corner vertices
      * @param cornerEnv the envelope of the corner
-     * @param hull the hull to test
+     * @param edge the hull to test
      * @return true if there is an intersecting vertex
      */
     private boolean hasIntersectingVertex(Corner corner, Envelope cornerEnv, 
         Edge edge) {
       int[] result = edge.query(cornerEnv);
-      for (int i = 0; i < result.length; i++) {
-        int index = result[i];
-        
+      for (int index : result) {
+
         Coordinate v = edge.getCoordinate(index);
         // ok if corner touches another line - should only happen at endpoints
         if (corner.isVertex(v))
@@ -251,9 +263,10 @@ class TPVWSimplifier {
       int index = corner.getIndex();
       int prev = linkedLine.prev(index);
       int next = linkedLine.next(index);
+      cornerQueue.removeIf(c -> c.getIndex() == prev || c.getIndex() == next);
       linkedLine.remove(index);
       vertexIndex.remove(index);
-      
+
       //-- potentially add the new corners created
       addCorner(prev, cornerQueue);
       addCorner(next, cornerQueue);
