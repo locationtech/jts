@@ -16,6 +16,7 @@ import java.util.List;
 
 import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateArrays;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
@@ -49,14 +50,24 @@ class CoverageRing extends BasicSegmentString {
 
   private static CoverageRing createRing(LinearRing ring, boolean isShell) {
     Coordinate[] pts = ring.getCoordinates();
+    if (CoordinateArrays.hasRepeatedOrInvalidPoints(pts)) {
+      pts = CoordinateArrays.removeRepeatedOrInvalidPoints(pts);
+    }
     boolean isCCW = Orientation.isCCW(pts);
     boolean isInteriorOnRight = isShell ? ! isCCW : isCCW;
     return new CoverageRing(pts, isInteriorOnRight);
   }
   
-  public static boolean isValid(List<CoverageRing> rings) {
+  /**
+   * Tests if all rings have known status (matched or invalid)
+   * for all segments.
+   * 
+   * @param rings a list of rings
+   * @return true if all ring segments have known status
+   */
+  public static boolean isKnown(List<CoverageRing> rings) {
     for (CoverageRing ring : rings) {
-      if (! ring.isValid())
+      if (! ring.isKnown())
         return false;
     }
     return true;
@@ -64,29 +75,60 @@ class CoverageRing extends BasicSegmentString {
   
   private boolean isInteriorOnRight;
   private boolean[] isInvalid;
-  private boolean[] isValid;
+  private boolean[] isMatched;
 
-  public CoverageRing(Coordinate[] pts, boolean isInteriorOnRight) {
+  private CoverageRing(Coordinate[] pts, boolean isInteriorOnRight) {
     super(pts, null);
     this.isInteriorOnRight = isInteriorOnRight;
     isInvalid = new boolean[size() - 1];
-    isValid = new boolean[size() - 1];
-  }
-  
-  public boolean isInteriorOnRight() {
-    return isInteriorOnRight;
+    isMatched = new boolean[size() - 1];
   }
   
   /**
-   * Tests if a segment is marked valid.
+   * Reports if the ring has canonical orientation,
+   * with the polygon interior on the right (shell is CW).
    * 
-   * @param index the segment index
-   * @return true if the segment is valid
+   * @return true if the polygon interior is on the right
    */
-  public boolean isValid(int index) {
-    return isValid[index];
+  public boolean isInteriorOnRight() {
+    return isInteriorOnRight;
   }
 
+  
+  /**
+   * Marks a segment as invalid.
+   * 
+   * @param i the segment index
+   */
+  public void markInvalid(int i) {
+    isInvalid[i] = true;
+  }
+
+  /**
+   * Marks a segment as valid.
+   * 
+   * @param i the segment index
+   */
+  public void markMatched(int i) {
+    //if (isInvalid[i])
+    //  throw new IllegalStateException("Setting invalid edge to matched");
+    isMatched[i] = true;
+  }
+  
+  /**
+   * Tests if all segments in the ring have known status
+   * (matched or invalid).
+   * 
+   * @return true if all segments have known status
+   */
+  public boolean isKnown() {
+    for (int i = 0; i < isMatched.length; i++) {
+      if (! (isMatched[i] && isInvalid[i]))
+        return false;
+    }
+    return true;
+  }
+  
   /**
    * Tests if a segment is marked invalid.
    * 
@@ -97,19 +139,6 @@ class CoverageRing extends BasicSegmentString {
     return isInvalid[index];
   }
   
-  /**
-   * Tests whether all segments are valid.
-   * 
-   * @return true if all segments are valid
-   */
-  public boolean isValid() {
-    for (int i = 0; i < isValid.length; i++) {
-      if (! isValid[i])
-        return false;
-    }
-    return true;
-  }
-
   /**
    * Tests whether all segments are invalid.
    * 
@@ -137,13 +166,13 @@ class CoverageRing extends BasicSegmentString {
   }
 
   /**
-   * Tests whether the validity state of a ring segment is known.
+   * Tests whether the matched/invalid state of a ring segment is known.
    * 
    * @param i the index of the ring segment
-   * @return true if the segment validity state is known
+   * @return true if the segment state is known
    */
   public boolean isKnown(int i) {
-    return isValid[i] || isInvalid[i];
+    return isMatched[i] || isInvalid[i];
   } 
   
   /**
@@ -203,28 +232,6 @@ class CoverageRing extends BasicSegmentString {
     if (index < size() - 2) 
       return index + 1;
     return 0;
-  }
-  
-  /**
-   * Marks a segment as invalid.
-   * 
-   * @param i the segment index
-   */
-  public void markInvalid(int i) {
-    if (isValid[i])
-      throw new IllegalStateException("Setting valid edge to invalid");
-    isInvalid[i] = true;
-  }
-
-  /**
-   * Marks a segment as valid.
-   * 
-   * @param i the segment index
-   */
-  public void markValid(int i) {
-    if (isInvalid[i])
-      throw new IllegalStateException("Setting invalid edge to valid");
-    isValid[i] = true;
   }
 
   public void createInvalidLines(GeometryFactory geomFactory, List<LineString> lines) {
