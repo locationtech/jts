@@ -279,7 +279,6 @@ class TPVWSimplifier {
       int index = corner.getIndex();
       int prev = linkedLine.prev(index);
       int next = linkedLine.next(index);
-      cornerQueue.removeIf(c -> c.getIndex() == prev || c.getIndex() == next);
       linkedLine.remove(index);
       vertexIndex.remove(index);
 
