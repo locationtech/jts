@@ -49,6 +49,19 @@ public class CoverageValidatorTest extends GeometryTestCase
             );
   }
   
+  public void testFullyCoveredTriangles() {
+    checkInvalid(readArray(
+        "POLYGON ((1 9, 9 1, 1 1, 1 9))",
+        "POLYGON ((9 9, 1 9, 9 1, 9 9))",
+        "POLYGON ((9 9, 9 1, 1 1, 1 9, 9 9))"
+        ),
+        readArray(
+            "LINESTRING (9 1, 1 1, 1 9)",
+            "LINESTRING (9 1, 9 9, 1 9)",
+            "LINESTRING (9 9, 9 1, 1 1, 1 9, 9 9)")
+            );
+  }
+  
   //========  Gap cases   =============================
 
   public void testGap() {

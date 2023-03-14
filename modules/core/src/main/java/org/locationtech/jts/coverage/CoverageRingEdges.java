@@ -17,6 +17,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateList;
@@ -85,6 +86,7 @@ class CoverageRingEdges {
   private void build() {
     Set<Coordinate> nodes = findNodes(coverage);
     Set<LineSegment> boundarySegs = CoverageBoundarySegmentFinder.findBoundarySegments(coverage);
+    nodes.addAll(findBoundaryNodes(boundarySegs));
     HashMap<LineSegment, CoverageEdge> uniqueEdgeMap = new HashMap<LineSegment, CoverageEdge>();
     for (Geometry geom : coverage) {
       for (int ipoly = 0; ipoly < geom.getNumGeometries(); ipoly++) {
@@ -167,7 +169,7 @@ class CoverageRingEdges {
   
   private CoverageEdge createEdge(LinearRing ring, int start, int end, HashMap<LineSegment, CoverageEdge> uniqueEdgeMap) {
     CoverageEdge edge;
-    LineSegment edgeKey = CoverageEdge.key(ring, start, end);
+    LineSegment edgeKey = (end == start) ? CoverageEdge.key(ring) : CoverageEdge.key(ring, start, end);
     if (uniqueEdgeMap.containsKey(edgeKey)) {
       edge = uniqueEdgeMap.get(edgeKey);
     }
@@ -214,6 +216,18 @@ class CoverageRingEdges {
       }
     }
     return nodes;
+  }
+
+
+  private Set<Coordinate> findBoundaryNodes(Set<LineSegment> lineSegments) {
+    Map<Coordinate, Integer> counter = new HashMap<>();
+    for (LineSegment line : lineSegments) {
+      counter.put(line.p0, counter.getOrDefault(line.p0, 0) + 1);
+      counter.put(line.p1, counter.getOrDefault(line.p1, 0) + 1);
+    }
+    return counter.entrySet().stream()
+        .filter(e->e.getValue()>2)
+        .map(Map.Entry::getKey).collect(Collectors.toSet());
   }
 
   /**

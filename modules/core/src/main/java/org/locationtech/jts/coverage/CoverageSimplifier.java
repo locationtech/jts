@@ -11,6 +11,7 @@
  */
 package org.locationtech.jts.coverage;
 
+import java.util.BitSet;
 import java.util.List;
 
 import org.locationtech.jts.geom.Geometry;
@@ -36,16 +37,23 @@ import org.locationtech.jts.geom.MultiLineString;
  * The simplified result coverage has the following characteristics:
  * <ul>
  * <li>It has the same number and types of polygonal geometries as the input
- * <li>Coverage node points (inner vertices shared by three or more polygons, or boundary vertices shared by two or more) are not changed
- * <li>if the input is a valid coverage, then so is the result
+ * <li>Node points (inner vertices shared by three or more polygons, 
+ *     or boundary vertices shared by two or more) are not changed
+ * <li>If the input is a valid coverage, then so is the result
  * </ul>
+ * This class also supports inner simplification, which simplifies
+ * only edges of the coverage which are adjacent to two polygons.
+ * This allows partial simplification of a coverage, since a simplified
+ * subset of a coverage still matches the remainder of the coverage.
+ * <p>
+ * The input coverage should be valid according to {@link CoverageValidator}.
  * 
  * @author Martin Davis
  */
 public class CoverageSimplifier {
   
   /**
-   * Simplify the boundaries of a set of polygonal geometries forming a coverage,
+   * Simplifies the boundaries of a set of polygonal geometries forming a coverage,
    * preserving the coverage topology.
    * 
    * @param coverage a set of polygonal geometries forming a coverage
@@ -58,8 +66,9 @@ public class CoverageSimplifier {
   }
   
   /**
-   * Simplify the inner boundaries of a set of polygonal geometries forming a coverage,
+   * Simplifies the inner boundaries of a set of polygonal geometries forming a coverage,
    * preserving the coverage topology.
+   * Edges which form the exterior boundary of the coverage are left unchanged.
    * 
    * @param coverage a set of polygonal geometries forming a coverage
    * @param tolerance the simplification tolerance
@@ -74,7 +83,7 @@ public class CoverageSimplifier {
   private GeometryFactory geomFactory;
   
   /**
-   * Create a new simplifier instance.
+   * Create a new coverage simplifier instance.
    * 
    * @param coverage a set of polygonal geometries forming a coverage
    */
@@ -98,7 +107,8 @@ public class CoverageSimplifier {
   
   /**
    * Computes the inner-boundary simplified coverage,
-   * preserving the coverage topology.
+   * preserving the coverage topology,
+   * and leaving outer boundary edges unchanged.
    * 
    * @param tolerance the simplification tolerance
    * @return the simplified polygons
@@ -107,16 +117,17 @@ public class CoverageSimplifier {
     CoverageRingEdges cov = CoverageRingEdges.create(input);
     List<CoverageEdge> innerEdges = cov.selectEdges(2);
     List<CoverageEdge> outerEdges = cov.selectEdges(1);
-    MultiLineString constraint = createLines(outerEdges);
-    
-    simplifyEdges(innerEdges, constraint, tolerance);
+    MultiLineString constraintEdges = createLines(outerEdges);
+
+    simplifyEdges(innerEdges, constraintEdges, tolerance);
     Geometry[] result = cov.buildCoverage();
     return result;
   }
 
   private void simplifyEdges(List<CoverageEdge> edges, MultiLineString constraints, double tolerance) {
     MultiLineString lines = createLines(edges);
-    MultiLineString linesSimp = TPVWSimplifier.simplify(lines, constraints, tolerance);
+    BitSet freeRings = getFreeRings(edges);
+    MultiLineString linesSimp = TPVWSimplifier.simplify(lines, freeRings, constraints, tolerance);
     //Assert: mlsSimp.getNumGeometries = edges.length
     
     setCoordinates(edges, linesSimp);
@@ -131,10 +142,19 @@ public class CoverageSimplifier {
   private MultiLineString createLines(List<CoverageEdge> edges) {
     LineString lines[] = new LineString[edges.size()];
     for (int i = 0; i < edges.size(); i++) {
-      lines[i] = geomFactory.createLineString(edges.get(i).getCoordinates());
+      CoverageEdge edge = edges.get(i);
+      lines[i] = geomFactory.createLineString(edge.getCoordinates());
     }
     MultiLineString mls = geomFactory.createMultiLineString(lines);
     return mls;
+  }
+
+  private BitSet getFreeRings(List<CoverageEdge> edges) {
+    BitSet freeRings = new BitSet(edges.size());
+    for (int i = 0 ; i < edges.size() ; i++) {
+      freeRings.set(i, edges.get(i).isFreeRing());
+    }
+    return freeRings;
   }
   
 }
