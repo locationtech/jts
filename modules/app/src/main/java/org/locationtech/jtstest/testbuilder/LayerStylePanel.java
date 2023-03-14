@@ -102,7 +102,16 @@ public class LayerStylePanel extends JPanel {
     txtName.setText(layer.getName());
     txtName.setEditable(isModifiable);
     txtName.setFocusable(isModifiable);
-
+    updateStyleControls();
+  }
+  
+  void updateStyleControls() {
+    ColorControl.update(btnVertexColor, layer.getLayerStyle().getVertexColor() );
+    ColorControl.update(btnLabelColor, layer.getLayerStyle().getLabelColor() );
+    ColorControl.update(btnLineColor, geomStyle().getLineColor() );
+    ColorControl.update(btnFillColor, geomStyle().getFillColor() );
+    sliderLineAlpha.setValue(geomStyle().getLineAlpha());
+    sliderFillAlpha.setValue(geomStyle().getFillAlpha());
     cbShift.setSelected(layer.getLayerStyle().isShifted());
     cbVertex.setSelected(layer.getLayerStyle().isVertices());
     cbVertexLabel.setSelected(layer.getLayerStyle().isVertexLabels());
@@ -121,16 +130,7 @@ public class LayerStylePanel extends JPanel {
     cbSegIndex.setSelected(layer.getLayerStyle().isSegIndex());
     lineWidthModel.setValue((double) geomStyle().getStrokeWidth());
     setPaletteType(comboPalette, layer.getLayerStyle().getFillType());
-    updateStyleControls();
-  }
-  
-  void updateStyleControls() {
-    ColorControl.update(btnVertexColor, layer.getLayerStyle().getVertexColor() );
-    ColorControl.update(btnLabelColor, layer.getLayerStyle().getLabelColor() );
-    ColorControl.update(btnLineColor, geomStyle().getLineColor() );
-    ColorControl.update(btnFillColor, geomStyle().getFillColor() );
-    sliderLineAlpha.setValue(geomStyle().getLineAlpha());
-    sliderFillAlpha.setValue(geomStyle().getFillAlpha());
+
     JTSTestBuilder.controller().updateLayerList();
   }
   
