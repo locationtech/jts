@@ -28,7 +28,7 @@ import org.locationtech.jts.simplify.Corner;
 import org.locationtech.jts.simplify.LinkedLine;
 
 /**
- * Computes a Topology-Preserving Visvalingnam-Whyatt simplification
+ * Computes a Topology-Preserving Visvalingam-Whyatt simplification
  * of a set of input lines.
  * The simplified lines will contain no more intersections than are present
  * in the original input.
@@ -40,7 +40,7 @@ import org.locationtech.jts.simplify.LinkedLine;
  * It is the square root of the area tolerance used 
  * in the Visvalingam-Whyatt algorithm.
  * This equates roughly to the maximum
- * distance by which a simplfied line can change from the original.
+ * distance by which a simplified line can change from the original.
  * 
  * @author mdavis
  *
