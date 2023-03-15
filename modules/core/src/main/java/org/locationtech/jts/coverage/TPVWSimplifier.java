@@ -124,11 +124,10 @@ class TPVWSimplifier {
     List<Edge> edges = new ArrayList<Edge>();
     if (lines == null)
       return edges;
-    if (isFreeRing == null)
-      isFreeRing = new BitSet(lines.getNumGeometries());
     for (int i = 0 ; i < lines.getNumGeometries(); i++) {
       LineString line = (LineString) lines.getGeometryN(i);
-      edges.add(new Edge(line, isFreeRing.get(i), areaTolerance));
+      boolean isFree = isFreeRing == null ? false : isFreeRing.get(i);
+      edges.add(new Edge(line, isFree, areaTolerance));
     }
     return edges;
   }
