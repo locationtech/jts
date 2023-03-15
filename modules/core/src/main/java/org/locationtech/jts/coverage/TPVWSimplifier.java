@@ -104,8 +104,8 @@ class TPVWSimplifier {
   }
 
   private Geometry simplify() {
-    List<Edge> edges = createEdges(inputLines);
-    List<Edge> constraintEdges = createEdges(constraintLines);
+    List<Edge> edges = createEdges(inputLines, this.isFreeRing);
+    List<Edge> constraintEdges = createEdges(constraintLines, null);
 
     EdgeIndex edgeIndex = new EdgeIndex();
     edgeIndex.add(edges);
@@ -120,7 +120,7 @@ class TPVWSimplifier {
     return geomFactory.createMultiLineString(result);
   }
 
-  private List<Edge> createEdges(MultiLineString lines) {
+  private List<Edge> createEdges(MultiLineString lines, BitSet isFreeRing) {
     List<Edge> edges = new ArrayList<Edge>();
     if (lines == null)
       return edges;
