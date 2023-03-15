@@ -310,7 +310,7 @@ public class Polygonizer
         }
       }
       if (unsetNumber > 0 && unsetNumber == lastUnsetNumber) {
-        throw new IllegalStateException("Failed to find disjoint shells : input may not be correctly noded");
+        throw new IllegalStateException("Failed to polygonize with extractOnlyPolygonal option : input may not be correctly noded");
       }
       lastUnsetNumber = unsetNumber;
     } while (isMoreToScan);
