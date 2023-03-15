@@ -226,7 +226,7 @@ public class OffsetCurve {
    * @param bufParams the buffer parameters to use
    * @return the raw offset curve points
    */
-  public static Coordinate[] rawOffsetCurve(LineString line, double distance, BufferParameters bufParams)
+  public static Coordinate[] rawOffset(LineString line, double distance, BufferParameters bufParams)
   {
     Coordinate[] pts = line.getCoordinates();
     Coordinate[] cleanPts = CoordinateArrays.removeRepeatedOrInvalidPoints(pts);
@@ -247,7 +247,7 @@ public class OffsetCurve {
    */
   public static Coordinate[] rawOffset(LineString line, double distance)
   {
-    return rawOffsetCurve(line, distance, new BufferParameters());
+    return rawOffset(line, distance, new BufferParameters());
   }
 
   private Geometry computeCurve(LineString lineGeom, double distance) {
@@ -274,7 +274,7 @@ public class OffsetCurve {
   }
 
   private List<OffsetCurveSection> computeSections(LineString lineGeom, double distance) {
-    Coordinate[] rawCurve = rawOffsetCurve(lineGeom, distance, bufferParams);
+    Coordinate[] rawCurve = rawOffset(lineGeom, distance, bufferParams);
     List<OffsetCurveSection> sections = new ArrayList<OffsetCurveSection>();
     if (rawCurve.length == 0) {
       return sections;
