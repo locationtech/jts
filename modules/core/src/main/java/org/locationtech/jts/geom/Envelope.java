@@ -591,11 +591,7 @@ public class Envelope
    *@see #intersects(Envelope)
    */
   public boolean disjoint(Envelope other) {
-      if (isNull() || other.isNull()) { return true; }
-    return other.minx > maxx ||
-        other.maxx < minx ||
-        other.miny > maxy ||
-        other.maxy < miny;
+    return ! intersects(other);
   }
   
   /**
