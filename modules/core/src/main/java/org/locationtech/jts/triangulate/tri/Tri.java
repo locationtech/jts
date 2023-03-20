@@ -558,6 +558,9 @@ public class Tri {
       Tri adj = curr.getAdjacent(currIndex);
       if (adj == null) return false;
       int adjIndex = adj.getIndex(curr);
+      if (adjIndex < 0) {
+        throw new IllegalStateException("Inconsistent adjacency - invalid triangulation");
+      }
       curr = adj;
       currIndex = Tri.next(adjIndex);
     }
