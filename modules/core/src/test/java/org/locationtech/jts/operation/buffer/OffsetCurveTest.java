@@ -54,6 +54,20 @@ public class OffsetCurveTest extends GeometryTestCase {
         "LINESTRING EMPTY"
         );
   }
+  
+  public void testZeroOffsetLine() {
+    checkOffsetCurve(
+        "LINESTRING (0 0, 1 0, 1 1)", 0,
+        "LINESTRING (0 0, 1 0, 1 1)"
+        );
+  }
+
+  public void testZeroOffsetPolygon() {
+    checkOffsetCurve(
+        "POLYGON ((1 9, 9 1, 1 1, 1 9))", 0,
+        "LINESTRING (1 9, 1 1, 9 1, 1 9)"
+        );
+  }
 
   /**
    * Test bug fix for removing repeated points in input for raw curve.

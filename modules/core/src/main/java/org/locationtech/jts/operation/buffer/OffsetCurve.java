@@ -38,6 +38,7 @@ import org.locationtech.jts.util.Assert;
  * If the offset distance is positive the curve lies on the left side of the input;
  * if it is negative the curve is on the right side.
  * The curve(s) have the same direction as the input line(s).
+ * The result for a zero offset distance is a copy of the input linework.
  * <p>
  * The offset curve is based on the boundary of the buffer for the geometry
  * at the offset distance (see {@link BufferOp}.
@@ -255,6 +256,10 @@ public class OffsetCurve {
     //-- empty or single-point line
     if (lineGeom.getNumPoints() < 2 || lineGeom.getLength() == 0.0) {
       return geomFactory.createLineString();
+    }
+    //-- zero offset distance
+    if (distance == 0) {
+      return lineGeom.copy();
     }
     //-- two-point line
     if (lineGeom.getNumPoints() == 2) {
