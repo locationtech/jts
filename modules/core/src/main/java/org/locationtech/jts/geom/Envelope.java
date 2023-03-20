@@ -541,6 +541,8 @@ public class Envelope
   /**
    * Tests if the region defined by <code>other</code>
    * intersects the region of this <code>Envelope</code>.
+   * <p>
+   * A null envelope never intersects.
    *
    *@param  other  the <code>Envelope</code> which this <code>Envelope</code> is
    *          being checked for intersecting
@@ -584,6 +586,8 @@ public class Envelope
   /**
    * Tests if the region defined by <code>other</code>
    * is disjoint from the region of this <code>Envelope</code>.
+   * <p>
+   * A null envelope is always disjoint.
    *
    *@param  other  the <code>Envelope</code> being checked for disjointness
    *@return        <code>true</code> if the <code>Envelope</code>s are disjoint
