@@ -39,6 +39,8 @@ import org.locationtech.jts.util.Assert;
  */
 public class Tri {
   
+  private static final String INVALID_TRI_INDEX = "Invalid Tri index";
+
   /**
    * Creates a {@link GeometryCollection} of {@link Polygon}s
    * representing the triangles in a list.
@@ -176,7 +178,7 @@ public class Tri {
     case 1: tri1 = tri; return;
     case 2: tri2 = tri; return;
     }
-    Assert.shouldNeverReachHere();
+    throw new IllegalArgumentException(INVALID_TRI_INDEX);
   }
 
   private void setCoordinates(Coordinate p0, Coordinate p1, Coordinate p2) {
@@ -436,13 +438,12 @@ public class Tri {
    * @return the vertex coordinate
    */
   public Coordinate getCoordinate(int index) {
-    if ( index == 0 ) {
-      return p0;
+    switch(index) {
+    case 0: return p0;
+    case 1: return p1;
+    case 2: return p2;
     }
-    if ( index == 1 ) {
-      return p1;
-    }
-    return p2;
+    throw new IllegalArgumentException(INVALID_TRI_INDEX);
   }
 
   /**
@@ -491,8 +492,7 @@ public class Tri {
     case 1: return tri1;
     case 2: return tri2;
     }
-    Assert.shouldNeverReachHere();
-    return null;
+    throw new IllegalArgumentException(INVALID_TRI_INDEX);
   }
 
   /**
