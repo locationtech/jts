@@ -86,27 +86,27 @@ public class ConstructionFunctions {
   //--------------------------------------------
   
   @Metadata(description="Constructs the Largest Empty Circle in a set of obstacles")
-  public static Geometry largestEmptyCircle(Geometry g,
-      @Metadata(title="Distance tolerance")
+  public static Geometry largestEmptyCircle(Geometry obstacles, Geometry boundary,
+      @Metadata(title="Accuracy distance tolerance")
       double tolerance) { 
-    LineString radiusLine = LargestEmptyCircle.getRadiusLine(g, tolerance);
+    LineString radiusLine = LargestEmptyCircle.getRadiusLine(obstacles, boundary, tolerance);
     return circleByRadiusLine(radiusLine, 60);
   }
   
   @Metadata(description="Computes a radius line of the Largest Empty Circle in a set of obstacles")
-  public static Geometry largestEmptyCircleCenter(Geometry g, 
-      @Metadata(title="Distance tolerance")
+  public static Geometry largestEmptyCircleCenter(Geometry obstacles, Geometry boundary,
+      @Metadata(title="Accuracy distance tolerance")
       double tolerance) { 
-    return LargestEmptyCircle.getCenter(g, tolerance); 
+    return LargestEmptyCircle.getCenter(obstacles, boundary, tolerance); 
   }
   
   @Metadata(description="Computes a radius line of the Largest Empty Circle in a set of obstacles")
-  public static Geometry largestEmptyCircleRadius(Geometry g, 
-      @Metadata(title="Distance tolerance")
+  public static Geometry largestEmptyCircleRadius(Geometry obstacles, Geometry boundary, 
+      @Metadata(title="Accuracy distance tolerance")
       double tolerance) { 
-    return LargestEmptyCircle.getRadiusLine(g, tolerance); 
+    return LargestEmptyCircle.getRadiusLine(obstacles, boundary, tolerance); 
   }
-
+  
   //--------------------------------------------
 
   @Metadata(description="Constructs an n-point circle from a 2-point line giving the radius")
