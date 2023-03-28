@@ -164,14 +164,16 @@ public class LargestEmptyCircle {
   }
 
   /**
-   * Sets the boundary polygonal geometry which will contain the LEC center.
-   * If the boundary is null or not set the convex hull
+   * Sets the boundary polygonal geometry to contain the LEC center.
+   * If the boundary is null or empty the convex hull
    * of the obstacles is used as the boundary.
    *
    * @param boundary a polygonal geometry (may be null or empty)
    */
   public void setBoundary(Geometry boundary) {
-    if (boundary != null && ! (boundary instanceof Polygonal)) {
+    if (boundary == null)
+      return;
+    if (! (boundary instanceof Polygonal)) {
       throw new IllegalArgumentException("Boundary must be polygonal");
     }
     this.boundary = boundary;
