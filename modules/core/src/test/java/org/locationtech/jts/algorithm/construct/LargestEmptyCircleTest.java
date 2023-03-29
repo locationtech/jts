@@ -107,8 +107,7 @@ public class LargestEmptyCircleTest extends GeometryTestCase {
   
   private void checkCircle(Geometry obstacles, Geometry boundary, double tolerance, 
       double x, double y, double expectedRadius) {
-    LargestEmptyCircle lec = new LargestEmptyCircle(obstacles, tolerance); 
-    lec.setBoundary(boundary);
+    LargestEmptyCircle lec = new LargestEmptyCircle(obstacles, boundary, tolerance); 
     Geometry centerPoint = lec.getCenter();
     Coordinate centerPt = centerPoint.getCoordinate();
     Coordinate expectedCenter = new Coordinate(x, y);
@@ -128,7 +127,7 @@ public class LargestEmptyCircleTest extends GeometryTestCase {
   }
 
   private void checkCircleZeroRadius(Geometry geom, double tolerance) {
-    LargestEmptyCircle lec = new LargestEmptyCircle(geom, tolerance); 
+    LargestEmptyCircle lec = new LargestEmptyCircle(geom, null, tolerance); 
 
     LineString radiusLine = lec.getRadiusLine();
     double actualRadius = radiusLine.getLength();
