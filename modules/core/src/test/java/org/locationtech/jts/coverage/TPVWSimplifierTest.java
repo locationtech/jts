@@ -42,6 +42,14 @@ public class TPVWSimplifierTest extends GeometryTestCase {
         "MULTILINESTRING ((1 9, 1 1, 9 1), (1 9, 9 9, 9 1), (5 5, 2 2, 2 8, 5 5), (5 5, 8 2, 8 8, 5 5))");
   }
     
+  public void testConstraint() {
+    checkSimplify("MULTILINESTRING ((6 8, 2 8, 2.1 5, 2 2, 6 2, 5.9 5, 6 8))", 
+        new int[] {  },
+        "MULTILINESTRING ((1 9, 9 9, 6 5, 9 1), (1 9, 1 1, 9 1))",
+        1, 
+        "MULTILINESTRING ((6 8, 2 8, 2 2, 6 2, 5.9 5, 6 8))");
+  }
+    
   private void checkNoop(String wkt, double tolerance) {
     MultiLineString geom = (MultiLineString) read(wkt);
     Geometry actual = TPVWSimplifier.simplify(geom, tolerance);
