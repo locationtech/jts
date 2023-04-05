@@ -16,8 +16,6 @@ import org.locationtech.jts.geom.Geometry;
 import junit.textui.TestRunner;
 import test.jts.GeometryTestCase;
 
-import java.util.Arrays;
-
 public class CoverageSimplifierTest extends GeometryTestCase {
   public static void main(String args[]) {
     TestRunner.run(CoverageSimplifierTest.class);

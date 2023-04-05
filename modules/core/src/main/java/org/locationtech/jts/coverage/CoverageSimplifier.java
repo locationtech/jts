@@ -16,7 +16,6 @@ import java.util.List;
 
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.MultiLineString;
 
 /**
@@ -117,7 +116,7 @@ public class CoverageSimplifier {
     CoverageRingEdges cov = CoverageRingEdges.create(input);
     List<CoverageEdge> innerEdges = cov.selectEdges(2);
     List<CoverageEdge> outerEdges = cov.selectEdges(1);
-    MultiLineString constraintEdges = createLines(outerEdges);
+    MultiLineString constraintEdges = CoverageEdge.createLines(outerEdges, geomFactory);
 
     simplifyEdges(innerEdges, constraintEdges, tolerance);
     Geometry[] result = cov.buildCoverage();
@@ -125,7 +124,7 @@ public class CoverageSimplifier {
   }
 
   private void simplifyEdges(List<CoverageEdge> edges, MultiLineString constraints, double tolerance) {
-    MultiLineString lines = createLines(edges);
+    MultiLineString lines = CoverageEdge.createLines(edges, geomFactory);
     BitSet freeRings = getFreeRings(edges);
     MultiLineString linesSimp = TPVWSimplifier.simplify(lines, freeRings, constraints, tolerance);
     //Assert: mlsSimp.getNumGeometries = edges.length
@@ -137,16 +136,6 @@ public class CoverageSimplifier {
     for (int i = 0; i < edges.size(); i++) {
       edges.get(i).setCoordinates(lines.getGeometryN(i).getCoordinates());
     }
-  }
-
-  private MultiLineString createLines(List<CoverageEdge> edges) {
-    LineString lines[] = new LineString[edges.size()];
-    for (int i = 0; i < edges.size(); i++) {
-      CoverageEdge edge = edges.get(i);
-      lines[i] = geomFactory.createLineString(edge.getCoordinates());
-    }
-    MultiLineString mls = geomFactory.createMultiLineString(lines);
-    return mls;
   }
 
   private BitSet getFreeRings(List<CoverageEdge> edges) {

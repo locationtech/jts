@@ -11,9 +11,14 @@
  */
 package org.locationtech.jts.coverage;
 
+import java.util.List;
+
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineSegment;
+import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.LinearRing;
+import org.locationtech.jts.geom.MultiLineString;
 import org.locationtech.jts.io.WKTWriter;
 
 /**
@@ -38,6 +43,16 @@ class CoverageEdge {
     return edge;
   }
 
+  static MultiLineString createLines(List<CoverageEdge> edges, GeometryFactory geomFactory) {
+    LineString lines[] = new LineString[edges.size()];
+    for (int i = 0; i < edges.size(); i++) {
+      CoverageEdge edge = edges.get(i);
+      lines[i] = edge.toLineString(geomFactory);
+    }
+    MultiLineString mls = geomFactory.createMultiLineString(lines);
+    return mls;
+  }
+  
   private static Coordinate[] extractEdgePoints(LinearRing ring, int start, int end) {
     int size = start < end 
                   ? end - start + 1 
@@ -162,6 +177,10 @@ class CoverageEdge {
   
   public Coordinate getStartCoordinate() {
     return pts[0];
+  }
+  
+  public LineString toLineString(GeometryFactory geomFactory) {
+    return geomFactory.createLineString(getCoordinates());
   }
   
   public String toString() {
