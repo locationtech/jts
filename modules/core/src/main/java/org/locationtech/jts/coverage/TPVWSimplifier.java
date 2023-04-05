@@ -69,7 +69,7 @@ class TPVWSimplifier {
    * 
    * @param lines the lines to simplify
    * @param freeRings flags indicating which ring edges do not have node endpoints
-   * @param constraintLines the linear constraints
+   * @param constraintLines the linear constraints (may be null)
    * @param distanceTolerance the simplification tolerance
    * @return the simplified lines
    */
