@@ -40,6 +40,11 @@ public class CoverageRingEdgesTest  extends GeometryTestCase {
         "MULTILINESTRING ((1 6, 1 1, 9 1, 9 6, 6 5), (1 6, 1 9, 6 9, 6 5), (1 6, 6 5), (2 4, 2 2, 4 2, 4 4, 2 4))");
   }
 
+  public void testHolesAndFillWithDifferentEndpoints() {
+    checkEdges("GEOMETRYCOLLECTION (POLYGON ((0 10, 10 10, 10 0, 0 0, 0 10), (1 9, 4 8, 9 9, 9 1, 1 1, 1 9)), POLYGON ((9 9, 1 1, 1 9, 4 8, 9 9)), POLYGON ((1 1, 9 9, 9 1, 1 1)))",
+        "MULTILINESTRING ((0 10, 0 0, 10 0, 10 10, 0 10), (1 1, 1 9, 4 8, 9 9), (1 1, 9 1, 9 9), (1 1, 9 9))");
+  }
+
   private void checkEdges(String wkt, String wktExpected) {
     Geometry geom = read(wkt);
     Geometry[] polygons = toArray(geom);
