@@ -30,9 +30,14 @@ public class CoverageRingEdgesTest  extends GeometryTestCase {
     super(name);
   }
   
-  public void testSimple() {
-    checkEdges("GEOMETRYCOLLECTION (POLYGON ((100 100, 200 200, 300 100, 200 101, 100 100)), POLYGON ((150 0, 100 100, 200 101, 300 100, 250 0, 150 0)))",
-        "MULTILINESTRING ((100 100, 150 0, 250 0, 300 100), (100 100, 200 101, 300 100), (100 100, 200 200, 300 100))");
+  public void testTwoAdjacent() {
+    checkEdges("GEOMETRYCOLLECTION (POLYGON ((1 1, 1 6, 6 5, 9 6, 9 1, 1 1)), POLYGON ((1 9, 6 9, 6 5, 1 6, 1 9)))",
+        "MULTILINESTRING ((1 6, 1 1, 9 1, 9 6, 6 5), (1 6, 1 9, 6 9, 6 5), (1 6, 6 5))");
+  }
+
+  public void testTwoAdjacentWithFilledHole() {
+    checkEdges("GEOMETRYCOLLECTION (POLYGON ((1 1, 1 6, 6 5, 9 6, 9 1, 1 1), (2 4, 4 4, 4 2, 2 2, 2 4)), POLYGON ((1 9, 6 9, 6 5, 1 6, 1 9)), POLYGON ((4 2, 2 2, 2 4, 4 4, 4 2)))",
+        "MULTILINESTRING ((1 6, 1 1, 9 1, 9 6, 6 5), (1 6, 1 9, 6 9, 6 5), (1 6, 6 5), (2 4, 2 2, 4 2, 4 4, 2 4))");
   }
 
   private void checkEdges(String wkt, String wktExpected) {
