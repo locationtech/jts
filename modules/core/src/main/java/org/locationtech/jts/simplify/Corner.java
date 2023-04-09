@@ -42,6 +42,10 @@ public class Corner implements Comparable<Corner> {
     return index;
   }
   
+  public Coordinate getCoordinate() {
+    return edge.getCoordinate(index);
+  }
+  
   public double getArea() {
     return area;
   }
@@ -62,11 +66,17 @@ public class Corner implements Comparable<Corner> {
   }
 
   /**
-   * Orders corners by increasing area
+   * Orders corners by increasing area.
+   * To ensure equal-area corners have a deterministic ordering,
+   * if area is equal then compares corner index.
    */
   @Override
   public int compareTo(Corner o) {
-    return Double.compare(area, o.area);
+    int comp = Double.compare(area, o.area);
+    if (comp != 0) 
+      return comp;
+    //-- ensure equal-area corners have a deterministic ordering
+    return Integer.compare(index, o.index);
   }
   
   public Envelope envelope() {
