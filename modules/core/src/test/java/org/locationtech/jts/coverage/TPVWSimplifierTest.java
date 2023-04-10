@@ -47,7 +47,7 @@ public class TPVWSimplifierTest extends GeometryTestCase {
   }
     
   public void testNoFreeRing() {
-    checkSimplify("MULTILINESTRING ((1 9, 9 9, 9 1), (1 9, 1 1, 9 1), (5 5, 4 8, 2 8, 2 2, 4 2, 5 5), (5 5, 6 8, 8.1 8, 8 8, 8 2, 6 2, 5 5))", 
+    checkSimplify("MULTILINESTRING ((1 9, 9 9, 9 1), (1 9, 1 1, 9 1), (5 5, 4 8, 2 8, 2 2, 4 2, 5 5), (5 5, 6 8, 8 8, 8 2, 6 2, 5 5))", 
         new int[] {  },
         2, 
         "MULTILINESTRING ((1 9, 1 1, 9 1), (1 9, 9 9, 9 1), (5 5, 2 2, 2 8, 5 5), (5 5, 8 2, 8 8, 5 5))");
