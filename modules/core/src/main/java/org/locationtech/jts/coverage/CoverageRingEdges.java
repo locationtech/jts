@@ -112,21 +112,16 @@ class CoverageRingEdges {
 
   private void addBoundaryNodes(LinearRing ring, Set<LineSegment> boundarySegs, Set<Coordinate> nodes) {
     CoordinateSequence seq = ring.getCoordinateSequence();
-    boolean isBdyLast = isBoundarySegment(seq, seq.size() - 2, boundarySegs);
+    boolean isBdyLast = CoverageBoundarySegmentFinder.isBoundarySegment(boundarySegs, seq, seq.size() - 2);
     boolean isBdyPrev = isBdyLast;
     for (int i = 0; i < seq.size() - 1; i++) {
-      boolean isBdy = isBoundarySegment(seq, i, boundarySegs);
+      boolean isBdy = CoverageBoundarySegmentFinder.isBoundarySegment(boundarySegs, seq, i);
       if (isBdy != isBdyPrev) {
         Coordinate nodePt = seq.getCoordinate(i);
         nodes.add(nodePt);
       }
       isBdyPrev = isBdy;
     }
-  }
-
-  private boolean isBoundarySegment(CoordinateSequence seq, int i, Set<LineSegment> boundarySegs) {
-    LineSegment seg = CoverageBoundarySegmentFinder.createSegment(seq, i);
-    return boundarySegs.contains(seg);
   }
 
   private List<CoverageEdge> extractRingEdges(LinearRing ring, 

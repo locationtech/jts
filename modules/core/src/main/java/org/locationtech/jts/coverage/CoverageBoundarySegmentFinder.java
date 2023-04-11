@@ -19,7 +19,7 @@ import org.locationtech.jts.geom.CoordinateSequenceFilter;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.LineSegment;
 
-public class CoverageBoundarySegmentFinder implements CoordinateSequenceFilter {
+class CoverageBoundarySegmentFinder implements CoordinateSequenceFilter {
   
   public static Set<LineSegment> findBoundarySegments(Geometry[] geoms) {
     Set<LineSegment> segs = new HashSet<LineSegment>();
@@ -30,6 +30,11 @@ public class CoverageBoundarySegmentFinder implements CoordinateSequenceFilter {
     return segs;
   }
 
+  public static boolean isBoundarySegment(Set<LineSegment> boundarySegs, CoordinateSequence seq, int i) {
+    LineSegment seg = createSegment(seq, i);
+    return boundarySegs.contains(seg);
+  }
+  
   private Set<LineSegment> boundarySegs;
 
   public CoverageBoundarySegmentFinder(Set<LineSegment> segs) {
@@ -50,7 +55,7 @@ public class CoverageBoundarySegmentFinder implements CoordinateSequenceFilter {
     }
   }
 
-  public static LineSegment createSegment(CoordinateSequence seq, int i) {
+  private static LineSegment createSegment(CoordinateSequence seq, int i) {
     LineSegment seg = new LineSegment(seq.getCoordinate(i), seq.getCoordinate(i + 1));
     seg.normalize();
     return seg;
