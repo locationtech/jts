@@ -24,7 +24,6 @@ import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.MultiLineString;
 import org.locationtech.jts.index.VertexSequencePackedRtree;
 import org.locationtech.jts.index.strtree.STRtree;
-import org.locationtech.jts.simplify.Corner;
 import org.locationtech.jts.simplify.LinkedLine;
 
 /**

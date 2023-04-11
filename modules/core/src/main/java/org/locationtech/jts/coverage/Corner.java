@@ -9,15 +9,16 @@
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
  */
-package org.locationtech.jts.simplify;
+package org.locationtech.jts.coverage;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Triangle;
+import org.locationtech.jts.simplify.LinkedLine;
 
-public class Corner implements Comparable<Corner> {
+class Corner implements Comparable<Corner> {
   private LinkedLine edge;
   private int index;
   private int prev;
