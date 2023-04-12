@@ -13,11 +13,12 @@
 /**
  * Classes that operate on polygonal coverages.
  * <p>
- * A polygonal coverage is a non-overlapping, fully-noded set of polygons.
- * Specifically, a set of polygons is a valid coverage if:
+ * A polygonal coverage is a set of polygonal geometries which is non-overlapping and edge-matched. 
+ * ({@link Polygon}s or {@link MultiPolygon}s).
+ * A set of polygonal geometries is a valid coverage if:
  * <ol>
- * <li>The polygons are valid
- * <li>The interiors of all polygons are disjoint.
+ * <li>Each geometry is valid
+ * <li>The interiors of all polygons are disjoint (they are non-overlapping).
  * This is the case if no polygon has a boundary which intersects the interior of another polygon.
  * <li>Where polygons are adjacent (i.e. their boundaries intersect), 
  * they are <b>edge-matched</b>: the vertices
