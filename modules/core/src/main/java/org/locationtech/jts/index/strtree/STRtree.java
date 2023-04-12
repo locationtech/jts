@@ -263,9 +263,9 @@ implements SpatialIndex, Serializable
   }
 
   /**
-   * Returns the number of items in the tree.
+   * Returns the number of levels in the tree.
    *
-   * @return the number of items in the tree
+   * @return the number of levels in the tree
    */
   public int depth()
   {
