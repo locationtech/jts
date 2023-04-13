@@ -268,6 +268,14 @@ public class LineSegment
     return Distance.pointToLinePerpendicular(p, p0, p1);
   }
 
+  public double distancePerpendicularOriented(Coordinate p)
+  {
+    double dist = Distance.pointToLinePerpendicular(p, p0, p1);
+    if (orientationIndex(p) < 0)
+      return -dist;
+    return dist;
+  }
+  
   /**
    * Computes the {@link Coordinate} that lies a given
    * fraction along the line defined by this segment.

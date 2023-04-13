@@ -219,4 +219,21 @@ public class Distance {
     return Math.abs(s) * Math.sqrt(len2);
   }
 
+  public static double pointToLinePerpendicularSigned(Coordinate p,
+      Coordinate A, Coordinate B)
+  {
+    // use comp.graphics.algorithms Frequently Asked Questions method
+    /*
+     * (2) s = (Ay-Cy)(Bx-Ax)-(Ax-Cx)(By-Ay) 
+     *         ----------------------------- 
+     *                    L^2
+     * 
+     * Then the distance from C to P = |s|*L.
+     */
+    double len2 = (B.x - A.x) * (B.x - A.x) + (B.y - A.y) * (B.y - A.y);
+    double s = ((A.y - p.y) * (B.x - A.x) - (A.x - p.x) * (B.y - A.y))
+        / len2;
+  
+    return s * Math.sqrt(len2);
+  }
 }

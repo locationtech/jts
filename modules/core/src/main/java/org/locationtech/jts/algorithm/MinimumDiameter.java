@@ -217,7 +217,7 @@ public class MinimumDiameter
     int currMaxIndex = 1;
 
     LineSegment seg = new LineSegment();
-    // compute the max distance for all segments in the ring, and pick the minimum
+    // for each segment, find a vertex at max distance, and pick the minimum
     for (int i = 0; i < pts.length - 1; i++) {
       seg.p0 = pts[i];
       seg.p1 = pts[i + 1];
@@ -260,16 +260,17 @@ public class MinimumDiameter
   }
   
   /**
-   * Gets the minimum rectangular {@link Polygon} which encloses the input geometry.
+   * Gets the rectangular {@link Polygon} which encloses the input geometry,
+   * and is based along the minimum diameter supporting segment.
+   * This is NOT necessarily the minimum-area rectangle.
    * The rectangle has width equal to the minimum diameter, 
    * and a longer length.
    * If the convex hull of the input is degenerate (a line or point)
    * a {@link LineString} or {@link Point} is returned.
-   * <p>
-   * The minimum rectangle can be used as an extremely generalized representation
-   * for the given geometry.
    * 
-   * @return the minimum rectangle enclosing the input (or a line or point if degenerate)
+   * @return a rectangle enclosing the input (or a line or point if degenerate)
+   * 
+   * @deprecated use {@link MinimumDiameter}
    */
   public Geometry getMinimumRectangle()
   {
