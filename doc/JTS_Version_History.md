@@ -70,6 +70,7 @@ Distributions for older JTS versions can be obtained at the
 * Add `ConcaveHullOfPolygons` class (#870)
 * Add `PolygonHullSimplifier` class (#861, #880)
 * TWKB read and write implementation (#854)
+* Add `CubicBezierCurve` class
 
 ### Functionality Improvements
 
@@ -87,7 +88,7 @@ Distributions for older JTS versions can be obtained at the
 
 ### Performance Improvements
 
-* Improve performance of `CoveageUnion` by using boundary chains (#891)
+* Improve performance of `CoverageUnion` by using boundary chains (#891)
 
 ### Bug Fixes
 
