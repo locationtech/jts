@@ -46,6 +46,7 @@ import org.locationtech.jts.geom.MultiLineString;
  * subset of a coverage still matches the remainder of the coverage.
  * <p>
  * The input coverage should be valid according to {@link CoverageValidator}.
+ * Invalid coverages may still be simplified, but the result will still be invalid.
  * 
  * @author Martin Davis
  */

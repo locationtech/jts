@@ -19,6 +19,17 @@ import org.locationtech.jts.geom.CoordinateSequenceFilter;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.LineSegment;
 
+/**
+ * Finds coverage segments which occur in only a single coverage element.
+ * In a valid coverage, these are exactly the line segments which lie
+ * on the boundary of the coverage.
+ * <p>
+ * In an invalid coverage, segments might occur in 3 or more elements.
+ * This situation is not detected.
+ * 
+ * @author mdavis
+ *
+ */
 class CoverageBoundarySegmentFinder implements CoordinateSequenceFilter {
   
   public static Set<LineSegment> findBoundarySegments(Geometry[] geoms) {
@@ -47,6 +58,11 @@ class CoverageBoundarySegmentFinder implements CoordinateSequenceFilter {
     if (i >= seq.size() - 1)
       return;
     LineSegment seg = createSegment(seq, i);
+    /**
+     * Records segments with an odd number of occurrences.
+     * In a valid coverage each segment can occur only 1 or 2 times.
+     * This does not detect invalid situations, where a segment might occur 3 or more times.
+     */
     if (boundarySegs.contains(seg)) {
       boundarySegs.remove(seg);
     }

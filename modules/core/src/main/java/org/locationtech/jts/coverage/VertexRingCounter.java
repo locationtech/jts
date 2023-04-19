@@ -20,21 +20,29 @@ import org.locationtech.jts.geom.CoordinateSequenceFilter;
 import org.locationtech.jts.geom.CoordinateSequences;
 import org.locationtech.jts.geom.Geometry;
 
-class VertexCounter implements CoordinateSequenceFilter {
+/**
+ * Counts the number of rings containing each vertex.
+ * Vertices which are contained by 3 or more rings are nodes in the coverage topology
+ * (although not the only ones - 
+ * boundary vertices with 3 or more incident edges are also nodes).
+ * @author mdavis
+ *
+ */
+class VertexRingCounter implements CoordinateSequenceFilter {
 
   public static Map<Coordinate, Integer> count(Geometry[] geoms) {
-    Map<Coordinate, Integer> vertexCount = new HashMap<Coordinate, Integer>();
-    VertexCounter counter = new VertexCounter(vertexCount);
+    Map<Coordinate, Integer> vertexRingCount = new HashMap<Coordinate, Integer>();
+    VertexRingCounter counter = new VertexRingCounter(vertexRingCount);
     for (Geometry geom : geoms) {
       geom.apply(counter);
     }
-    return vertexCount;
+    return vertexRingCount;
   }
 
-  private Map<Coordinate, Integer> vertexCount;
+  private Map<Coordinate, Integer> vertexRingCount;
   
-  public VertexCounter(Map<Coordinate, Integer> vertexCount) {
-    this.vertexCount = vertexCount;
+  public VertexRingCounter(Map<Coordinate, Integer> vertexRingCount) {
+    this.vertexRingCount = vertexRingCount;
   }
 
   @Override
@@ -43,9 +51,9 @@ class VertexCounter implements CoordinateSequenceFilter {
     if (CoordinateSequences.isRing(seq) && i == 0)
       return;
     Coordinate v = seq.getCoordinate(i);
-    int count = vertexCount.containsKey(v) ? vertexCount.get(v) : 0;
+    int count = vertexRingCount.containsKey(v) ? vertexRingCount.get(v) : 0;
     count++;
-    vertexCount.put(v, count);
+    vertexRingCount.put(v, count);
   }
 
   @Override

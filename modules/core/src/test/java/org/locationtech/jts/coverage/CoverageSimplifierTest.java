@@ -56,6 +56,44 @@ public class CoverageSimplifierTest extends GeometryTestCase {
 
   //---------------------------------------------
   
+  public void testRepeatedPointRemoved() {
+    checkResult(readArray(
+        "POLYGON ((5 9, 6.5 6.5, 9 5, 5 5, 5 5, 5 9))" ),
+        2,
+        readArray(
+            "POLYGON ((5 5, 5 9, 9 5, 5 5))" )
+    );
+  }
+  
+  public void testRepeatedPointCollapseToLine() {
+    checkResult(readArray(
+        "MULTIPOLYGON (((10 10, 10 20, 20 19, 30 20, 30 10, 10 10)), ((10 30, 20 29, 30 30, 30 20, 20 19, 10 20, 10 30)), ((10 20, 20 19, 20 19, 10 20)))" ),
+        5,
+        readArray(
+            "MULTIPOLYGON (((10 20, 20 19, 30 20, 30 10, 10 10, 10 20)), ((30 20, 20 19, 10 20, 10 30, 30 30, 30 20)), ((10 20, 20 19, 10 20)))" )
+    );
+  }
+  
+  public void testRepeatedPointCollapseToPoint() {
+    checkResult(readArray(
+        "MULTIPOLYGON (((10 10, 10 20, 20 19, 30 20, 30 10, 10 10)), ((10 30, 20 29, 30 30, 30 20, 20 19, 10 20, 10 30)), ((20 19, 20 19, 20 19)))" ),
+        5,
+        readArray(
+            "MULTIPOLYGON (((10 10, 10 20, 20 19, 30 20, 30 10, 10 10)), ((10 20, 10 30, 30 30, 30 20, 20 19, 10 20)), ((20 19, 20 19, 20 19)))" )
+    );
+  }
+  
+  public void testRepeatedPointCollapseToPoint2() {
+    checkResult(readArray(
+        "MULTIPOLYGON (((100 200, 150 195, 200 200, 200 100, 100 100, 100 200)), ((150 195, 150 195, 150 195, 150 195)))" ),
+        40,
+        readArray(
+            "MULTIPOLYGON (((10 10, 10 20, 20 19, 30 20, 30 10, 10 10)), ((10 20, 10 30, 30 30, 30 20, 20 19, 10 20)), ((20 19, 20 19, 20 19)))" )
+    );
+  }
+  
+  //---------------------------------------------
+  
   public void testSimple2() {
     checkResult(readArray(
         "POLYGON ((100 100, 200 200, 300 100, 200 101, 100 100))",
@@ -67,6 +105,17 @@ public class CoverageSimplifierTest extends GeometryTestCase {
     );
   }
 
+  public void testMultiPolygons() {
+    checkResult(readArray(
+        "MULTIPOLYGON (((5 9, 2.5 7.5, 1 5, 5 5, 5 9)), ((5 5, 9 5, 7.5 2.5, 5 1, 5 5)))",
+        "MULTIPOLYGON (((5 9, 6.5 6.5, 9 5, 5 5, 5 9)), ((1 5, 5 5, 5 1, 3.5 3.5, 1 5)))" ),
+        3,
+        readArray(
+            "MULTIPOLYGON (((1 5, 5 9, 5 5, 1 5)), ((5 1, 5 5, 9 5, 5 1))))",
+            "MULTIPOLYGON (((1 5, 5 5, 5 1, 1 5)), ((5 5, 5 9, 9 5, 5 5)))" )
+    );
+  }
+  
   public void testSingleRingNoCollapse() {
     checkResult(readArray(
         "POLYGON ((10 50, 60 90, 70 50, 60 10, 10 50))" ),

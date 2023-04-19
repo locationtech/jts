@@ -31,13 +31,13 @@ import org.locationtech.jts.io.WKTWriter;
  */
 class CoverageEdge {
 
-  public static CoverageEdge createEdge(LinearRing ring) {
-    Coordinate[] pts = extractEdgePoints(ring, 0, ring.getNumPoints() - 1);
+  public static CoverageEdge createEdge(Coordinate[] ring) {
+    Coordinate[] pts = extractEdgePoints(ring, 0, ring.length - 1);
     CoverageEdge edge = new CoverageEdge(pts, true);
     return edge;
   }
 
-  public static CoverageEdge createEdge(LinearRing ring, int start, int end) {
+  public static CoverageEdge createEdge(Coordinate[] ring, int start, int end) {
     Coordinate[] pts = extractEdgePoints(ring, start, end);
     CoverageEdge edge = new CoverageEdge(pts, false);
     return edge;
@@ -53,16 +53,16 @@ class CoverageEdge {
     return mls;
   }
   
-  private static Coordinate[] extractEdgePoints(LinearRing ring, int start, int end) {
+  private static Coordinate[] extractEdgePoints(Coordinate[] ring, int start, int end) {
     int size = start < end 
                   ? end - start + 1 
-                  : ring.getNumPoints() - start + end;
+                  : ring.length - start + end;
     Coordinate[] pts = new Coordinate[size];
     int iring = start;
     for (int i = 0; i < size; i++) {
-      pts[i] = ring.getCoordinateN(iring).copy();
+      pts[i] = ring[iring].copy();
       iring += 1;
-      if (iring >= ring.getNumPoints()) iring = 1;
+      if (iring >= ring.length) iring = 1;
     }
     return pts;
   }
@@ -75,18 +75,17 @@ class CoverageEdge {
    * @param ring a linear ring
    * @return a LineSegment representing the key
    */
-  public static LineSegment key(LinearRing ring) {
-    Coordinate[] pts = ring.getCoordinates();
-    // find lowest vertex index
+  public static LineSegment key(Coordinate[] ring) {
+   // find lowest vertex index
     int indexLow = 0;
-    for (int i = 1; i < pts.length - 1; i++) {
-      if (pts[indexLow].compareTo(pts[i]) < 0)
+    for (int i = 1; i < ring.length - 1; i++) {
+      if (ring[indexLow].compareTo(ring[i]) < 0)
         indexLow = i;
     }
-    Coordinate key0 = pts[indexLow];
+    Coordinate key0 = ring[indexLow];
     // find distinct adjacent vertices
-    Coordinate adj0 = findDistinctPoint(pts, indexLow, true, key0);
-    Coordinate adj1 = findDistinctPoint(pts, indexLow, false, key0);
+    Coordinate adj0 = findDistinctPoint(ring, indexLow, true, key0);
+    Coordinate adj1 = findDistinctPoint(ring, indexLow, false, key0);
     Coordinate key1 = adj0.compareTo(adj1) < 0 ? adj0 : adj1;
     return new LineSegment(key0, key1);
   }
@@ -99,20 +98,19 @@ class CoverageEdge {
    * @param end end index of the end of the section
    * @return a LineSegment representing the key
    */
-  public static LineSegment key(LinearRing ring, int start, int end) {
-    Coordinate[] pts = ring.getCoordinates();
+  public static LineSegment key(Coordinate[] ring, int start, int end) {
     //-- endpoints are distinct in a line edge
-    Coordinate end0 = pts[start];
-    Coordinate end1 = pts[end];
+    Coordinate end0 = ring[start];
+    Coordinate end1 = ring[end];
     boolean isForward = 0 > end0.compareTo(end1);
     Coordinate key0, key1;
     if (isForward) {
       key0 = end0;
-      key1 = findDistinctPoint(pts, start, true, key0);
+      key1 = findDistinctPoint(ring, start, true, key0);
     }
     else {
       key0 = end1;
-      key1 = findDistinctPoint(pts, end, false, key0);
+      key1 = findDistinctPoint(ring, end, false, key0);
     }
     return new LineSegment(key0, key1);  
   }
