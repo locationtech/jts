@@ -39,9 +39,9 @@ import org.locationtech.jts.geom.Polygon;
  * <li>the <b>minimum-width rectangle</b> of the input geometry.
  * The rectangle has width equal to the minimum diameter, and has one side
  * parallel to the supporting segment.
- * (Note: this may <b>not</b> be the enclosing rectangle with minimum area; 
- * use {@link MinimumAreaRectangle} to compute this.)
  * In degenerate cases the rectangle may be a LineString or a Point.
+ * (Note that this may not be the enclosing rectangle with minimum area; 
+ * use {@link MinimumAreaRectangle} to compute this.)
  * </ul>
  * 
  *

@@ -22,7 +22,7 @@ import org.locationtech.jts.geom.Polygon;
 
 /**
  * Computes the minimum-area rectangle enclosing a {@link Geometry}.
- * Unlike the {@link Envelope, the rectangle may not be axis-parallel.
+ * Unlike the {@link Envelope}, the rectangle may not be axis-parallel.
  * <p>
  * The first step in the algorithm is computing the convex hull of the Geometry.
  * If the input Geometry is known to be convex, a hint can be supplied to
@@ -31,7 +31,7 @@ import org.locationtech.jts.geom.Polygon;
  * In degenerate cases the minimum enclosing geometry 
  * may be a {@link LineString} or a {@link Point}.
  * <p>
- * The minimum-area rectangle does not necessarily
+ * The minimum-area enclosing rectangle does not necessarily
  * have the minimum possible width.
  * Use {@link MinimumDiameter} to compute this.
  * 
