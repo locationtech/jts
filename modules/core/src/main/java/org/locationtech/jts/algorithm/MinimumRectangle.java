@@ -153,15 +153,18 @@ public class MinimumRectangle
       
       segMaxLeftIndex = findFurthestVertex(ring, segDiam, segMaxLeftIndex, 1);
       
+      //-- init the max right index
       if (i == 0) {
         segMaxRightIndex = segMaxDiamIndex;
       }
       segMaxRightIndex = findFurthestVertex(ring, segDiam, segMaxRightIndex, -1);
       
-      double rectWidth = segDiam.distancePerpendicular(ring[segMaxLeftIndex]) 
+      double rectangleWidth = segDiam.distancePerpendicular(ring[segMaxLeftIndex]) 
           + segDiam.distancePerpendicular(ring[segMaxRightIndex]);
-      double rectangleArea = segDiam.getLength() * rectWidth;
+      double rectangleArea = segDiam.getLength() * rectangleWidth;
+      
       if (rectangleArea < minRectangleArea) {
+        //System.out.println("Min Rect area: " + rectangleArea);
         minRectangleArea = rectangleArea;
         baseSegIndex = i;  
         maxDiamIndex = segMaxDiamIndex;
@@ -179,8 +182,7 @@ public class MinimumRectangle
     double nextPerpDistance = maxPerpDistance;
     int maxIndex = startIndex;
     int nextIndex = maxIndex;
-    while (isGreaterOrEqual(nextPerpDistance,
-        maxPerpDistance, orient)) {
+    while (isGreaterOrEqual(nextPerpDistance, maxPerpDistance, orient)) {
       maxPerpDistance = nextPerpDistance;
       maxIndex = nextIndex;
 
@@ -201,15 +203,12 @@ public class MinimumRectangle
     throw new IllegalArgumentException("Invalid orientation value: " + orient);
   }
 
-
   private static double orientedDistance(LineSegment seg, Coordinate p, int orient) {
     double dist = seg.distancePerpendicularOriented(p);
-    switch (orient) {
-    case 0: return Math.abs(dist);
-    case 1: return dist;
-    case -1: return -dist;
+    if (orient == 0) {
+      return Math.abs(dist);
     }
-    throw new IllegalArgumentException("Invalid orientation value: " + orient);
+    return dist;
   }
 
   private static int nextIndex(Coordinate[] ring, int index)
