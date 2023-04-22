@@ -87,16 +87,20 @@ public class LineSegmentTest extends TestCase {
     checkDistancePerpendicular(1,1,  1,3,  0,4, 1);
     checkDistancePerpendicular(1,1,  1,3,  1,4, 0);
     checkDistancePerpendicular(1,1,  2,2,  4,4, 0);
+    //-- zero-length line segment
+    checkDistancePerpendicular(1,1,  1,1,  1,2, 1);
   }
   
   public void testDistancePerpendicularOriented() {
-    // right of line
+    //-- right of line
     checkDistancePerpendicularOriented(1,1,  1,3,  2,4, -1);
-    // left of line
+    //-- left of line
     checkDistancePerpendicularOriented(1,1,  1,3,  0,4, 1);
-    //on line
+    //-- on line
     checkDistancePerpendicularOriented(1,1,  1,3,  1,4, 0);
     checkDistancePerpendicularOriented(1,1,  2,2,  4,4, 0);
+    //-- zero-length segment
+    checkDistancePerpendicularOriented(1,1,  1,1,  1,2, 1);    
   }
   
   private void checkDistancePerpendicular(double x0, double y0, double x1, double y1, double px, double py, 

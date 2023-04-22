@@ -260,12 +260,16 @@ public class LineSegment
   /**
    * Computes the perpendicular distance between the (infinite) line defined
    * by this line segment and a point.
+   * If the segment has zero length this returns the distance between
+   * the segment and the point.
    *
    * @param p the point to compute the distance to
    * @return the perpendicular distance between the line and point
    */
   public double distancePerpendicular(Coordinate p)
   {
+    if (p0.equals2D(p1))
+      return p0.distance(p);
     return Distance.pointToLinePerpendicular(p, p0, p1);
   }
 
@@ -274,13 +278,17 @@ public class LineSegment
    * defined by this line segment and a point.
    * The oriented distance is positive if the point on the left of the line,
    * and negative if it is on the right.
+   * If the segment has zero length this returns the distance between
+   * the segment and the point.
    * 
    * @param p the point to compute the distance to
    * @return the oriented perpendicular distance between the line and point
    */
   public double distancePerpendicularOriented(Coordinate p)
   {
-    double dist = Distance.pointToLinePerpendicular(p, p0, p1);
+    if (p0.equals2D(p1))
+      return p0.distance(p);
+    double dist = distancePerpendicular(p);
     if (orientationIndex(p) < 0)
       return -dist;
     return dist;

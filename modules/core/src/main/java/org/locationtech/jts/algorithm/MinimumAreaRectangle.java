@@ -30,13 +30,16 @@ import org.locationtech.jts.geom.Polygon;
  * <p>
  * In degenerate cases the minimum enclosing geometry 
  * may be a {@link LineString} or a {@link Point}.
- * </ul>
+ * <p>
+ * The minimum-area rectangle does not necessarily
+ * have the minimum possible width.
+ * Use {@link MinimumDiameter} to compute this.
  * 
  * @see MinimumDiameter
  * @see ConvexHull
  *
  */
-public class MinimumRectangle
+public class MinimumAreaRectangle
 {
   /**
    * Gets the minimum-area rectangular {@link Polygon} which encloses the input geometry.
@@ -50,7 +53,7 @@ public class MinimumRectangle
    * @return the minimum rectangle enclosing the geometry
    */
   public static Geometry getMinimumRectangle(Geometry geom) {
-    return (new MinimumRectangle(geom)).getMinimumRectangle();
+    return (new MinimumAreaRectangle(geom)).getMinimumRectangle();
   }
   
   private final Geometry inputGeom;
@@ -60,11 +63,11 @@ public class MinimumRectangle
   private LineSegment minBaseSeg = new LineSegment();
 
   /**
-   * Compute a minimum rectangle for a given {@link Geometry}.
+   * Compute a minimum-area rectangle for a given {@link Geometry}.
    *
    * @param inputGeom a Geometry
    */
-  public MinimumRectangle(Geometry inputGeom)
+  public MinimumAreaRectangle(Geometry inputGeom)
   {
     this(inputGeom, false);
   }
@@ -79,7 +82,7 @@ public class MinimumRectangle
    * @param inputGeom a Geometry which is convex
    * @param isConvex <code>true</code> if the input geometry is convex
    */
-  public MinimumRectangle(Geometry inputGeom, boolean isConvex)
+  public MinimumAreaRectangle(Geometry inputGeom, boolean isConvex)
   {
     this.inputGeom = inputGeom;
     this.isConvex = isConvex;

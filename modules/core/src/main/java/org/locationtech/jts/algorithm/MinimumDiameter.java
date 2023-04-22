@@ -36,31 +36,37 @@ import org.locationtech.jts.geom.Polygon;
  * <ul>
  * <li>a line segment representing the minimum diameter
  * <li>the <b>supporting line segment</b> of the minimum diameter
- * <li>the <b>minimum enclosing rectangle</b> of the input geometry.
+ * <li>the <b>minimum-width rectangle</b> of the input geometry.
  * The rectangle has width equal to the minimum diameter, and has one side
  * parallel to the supporting segment.
- * In degenerate cases the minimum enclosing geometry may be a LineString or a Point.
+ * (Note: this may <b>not</b> be the enclosing rectangle with minimum area; 
+ * use {@link MinimumAreaRectangle} to compute this.)
+ * In degenerate cases the rectangle may be a LineString or a Point.
  * </ul>
  * 
  *
  * @see ConvexHull
+ * @see MinimumAreaRectangle
  *
  * @version 1.7
  */
 public class MinimumDiameter
 {
   /**
-   * Gets the minimum rectangular {@link Polygon} which encloses the input geometry.
+   * Gets the minimum-width rectangular {@link Polygon} which encloses the input geometry
+   * and is based along the supporting segment.
    * The rectangle has width equal to the minimum diameter, 
    * and a longer length.
    * If the convex hull of the input is degenerate (a line or point)
    * a {@link LineString} or {@link Point} is returned.
    * <p>
-   * The minimum rectangle can be used as an extremely generalized representation
-   * for the given geometry.
+   * This is not necessarily the rectangle with minimum area.
+   * Use {@link MinimumAreaRectangle} to compute this.
    * 
    * @param geom the geometry
-   * @return the minimum rectangle enclosing the geometry
+   * @return the minimum-width rectangle enclosing the geometry
+   * 
+   * @see MinimumAreaRectangle
    */
   public static Geometry getMinimumRectangle(Geometry geom) {
     return (new MinimumDiameter(geom)).getMinimumRectangle();
@@ -260,17 +266,18 @@ public class MinimumDiameter
   }
   
   /**
-   * Gets the rectangular {@link Polygon} which encloses the input geometry,
-   * and is based along the minimum diameter supporting segment.
-   * This is NOT necessarily the minimum-area rectangle.
+   * Gets the rectangular {@link Polygon} which encloses the input geometry
+   * and is based on the minimum diameter supporting segment.
    * The rectangle has width equal to the minimum diameter, 
    * and a longer length.
    * If the convex hull of the input is degenerate (a line or point)
    * a {@link LineString} or {@link Point} is returned.
+   * <p>
+   * This is not necessarily the enclosing rectangle with minimum area.
    * 
    * @return a rectangle enclosing the input (or a line or point if degenerate)
    * 
-   * @deprecated use {@link MinimumDiameter}
+   * @see MinimumAreaRectangle
    */
   public Geometry getMinimumRectangle()
   {

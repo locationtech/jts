@@ -20,15 +20,15 @@ import test.jts.GeometryTestCase;
 /**
  * @version 1.7
  */
-public class MinimumRectanglelTest extends GeometryTestCase {
+public class MinimumAreaRectanglelTest extends GeometryTestCase {
 
   private static final double TOL = 1e-10;
 
   public static void main(String args[]) {
-    TestRunner.run(MinimumRectanglelTest.class);
+    TestRunner.run(MinimumAreaRectanglelTest.class);
   }
 
-  public MinimumRectanglelTest(String name) { super(name); }
+  public MinimumAreaRectanglelTest(String name) { super(name); }
 
   public void testLengthZero() {
     checkMinRectangle("LINESTRING (1 1, 1 1)", "POINT (1 1)");
@@ -63,7 +63,7 @@ public class MinimumRectanglelTest extends GeometryTestCase {
    */
   public void testFlatDiagonal() throws Exception {
     checkMinRectangle("LINESTRING(-99.48710639268086 34.79029839231914,-99.48370699999998 34.78689899963806,-99.48152167568102 34.784713675318976)", 
-        "LINESTRING (-99.48710639268086 34.79029839231914, -99.48152167568102 34.784713675318976)");
+        "POLYGON ((-99.48710639268066 34.790298392318675, -99.48710639268066 34.790298392318675, -99.48152167568082 34.78471367531866, -99.48152167568082 34.78471367531866, -99.48710639268066 34.790298392318675))");
   } 
   
   public void testBadRectl() throws Exception {
@@ -73,7 +73,7 @@ public class MinimumRectanglelTest extends GeometryTestCase {
 
   private void checkMinRectangle(String wkt, String wktExpected) {
     Geometry geom = read(wkt);
-    Geometry actual = MinimumRectangle.getMinimumRectangle(geom);
+    Geometry actual = MinimumAreaRectangle.getMinimumRectangle(geom);
     Geometry expected = read(wktExpected);
     checkEqual(expected, actual, TOL);
   }
