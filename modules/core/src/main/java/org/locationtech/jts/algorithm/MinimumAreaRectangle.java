@@ -45,9 +45,6 @@ public class MinimumAreaRectangle
    * Gets the minimum-area rectangular {@link Polygon} which encloses the input geometry.
    * If the convex hull of the input is degenerate (a line or point)
    * a {@link LineString} or {@link Point} is returned.
-   * <p>
-   * The minimum rectangle can be used as a generalized representation
-   * for the given geometry.
    * 
    * @param geom the geometry
    * @return the minimum rectangle enclosing the geometry
@@ -73,9 +70,8 @@ public class MinimumAreaRectangle
   }
 
   /**
-   * Compute a minimum rectangle for a giver {@link Geometry},
-   * with a hint if
-   * the Geometry is convex
+   * Compute a minimum rectangle for a {@link Geometry},
+   * with a hint if the geometry is convex
    * (e.g. a convex Polygon or LinearRing,
    * or a two-point LineString, or a Point).
    *
@@ -90,6 +86,9 @@ public class MinimumAreaRectangle
 
   private Geometry getMinimumRectangle()
   {
+    if (inputGeom.isEmpty()) {
+      return inputGeom.getFactory().createPolygon();
+    }
     if (isConvex) {
       return computeConvex(inputGeom);
     }
@@ -121,65 +120,65 @@ public class MinimumAreaRectangle
 
   /**
    * Compute the minimum-area rectangle for a convex ring of {@link Coordinate}s.
-   * Leaves the width information in the instance variables.
    * <p>
-   * This algorithm uses the standard "rotating calipers" technique, 
-   * so is linear in the number of segments.
+   * This algorithm uses the "dual rotating calipers" technique. 
+   * Performance is linear in the number of segments.
    *
-   * @param ring
+   * @param ring the convex ring to scan
    */
   private Polygon computeConvexRing(Coordinate[] ring)
   {
-    // for each segment in the ring
     double minRectangleArea = Double.MAX_VALUE;
-    int baseSegIndex = -1;
-    int maxDiamIndex = -1;
-    int maxLeftIndex = -1;
-    int maxRightIndex = -1;
+    int minRectangleBaseIndex = -1;
+    int minRectangleDiamIndex = -1;
+    int minRectangleLeftIndex = -1;
+    int minRectangleRightIndex = -1;
     
-    int segMaxDiamIndex = 1;
-    int segMaxLeftIndex = 1;
-    int segMaxRightIndex = 0;
+    //-- start at vertex after first one
+    int segDiamIndex = 1;
+    int segLeftExtIndex = 1; 
+    int segRightExtIndex = -1; // initialized once first diameter is found
 
-    LineSegment seg = new LineSegment();
+    LineSegment segBase = new LineSegment();
     LineSegment segDiam = new LineSegment();
     // for each segment, find the next vertex which is at maximum distance
     for (int i = 0; i < ring.length - 1; i++) {
-      seg.p0 = ring[i];
-      seg.p1 = ring[i + 1];
-      segMaxDiamIndex = findFurthestVertex(ring, seg, segMaxDiamIndex, 0);
+      segBase.p0 = ring[i];
+      segBase.p1 = ring[i + 1];
+      segDiamIndex = findExtremalVertex(ring, segBase, segDiamIndex, 0);
       
-      Coordinate diamPt = ring[segMaxDiamIndex];
-      Coordinate diamBasePt = seg.project(diamPt);  
+      Coordinate diamPt = ring[segDiamIndex];
+      Coordinate diamBasePt = segBase.project(diamPt);  
       segDiam.p0 = diamBasePt;
       segDiam.p1 = diamPt;
       
-      segMaxLeftIndex = findFurthestVertex(ring, segDiam, segMaxLeftIndex, 1);
+      segLeftExtIndex = findExtremalVertex(ring, segDiam, segLeftExtIndex, 1);
       
       //-- init the max right index
       if (i == 0) {
-        segMaxRightIndex = segMaxDiamIndex;
+        segRightExtIndex = segDiamIndex;
       }
-      segMaxRightIndex = findFurthestVertex(ring, segDiam, segMaxRightIndex, -1);
+      segRightExtIndex = findExtremalVertex(ring, segDiam, segRightExtIndex, -1);
       
-      double rectangleWidth = segDiam.distancePerpendicular(ring[segMaxLeftIndex]) 
-          + segDiam.distancePerpendicular(ring[segMaxRightIndex]);
-      double rectangleArea = segDiam.getLength() * rectangleWidth;
+      double rectWidth = segDiam.distancePerpendicular(ring[segLeftExtIndex]) 
+          + segDiam.distancePerpendicular(ring[segRightExtIndex]);
+      double rectArea = segDiam.getLength() * rectWidth;
       
-      if (rectangleArea < minRectangleArea) {
-        //System.out.println("Min Rect area: " + rectangleArea);
-        minRectangleArea = rectangleArea;
-        baseSegIndex = i;  
-        maxDiamIndex = segMaxDiamIndex;
-        maxLeftIndex = segMaxLeftIndex;
-        maxRightIndex = segMaxRightIndex;
+      if (rectArea < minRectangleArea) {
+        minRectangleArea = rectArea;
+        minRectangleBaseIndex = i;  
+        minRectangleDiamIndex = segDiamIndex;
+        minRectangleLeftIndex = segLeftExtIndex;
+        minRectangleRightIndex = segRightExtIndex;
       }
     }
-    return computeRectangle(ring[baseSegIndex], ring[baseSegIndex + 1],
-        ring[maxDiamIndex], ring[maxLeftIndex], ring[maxRightIndex]);
+    return computeRectangleFromExtremal(
+        ring[minRectangleBaseIndex], ring[minRectangleBaseIndex + 1],
+        ring[minRectangleDiamIndex], ring[minRectangleLeftIndex], ring[minRectangleRightIndex], 
+        inputGeom.getFactory());
   }
 
-  private int findFurthestVertex(Coordinate[] pts, LineSegment seg, int startIndex, int orient)
+  private int findExtremalVertex(Coordinate[] pts, LineSegment seg, int startIndex, int orient)
   {
     double maxPerpDistance = orientedDistance(seg, pts[startIndex], orient);
     double nextPerpDistance = maxPerpDistance;
@@ -203,7 +202,7 @@ public class MinimumAreaRectangle
     case 1: return d1 >= d2;
     case -1: return d1 <= d2;  
     }
-    throw new IllegalArgumentException("Invalid orientation value: " + orient);
+    throw new IllegalArgumentException("Invalid orientation index: " + orient);
   }
 
   private static double orientedDistance(LineSegment seg, Coordinate p, int orient) {
@@ -221,8 +220,8 @@ public class MinimumAreaRectangle
     return index;
   }
   
-  private Polygon computeRectangle(Coordinate base0, Coordinate base1, 
-      Coordinate para, Coordinate perp1, Coordinate perp2)
+  private static Polygon computeRectangleFromExtremal(Coordinate base0, Coordinate base1, 
+      Coordinate para, Coordinate perp1, Coordinate perp2, GeometryFactory geoFactory)
   {
     // deltas for the base segment provide slope
     double dx = base1.x - base0.x;
@@ -245,105 +244,9 @@ public class MinimumAreaRectangle
     Coordinate p2 = minParaLine.lineIntersection(minPerpLine);
     Coordinate p3 = maxParaLine.lineIntersection(minPerpLine);
     
-    LinearRing shell = inputGeom.getFactory().createLinearRing(
+    LinearRing shell = geoFactory.createLinearRing(
         new Coordinate[] { p0, p1, p2, p3, p0 });
-    return inputGeom.getFactory().createPolygon(shell);
-  }
-
-  private Polygon computeRectangle2(Coordinate base0, Coordinate base1, 
-      Coordinate para, Coordinate perp1, Coordinate perp2)
-  {
-    // deltas for the base segment of the minimum diameter
-    double dx = base1.x - base0.x;
-    double dy = base1.y - base0.y;
-    
-    double minPara = Double.MAX_VALUE;
-    double maxPara = -Double.MAX_VALUE;
-    double minPerp = Double.MAX_VALUE;
-    double maxPerp = -Double.MAX_VALUE;
-    
-    // compute maxima and minima of lines parallel and perpendicular to base segment
-    for (int i = 0; i < convexHullPts.length; i++) {
-      
-      double paraC = computeC(dx, dy, convexHullPts[i]);
-      if (paraC > maxPara) maxPara = paraC;
-      if (paraC < minPara) minPara = paraC;
-      
-      double perpC = computeC(-dy, dx, convexHullPts[i]);
-      if (perpC > maxPerp) maxPerp = perpC;
-      if (perpC < minPerp) minPerp = perpC;
-    }
-    
-    // compute lines along edges of minimum rectangle
-    LineSegment maxPerpLine = computeSegmentForLine(-dx, -dy, maxPerp);
-    LineSegment minPerpLine = computeSegmentForLine(-dx, -dy, minPerp);
-    LineSegment maxParaLine = computeSegmentForLine(-dy, dx, maxPara);
-    LineSegment minParaLine = computeSegmentForLine(-dy, dx, minPara);
-    
-    // compute vertices of rectangle (where the para/perp max & min lines intersect)
-    Coordinate p0 = maxParaLine.lineIntersection(maxPerpLine);
-    Coordinate p1 = minParaLine.lineIntersection(maxPerpLine);
-    Coordinate p2 = minParaLine.lineIntersection(minPerpLine);
-    Coordinate p3 = maxParaLine.lineIntersection(minPerpLine);
-    
-    LinearRing shell = inputGeom.getFactory().createLinearRing(
-        new Coordinate[] { p0, p1, p2, p3, p0 });
-    return inputGeom.getFactory().createPolygon(shell);
-
-  }
-
-  
-  /**
-   * Gets the minimum-area rectangular {@link Polygon} which encloses the input geometry.
-   * The rectangle has width equal to the minimum diameter, 
-   * and a longer length.
-   * If the convex hull of the input is degenerate (a line or point)
-   * a {@link LineString} or {@link Point} is returned.
-   * <p>
-   * The minimum rectangle can be used as an extremely generalized representation
-   * for the given geometry.
-   * 
-   * @return the minimum rectangle enclosing the input (or a line or point if degenerate)
-   */
-  private Geometry OLDgetMinimumRectangle()
-  {
-    // deltas for the base segment of the minimum diameter
-    double dx = minBaseSeg.p1.x - minBaseSeg.p0.x;
-    double dy = minBaseSeg.p1.y - minBaseSeg.p0.y;
-    
-    double minPara = Double.MAX_VALUE;
-    double maxPara = -Double.MAX_VALUE;
-    double minPerp = Double.MAX_VALUE;
-    double maxPerp = -Double.MAX_VALUE;
-    
-    // compute maxima and minima of lines parallel and perpendicular to base segment
-    for (int i = 0; i < convexHullPts.length; i++) {
-      
-      double paraC = computeC(dx, dy, convexHullPts[i]);
-      if (paraC > maxPara) maxPara = paraC;
-      if (paraC < minPara) minPara = paraC;
-      
-      double perpC = computeC(-dy, dx, convexHullPts[i]);
-      if (perpC > maxPerp) maxPerp = perpC;
-      if (perpC < minPerp) minPerp = perpC;
-    }
-    
-    // compute lines along edges of minimum rectangle
-    LineSegment maxPerpLine = computeSegmentForLine(-dx, -dy, maxPerp);
-    LineSegment minPerpLine = computeSegmentForLine(-dx, -dy, minPerp);
-    LineSegment maxParaLine = computeSegmentForLine(-dy, dx, maxPara);
-    LineSegment minParaLine = computeSegmentForLine(-dy, dx, minPara);
-    
-    // compute vertices of rectangle (where the para/perp max & min lines intersect)
-    Coordinate p0 = maxParaLine.lineIntersection(maxPerpLine);
-    Coordinate p1 = minParaLine.lineIntersection(maxPerpLine);
-    Coordinate p2 = minParaLine.lineIntersection(minPerpLine);
-    Coordinate p3 = maxParaLine.lineIntersection(minPerpLine);
-    
-    LinearRing shell = inputGeom.getFactory().createLinearRing(
-        new Coordinate[] { p0, p1, p2, p3, p0 });
-    return inputGeom.getFactory().createPolygon(shell);
-
+    return geoFactory.createPolygon(shell);
   }
   
   /**

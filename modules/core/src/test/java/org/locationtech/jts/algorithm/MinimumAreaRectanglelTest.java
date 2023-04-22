@@ -30,6 +30,10 @@ public class MinimumAreaRectanglelTest extends GeometryTestCase {
 
   public MinimumAreaRectanglelTest(String name) { super(name); }
 
+  public void testEmpty() {
+    checkMinRectangle("POLYGON EMPTY", "POLYGON EMPTY");
+  }
+  
   public void testLengthZero() {
     checkMinRectangle("LINESTRING (1 1, 1 1)", "POINT (1 1)");
   }
