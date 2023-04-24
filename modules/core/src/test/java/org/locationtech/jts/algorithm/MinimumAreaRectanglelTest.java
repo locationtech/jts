@@ -34,26 +34,36 @@ public class MinimumAreaRectanglelTest extends GeometryTestCase {
     checkMinRectangle("POLYGON EMPTY", "POLYGON EMPTY");
   }
   
-  public void testLengthZero() {
+  public void testLineLengthZero() {
     checkMinRectangle("LINESTRING (1 1, 1 1)", "POINT (1 1)");
   }
   
-  public void testHorizontal() {
+  public void testLineHorizontal() {
     checkMinRectangle("LINESTRING (1 1, 3 1, 5 1, 7 1)", "LINESTRING (1 1, 7 1)");
   }
   
-  public void testVertical() {
+  public void testLineVertical() {
     checkMinRectangle("LINESTRING (1 1, 1 4, 1 7, 1 9)", "LINESTRING (1 1, 1 9)");
   }
   
-  public void testBentLine() {
+  public void testLineObtuseAngle() {
     checkMinRectangle("LINESTRING (1 2, 3 8, 9 8)", 
-        "POLYGON ((6.84 10.88, 9 8, 1 2, -1.16 4.88, 6.84 10.88))");
+        "POLYGON ((9 8, 1 2, -1.16 4.88, 6.84 10.88, 9 8))");
   }
   
-  public void testNotMinDiamter() {
+  public void testLineAcuteAngle() {
+    checkMinRectangle("LINESTRING (5 2, 3 8, 9 8)", 
+        "POLYGON ((5 2, 3 8, 8.4 9.8, 10.4 3.8, 5 2))");
+  }
+  
+  public void testNotMinDiameter() {
     checkMinRectangle("POLYGON ((150 300, 200 300, 300 300, 300 250, 280 120, 210 100, 100 100, 100 240, 150 300))", 
         "POLYGON ((100 100, 100 300, 300 300, 300 100, 100 100))");
+  }
+  
+  public void testTriangle() {
+    checkMinRectangle("POLYGON ((100 100, 200 200, 160 240, 100 100))",
+        "POLYGON ((100 100, 160 240, 208.2758620689651 219.31034482758352, 148.2758620689666 79.31034482758756, 100 100))");
   }
   
   public void testConvex() {

@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2016 Vivid Solutions.
- *
+ * Copyright (c) 2023 Martin Davis.
+ * 
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
@@ -56,9 +56,6 @@ public class MinimumAreaRectangle
   private final Geometry inputGeom;
   private final boolean isConvex;
 
-  private Coordinate[] convexHullPts = null;
-  private LineSegment minBaseSeg = new LineSegment();
-
   /**
    * Compute a minimum-area rectangle for a given {@link Geometry}.
    *
@@ -99,6 +96,7 @@ public class MinimumAreaRectangle
   private Geometry computeConvex(Geometry convexGeom)
   {
 //System.out.println("Input = " + geom);
+    Coordinate[] convexHullPts = null;
     if (convexGeom instanceof Polygon)
       convexHullPts = ((Polygon) convexGeom).getExteriorRing().getCoordinates();
     else
@@ -119,7 +117,7 @@ public class MinimumAreaRectangle
   }
 
   /**
-   * Compute the minimum-area rectangle for a convex ring of {@link Coordinate}s.
+   * Computes the minimum-area rectangle for a convex ring of {@link Coordinate}s.
    * <p>
    * This algorithm uses the "dual rotating calipers" technique. 
    * Performance is linear in the number of segments.
@@ -128,6 +126,8 @@ public class MinimumAreaRectangle
    */
   private Polygon computeConvexRing(Coordinate[] ring)
   {
+    // Assert: ring is oriented CW
+    
     double minRectangleArea = Double.MAX_VALUE;
     int minRectangleBaseIndex = -1;
     int minRectangleDiamIndex = -1;
@@ -135,9 +135,9 @@ public class MinimumAreaRectangle
     int minRectangleRightIndex = -1;
     
     //-- start at vertex after first one
-    int segDiamIndex = 1;
-    int segLeftExtIndex = 1; 
-    int segRightExtIndex = -1; // initialized once first diameter is found
+    int diameterIndex = 1;
+    int leftSideIndex = 1; 
+    int rightSideIndex = -1; // initialized once first diameter is found
 
     LineSegment segBase = new LineSegment();
     LineSegment segDiam = new LineSegment();
@@ -145,58 +145,60 @@ public class MinimumAreaRectangle
     for (int i = 0; i < ring.length - 1; i++) {
       segBase.p0 = ring[i];
       segBase.p1 = ring[i + 1];
-      segDiamIndex = findExtremalVertex(ring, segBase, segDiamIndex, 0);
+      diameterIndex = findFurthestVertex(ring, segBase, diameterIndex, 0);
       
-      Coordinate diamPt = ring[segDiamIndex];
+      Coordinate diamPt = ring[diameterIndex];
       Coordinate diamBasePt = segBase.project(diamPt);  
       segDiam.p0 = diamBasePt;
       segDiam.p1 = diamPt;
       
-      segLeftExtIndex = findExtremalVertex(ring, segDiam, segLeftExtIndex, 1);
+      leftSideIndex = findFurthestVertex(ring, segDiam, leftSideIndex, 1);
       
       //-- init the max right index
       if (i == 0) {
-        segRightExtIndex = segDiamIndex;
+        rightSideIndex = diameterIndex;
       }
-      segRightExtIndex = findExtremalVertex(ring, segDiam, segRightExtIndex, -1);
+      rightSideIndex = findFurthestVertex(ring, segDiam, rightSideIndex, -1);
       
-      double rectWidth = segDiam.distancePerpendicular(ring[segLeftExtIndex]) 
-          + segDiam.distancePerpendicular(ring[segRightExtIndex]);
+      double rectWidth = segDiam.distancePerpendicular(ring[leftSideIndex]) 
+          + segDiam.distancePerpendicular(ring[rightSideIndex]);
       double rectArea = segDiam.getLength() * rectWidth;
       
       if (rectArea < minRectangleArea) {
         minRectangleArea = rectArea;
         minRectangleBaseIndex = i;  
-        minRectangleDiamIndex = segDiamIndex;
-        minRectangleLeftIndex = segLeftExtIndex;
-        minRectangleRightIndex = segRightExtIndex;
+        minRectangleDiamIndex = diameterIndex;
+        minRectangleLeftIndex = leftSideIndex;
+        minRectangleRightIndex = rightSideIndex;
       }
     }
-    return computeRectangleFromExtremal(
+    return Rectangle.createFromSidePts(
         ring[minRectangleBaseIndex], ring[minRectangleBaseIndex + 1],
-        ring[minRectangleDiamIndex], ring[minRectangleLeftIndex], ring[minRectangleRightIndex], 
+        ring[minRectangleDiamIndex], 
+        ring[minRectangleLeftIndex], ring[minRectangleRightIndex], 
         inputGeom.getFactory());
   }
 
-  private int findExtremalVertex(Coordinate[] pts, LineSegment seg, int startIndex, int orient)
+  private int findFurthestVertex(Coordinate[] pts, LineSegment baseSeg, int startIndex, int orient)
   {
-    double maxPerpDistance = orientedDistance(seg, pts[startIndex], orient);
-    double nextPerpDistance = maxPerpDistance;
+    double maxDistance = orientedDistance(baseSeg, pts[startIndex], orient);
+    double nextDistance = maxDistance;
     int maxIndex = startIndex;
     int nextIndex = maxIndex;
-    while (isGreaterOrEqual(nextPerpDistance, maxPerpDistance, orient)) {
-      maxPerpDistance = nextPerpDistance;
+    //-- rotate "caliper" while distance from base segment is non-decreasing
+    while (isFurtherOrEqual(nextDistance, maxDistance, orient)) {
+      maxDistance = nextDistance;
       maxIndex = nextIndex;
 
       nextIndex = nextIndex(pts, maxIndex);
       if (nextIndex == startIndex)
         break;
-      nextPerpDistance = orientedDistance(seg, pts[nextIndex], orient);
+      nextDistance = orientedDistance(baseSeg, pts[nextIndex], orient);
     }
     return maxIndex;
   }
 
-  private boolean isGreaterOrEqual(double d1, double d2, int orient) {
+  private boolean isFurtherOrEqual(double d1, double d2, int orient) {
     switch (orient) {
     case 0: return Math.abs(d1) >= Math.abs(d2);
     case 1: return d1 >= d2;
@@ -218,35 +220,6 @@ public class MinimumAreaRectangle
     index++;
     if (index >= ring.length - 1) index = 0;
     return index;
-  }
-  
-  private static Polygon computeRectangleFromExtremal(Coordinate base0, Coordinate base1, 
-      Coordinate para, Coordinate perp1, Coordinate perp2, GeometryFactory geoFactory)
-  {
-    // deltas for the base segment provide slope
-    double dx = base1.x - base0.x;
-    double dy = base1.y - base0.y;
-    
-    double minParaC = computeC(dx, dy, base0);
-    double maxParaC = computeC(dx, dy, para);
-    double minPerpC = computeC(-dy, dx, perp1);
-    double maxPerpC = computeC(-dy, dx, perp2);
-    
-    // compute lines along edges of minimum rectangle
-    LineSegment maxPerpLine = computeSegmentForLine(-dx, -dy, maxPerpC);
-    LineSegment minPerpLine = computeSegmentForLine(-dx, -dy, minPerpC);
-    LineSegment maxParaLine = computeSegmentForLine(-dy, dx, maxParaC);
-    LineSegment minParaLine = computeSegmentForLine(-dy, dx, minParaC);
-    
-    // compute vertices of rectangle (where the para/perp max & min lines intersect)
-    Coordinate p0 = maxParaLine.lineIntersection(maxPerpLine);
-    Coordinate p1 = minParaLine.lineIntersection(maxPerpLine);
-    Coordinate p2 = minParaLine.lineIntersection(minPerpLine);
-    Coordinate p3 = maxParaLine.lineIntersection(minPerpLine);
-    
-    LinearRing shell = geoFactory.createLinearRing(
-        new Coordinate[] { p0, p1, p2, p3, p0 });
-    return geoFactory.createPolygon(shell);
   }
   
   /**
@@ -275,30 +248,5 @@ public class MinimumAreaRectangle
       p1 = ptMaxY;
     }
     return factory.createLineString(new Coordinate[] { p0.copy(), p1.copy() });
-  }
-
-  private static double computeC(double a, double b, Coordinate p)
-  {
-    return a * p.y - b * p.x;
-  }
-  
-  private static LineSegment computeSegmentForLine(double a, double b, double c)
-  {
-    Coordinate p0;
-    Coordinate p1;
-    /*
-    * Line eqn is ax + by = c
-    * Slope is a/b.
-    * If slope is steep, use y values as the inputs
-    */
-    if (Math.abs(b) > Math.abs(a)) {
-      p0 = new Coordinate(0.0, c/b);
-      p1 = new Coordinate(1.0, c/b - a/b);
-    }
-    else {
-      p0 = new Coordinate(c/a, 0.0);
-      p1 = new Coordinate(c/a - b/a, 1.0);
-    }
-    return new LineSegment(p0, p1);
   }
 }
