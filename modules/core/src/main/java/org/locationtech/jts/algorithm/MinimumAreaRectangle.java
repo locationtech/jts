@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2023 Martin Davis.
- * 
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
