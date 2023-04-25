@@ -287,7 +287,7 @@ public class MinimumDiameter
     if (minWidth == 0.0) {
       //-- Min rectangle is a point
       if (minBaseSeg.p0.equals2D(minBaseSeg.p1)) {
-        return inputGeom.getFactory().createPoint(minBaseSeg.p0);
+        return inputGeom.getFactory().createPoint(minBaseSeg.p0.copy());
       }
       //-- Min rectangle is a line. Use the diagonal of the extent
       return computeMaximumLine(convexHullPts, inputGeom.getFactory());
