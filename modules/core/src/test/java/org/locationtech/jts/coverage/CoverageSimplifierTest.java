@@ -270,6 +270,42 @@ public class CoverageSimplifierTest extends GeometryTestCase {
     );
     
   }
+  
+  //---------------------------------
+
+  public void testAllEmpty() {
+    checkResult(readArray(
+        "POLYGON EMPTY",
+        "POLYGON EMPTY" ),
+        1,
+        readArray(
+            "POLYGON EMPTY",
+            "POLYGON EMPTY" )
+    );
+  }
+  
+  public void testOneEmpty() {
+    checkResult(readArray(
+        "POLYGON ((1 9, 5 9.1, 9 9, 9 1, 1 1, 1 9))",
+        "POLYGON EMPTY" ),
+        1,
+        readArray(
+            "POLYGON ((1 9, 9 9, 9 1, 1 1, 1 9))",
+            "POLYGON EMPTY" )
+    );
+  }
+  
+  public void testEmptyHole() {
+    checkResult(readArray(
+        "POLYGON ((1 9, 5 9.1, 9 9, 9 1, 1 1, 1 9), EMPTY)",
+        "POLYGON EMPTY" ),
+        1,
+        readArray(
+            "POLYGON ((1 9, 9 9, 9 1, 1 1, 1 9), EMPTY)",
+            "POLYGON EMPTY" )
+    );
+  }
+  
   //=================================
 
 

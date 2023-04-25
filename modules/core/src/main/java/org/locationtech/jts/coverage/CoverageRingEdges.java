@@ -97,12 +97,20 @@ class CoverageRingEdges {
     for (Geometry geom : coverage) {
       for (int ipoly = 0; ipoly < geom.getNumGeometries(); ipoly++) {
         Polygon poly = (Polygon) geom.getGeometryN(ipoly);
+        
+        //-- skip empty elements. Missing elements are copied in result
+        if (poly.isEmpty())
+          continue;
+        
         //-- extract shell
         LinearRing shell = poly.getExteriorRing();
         addRingEdges(shell, nodes, boundarySegs, uniqueEdgeMap);
         //-- extract holes
         for (int ihole = 0; ihole < poly.getNumInteriorRing(); ihole++) {
           LinearRing hole = poly.getInteriorRingN(ihole);
+          //-- skip empty rings. Missing rings are copied in result
+          if (hole.isEmpty())
+            continue;
           addRingEdges(hole, nodes, boundarySegs, uniqueEdgeMap);         
         }
       }
@@ -300,6 +308,7 @@ class CoverageRingEdges {
 
   private Polygon buildPolygon(Polygon polygon) {
     LinearRing shell = buildRing(polygon.getExteriorRing());
+
     if (polygon.getNumInteriorRing() == 0) {
       return polygon.getFactory().createPolygon(shell);
     }
