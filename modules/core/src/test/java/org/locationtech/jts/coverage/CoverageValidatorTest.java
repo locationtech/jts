@@ -113,6 +113,43 @@ public class CoverageValidatorTest extends GeometryTestCase
         "POLYGON ((9 1, 5 1, 5 5, 9 5, 9 1))" ));
   }
 
+  public void testMultiPolygon() {
+    checkValid(readArray(
+        "MULTIPOLYGON (((1 9, 5 9, 5 5, 1 5, 1 9)), ((9 1, 5 1, 5 5, 9 5, 9 1)))",
+        "MULTIPOLYGON (((1 1, 1 5, 5 5, 5 1, 1 1)), ((9 9, 9 5, 5 5, 5 9, 9 9)))" ));
+  }
+
+  public void testValidDuplicatePoints() {
+    checkValid(readArray(
+        "POLYGON ((1 9, 5 9, 5 5, 1 5, 1 5, 1 5, 1 9))",
+        "POLYGON ((9 9, 9 5, 5 5, 5 9, 9 9))",
+        "POLYGON ((1 1, 1 5, 5 5, 5 1, 1 1))",
+        "POLYGON ((9 1, 5 1, 5 5, 9 5, 9 1))" ));
+  }
+
+  public void testRingCollapse() {
+    checkValid(readArray(
+        "POLYGON ((1 9, 5 9, 1 9))",
+        "POLYGON ((9 9, 9 5, 5 5, 5 9, 9 9))",
+        "POLYGON ((1 1, 1 5, 5 5, 5 1, 1 1))",
+        "POLYGON ((9 1, 5 1, 5 5, 9 5, 9 1))" ));
+  }
+
+  //========  Valid cases with EMPTY  =============================
+
+  public void testPolygonEmpty() {
+    checkValid(readArray(
+        "POLYGON ((1 9, 5 9, 5 5, 1 5, 1 9))",
+        "POLYGON ((9 9, 9 5, 5 5, 5 9, 9 9))",
+        "POLYGON ((1 1, 1 5, 5 5, 5 1, 1 1))",
+        "POLYGON EMPTY" ));
+  }
+
+  public void testMultiPolygonWithEmptyRing() {
+    checkValid(readArray(
+        "MULTIPOLYGON (((9 9, 9 1, 1 1, 2 4, 7 7, 9 9)), EMPTY)" ));
+  }
+  
   //------------------------------------------------------------
   
   private void checkValid(Geometry[] coverage) {
