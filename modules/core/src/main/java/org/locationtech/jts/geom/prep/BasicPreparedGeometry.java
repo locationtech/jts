@@ -11,6 +11,7 @@
  */
 package org.locationtech.jts.geom.prep;
 
+import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 
@@ -32,7 +33,7 @@ import org.locationtech.jts.geom.util.ComponentCoordinateExtracter;
  *
  */
 class BasicPreparedGeometry 
-  implements PreparedGeometry
+  implements PreparedGeometry, Serializable
 {
   private final Geometry baseGeom;
   private final List representativePts;  // List<Coordinate>
