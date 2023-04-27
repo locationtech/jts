@@ -51,6 +51,7 @@ Distributions for older JTS versions can be obtained at the
   (allows `PolygonTriangulator`, `ConstrainedDelaunayTriangulator`, and `ConcaveHullOfPolygons` to work correctly) (#946)
 * Fix `OffsetCurve` handling of input with repeated points (#956)
 * Fix `OffsetCurve` handling zero offset distance (#971)
+* Fix `MaximumInscribedCircle` and `LargestEmptyCircle` to avoid long looping for thin inputs (#978)
 
 ### Performance Improvements
 
