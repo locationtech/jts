@@ -7,13 +7,13 @@ import org.locationtech.jts.geom.LineString;
 import junit.textui.TestRunner;
 import test.jts.GeometryTestCase;
 
-public class MaximumInscibedCircleTest extends GeometryTestCase {
+public class MaximumInscribedCircleTest extends GeometryTestCase {
   
   public static void main(String args[]) {
-    TestRunner.run(MaximumInscibedCircleTest.class);
+    TestRunner.run(MaximumInscribedCircleTest.class);
   }
 
-  public MaximumInscibedCircleTest(String name) { super(name); }
+  public MaximumInscribedCircleTest(String name) { super(name); }
   
   public void testSquare() {
     checkCircle("POLYGON ((100 200, 200 200, 200 100, 100 100, 100 200))", 
