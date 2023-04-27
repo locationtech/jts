@@ -100,7 +100,7 @@ public class MaximumInscibedCircleTest extends GeometryTestCase {
     MaximumInscribedCircle mic = new MaximumInscribedCircle(geom, tolerance); 
     Geometry centerPoint = mic.getCenter();
     double dist = geom.distance(centerPoint);
-    assert(dist < 2 * tolerance);
+    assertTrue(dist < 2 * tolerance);
   }
   
   private void checkCircle(String wkt, double tolerance, 

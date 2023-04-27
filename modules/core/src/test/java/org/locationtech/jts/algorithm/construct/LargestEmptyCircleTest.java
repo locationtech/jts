@@ -110,10 +110,12 @@ public class LargestEmptyCircleTest extends GeometryTestCase {
    */
   private void checkCircle(String wkt, double tolerance) {
     Geometry geom = read(wkt);
-    LargestEmptyCircle mic = new LargestEmptyCircle(geom, null, tolerance); 
-    Geometry centerPoint = mic.getCenter();
+    LargestEmptyCircle lec = new LargestEmptyCircle(geom, null, tolerance); 
+    Geometry centerPoint = lec.getCenter();
     double dist = geom.distance(centerPoint);
-    assert(dist < 2 * tolerance);
+    LineString radiusLine = lec.getRadiusLine();
+    double actualRadius = radiusLine.getLength();
+    assertTrue(Math.abs(actualRadius - dist) < 2 * tolerance);
   }
   
   private void checkCircle(String wktObstacles, double tolerance, 
