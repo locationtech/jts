@@ -59,6 +59,11 @@ public class LargestEmptyCircleTest extends GeometryTestCase {
     checkCircleZeroRadius("LINESTRING (0 0, 50 50)", 
        0.01 );
   }
+  
+  public void testPolygonThin() {
+    checkCircle("MULTIPOINT ((100 100), (300 100), (200 100.1))", 
+       0.01 );
+  }
 
   //---------------------------------------------------------
   // Obstacles and Boundary
@@ -94,6 +99,22 @@ public class LargestEmptyCircleTest extends GeometryTestCase {
   }
   
   //========================================================
+  
+  /**
+   * A coarse distance check, mainly testing 
+   * that there is not a huge number of iterations.
+   * (This will be revealed by CI taking a very long time!)
+   * 
+   * @param wkt
+   * @param tolerance
+   */
+  private void checkCircle(String wkt, double tolerance) {
+    Geometry geom = read(wkt);
+    LargestEmptyCircle mic = new LargestEmptyCircle(geom, null, tolerance); 
+    Geometry centerPoint = mic.getCenter();
+    double dist = geom.distance(centerPoint);
+    assert(dist < 2 * tolerance);
+  }
   
   private void checkCircle(String wktObstacles, double tolerance, 
       double x, double y, double expectedRadius) {
