@@ -142,6 +142,7 @@ public class LargestEmptyCircle {
   private Point centerPoint = null;
   private Coordinate radiusPt;
   private Point radiusPoint = null;
+  private Geometry bounds;
 
   /**
    * Creates a new instance of a Largest Empty Circle construction,
@@ -235,7 +236,7 @@ public class LargestEmptyCircle {
   }
   
   private void initBoundary() {
-    Geometry bounds = this.boundary;
+    bounds = this.boundary;
     if (bounds == null || bounds.isEmpty()) {
       bounds = obstacles.convexHull();
     }
@@ -278,7 +279,10 @@ public class LargestEmptyCircle {
      * Carry out the branch-and-bound search
      * of the cell space
      */
-    while (! cellQueue.isEmpty()) {
+    long maxIter = MaximumInscribedCircle.computeMaximumIterations(bounds, tolerance);
+    long iter = 0;
+    while (! cellQueue.isEmpty() && iter < maxIter) {
+      iter++;
       // pick the cell with greatest distance from the queue
       Cell cell = cellQueue.remove();
 
@@ -351,6 +355,8 @@ public class LargestEmptyCircle {
     return potentialIncrease > tolerance;
   }
 
+  private static final int INITIAL_GRID_SIDE = 25;
+
   /**
    * Initializes the queue with a grid of cells covering 
    * the extent of the area.
@@ -363,9 +369,7 @@ public class LargestEmptyCircle {
     double maxX = env.getMaxX();
     double minY = env.getMinY();
     double maxY = env.getMaxY();
-    double width = env.getWidth();
-    double height = env.getHeight();
-    double cellSize = Math.min(width, height);
+    double cellSize = env.getDiameter() / INITIAL_GRID_SIDE;
     double hSize = cellSize / 2.0;
 
     // compute initial grid of cells to cover area

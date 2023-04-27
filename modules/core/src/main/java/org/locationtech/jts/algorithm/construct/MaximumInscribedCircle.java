@@ -90,6 +90,35 @@ public class MaximumInscribedCircle {
     return mic.getRadiusLine();
   }
   
+  /**
+   * Computes the maximum number of iterations allowed.
+   * Uses a heuristic based on the area of the input geometry
+   * and the tolerance distance.
+   * The number of tolerance-sized cells that cover the input geometry area
+   * is computed, times a safety factor.
+   * This prevents massive numbers of iterations and created cells
+   * for casees where the input geometry has extremely small area
+   * (e.g. is very thin).
+   * 
+   * @param geom the input geometry
+   * @param toleranceDist the tolerance distance
+   * @return the maximum number of iterations allowed
+   */
+  static long computeMaximumIterations(Geometry geom, double toleranceDist) {
+    int safetyFactor = 100;
+    int maximumIter = 1_000_000;
+    //-- use FP in case values are way big or small
+    double maxCellCount = geom.getArea() / toleranceDist / toleranceDist;
+    //-- enforce an absolute maximum
+    if (maxCellCount > (maximumIter / safetyFactor) )
+      return maximumIter;
+    long maxIter = safetyFactor * (long) maxCellCount;
+    //-- ensure a reasonable number of iterations
+    if (maxIter < 100)
+      return 100;
+    return maxIter;
+  }
+  
   private Geometry inputGeom;
   private double tolerance;
 
@@ -204,10 +233,14 @@ public class MaximumInscribedCircle {
      * Carry out the branch-and-bound search
      * of the cell space
      */
-    while (! cellQueue.isEmpty()) {
+    long maxIter = computeMaximumIterations(inputGeom, tolerance);
+    long iter = 0;
+    while (! cellQueue.isEmpty() && iter < maxIter) {
+      iter++;
       // pick the most promising cell from the queue
       Cell cell = cellQueue.remove();
       //System.out.println(factory.toGeometry(cell.getEnvelope()));
+      //System.out.println(iter + "] Dist: " + cell.getDistance() + "  size: " + cell.getHSide());
       
       // update the center cell if the candidate is further from the boundary
       if (cell.getDistance() > farthestCell.getDistance()) {
@@ -241,6 +274,8 @@ public class MaximumInscribedCircle {
     radiusPoint = factory.createPoint(radiusPt);
   }
 
+  private static final int INITIAL_GRID_SIDE = 25;
+  
   /**
    * Initializes the queue with a grid of cells covering 
    * the extent of the area.
@@ -253,9 +288,7 @@ public class MaximumInscribedCircle {
     double maxX = env.getMaxX();
     double minY = env.getMinY();
     double maxY = env.getMaxY();
-    double width = env.getWidth();
-    double height = env.getHeight();
-    double cellSize = Math.min(width, height);
+    double cellSize = env.getDiameter() / INITIAL_GRID_SIDE;
     
     // Check for flat collapsed input and if so short-circuit
     // Result will just be centroid

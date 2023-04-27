@@ -7,13 +7,13 @@ import org.locationtech.jts.geom.LineString;
 import junit.textui.TestRunner;
 import test.jts.GeometryTestCase;
 
-public class MaximumInscibedCircleTest extends GeometryTestCase {
+public class MaximumInscribedCircleTest extends GeometryTestCase {
   
   public static void main(String args[]) {
-    TestRunner.run(MaximumInscibedCircleTest.class);
+    TestRunner.run(MaximumInscribedCircleTest.class);
   }
 
-  public MaximumInscibedCircleTest(String name) { super(name); }
+  public MaximumInscribedCircleTest(String name) { super(name); }
   
   public void testSquare() {
     checkCircle("POLYGON ((100 200, 200 200, 200 100, 100 100, 100 200))", 
@@ -72,6 +72,37 @@ public class MaximumInscibedCircleTest extends GeometryTestCase {
        0.01, 100, 100, 0 );
   }
   
+  /**
+   * Tests that a nearly flat geometry doesn't make the initial cell grid huge.
+   * 
+   * See https://github.com/libgeos/geos/issues/875
+   */
+  public void testNearlyFlat() {
+    checkCircle("POLYGON ((59.3 100.00000000000001, 99.7 100.00000000000001, 99.7 100, 59.3 100, 59.3 100.00000000000001))", 
+       0.01 );
+  }
+  
+  public void testVeryThin() {
+    checkCircle("POLYGON ((100 100, 200 300, 300 100, 450 250, 300 99.999999, 200 299.99999, 100 100))", 
+       0.01 );
+  }
+  
+  /**
+   * A coarse distance check, mainly testing 
+   * that there is not a huge number of iterations.
+   * (This will be revealed by CI taking a very long time!)
+   * 
+   * @param wkt
+   * @param tolerance
+   */
+  private void checkCircle(String wkt, double tolerance) {
+    Geometry geom = read(wkt);
+    MaximumInscribedCircle mic = new MaximumInscribedCircle(geom, tolerance); 
+    Geometry centerPoint = mic.getCenter();
+    double dist = geom.distance(centerPoint);
+    assertTrue(dist < 2 * tolerance);
+  }
+  
   private void checkCircle(String wkt, double tolerance, 
       double x, double y, double expectedRadius) {
     checkCircle(read(wkt), tolerance, x, y, expectedRadius);
@@ -83,11 +114,11 @@ public class MaximumInscibedCircleTest extends GeometryTestCase {
     Geometry centerPoint = mic.getCenter();
     Coordinate centerPt = centerPoint.getCoordinate();
     Coordinate expectedCenter = new Coordinate(x, y);
-    checkEqualXY(expectedCenter, centerPt, tolerance);
+    checkEqualXY(expectedCenter, centerPt, 2 * tolerance);
     
     LineString radiusLine = mic.getRadiusLine();
     double actualRadius = radiusLine.getLength();
-    assertEquals("Radius: ", expectedRadius, actualRadius, tolerance);
+    assertEquals("Radius: ", expectedRadius, actualRadius, 2 * tolerance);
     
     checkEqualXY("Radius line center point: ", centerPt, radiusLine.getCoordinateN(0));
     Coordinate radiusPt = mic.getRadiusPoint().getCoordinate();

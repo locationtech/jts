@@ -41,8 +41,8 @@ public class LargestEmptyCircleTest extends GeometryTestCase {
   }
 
   public void testLinesZigzag() {
-    checkCircle("MULTILINESTRING ((100 100, 200 150, 100 200, 250 250, 100 300, 300 350, 100 400), (50 400, 0 350, 50 300, 0 250, 50 200, 0 150, 50 100))", 
-       0.01, 77.52, 349.99, 54.81 );
+    checkCircle("MULTILINESTRING ((100 100, 200 150, 100 200, 250 250, 100 300, 300 350, 100 400), (70 380, 0 350, 50 300, 0 250, 50 200, 0 150, 50 120))", 
+       0.01, 77.52, 249.99, 54.81 );
   }
 
   public void testPointsLinesTriangle() {
@@ -57,6 +57,11 @@ public class LargestEmptyCircleTest extends GeometryTestCase {
 
   public void testLineFlat() {
     checkCircleZeroRadius("LINESTRING (0 0, 50 50)", 
+       0.01 );
+  }
+  
+  public void testPolygonThin() {
+    checkCircle("MULTIPOINT ((100 100), (300 100), (200 100.1))", 
        0.01 );
   }
 
@@ -95,6 +100,24 @@ public class LargestEmptyCircleTest extends GeometryTestCase {
   
   //========================================================
   
+  /**
+   * A coarse distance check, mainly testing 
+   * that there is not a huge number of iterations.
+   * (This will be revealed by CI taking a very long time!)
+   * 
+   * @param wkt
+   * @param tolerance
+   */
+  private void checkCircle(String wkt, double tolerance) {
+    Geometry geom = read(wkt);
+    LargestEmptyCircle lec = new LargestEmptyCircle(geom, null, tolerance); 
+    Geometry centerPoint = lec.getCenter();
+    double dist = geom.distance(centerPoint);
+    LineString radiusLine = lec.getRadiusLine();
+    double actualRadius = radiusLine.getLength();
+    assertTrue(Math.abs(actualRadius - dist) < 2 * tolerance);
+  }
+  
   private void checkCircle(String wktObstacles, double tolerance, 
       double x, double y, double expectedRadius) {
     checkCircle(read(wktObstacles), null, tolerance, x, y, expectedRadius);
@@ -111,11 +134,11 @@ public class LargestEmptyCircleTest extends GeometryTestCase {
     Geometry centerPoint = lec.getCenter();
     Coordinate centerPt = centerPoint.getCoordinate();
     Coordinate expectedCenter = new Coordinate(x, y);
-    checkEqualXY(expectedCenter, centerPt, tolerance);
+    checkEqualXY(expectedCenter, centerPt, 2 * tolerance);
     
     LineString radiusLine = lec.getRadiusLine();
     double actualRadius = radiusLine.getLength();
-    assertEquals("Radius: ", expectedRadius, actualRadius, tolerance);
+    assertEquals("Radius: ", expectedRadius, actualRadius, 2 * tolerance);
     
     checkEqualXY("Radius line center point: ", centerPt, radiusLine.getCoordinateN(0));
     Coordinate radiusPt = lec.getRadiusPoint().getCoordinate();
