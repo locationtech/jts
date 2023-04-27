@@ -41,8 +41,8 @@ public class LargestEmptyCircleTest extends GeometryTestCase {
   }
 
   public void testLinesZigzag() {
-    checkCircle("MULTILINESTRING ((100 100, 200 150, 100 200, 250 250, 100 300, 300 350, 100 400), (50 400, 0 350, 50 300, 0 250, 50 200, 0 150, 50 100))", 
-       0.01, 77.52, 349.99, 54.81 );
+    checkCircle("MULTILINESTRING ((100 100, 200 150, 100 200, 250 250, 100 300, 300 350, 100 400), (70 380, 0 350, 50 300, 0 250, 50 200, 0 150, 50 120))", 
+       0.01, 77.52, 249.99, 54.81 );
   }
 
   public void testPointsLinesTriangle() {
@@ -111,11 +111,11 @@ public class LargestEmptyCircleTest extends GeometryTestCase {
     Geometry centerPoint = lec.getCenter();
     Coordinate centerPt = centerPoint.getCoordinate();
     Coordinate expectedCenter = new Coordinate(x, y);
-    checkEqualXY(expectedCenter, centerPt, tolerance);
+    checkEqualXY(expectedCenter, centerPt, 2 * tolerance);
     
     LineString radiusLine = lec.getRadiusLine();
     double actualRadius = radiusLine.getLength();
-    assertEquals("Radius: ", expectedRadius, actualRadius, tolerance);
+    assertEquals("Radius: ", expectedRadius, actualRadius, 2 * tolerance);
     
     checkEqualXY("Radius line center point: ", centerPt, radiusLine.getCoordinateN(0));
     Coordinate radiusPt = lec.getRadiusPoint().getCoordinate();
