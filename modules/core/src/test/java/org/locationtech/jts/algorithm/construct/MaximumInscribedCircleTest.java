@@ -52,7 +52,7 @@ public class MaximumInscribedCircleTest extends GeometryTestCase {
    */
   public void testCollapsedLine() {
     checkCircle("POLYGON ((100 100, 200 200, 100 100, 100 100))", 
-       0.01, 150, 150, 0 );
+       0.01);
   }
 
   /**
@@ -61,7 +61,7 @@ public class MaximumInscribedCircleTest extends GeometryTestCase {
    */
   public void testCollapsedLineFlat() {
     checkCircle("POLYGON((1 2, 1 2, 1 2, 1 2, 3 2, 1 2))",
-        0.01, 2, 2, 0 );
+        0.01);
   }
 
   /**
@@ -99,7 +99,7 @@ public class MaximumInscribedCircleTest extends GeometryTestCase {
     Geometry geom = read(wkt);
     MaximumInscribedCircle mic = new MaximumInscribedCircle(geom, tolerance); 
     Geometry centerPoint = mic.getCenter();
-    double dist = geom.distance(centerPoint);
+    double dist = geom.getBoundary().distance(centerPoint);
     assertTrue(dist < 2 * tolerance);
   }
   

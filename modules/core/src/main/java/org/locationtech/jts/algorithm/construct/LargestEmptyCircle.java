@@ -285,6 +285,7 @@ public class LargestEmptyCircle {
       iter++;
       // pick the cell with greatest distance from the queue
       Cell cell = cellQueue.remove();
+      //System.out.println(iter + "] Dist: " + cell.getDistance() + " Max D: " + cell.getMaxDistance() + " size: " + cell.getHSide());
 
       // update the center cell if the candidate is further from the constraints
       if (cell.getDistance() > farthestCell.getDistance()) {
@@ -355,29 +356,23 @@ public class LargestEmptyCircle {
     return potentialIncrease > tolerance;
   }
 
-  private static final int INITIAL_GRID_SIDE = 25;
-
   /**
-   * Initializes the queue with a grid of cells covering 
+   * Initializes the queue with a cell covering 
    * the extent of the area.
    * 
    * @param env the area extent to cover
    * @param cellQueue the queue to initialize
    */
   private void createInitialGrid(Envelope env, PriorityQueue<Cell> cellQueue) {
-    double minX = env.getMinX();
-    double maxX = env.getMaxX();
-    double minY = env.getMinY();
-    double maxY = env.getMaxY();
-    double cellSize = env.getDiameter() / INITIAL_GRID_SIDE;
-    double hSize = cellSize / 2.0;
+    double cellSize = Math.max(env.getWidth(), env.getHeight());
+    double hSide = cellSize / 2.0;
 
-    // compute initial grid of cells to cover area
-    for (double x = minX; x < maxX; x += cellSize) {
-      for (double y = minY; y < maxY; y += cellSize) {
-        cellQueue.add(createCell(x + hSize, y + hSize, hSize));
-      }
-    }
+    // Check for flat collapsed input and if so short-circuit
+    // Result will just be centroid
+    if (cellSize == 0) return;
+    
+    Coordinate centre = env.centre();
+    cellQueue.add(createCell(centre.x, centre.y, hSide));   
   }
 
   private Cell createCell(double x, double y, double h) {
@@ -453,10 +448,11 @@ public class LargestEmptyCircle {
     }
     
     /**
-     * A cell is greater if its maximum distance is larger.
+     * For maximum efficieny sort the PriorityQueue with largest maxDistance at front.
+     * Since Java PQ sorts least-first, need to invert the comparison
      */
     public int compareTo(Cell o) {
-      return (int) (o.maxDist - this.maxDist);
+      return -Double.compare(maxDist, o.maxDist);
     }
   }
 
