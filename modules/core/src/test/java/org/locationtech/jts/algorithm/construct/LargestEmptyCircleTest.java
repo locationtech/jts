@@ -60,7 +60,7 @@ public class LargestEmptyCircleTest extends GeometryTestCase {
        0.01 );
   }
   
-  public void testPolygonThin() {
+  public void testThinExtent() {
     checkCircle("MULTIPOINT ((100 100), (300 100), (200 100.1))", 
        0.01 );
   }
