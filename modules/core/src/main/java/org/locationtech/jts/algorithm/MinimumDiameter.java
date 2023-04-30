@@ -36,31 +36,37 @@ import org.locationtech.jts.geom.Polygon;
  * <ul>
  * <li>a line segment representing the minimum diameter
  * <li>the <b>supporting line segment</b> of the minimum diameter
- * <li>the <b>minimum enclosing rectangle</b> of the input geometry.
+ * <li>the <b>minimum-width rectangle</b> of the input geometry.
  * The rectangle has width equal to the minimum diameter, and has one side
  * parallel to the supporting segment.
- * In degenerate cases the minimum enclosing geometry may be a LineString or a Point.
+ * In degenerate cases the rectangle may be a LineString or a Point.
+ * (Note that this may not be the enclosing rectangle with minimum area; 
+ * use {@link MinimumAreaRectangle} to compute this.)
  * </ul>
  * 
  *
  * @see ConvexHull
+ * @see MinimumAreaRectangle
  *
  * @version 1.7
  */
 public class MinimumDiameter
 {
   /**
-   * Gets the minimum rectangular {@link Polygon} which encloses the input geometry.
+   * Gets the minimum-width rectangular {@link Polygon} which encloses the input geometry
+   * and is based along the supporting segment.
    * The rectangle has width equal to the minimum diameter, 
    * and a longer length.
    * If the convex hull of the input is degenerate (a line or point)
    * a {@link LineString} or {@link Point} is returned.
    * <p>
-   * The minimum rectangle can be used as an extremely generalized representation
-   * for the given geometry.
+   * This is not necessarily the rectangle with minimum area.
+   * Use {@link MinimumAreaRectangle} to compute this.
    * 
    * @param geom the geometry
-   * @return the minimum rectangle enclosing the geometry
+   * @return the minimum-width rectangle enclosing the geometry
+   * 
+   * @see MinimumAreaRectangle
    */
   public static Geometry getMinimumRectangle(Geometry geom) {
     return (new MinimumDiameter(geom)).getMinimumRectangle();
@@ -217,7 +223,7 @@ public class MinimumDiameter
     int currMaxIndex = 1;
 
     LineSegment seg = new LineSegment();
-    // compute the max distance for all segments in the ring, and pick the minimum
+    // for each segment, find a vertex at max distance, and pick the minimum
     for (int i = 0; i < pts.length - 1; i++) {
       seg.p0 = pts[i];
       seg.p1 = pts[i + 1];
@@ -260,16 +266,18 @@ public class MinimumDiameter
   }
   
   /**
-   * Gets the minimum rectangular {@link Polygon} which encloses the input geometry.
+   * Gets the rectangular {@link Polygon} which encloses the input geometry
+   * and is based on the minimum diameter supporting segment.
    * The rectangle has width equal to the minimum diameter, 
    * and a longer length.
    * If the convex hull of the input is degenerate (a line or point)
    * a {@link LineString} or {@link Point} is returned.
    * <p>
-   * The minimum rectangle can be used as an extremely generalized representation
-   * for the given geometry.
+   * This is not necessarily the enclosing rectangle with minimum area.
    * 
-   * @return the minimum rectangle enclosing the input (or a line or point if degenerate)
+   * @return a rectangle enclosing the input (or a line or point if degenerate)
+   * 
+   * @see MinimumAreaRectangle
    */
   public Geometry getMinimumRectangle()
   {
@@ -279,7 +287,7 @@ public class MinimumDiameter
     if (minWidth == 0.0) {
       //-- Min rectangle is a point
       if (minBaseSeg.p0.equals2D(minBaseSeg.p1)) {
-        return inputGeom.getFactory().createPoint(minBaseSeg.p0);
+        return inputGeom.getFactory().createPoint(minBaseSeg.p0.copy());
       }
       //-- Min rectangle is a line. Use the diagonal of the extent
       return computeMaximumLine(convexHullPts, inputGeom.getFactory());
