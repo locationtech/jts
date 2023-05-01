@@ -11,6 +11,8 @@
  */
 package org.locationtech.jts.noding;
 
+import java.io.Serializable;
+
 /**
  * Processes possible intersections detected by a {@link Noder}.
  * The {@link SegmentIntersector} is passed to a {@link Noder}.
@@ -24,7 +26,7 @@ package org.locationtech.jts.noding;
  *
  * @version 1.7
  */
-public interface SegmentIntersector
+public interface SegmentIntersector extends Serializable
 {
   /**
    * This method is called by clients

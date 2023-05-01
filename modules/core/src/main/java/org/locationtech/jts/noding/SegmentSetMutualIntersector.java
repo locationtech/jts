@@ -11,6 +11,7 @@
  */
 package org.locationtech.jts.noding;
 
+import java.io.Serializable;
 import java.util.Collection;
 
 /**
@@ -35,7 +36,7 @@ import java.util.Collection;
  * @author Martin Davis
  * @version 1.10
  */
-public interface SegmentSetMutualIntersector
+public interface SegmentSetMutualIntersector extends Serializable
 {  
   /**
    * Computes the intersections with a given set of {@link SegmentString}s,

@@ -16,6 +16,8 @@ import org.locationtech.jts.geom.CoordinateSequence;
 import org.locationtech.jts.geom.Location;
 import org.locationtech.jts.geom.Polygonal;
 
+import java.io.Serializable;
+
 /**
  * Counts the number of segments crossed by a horizontal ray extending to the right
  * from a given point, in an incremental fashion.
@@ -46,7 +48,7 @@ import org.locationtech.jts.geom.Polygonal;
  * @author Martin Davis
  *
  */
-public class RayCrossingCounter 
+public class RayCrossingCounter implements Serializable
 {
 	/**
 	 * Determines the {@link Location} of a point in a ring.

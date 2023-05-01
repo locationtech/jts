@@ -11,6 +11,7 @@
  */
 package org.locationtech.jts.index.intervalrtree;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -33,7 +34,7 @@ import org.locationtech.jts.index.ItemVisitor;
  * 
  * @author Martin Davis
  */
-public class SortedPackedIntervalRTree 
+public class SortedPackedIntervalRTree implements Serializable
 {
   private final List leaves = new ArrayList();
   

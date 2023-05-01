@@ -15,13 +15,15 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Location;
 
+import java.io.Serializable;
+
 /**
  * An interface for classes which determine the {@link Location} of
  * points in a {@link Geometry}.
  * 
  * @author Martin Davis
  */
-public interface PointOnGeometryLocator 
+public interface PointOnGeometryLocator extends Serializable
 {
   /**
    * Determines the {@link Location} of a point in the {@link Geometry}.

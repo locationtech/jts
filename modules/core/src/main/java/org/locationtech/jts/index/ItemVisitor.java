@@ -12,13 +12,15 @@
 
 package org.locationtech.jts.index;
 
+import java.io.Serializable;
+
 /**
  * A visitor for items in a {@link SpatialIndex}.
  *
  * @version 1.7
  */
 
-public interface ItemVisitor
+public interface ItemVisitor extends Serializable
 {
   /**
    * Visits an item in the index.

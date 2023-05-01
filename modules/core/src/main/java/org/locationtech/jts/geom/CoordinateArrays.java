@@ -11,6 +11,7 @@
  */
 package org.locationtech.jts.geom;
 
+import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.Comparator;
@@ -23,7 +24,7 @@ import org.locationtech.jts.math.MathUtil;
  *
  * @version 1.7
  */
-public class CoordinateArrays {
+public class CoordinateArrays implements Serializable {
   private final static Coordinate[] coordArrayType = new Coordinate[0];
 
   private CoordinateArrays() {

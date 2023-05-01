@@ -11,6 +11,7 @@
  */
 package org.locationtech.jts.algorithm.locate;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -122,7 +123,7 @@ public class IndexedPointInAreaLocator
     }
   }
   
-  private static class IntervalIndexedGeometry
+  private static class IntervalIndexedGeometry implements Serializable
   {
     private final boolean isEmpty;
     private final SortedPackedIntervalRTree index= new SortedPackedIntervalRTree();

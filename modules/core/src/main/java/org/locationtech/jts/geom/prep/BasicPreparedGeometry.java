@@ -33,7 +33,7 @@ import org.locationtech.jts.geom.util.ComponentCoordinateExtracter;
  *
  */
 class BasicPreparedGeometry 
-  implements PreparedGeometry, Serializable
+  implements PreparedGeometry
 {
   private final Geometry baseGeom;
   private final List representativePts;  // List<Coordinate>

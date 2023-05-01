@@ -58,7 +58,7 @@ On master:
 2. Update version number in Maven POMs (run the Maven release plugin at project root:
    
    ```
-   mvn versions:set -DnewVersion=1.20.0.1-VERASET
+   mvn versions:set -DnewVersion=1.20.0.2-VERASET
    ```
 
 3. Edit ``build-tools/pom.xml`` by hand, and compile to test.

@@ -12,6 +12,7 @@
 
 package org.locationtech.jts.geom;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 /**
@@ -26,7 +27,7 @@ import java.util.Comparator;
  *
  */
 public class CoordinateSequenceComparator
-	implements Comparator
+	implements Comparator, Serializable
 {
   /**
    * Compare two <code>double</code>s, allowing for NaN values.

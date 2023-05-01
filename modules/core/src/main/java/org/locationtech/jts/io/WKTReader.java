@@ -14,6 +14,7 @@ package org.locationtech.jts.io;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.io.Serializable;
 import java.io.StreamTokenizer;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -142,7 +143,7 @@ import org.locationtech.jts.util.AssertionFailedException;
  *@version 1.7
  * @see WKTWriter
  */
-public class WKTReader
+public class WKTReader implements Serializable
 {
   private static final String COMMA = ",";
   private static final String L_PAREN = "(";

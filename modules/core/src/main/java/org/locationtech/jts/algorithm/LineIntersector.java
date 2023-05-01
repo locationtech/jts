@@ -19,6 +19,8 @@ import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.io.WKTWriter;
 import org.locationtech.jts.util.Assert;
 
+import java.io.Serializable;
+
 /**
  * A <code>LineIntersector</code> is an algorithm that can both test whether
  * two line segments intersect and compute the intersection point(s)
@@ -47,7 +49,7 @@ import org.locationtech.jts.util.Assert;
  *
  * @version 1.7
  */
-public abstract class LineIntersector 
+public abstract class LineIntersector implements Serializable
 {
 /**
  * These are deprecated, due to ambiguous naming

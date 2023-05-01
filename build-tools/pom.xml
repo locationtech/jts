@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.locationtech.jts</groupId>
     <artifactId>build-tools</artifactId>
-    <version>1.20.0.1-VERASET</version>
+    <version>1.20.0.2-VERASET</version>
     <name>JTS Topology Suite Build Configuration</name>
     
     <build>

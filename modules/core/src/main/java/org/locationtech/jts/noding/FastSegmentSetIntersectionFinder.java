@@ -12,6 +12,7 @@
 
 package org.locationtech.jts.noding;
 
+import java.io.Serializable;
 import java.util.Collection;
 
 /**
@@ -24,7 +25,7 @@ import java.util.Collection;
  *
  * @version 1.7
  */
-public class FastSegmentSetIntersectionFinder 
+public class FastSegmentSetIntersectionFinder implements Serializable
 {
 	private final SegmentSetMutualIntersector segSetMutInt; 
 	// for testing purposes

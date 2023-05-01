@@ -16,6 +16,8 @@ import org.locationtech.jts.geom.Lineal;
 import org.locationtech.jts.geom.Polygonal;
 import org.locationtech.jts.geom.Puntal;
 
+import java.io.Serializable;
+
 /**
  * A factory for creating {@link PreparedGeometry}s.
  * It chooses an appropriate implementation of PreparedGeometry
@@ -29,7 +31,7 @@ import org.locationtech.jts.geom.Puntal;
  * @author Martin Davis
  *
  */
-public class PreparedGeometryFactory 
+public class PreparedGeometryFactory implements Serializable
 {
   /**
    * Creates a new {@link PreparedGeometry} appropriate for the argument {@link Geometry}.

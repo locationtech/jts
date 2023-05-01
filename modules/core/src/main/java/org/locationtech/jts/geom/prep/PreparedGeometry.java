@@ -14,6 +14,8 @@ package org.locationtech.jts.geom.prep;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryCollection;
 
+import java.io.Serializable;
+
 /**
  * An interface for classes which prepare {@link Geometry}s 
  * in order to optimize the performance 
@@ -34,7 +36,7 @@ import org.locationtech.jts.geom.GeometryCollection;
  * @author Martin Davis
  *
  */
-public interface PreparedGeometry 
+public interface PreparedGeometry extends Serializable
 {
 	
 	/**
