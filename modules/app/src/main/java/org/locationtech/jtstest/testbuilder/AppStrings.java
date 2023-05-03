@@ -92,6 +92,8 @@ public class AppStrings {
 
   public static final String TIP_ALLOW_INVERTED_RINGS = "Allow valid inverted shells and exverted holes";
 
+  public static final String LYR_INDICATORS = "Indicators";
+
 
 
 

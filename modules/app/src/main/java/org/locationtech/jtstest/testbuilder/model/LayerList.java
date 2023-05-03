@@ -129,6 +129,16 @@ public class LayerList
     return geoms;
   }
 
+  public Layer add(Layer lyr, boolean atTop) {
+    if (atTop) {
+      layers.add(0, lyr);
+    }
+    else {
+      layers.add(lyr);
+    }
+    return lyr;
+  }
+
   public Layer copy(Layer focusLayer) {
     Layer lyr = new Layer(focusLayer);
     layers.add(lyr);
@@ -180,5 +190,13 @@ public class LayerList
     Layer tmp = layers.get(i+1);
     layers.set(i+1, lyr);
     layers.set(i, tmp);
+  }
+
+  public Layer find(String name) {
+    for (Layer lyr : layers) {
+      if (lyr.getName().equals(name))
+        return lyr;
+    }
+    return null;
   }
 }

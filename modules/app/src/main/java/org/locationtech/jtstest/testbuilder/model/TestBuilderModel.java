@@ -30,6 +30,8 @@ import org.locationtech.jts.math.MathUtil;
 import org.locationtech.jts.util.Assert;
 import org.locationtech.jtstest.test.TestCaseList;
 import org.locationtech.jtstest.test.Testable;
+import org.locationtech.jtstest.testbuilder.AppConstants;
+import org.locationtech.jtstest.testbuilder.AppStrings;
 import org.locationtech.jtstest.testbuilder.GeometryDepiction;
 import org.locationtech.jtstest.testbuilder.ui.SwingUtil;
 import org.locationtech.jtstest.testbuilder.ui.style.BasicStyle;
@@ -110,6 +112,44 @@ public class TestBuilderModel
           && layerList.getLayer(i).isEnabled())
         layers.add(layerList.getLayer(i));
     }
+  }
+  
+  public Layer getLayerIndicators() {
+    Layer ind = layerListTop.find(AppStrings.LYR_INDICATORS);
+    if (ind == null)
+      ind = layerListBase.find(AppStrings.LYR_INDICATORS);
+    if (ind == null) {
+      ind = createIndicatorLayer();
+      layerListBase.add(ind, true);
+    }
+    return ind;
+  }
+
+  private Layer createIndicatorLayer() {
+    Layer ind = new Layer(AppStrings.LYR_INDICATORS,
+        new ListGeometryContainer(),
+        new BasicStyle(AppConstants.INDICATOR_LINE_CLR, 
+                        AppConstants.INDICATOR_FILL_CLR));
+    ind.getLayerStyle().setVertices(false);
+    return ind;
+  }
+  
+  public void addIndicator(Geometry geom) {
+    Layer lyr = getLayerIndicators();
+    ListGeometryContainer src = (ListGeometryContainer) lyr.getSource();
+    src.add(geom);   
+  }
+  
+  public boolean hasLayer(String name) {
+    return findLayer(name) != null;
+  }
+  
+  private Layer findLayer(String name) {
+    Layer lyr = layerListTop.find(name);
+    if (lyr != null) return lyr;
+    lyr = layerListBase.find(name);
+    if (lyr != null) return lyr;
+    return layerList.find(name);
   }
   
   private void initLayers()
@@ -516,7 +556,7 @@ public class TestBuilderModel
     }  
   
   }
-
+  
   public Layer layerCopy(Layer lyr) {
     if (layerListTop.contains(lyr)) {
       return layerListTop.copy(lyr);

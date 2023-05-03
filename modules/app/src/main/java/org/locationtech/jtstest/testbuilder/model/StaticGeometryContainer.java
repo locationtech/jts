@@ -31,4 +31,9 @@ public class StaticGeometryContainer implements GeometryContainer {
     geometry = geom;;
   }
 
+  @Override
+  public void clear() {
+    geometry = null;
+  }
+
 }

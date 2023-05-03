@@ -61,15 +61,7 @@ public class FunctionsUtil {
   
   public static void showIndicator(Geometry geom, Color lineClr)
   {
-    if (! isShowingIndicators()) return;
-    
-    GeometryEditPanel panel = JTSTestBuilderFrame
-    .instance().getTestCasePanel()
-    .getGeometryEditPanel();
-    Graphics2D gr = (Graphics2D) panel.getGraphics();
-    GeometryPainter.paint(geom, panel.getViewport(), gr, 
-        lineClr, 
-        AppConstants.INDICATOR_FILL_CLR);
+    JTSTestBuilder.controller().indicatorShow(geom, lineClr);
   }
   
   public static Geometry buildGeometry(List geoms, Geometry parentGeom)

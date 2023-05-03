@@ -13,12 +13,16 @@
 package org.locationtech.jtstest.testbuilder.controller;
 
 
+import java.awt.Color;
+
 import javax.swing.JFileChooser;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.util.LinearComponentExtracter;
 import org.locationtech.jtstest.clean.CleanDuplicatePoints;
+import org.locationtech.jtstest.testbuilder.AppConstants;
+import org.locationtech.jtstest.testbuilder.AppStrings;
 import org.locationtech.jtstest.testbuilder.GeometryEditPanel;
 import org.locationtech.jtstest.testbuilder.JTSTestBuilder;
 import org.locationtech.jtstest.testbuilder.JTSTestBuilderFrame;
@@ -171,6 +175,10 @@ public class JTSTestBuilderController
   public void inspectResult()
   {
     JTSTestBuilderFrame.instance().inspectResult();
+  }
+
+  public void inspectGeometry(String tag, Geometry geometry) {
+    JTSTestBuilderFrame.instance().inspectGeometry(tag, geometry);
   }
 
   public void inspectGeometryDialogForCurrentCase()
@@ -367,5 +375,21 @@ public class JTSTestBuilderController
     Geometry cleanGeom = LinearComponentExtracter.getGeometry(model().getGeometryEditModel().getGeometry(0));
     model().getCurrentCase().setGeometry(0, cleanGeom);
     frame().geometryChanged();
+  }
+  
+  //=============================================
+
+  public void indicatorShow(Geometry geom, Color lineClr)
+  {
+    if (! JTSTestBuilderFrame.isShowingIndicators()) return;
+    
+    if (JTSTestBuilderFrame.isSavingIndicators()) {
+      //-- refresh layer list panel only when indicator layer is created
+      boolean refreshLayerList = ! model().hasLayer(AppStrings.LYR_INDICATORS);
+      model().addIndicator(geom);
+      if (refreshLayerList) 
+        frame().refreshLayerList();
+    }
+    editPanel().draw(geom, lineClr, AppConstants.INDICATOR_FILL_CLR);
   }
 }

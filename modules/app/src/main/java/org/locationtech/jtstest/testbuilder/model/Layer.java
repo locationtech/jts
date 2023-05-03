@@ -31,6 +31,12 @@ public class Layer
     this.name = name;
   }
 
+  public Layer(String name, GeometryContainer source, BasicStyle style) {
+    this.name = name;
+    setSource(source);
+    setGeometryStyle(style);
+  }
+
   public Layer(Layer layer) {
     this.name = layer.name + "Copy";
     this.layerStyle = layer.layerStyle.copy();
@@ -95,6 +101,11 @@ public class Layer
   {
     if (geomCont == null) return null;
     return geomCont.getGeometry();
+  }
+
+  public void setGeometry(Geometry geom)
+  {
+    this.geomCont = new StaticGeometryContainer(geom);
   }
 
   public Envelope getEnvelope() {

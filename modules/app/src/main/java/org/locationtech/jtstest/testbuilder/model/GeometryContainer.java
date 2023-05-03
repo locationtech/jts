@@ -16,4 +16,8 @@ import org.locationtech.jts.geom.Geometry;
 
 public interface GeometryContainer {
   Geometry getGeometry();
+
+  default void clear() {
+    
+  }
 }
