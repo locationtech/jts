@@ -103,7 +103,7 @@ public class GeometryTreePanel extends JPanel implements TreeWillExpandListener
         }
         // would be nice to flash as well as zoom, but zooming drawing is too slow
         if (e.getClickCount() == 1) {
-          JTSTestBuilderFrame.getGeometryEditPanel().flash(geom);
+          JTSTestBuilder.controller().flash(geom);
         }
 			}
 		});
@@ -115,12 +115,19 @@ public class GeometryTreePanel extends JPanel implements TreeWillExpandListener
 			}
 		});
 	}
+	/**
+	 * Gets currently selected geometry, if any.
+	 * 
+	 * @return selected geometry, or null if none selected
+	 */
   public Geometry getSelectedGeometry() {
     return getGeometryFromNode(tree.getLastSelectedPathComponent());
   }
   public void moveToNextNode(int direction) {
     direction = (int) Math.signum(direction);
     TreePath path = tree.getSelectionPath();
+    if (path == null)
+      return;
     
     TreePath nextPath2 = nextPath(path, 2 * direction);
     tree.scrollPathToVisible(nextPath2);

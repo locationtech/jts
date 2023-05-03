@@ -167,6 +167,11 @@ public class JTSTestBuilderController
     toolbar().setFocusGeometry(index);    
   }
 
+  public void flash(Geometry geom)
+  {
+    JTSTestBuilderFrame.getGeometryEditPanel().flash(geom);
+  }
+  
   public void inspectGeometry()
   {
     JTSTestBuilderFrame.instance().inspectGeometry();

@@ -46,9 +46,9 @@ public class InspectorPanel extends TestBuilderPanel  {
 
   private Geometry geometry;
 
-  private Comparator sorterArea;
+  private Comparator<GeometricObjectNode> sorterArea;
 
-  private Comparator sorterLen;
+  private Comparator<GeometricObjectNode> sorterLen;
 
   public InspectorPanel() {
     this(true);
@@ -69,22 +69,22 @@ public class InspectorPanel extends TestBuilderPanel  {
     
     JButton btnZoom = SwingUtil.createButton(AppIcons.ZOOM, "Zoom to component", new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        btnZoom_actionPerformed(e);
+        actionZoom(e);
       }
     });
-    JButton btnCopy = SwingUtil.createButton(AppIcons.COPY, "Copy (Ctl-click to copy formatted", new java.awt.event.ActionListener() {
+    JButton btnCopy = SwingUtil.createButton(AppIcons.COPY, "Copy (Ctl-click to Copy formatted", new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        btnCopy_actionPerformed(e);
+        actionCopy(e);
       }
     });
-    JButton btnNext = SwingUtil.createButton(AppIcons.DOWN, "Zoom to Next", new java.awt.event.ActionListener() {
+    JButton btnNext = SwingUtil.createButton(AppIcons.DOWN, "Next (Ctl-click to Zoom)", new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        btnZoomNext_actionPerformed(e, 1);
+         actionZoomNext(e, 1);
       }
     });
-    JButton btnPrev = SwingUtil.createButton(AppIcons.UP, "Zoom to Previous", new java.awt.event.ActionListener() {
+    JButton btnPrev = SwingUtil.createButton(AppIcons.UP, "Previous (Ctl-click to Zoom)", new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        btnZoomNext_actionPerformed(e, -1);
+        actionZoomNext(e, -1);
       }
     });
     btnDelete = SwingUtil.createButton(AppIcons.DELETE, "Delete", new java.awt.event.ActionListener() {
@@ -113,24 +113,6 @@ public class InspectorPanel extends TestBuilderPanel  {
     btnPanel.add(btnDelete);
     this.add(btnPanel, BorderLayout.WEST);
     
-    if (showExpand) {
-      JPanel btn2Panel = new JPanel();
-      btn2Panel.setLayout(new BoxLayout(btn2Panel, BoxLayout.PAGE_AXIS));
-      btn2Panel.setPreferredSize(new java.awt.Dimension(30, 30));
-      btnExpand.setEnabled(true);
-      btnExpand.setMaximumSize(new Dimension(30, 30));
-      btnExpand.setText("...");
-      btnExpand.setToolTipText("Display in window");
-      btnExpand.addActionListener(new java.awt.event.ActionListener() {
-        public void actionPerformed(ActionEvent e)
-        {
-          btnExpand_actionPerformed();
-        }
-      });
-      btn2Panel.add(btnExpand);
-      this.add(btn2Panel, BorderLayout.EAST);
-    }
-    
     JButton btnSortNone = SwingUtil.createButton(AppIcons.CLEAR, "Unsorted", new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e) {
         sortNone();
@@ -147,33 +129,55 @@ public class InspectorPanel extends TestBuilderPanel  {
       }
     });
     
-    JPanel sortPanel = new JPanel();
-    sortPanel.setLayout(new BoxLayout(sortPanel, BoxLayout.LINE_AXIS));
-    sortPanel.add(Box.createRigidArea(new Dimension(160, 0)));
-    sortPanel.add(new JLabel("Sort"));
-    sortPanel.add(Box.createRigidArea(new Dimension(10, 0)));
-    sortPanel.add(btnSortNone);
-    //sortPanel.add(new JLabel(AppIcons.ICON_LINESTRING));
-    sortPanel.add(Box.createRigidArea(new Dimension(10, 0)));
-    sortPanel.add(btnSortByLen);
-    //sortPanel.add(new JLabel(AppIcons.ICON_POLYGON));
-    sortPanel.add(Box.createRigidArea(new Dimension(10, 0)));
-    sortPanel.add(btnSortByArea);
-    this.add(sortPanel, BorderLayout.NORTH);
-
+    JPanel btn2Panel = new JPanel();
+    btn2Panel.setLayout(new BoxLayout(btn2Panel, BoxLayout.PAGE_AXIS));
+    btn2Panel.setPreferredSize(new java.awt.Dimension(30, 30));
+    btnExpand.setMaximumSize(new Dimension(30, 30));
+    btnExpand.setText("...");
+    btnExpand.setToolTipText("Display in window");
+    btnExpand.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e)
+      {
+        btnExpand_actionPerformed();
+      }
+    });
+    if (showExpand) {
+      btnExpand.setEnabled(true);
+    }
+    btn2Panel.add(btnExpand);
+    
+    btn2Panel.add(Box.createRigidArea(new Dimension(0, 10)));
+    btn2Panel.add(new JLabel("Sort"));
+    btn2Panel.add(btnSortByLen);
+    btn2Panel.add(btnSortByArea);
+    btn2Panel.add(btnSortNone);
+    this.add(btn2Panel, BorderLayout.EAST);
   }
   private void btnExpand_actionPerformed() {
     JTSTestBuilder.controller().inspectGeometryDialogForCurrentCase();
   }
-  private void btnZoom_actionPerformed(ActionEvent e) {
-    JTSTestBuilderFrame.getGeometryEditPanel().zoom(geomTreePanel.getSelectedGeometry());
+  private void actionZoom(ActionEvent e) {
+    Geometry geom = geomTreePanel.getSelectedGeometry();
+    JTSTestBuilderFrame.getGeometryEditPanel().zoom(geom);
+    //-- would be nice to flash, but zoom is too slow
+    //JTSTestBuilder.controller().flash(geom);
   }
-  private void btnZoomNext_actionPerformed(ActionEvent e, int direction) {
+  private void actionZoomNext(ActionEvent e, int direction) {
+    boolean isZoom = SwingUtil.isCtlKeyPressed(e);
     geomTreePanel.moveToNextNode(direction);
-    JTSTestBuilderFrame.getGeometryEditPanel().zoom(geomTreePanel.getSelectedGeometry());
+    Geometry geom = geomTreePanel.getSelectedGeometry();
+    if (geom == null)
+      return;
+    if (isZoom) {
+      JTSTestBuilderFrame.getGeometryEditPanel().zoom(geom);
+      //-- would be nice to flash, but zoom is too slow
+    }
+    else {
+      JTSTestBuilder.controller().flash(geom);
+    }
   }
-  private void btnCopy_actionPerformed(ActionEvent e) {
-    boolean isFormatted = 0 != (e.getModifiers() & ActionEvent.CTRL_MASK);
+  private void actionCopy(ActionEvent e) {
+    boolean isFormatted = SwingUtil.isCtlKeyPressed(e);
     Geometry geom = geomTreePanel.getSelectedGeometry();
     if (geom == null) return;
     SwingUtil.copyToClipboard(geom, isFormatted);
@@ -194,6 +198,7 @@ public class InspectorPanel extends TestBuilderPanel  {
 
     btnDelete.setEnabled(isEditable);
     lblGeom.setText(tag);
+    lblGeom.setToolTipText(tag);
     lblGeom.setForeground(source == 0 ? Color.BLUE : Color.RED);
     
     sortNone();
