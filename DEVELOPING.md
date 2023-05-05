@@ -93,7 +93,7 @@ The XML test format can be executed using the **JTS TestRunner**, or imported in
 
 ## Eclipse Configuration
 
-Project:
+### Project
 
 1. Startup eclipse, creating a new `jts-workspace` location. This folder is used by eclipse to keep track of settings alongside your jts source code.
    
@@ -107,7 +107,7 @@ Project:
    
    Do not try the *maven-checkstyle-plugin* connector as it fails to install.
 
-Plugins:
+### Plugins
 
 * Install *Eclipse-CS* from the market place.
 
@@ -149,7 +149,7 @@ Plugins:
   
   You can use *PMD > Check code* to list errors and warnings. The results are shown in their own view, and quickfixes are not available.
   
-Run Configurations:
+### Run Configurations
 
 * **JTS TestRunner** - for executing XML tests:
 
