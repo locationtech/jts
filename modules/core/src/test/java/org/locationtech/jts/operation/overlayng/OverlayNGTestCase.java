@@ -1,6 +1,8 @@
 package org.locationtech.jts.operation.overlayng;
 
+import static org.locationtech.jts.operation.overlayng.OverlayNG.DIFFERENCE;
 import static org.locationtech.jts.operation.overlayng.OverlayNG.INTERSECTION;
+import static org.locationtech.jts.operation.overlayng.OverlayNG.SYMDIFFERENCE;
 import static org.locationtech.jts.operation.overlayng.OverlayNG.UNION;
 
 import org.locationtech.jts.geom.Geometry;
@@ -30,4 +32,46 @@ class OverlayNGTestCase extends GeometryTestCase {
     Geometry expected = read(wktExpected);
     checkEqual(expected, actual);
   }
+  
+  static Geometry difference(Geometry a, Geometry b) {
+    PrecisionModel pm = new PrecisionModel();
+    return OverlayNG.overlay(a, b, DIFFERENCE, pm);
+  }
+  
+  static Geometry symDifference(Geometry a, Geometry b) {
+    PrecisionModel pm = new PrecisionModel();
+    return OverlayNG.overlay(a, b, SYMDIFFERENCE, pm);
+  }
+  
+  static Geometry intersection(Geometry a, Geometry b) {
+    PrecisionModel pm = new PrecisionModel();
+    return OverlayNG.overlay(a, b, INTERSECTION, pm);
+  }
+  
+  static Geometry union(Geometry a, Geometry b) {
+    PrecisionModel pm = new PrecisionModel();
+    return OverlayNG.overlay(a, b, UNION, pm);
+  }
+  
+  public static Geometry difference(Geometry a, Geometry b, double scaleFactor) {
+    PrecisionModel pm = new PrecisionModel(scaleFactor);
+    return OverlayNG.overlay(a, b, DIFFERENCE, pm);
+  }
+  
+  public static Geometry symDifference(Geometry a, Geometry b, double scaleFactor) {
+    PrecisionModel pm = new PrecisionModel(scaleFactor);
+    return OverlayNG.overlay(a, b, SYMDIFFERENCE, pm);
+  }
+  
+  public static Geometry intersection(Geometry a, Geometry b, double scaleFactor) {
+    PrecisionModel pm = new PrecisionModel(scaleFactor);
+    return OverlayNG.overlay(a, b, INTERSECTION, pm);
+  }
+  
+  public static Geometry union(Geometry a, Geometry b, double scaleFactor) {
+    PrecisionModel pm = new PrecisionModel(scaleFactor);
+    return OverlayNG.overlay(a, b, UNION, pm);
+  }
+  
+
 }
