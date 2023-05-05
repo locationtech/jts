@@ -231,8 +231,10 @@ public class MaximumInscribedCircle {
       iter++;
       // pick the most promising cell from the queue
       Cell cell = cellQueue.remove();
+      
       //System.out.println(factory.toGeometry(cell.getEnvelope()));
       //System.out.println(iter + "] Dist: " + cell.getDistance() + " Max D: " + cell.getMaxDistance() + " size: " + cell.getHSide());
+      //TestBuilderProxy.showIndicator(inputGeom.getFactory().toGeometry(cell.getEnvelope()));
       
       //-- if cell must be closer than furthest, terminate since all remaining cells in queue are even closer. 
       if (cell.getMaxDistance() < farthestCell.getDistance())
