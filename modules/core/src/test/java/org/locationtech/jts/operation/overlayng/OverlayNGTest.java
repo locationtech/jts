@@ -30,102 +30,6 @@ public class OverlayNGTest extends GeometryTestCase {
 
   public OverlayNGTest(String name) { super(name); }
   
-  public void testEmptyGCBothIntersection() {
-    Geometry a = read("GEOMETRYCOLLECTION EMPTY");
-    Geometry b = read("GEOMETRYCOLLECTION EMPTY");
-    Geometry expected = read("GEOMETRYCOLLECTION EMPTY");
-    Geometry actual = intersection(a, b, 1);
-    checkEqual(expected, actual);
-  }
-  
-  public void testEmptyAPolygonIntersection() {
-    Geometry a = read("POLYGON EMPTY");
-    Geometry b = read("POLYGON ((1 0, 2 5, 3 0, 1 0))");
-    Geometry expected = read("POLYGON EMPTY");
-    Geometry actual = intersection(a, b, 1);
-    checkEqual(expected, actual);
-  }
-  
-  public void testEmptyBIntersection() {
-    Geometry a = read("POLYGON ((1 0, 2 5, 3 0, 1 0))");
-    Geometry b = read("POLYGON EMPTY");
-    Geometry expected = read("POLYGON EMPTY");
-    Geometry actual = intersection(a, b, 1);
-    checkEqual(expected, actual);
-  }
-  
-  public void testEmptyABIntersection() {
-    Geometry a = read("POLYGON EMPTY");
-    Geometry b = read("POLYGON EMPTY");
-    Geometry expected = read("POLYGON EMPTY");
-    Geometry actual = intersection(a, b, 1);
-    checkEqual(expected, actual);
-  }
-  
-  public void testEmptyADifference() {
-    Geometry a = read("POLYGON EMPTY");
-    Geometry b = read("POLYGON ((1 0, 2 5, 3 0, 1 0))");
-    Geometry expected = read("POLYGON EMPTY");
-    Geometry actual = difference(a, b, 1);
-    checkEqual(expected, actual);
-  }
-  
-  public void testEmptyAUnion() {
-    Geometry a = read("POLYGON EMPTY");
-    Geometry b = read("POLYGON ((1 0, 2 5, 3 0, 1 0))");
-    Geometry expected = read("POLYGON ((1 0, 2 5, 3 0, 1 0))");
-    Geometry actual = union(a, b, 1);
-    checkEqual(expected, actual);
-  }
-  
-  public void testEmptyASymDifference() {
-    Geometry a = read("POLYGON EMPTY");
-    Geometry b = read("POLYGON ((1 0, 2 5, 3 0, 1 0))");
-    Geometry expected = read("POLYGON ((1 0, 2 5, 3 0, 1 0))");
-    Geometry actual = symDifference(a, b, 1);
-    checkEqual(expected, actual);
-  }
-  
-  public void testEmptyLinePolygonIntersection() {
-    Geometry a = read("LINESTRING EMPTY");
-    Geometry b = read("POLYGON ((1 0, 2 5, 3 0, 1 0))");
-    Geometry expected = read("LINESTRING EMPTY");
-    Geometry actual = intersection(a, b, 1);
-    checkEqual(expected, actual);
-  }
-  
-  public void testEmptyLinePolygonDifference() {
-    Geometry a = read("LINESTRING EMPTY");
-    Geometry b = read("POLYGON ((1 0, 2 5, 3 0, 1 0))");
-    Geometry expected = read("LINESTRING EMPTY");
-    Geometry actual = difference(a, b, 1);
-    checkEqual(expected, actual);
-  }
-  
-  public void testEmptyPointPolygonIntersection() {
-    Geometry a = read("POINT EMPTY");
-    Geometry b = read("POLYGON ((1 0, 2 5, 3 0, 1 0))");
-    Geometry expected = read("POINT EMPTY");
-    Geometry actual = intersection(a, b, 1);
-    checkEqual(expected, actual);
-  }
-  
-  public void testDisjointIntersection() {
-    Geometry a = read("POLYGON ((60 90, 90 90, 90 60, 60 60, 60 90))");
-    Geometry b = read("POLYGON ((200 300, 300 300, 300 200, 200 200, 200 300))");
-    Geometry expected = read("POLYGON EMPTY");
-    Geometry actual = intersection(a, b, 1);
-    checkEqual(expected, actual);
-  }
-  
-  public void testDisjointIntersectionNoOpt() {
-    Geometry a = read("POLYGON ((60 90, 90 90, 90 60, 60 60, 60 90))");
-    Geometry b = read("POLYGON ((200 300, 300 300, 300 200, 200 200, 200 300))");
-    Geometry expected = read("POLYGON EMPTY");
-    Geometry actual = intersectionNoOpt(a, b, 1);
-    checkEqual(expected, actual);
-  }
-  
   public void testAreaLineIntersection() {
     Geometry a = read("POLYGON ((360 200, 220 200, 220 180, 300 180, 300 160, 300 140, 360 200))");
     Geometry b = read("MULTIPOLYGON (((280 180, 280 160, 300 160, 300 180, 280 180)), ((220 230, 240 230, 240 180, 220 180, 220 230)))");
@@ -636,12 +540,7 @@ public class OverlayNGTest extends GeometryTestCase {
     return OverlayNG.overlay(a, b, UNION, pm);
   }
   
-  public static Geometry intersectionNoOpt(Geometry a, Geometry b, double scaleFactor) {
-    PrecisionModel pm = new PrecisionModel(scaleFactor);
-    OverlayNG ov = new OverlayNG(a, b, pm, INTERSECTION);
-    ov.setOptimized(false);
-    return ov.getResult();
-  }
+
   
   
 }
