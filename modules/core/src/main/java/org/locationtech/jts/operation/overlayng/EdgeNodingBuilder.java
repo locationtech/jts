@@ -87,7 +87,7 @@ class EdgeNodingBuilder {
   }
   
   private PrecisionModel pm;
-  List<NodedSegmentString> inputEdges = new ArrayList<NodedSegmentString>();
+  private List<NodedSegmentString> inputEdges = new ArrayList<NodedSegmentString>();
   private Noder customNoder;
   
   private Envelope clipEnv = null;
