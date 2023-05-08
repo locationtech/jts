@@ -11,18 +11,11 @@
  */
 package org.locationtech.jts.operation.overlayng;
 
-import static org.locationtech.jts.operation.overlayng.OverlayNG.DIFFERENCE;
-import static org.locationtech.jts.operation.overlayng.OverlayNG.INTERSECTION;
-import static org.locationtech.jts.operation.overlayng.OverlayNG.SYMDIFFERENCE;
-import static org.locationtech.jts.operation.overlayng.OverlayNG.UNION;
-
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.PrecisionModel;
 
 import junit.textui.TestRunner;
-import test.jts.GeometryTestCase;
 
-public class OverlayNGTest extends GeometryTestCase {
+public class OverlayNGTest extends OverlayNGTestCase {
 
   public static void main(String args[]) {
     TestRunner.run(OverlayNGTest.class);
@@ -496,51 +489,6 @@ public class OverlayNGTest extends GeometryTestCase {
     Geometry actual = intersection(a, b);
     checkEqual(expected, actual);    
   }
-  
-  //============================================================
-  
-  
-  public static Geometry difference(Geometry a, Geometry b, double scaleFactor) {
-    PrecisionModel pm = new PrecisionModel(scaleFactor);
-    return OverlayNG.overlay(a, b, DIFFERENCE, pm);
-  }
-  
-  public static Geometry symDifference(Geometry a, Geometry b, double scaleFactor) {
-    PrecisionModel pm = new PrecisionModel(scaleFactor);
-    return OverlayNG.overlay(a, b, SYMDIFFERENCE, pm);
-  }
-  
-  public static Geometry intersection(Geometry a, Geometry b, double scaleFactor) {
-    PrecisionModel pm = new PrecisionModel(scaleFactor);
-    return OverlayNG.overlay(a, b, INTERSECTION, pm);
-  }
-  
-  public static Geometry union(Geometry a, Geometry b, double scaleFactor) {
-    PrecisionModel pm = new PrecisionModel(scaleFactor);
-    return OverlayNG.overlay(a, b, UNION, pm);
-  }
-  
-  public static Geometry difference(Geometry a, Geometry b) {
-    PrecisionModel pm = new PrecisionModel();
-    return OverlayNG.overlay(a, b, DIFFERENCE, pm);
-  }
-  
-  public static Geometry symDifference(Geometry a, Geometry b) {
-    PrecisionModel pm = new PrecisionModel();
-    return OverlayNG.overlay(a, b, SYMDIFFERENCE, pm);
-  }
-  
-  public static Geometry intersection(Geometry a, Geometry b) {
-    PrecisionModel pm = new PrecisionModel();
-    return OverlayNG.overlay(a, b, INTERSECTION, pm);
-  }
-  
-  public static Geometry union(Geometry a, Geometry b) {
-    PrecisionModel pm = new PrecisionModel();
-    return OverlayNG.overlay(a, b, UNION, pm);
-  }
-  
-
-  
+ 
   
 }
