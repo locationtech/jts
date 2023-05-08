@@ -187,11 +187,7 @@ class EdgeNodingBuilder {
     
     @SuppressWarnings("unchecked")
     Collection<SegmentString> nodedSS = noder.getNodedSubstrings();
-    
-    //scanForEdges(nodedSS);
-    
     List<Edge> edges = createEdges(nodedSS);
-
     return edges;
   }
 
@@ -201,7 +197,8 @@ class EdgeNodingBuilder {
       Coordinate[] pts = ss.getCoordinates();
       
       // don't create edges from collapsed lines
-      if ( Edge.isCollapsed(pts) ) continue;
+      if ( Edge.isCollapsed(pts) ) 
+    	  continue;
       
       EdgeSourceInfo info = (EdgeSourceInfo) ss.getData();
       /**
