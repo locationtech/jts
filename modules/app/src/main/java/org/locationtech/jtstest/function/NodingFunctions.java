@@ -26,6 +26,7 @@ import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.noding.FastNodingValidator;
 import org.locationtech.jts.noding.IntersectionAdder;
 import org.locationtech.jts.noding.MCIndexNoder;
+import org.locationtech.jts.noding.NodedSegmentString;
 import org.locationtech.jts.noding.Noder;
 import org.locationtech.jts.noding.NodingIntersectionFinder;
 import org.locationtech.jts.noding.SegmentStringUtil;
@@ -107,51 +108,66 @@ public class NodingFunctions
     noder.computeNodes( SegmentStringUtil.extractBasicSegmentStrings(geom) );
   }
 
-  public static Geometry MCIndexNodingWithPrecision(Geometry geom, double scaleFactor)
+  public static Geometry MCIndexNodingWithPrecision(Geometry geom, 
+      @Metadata(isRequired=false)
+      Geometry geom2, 
+      @Metadata(title="Precision Scale")
+      double scaleFactor)
   {
+    List<NodedSegmentString> segs = extractNodedSegmentStrings(geom, geom2);
     PrecisionModel fixedPM = new PrecisionModel(scaleFactor);
     
     LineIntersector li = new RobustLineIntersector();
     li.setPrecisionModel(fixedPM);
 
     Noder noder = new MCIndexNoder(new IntersectionAdder(li));
-    noder.computeNodes( SegmentStringUtil.extractNodedSegmentStrings(geom) );
+    noder.computeNodes( segs );
     return SegmentStringUtil.toGeometry( noder.getNodedSubstrings(), FunctionsUtil.getFactoryOrDefault(geom) );
   }
 
-  public static Geometry MCIndexNoding(Geometry geom)
+  public static Geometry MCIndexNoding(Geometry geom, 
+      @Metadata(isRequired=false)
+      Geometry geom2)
   {
+    List<NodedSegmentString> segs = extractNodedSegmentStrings(geom, geom2);
     Noder noder = new MCIndexNoder(new IntersectionAdder(new RobustLineIntersector()));
-    noder.computeNodes( SegmentStringUtil.extractNodedSegmentStrings(geom) );
+    noder.computeNodes( segs );
     return SegmentStringUtil.toGeometry(noder.getNodedSubstrings(), FunctionsUtil.getFactoryOrDefault(geom));
   }
   
   @Metadata(description="Nodes input using the SnappingNoder")
-  public static Geometry snappingNoder(Geometry geom, Geometry geom2, 
+  public static Geometry snappingNoder(Geometry geom, 
+      @Metadata(isRequired=false)
+      Geometry geom2, 
       @Metadata(title="Snap distance")
       double snapDistance)
   {
-    List segs = SegmentStringUtil.extractNodedSegmentStrings(geom);
-    if (geom2 != null) {
-      List segs2 = SegmentStringUtil.extractNodedSegmentStrings(geom2);
-      segs.addAll(segs2);
-    }
+    List<NodedSegmentString> segs = extractNodedSegmentStrings(geom, geom2);
     Noder noder = new SnappingNoder(snapDistance);
     noder.computeNodes(segs);
     Collection nodedSegStrings = noder.getNodedSubstrings();
     return SegmentStringUtil.toGeometry(nodedSegStrings, FunctionsUtil.getFactoryOrDefault(geom));
   }
 
-  @Metadata(description="Nodes input using the SnapRoundingNoder")
-  public static Geometry snapRoundingNoder(Geometry geom, Geometry geom2, 
-      @Metadata(title="Scale factor")
-      double scaleFactor)
-  {
-    List segs = SegmentStringUtil.extractNodedSegmentStrings(geom);
+  private static List<NodedSegmentString> extractNodedSegmentStrings(Geometry geom1, Geometry geom2) {
+    @SuppressWarnings("unchecked")
+    List<NodedSegmentString> segs = SegmentStringUtil.extractNodedSegmentStrings(geom1);
     if (geom2 != null) {
-      List segs2 = SegmentStringUtil.extractNodedSegmentStrings(geom2);
+      @SuppressWarnings("unchecked")
+      List<NodedSegmentString> segs2 = SegmentStringUtil.extractNodedSegmentStrings(geom2);
       segs.addAll(segs2);
     }
+    return segs;
+  }
+
+  @Metadata(description="Nodes input using the SnapRoundingNoder")
+  public static Geometry snapRoundingNoder(Geometry geom, 
+      @Metadata(isRequired=false)
+      Geometry geom2, 
+      @Metadata(title="Precision Scale")
+      double scaleFactor)
+  {
+    List<NodedSegmentString> segs = extractNodedSegmentStrings(geom, geom2);
     PrecisionModel pm = new PrecisionModel(scaleFactor);
     Noder noder = new SnapRoundingNoder(pm);
     noder.computeNodes(segs);
