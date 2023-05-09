@@ -176,7 +176,7 @@ class EdgeNodingBuilder {
    * Nodes a set of segment strings and creates {@link Edge}s from the result.
    * The input segment strings each carry a {@link EdgeSourceInfo} object,
    * which is used to provide source topology info to the constructed Edges
-   * (and is then discarded).
+   * (and then is discarded).
    * 
    * @param segStrings
    * @return
@@ -196,16 +196,13 @@ class EdgeNodingBuilder {
     for (SegmentString ss : segStrings) {
       Coordinate[] pts = ss.getCoordinates();
       
-      // don't create edges from collapsed lines
+      //-- don't create edges from collapsed lines
       if ( Edge.isCollapsed(pts) ) 
     	  continue;
       
       EdgeSourceInfo info = (EdgeSourceInfo) ss.getData();
-      /**
-       * Record that a non-collapsed edge exists for the parent geometry
-       */
+      //-- Record that a non-collapsed edge exists for the parent geometry
       hasEdges[ info.getIndex() ] = true;
-      
       edges.add(new Edge(ss.getCoordinates(), info));
     }
     return edges;
