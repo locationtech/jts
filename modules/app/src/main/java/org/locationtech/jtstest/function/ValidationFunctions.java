@@ -73,6 +73,12 @@ public class ValidationFunctions
     return GeometryFixer.fix(geom);
   }
   
+  public static Geometry fixIfInvalid(Geometry geom) {
+    if (geom.isValid())
+      return geom.copy();
+    return GeometryFixer.fix(geom);
+  }
+  
   public static Geometry fixInvalidKeepCollapse(Geometry geom) {
     GeometryFixer fixer = new GeometryFixer(geom);
     fixer.setKeepCollapsed(true);
