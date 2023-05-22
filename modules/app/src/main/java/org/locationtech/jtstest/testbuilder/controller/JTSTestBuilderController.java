@@ -314,14 +314,13 @@ public class JTSTestBuilderController
     editPanel().zoomToGeometry(1);
   }
   
-  public void caseMoveToPrev(boolean isZoom) {
-    model().cases().prevCase();
-    frame().updateTestCaseView();
-    if (isZoom) zoomToInput();
-  }
-
-  public void caseMoveToNext(boolean isZoom) {
+  public void caseMoveTo(int dir, boolean isZoom) {
+    if (dir < 1) {
+      model().cases().prevCase();
+    }
+    else {
     model().cases().nextCase();
+    }
     frame().updateTestCaseView();
     if (isZoom) zoomToInput();
   }
