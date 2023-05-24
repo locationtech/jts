@@ -112,9 +112,12 @@ public class ZoomTool extends BasicTool
   }
 
   public void mouseWheelMoved(MouseWheelEvent e) {
+    /**
+     * Rolling wheel forward zooms in, backward zooms out
+     */
     double notches = e.getPreciseWheelRotation();
-    double zoomFactor = Math.abs(notches) * 2;
-    if (notches > 0 && zoomFactor > 0) zoomFactor = 1.0 / zoomFactor;
+    double zoomFactor = Math.abs(notches) * 4;
+    if (notches < 0 && zoomFactor > 0) zoomFactor = 1.0 / zoomFactor;
     panel().zoom(toModel(e.getPoint()), zoomFactor);
   }
   
