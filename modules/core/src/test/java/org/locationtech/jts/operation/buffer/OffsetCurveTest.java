@@ -298,8 +298,8 @@ public class OffsetCurveTest extends GeometryTestCase {
   public void testQuadSegs() {
     checkOffsetCurve(
         "LINESTRING (20 20, 50 50, 80 20)", 
-        10, 2, -1, -1,
-        "LINESTRING (12.93 27.07, 42.93 57.07, 50 60, 57.07 57.07, 87.07 27.07)"
+        10, 10, -1, -1,
+        "LINESTRING (12.93 27.07, 42.93 57.07, 44.12 58.09, 45.46 58.91, 46.91 59.51, 48.44 59.88, 50 60, 51.56 59.88, 53.09 59.51, 54.54 58.91, 55.88 58.09, 57.07 57.07, 87.07 27.07)"
     );
   }
 
@@ -316,6 +316,24 @@ public class OffsetCurveTest extends GeometryTestCase {
         "LINESTRING (20 20, 50 50, 80 20)", 
         10, -1, BufferParameters.JOIN_MITRE, -1,
         "LINESTRING (12.93 27.07, 50 64.14, 87.07 27.07)"
+    );
+  }
+  
+  // See https://github.com/qgis/QGIS/issues/53165
+  public void testMinQuadrantSegments() {
+    checkOffsetCurve(
+        "LINESTRING (553772.0645892698 177770.05079236583, 553780.9235869241 177768.99614978794, 553781.8325485934 177768.41771963477)", 
+        -11, 0, BufferParameters.JOIN_MITRE, -1,
+        "LINESTRING (553770.76 177759.13, 553777.54 177758.32)"
+    );
+  }
+  
+  // See https://github.com/qgis/QGIS/issues/53165#issuecomment-1563214857
+  public void testMinQuadrantSegments_QGIS() {
+    checkOffsetCurve(
+        "LINESTRING (421 622, 446 625, 449 627)", 
+        133, 0, BufferParameters.JOIN_MITRE, -1,
+        "LINESTRING (405.15 754.05, 416.3 755.39)"
     );
   }
   

@@ -76,6 +76,12 @@ public class OffsetCurve {
    * The nearness tolerance for matching the the raw offset linework and the buffer curve.
    */
   private static final int MATCH_DISTANCE_FACTOR = 10000;
+  
+  /**
+   * A QuadSegs minimum value that will prevent generating
+   * unwanted offset curve artifacts near end caps.
+   */
+  private static final int MIN_QUADRANT_SEGMENTS = 8;
 
   /**
    * Computes the offset curve of a geometry at a given distance.
@@ -164,7 +170,15 @@ public class OffsetCurve {
     //-- make new buffer params since the end cap style must be the default
     this.bufferParams = new BufferParameters();
     if (bufParams != null) {
-      bufferParams.setQuadrantSegments(bufParams.getQuadrantSegments());
+      /**
+       * Prevent using a very small QuadSegs value, to avoid 
+       * offset curve artifacts near the end caps. 
+       */
+      int quadSegs = bufParams.getQuadrantSegments();
+      if (quadSegs < MIN_QUADRANT_SEGMENTS) {
+        quadSegs = MIN_QUADRANT_SEGMENTS;
+      }
+      bufferParams.setQuadrantSegments(quadSegs);
       bufferParams.setJoinStyle(bufParams.getJoinStyle());
       bufferParams.setMitreLimit(bufParams.getMitreLimit());
     }
