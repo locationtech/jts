@@ -319,6 +319,24 @@ public class OffsetCurveTest extends GeometryTestCase {
     );
   }
   
+  // See https://github.com/qgis/QGIS/issues/53165
+  public void testMinQuadrantSegments() {
+    checkOffsetCurve(
+        "LINESTRING (553772.0645892698 177770.05079236583, 553780.9235869241 177768.99614978794, 553781.8325485934 177768.41771963477)", 
+        -11, 0, BufferParameters.JOIN_MITRE, -1,
+        "LINESTRING (553770.76 177759.13, 553777.54 177758.32)"
+    );
+  }
+  
+  // See https://github.com/qgis/QGIS/issues/53165#issuecomment-1563214857
+  public void testMinQuadrantSegments_QGIS() {
+    checkOffsetCurve(
+        "LINESTRING (421 622, 446 625, 449 627)", 
+        133, 0, BufferParameters.JOIN_MITRE, -1,
+        "LINESTRING (405.15 754.05, 416.3 755.39)"
+    );
+  }
+  
   //=======================================
   
   private static final double EQUALS_TOL = 0.05;
