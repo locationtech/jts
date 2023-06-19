@@ -52,7 +52,8 @@ Distributions for older JTS versions can be obtained at the
 * Fix `OffsetCurve` handling of input with repeated points (#956)
 * Fix `OffsetCurve` handling zero offset distance (#971)
 * Fix `MaximumInscribedCircle` and `LargestEmptyCircle` to avoid long looping for thin inputs (#978)
-* Fix OffsetCurve to use a minimum QuadrantSegs value (#981)
+* Fix `OffsetCurve` to use a minimum QuadrantSegs value (#981)
+* Fix `HilbertEncoder` Y extent handling
 
 ### Performance Improvements
 
