@@ -19,16 +19,32 @@
  */
 package org.locationtech.jts.io.oracle;
 
+import java.util.List;
+import java.util.ArrayList;
 import java.sql.SQLException;
-import java.util.*;
 
 import org.locationtech.jts.algorithm.CGAlgorithms;
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateSequence;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryCollection;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.MultiLineString;
+import org.locationtech.jts.geom.MultiPoint;
+import org.locationtech.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.util.Assert;
 
+import oracle.jdbc.OracleConnection;
+
+import oracle.sql.ARRAY;
+import oracle.sql.Datum;
+import oracle.sql.NUMBER;
+import oracle.sql.STRUCT;
 
 import oracle.jdbc.OracleConnection;
-import oracle.sql.*;
 
 /**
  * Translates a JTS Geometry into an Oracle STRUCT representing an <code>MDSYS.SDO_GEOMETRY</code> object. 
