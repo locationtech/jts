@@ -144,19 +144,21 @@ public class ConvexHull
   
   /**
    * Extracts unique coordinates from an array of coordinates, 
-   * up to a maximum count of values.
+   * up to an (optional) maximum count of values.
    * If more than the given maximum of unique values are found,
    * this is reported by returning <code>null</code>.
-   * (the expectation is that the original array can then be used).
+   * This avoids scanning all input points if not needed.
+   * If the maximum points is not specified, all unique points are extracted.
    * 
    * @param pts an array of Coordinates
-   * @param maxPts the maximum number of unique points to scan
+   * @param maxPts the maximum number of unique points to scan, or -1
    * @return an array of unique values, or null
    */
   private static Coordinate[] extractUnique(Coordinate[] pts, int maxPts) {
     Set<Coordinate> uniquePts = new HashSet<Coordinate>();
     for (Coordinate pt : pts) {
       uniquePts.add(pt);
+      //-- if maxPts is provided, exit if more unique pts found
       if (maxPts >= 0 && uniquePts.size() > maxPts) return null;
     }
     return CoordinateArrays.toCoordinateArray(uniquePts);
@@ -403,10 +405,11 @@ public class ConvexHull
   }
 
   /**
-   *@param  vertices  the vertices of a linear ring, which may or may not be
+   * Cleans a list of points by removing interior collinear vertices.
+   * 
+   * @param  vertices  the vertices of a linear ring, which may or may not be
    *      flattened (i.e. vertices collinear)
-   *@return           the coordinates with unnecessary (collinear) vertices
-   *      removed
+   * @return the coordinates with unnecessary (collinear) vertices removed
    */
   private Coordinate[] cleanRing(Coordinate[] original) {
     Assert.equals(original[0], original[original.length - 1]);
