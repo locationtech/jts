@@ -14,10 +14,10 @@ package org.locationtech.jts.algorithm;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.Stack;
-import java.util.TreeSet;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateArrays;
@@ -30,7 +30,6 @@ import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.util.Assert;
-import org.locationtech.jts.util.UniqueCoordinateArrayFilter;
 
 /**
  * Computes the convex hull of a {@link Geometry}.
@@ -38,11 +37,16 @@ import org.locationtech.jts.util.UniqueCoordinateArrayFilter;
  * points in the input Geometry.
  * <p>
  * Uses the Graham Scan algorithm.
+ * <p>
+ * Incorporates heuristics to optimize checking for degenerate results, 
+ * and to reduce the number of points processed for large inputs.
  *
  *@version 1.7
  */
 public class ConvexHull
 {
+  private static final int TUNING_REDUCE_SIZE = 50;
+  
   private GeometryFactory geomFactory;
   private Coordinate[] inputPts;
 
@@ -51,23 +55,18 @@ public class ConvexHull
    */
   public ConvexHull(Geometry geometry)
   {
-    this(extractCoordinates(geometry), geometry.getFactory());
+    this(geometry.getCoordinates(), geometry.getFactory());
   }
   /**
    * Create a new convex hull construction for the input {@link Coordinate} array.
    */
   public ConvexHull(Coordinate[] pts, GeometryFactory geomFactory)
-  {
-    inputPts = UniqueCoordinateArrayFilter.filterCoordinates(pts);
-    //inputPts = pts;
+  {  
+    //-- suboptimal early uniquing - for performance testing only
+    //inputPts = UniqueCoordinateArrayFilter.filterCoordinates(pts);
+    
+    inputPts = pts;
     this.geomFactory = geomFactory;
-  }
-
-  private static Coordinate[] extractCoordinates(Geometry geom)
-  {
-    UniqueCoordinateArrayFilter filter = new UniqueCoordinateArrayFilter();
-    geom.apply(filter);
-    return filter.getCoordinates();
   }
 
   /**
@@ -84,20 +83,18 @@ public class ConvexHull
    */
   public Geometry getConvexHull() {
 
-    if (inputPts.length == 0) {
-      return geomFactory.createGeometryCollection();
-    }
-    if (inputPts.length == 1) {
-      return geomFactory.createPoint(inputPts[0]);
-    }
-    if (inputPts.length == 2) {
-      return geomFactory.createLineString(inputPts);
-    }
-
+    Geometry fewPointsGeom = createFewPointsResult();
+    if (fewPointsGeom != null) 
+      return fewPointsGeom;
+    
     Coordinate[] reducedPts = inputPts;
-    // use heuristic to reduce points, if large
-    if (inputPts.length > 50) {
+    //-- use heuristic to reduce points, if large
+    if (inputPts.length > TUNING_REDUCE_SIZE) {
       reducedPts = reduce(inputPts);
+    }
+    else {
+      //-- the points must be made unique
+      reducedPts = extractUnique(inputPts);
     }
     // sort points for Graham scan.
     Coordinate[] sortedPts = preSort(reducedPts);
@@ -109,9 +106,62 @@ public class ConvexHull
     Coordinate[] cH = toCoordinateArray(cHS);
 
     // Convert array to appropriate output geometry.
+    // (an empty or point result will be detected earlier)
     return lineOrPolygon(cH);
   }
 
+  /**
+   * Checks if there are <= 2 unique points,
+   * which produce an obviously degenerate result.
+   * If there are more points, returns null to indicate this.
+   * 
+   * This is a fast check for an obviously degenerate result.
+   * If the result is not obviously degenerate (at least 3 unique points found) 
+   * the full uniquing of the entire point set is
+   * done only once during the reduce phase.
+   * 
+   * @return a degenerate hull geometry, or null if the number of input points is large
+   */
+  private Geometry createFewPointsResult() {
+    Coordinate[] uniquePts = extractUnique(inputPts, 2);
+    if (uniquePts == null) {
+      return null;
+    }
+    else if (uniquePts.length == 0) {
+      return geomFactory.createGeometryCollection();
+    }
+    else if (uniquePts.length == 1) {
+      return geomFactory.createPoint(uniquePts[0]);
+    }
+    else {
+      return geomFactory.createLineString(uniquePts);
+    }
+  }
+  
+  private static Coordinate[] extractUnique(Coordinate[] pts) {
+    return extractUnique(pts, -1);
+  }
+  
+  /**
+   * Extracts unique coordinates from an array of coordinates, 
+   * up to a maximum count of values.
+   * If more than the given maximum of unique values are found,
+   * this is reported by returning <code>null</code>.
+   * (the expectation is that the original array can then be used).
+   * 
+   * @param pts an array of Coordinates
+   * @param maxPts the maximum number of unique points to scan
+   * @return an array of unique values, or null
+   */
+  private static Coordinate[] extractUnique(Coordinate[] pts, int maxPts) {
+    Set<Coordinate> uniquePts = new HashSet<Coordinate>();
+    for (Coordinate pt : pts) {
+      uniquePts.add(pt);
+      if (maxPts >= 0 && uniquePts.size() > maxPts) return null;
+    }
+    return CoordinateArrays.toCoordinateArray(uniquePts);
+  }
+  
   /**
    * An alternative to Stack.toArray, which is not present in earlier versions
    * of Java.
@@ -140,6 +190,9 @@ public class ConvexHull
    * <p>
    * To satisfy the requirements of the Graham Scan algorithm, 
    * the returned array has at least 3 entries.
+   * <p>
+   * This has the side effect of making the reduced points unique,
+   * as required by the convex hull algorithm used.
    *
    * @param pts the points to reduce
    * @return the reduced list of points (at least 3)
@@ -147,29 +200,28 @@ public class ConvexHull
   private Coordinate[] reduce(Coordinate[] inputPts)
   {
     //Coordinate[] polyPts = computeQuad(inputPts);
-    Coordinate[] polyPts = computeOctRing(inputPts);
-    //Coordinate[] polyPts = null;
-
+    Coordinate[] innerPolyPts = computeInnerOctolateralRing(inputPts);
+ 
     // unable to compute interior polygon for some reason
-    if (polyPts == null)
+    if (innerPolyPts == null)
       return inputPts;
 
 //    LinearRing ring = geomFactory.createLinearRing(polyPts);
 //    System.out.println(ring);
 
     // add points defining polygon
-    Set<Coordinate> reducedSet = new TreeSet<Coordinate>();
-    for (int i = 0; i < polyPts.length; i++) {
-      reducedSet.add(polyPts[i]);
+    Set<Coordinate> reducedSet = new HashSet();
+    for (int i = 0; i < innerPolyPts.length; i++) {
+      reducedSet.add(innerPolyPts[i]);
     }
     /**
      * Add all unique points not in the interior poly.
-     * CGAlgorithms.isPointInRing is not defined for points actually on the ring,
+     * CGAlgorithms.isPointInRing is not defined for points exactly on the ring,
      * but this doesn't matter since the points of the interior polygon
      * are forced to be in the reduced set.
      */
     for (int i = 0; i < inputPts.length; i++) {
-      if (! PointLocation.isInRing(inputPts[i], polyPts)) {
+      if (! PointLocation.isInRing(inputPts[i], innerPolyPts)) {
         reducedSet.add(inputPts[i]);
       }
     }
@@ -277,8 +329,8 @@ public class ConvexHull
     return false;
   }
 
-  private Coordinate[] computeOctRing(Coordinate[] inputPts) {
-    Coordinate[] octPts = computeOctPts(inputPts);
+  private Coordinate[] computeInnerOctolateralRing(Coordinate[] inputPts) {
+    Coordinate[] octPts = computeInnerOctolateralPts(inputPts);
     CoordinateList coordList = new CoordinateList();
     coordList.add(octPts, false);
 
@@ -290,7 +342,14 @@ public class ConvexHull
     return coordList.toCoordinateArray();
   }
 
-  private Coordinate[] computeOctPts(Coordinate[] inputPts)
+  /**
+   * Computes the extremal points of an inner octolateral.
+   * Some points may be duplicates - these are collapsed later.
+   * 
+   * @param inputPts the points to compute the octolateral for
+   * @return the extremal points of the octolateral
+   */
+  private Coordinate[] computeInnerOctolateralPts(Coordinate[] inputPts)
   {
     Coordinate[] pts = new Coordinate[8];
     for (int j = 0; j < pts.length; j++) {
@@ -338,8 +397,6 @@ public class ConvexHull
     coordinates = cleanRing(coordinates);
     if (coordinates.length == 3) {
       return geomFactory.createLineString(new Coordinate[]{coordinates[0], coordinates[1]});
-//      return new LineString(new Coordinate[]{coordinates[0], coordinates[1]},
-//          geometry.getPrecisionModel(), geometry.getSRID());
     }
     LinearRing linearRing = geomFactory.createLinearRing(coordinates);
     return geomFactory.createPolygon(linearRing);
