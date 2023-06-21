@@ -58,7 +58,10 @@ public class ConvexHull
    * Create a new convex hull construction for the input {@link Coordinate} array.
    */
   public ConvexHull(Coordinate[] pts, GeometryFactory geomFactory)
-  {
+  {  
+    //-- performance testing only
+    //inputPts = UniqueCoordinateArrayFilter.filterCoordinates(pts);
+    
     inputPts = pts;
     this.geomFactory = geomFactory;
   }
@@ -181,10 +184,10 @@ public class ConvexHull
   private Coordinate[] reduce(Coordinate[] inputPts)
   {
     //Coordinate[] polyPts = computeQuad(inputPts);
-    Coordinate[] polyPts = computeOctRing(inputPts);
+    Coordinate[] innerRingPts = computeInnerOctagonRing(inputPts);
  
     // unable to compute interior polygon for some reason
-    if (polyPts == null)
+    if (innerRingPts == null)
       return inputPts;
 
 //    LinearRing ring = geomFactory.createLinearRing(polyPts);
@@ -192,8 +195,8 @@ public class ConvexHull
 
     // add points defining polygon
     Set<Coordinate> reducedSet = new HashSet();
-    for (int i = 0; i < polyPts.length; i++) {
-      reducedSet.add(polyPts[i]);
+    for (int i = 0; i < innerRingPts.length; i++) {
+      reducedSet.add(innerRingPts[i]);
     }
     /**
      * Add all unique points not in the interior poly.
@@ -202,7 +205,7 @@ public class ConvexHull
      * are forced to be in the reduced set.
      */
     for (int i = 0; i < inputPts.length; i++) {
-      if (! PointLocation.isInRing(inputPts[i], polyPts)) {
+      if (! PointLocation.isInRing(inputPts[i], innerRingPts)) {
         reducedSet.add(inputPts[i]);
       }
     }
@@ -310,8 +313,8 @@ public class ConvexHull
     return false;
   }
 
-  private Coordinate[] computeOctRing(Coordinate[] inputPts) {
-    Coordinate[] octPts = computeOctPts(inputPts);
+  private Coordinate[] computeInnerOctagonRing(Coordinate[] inputPts) {
+    Coordinate[] octPts = computeInnerOctagonPts(inputPts);
     CoordinateList coordList = new CoordinateList();
     coordList.add(octPts, false);
 
@@ -323,7 +326,7 @@ public class ConvexHull
     return coordList.toCoordinateArray();
   }
 
-  private Coordinate[] computeOctPts(Coordinate[] inputPts)
+  private Coordinate[] computeInnerOctagonPts(Coordinate[] inputPts)
   {
     Coordinate[] pts = new Coordinate[8];
     for (int j = 0; j < pts.length; j++) {
