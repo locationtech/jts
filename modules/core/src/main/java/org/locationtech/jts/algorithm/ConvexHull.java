@@ -37,6 +37,9 @@ import org.locationtech.jts.util.Assert;
  * points in the input Geometry.
  * <p>
  * Uses the Graham Scan algorithm.
+ * <p>
+ * Incorporates heuristics to optimize checking for degenerate results, 
+ * and to reduce the number of points processed for large inputs.
  *
  *@version 1.7
  */
@@ -59,7 +62,7 @@ public class ConvexHull
    */
   public ConvexHull(Coordinate[] pts, GeometryFactory geomFactory)
   {  
-    //-- performance testing only
+    //-- suboptimal early uniquing - for performance testing only
     //inputPts = UniqueCoordinateArrayFilter.filterCoordinates(pts);
     
     inputPts = pts;
@@ -85,12 +88,12 @@ public class ConvexHull
       return fewPointsGeom;
     
     Coordinate[] reducedPts = inputPts;
-    // use heuristic to reduce points, if large
+    //-- use heuristic to reduce points, if large
     if (inputPts.length > TUNING_REDUCE_SIZE) {
       reducedPts = reduce(inputPts);
     }
     else {
-      // the points must be made unique
+      //-- the points must be made unique
       reducedPts = extractUnique(inputPts);
     }
     // sort points for Graham scan.
@@ -103,11 +106,24 @@ public class ConvexHull
     Coordinate[] cH = toCoordinateArray(cHS);
 
     // Convert array to appropriate output geometry.
+    // (an empty or point result will be detected earlier)
     return lineOrPolygon(cH);
   }
 
+  /**
+   * Checks if there are <= 2 unique points,
+   * which produce an obviously degenerate result.
+   * If there are more points, returns null to indicate this.
+   * 
+   * This is a fast check for an obviously degenerate result.
+   * If the result is not obviously degenerate (at least 3 unique points found) 
+   * the full uniquing of the entire point set is
+   * done only once during the reduce phase.
+   * 
+   * @return a degenerate hull geometry, or null if the number of input points is large
+   */
   private Geometry createFewPointsResult() {
-    Coordinate[] uniquePts = extractUnique(inputPts, 3);
+    Coordinate[] uniquePts = extractUnique(inputPts, 2);
     if (uniquePts == null) {
       return null;
     }
@@ -129,8 +145,8 @@ public class ConvexHull
   /**
    * Extracts unique coordinates from an array of coordinates, 
    * up to a maximum count of values.
-   * If there are more than the given maximum of unique values
-   * found, indicates this by returning <code>null</code>
+   * If more than the given maximum of unique values are found,
+   * this is reported by returning <code>null</code>.
    * (the expectation is that the original array can then be used).
    * 
    * @param pts an array of Coordinates
@@ -141,7 +157,7 @@ public class ConvexHull
     Set<Coordinate> uniquePts = new HashSet<Coordinate>();
     for (Coordinate pt : pts) {
       uniquePts.add(pt);
-      if (maxPts >= 0 && uniquePts.size() >= maxPts) return null;
+      if (maxPts >= 0 && uniquePts.size() > maxPts) return null;
     }
     return CoordinateArrays.toCoordinateArray(uniquePts);
   }
@@ -184,10 +200,10 @@ public class ConvexHull
   private Coordinate[] reduce(Coordinate[] inputPts)
   {
     //Coordinate[] polyPts = computeQuad(inputPts);
-    Coordinate[] innerRingPts = computeInnerOctagonRing(inputPts);
+    Coordinate[] innerPolyPts = computeInnerOctolateralRing(inputPts);
  
     // unable to compute interior polygon for some reason
-    if (innerRingPts == null)
+    if (innerPolyPts == null)
       return inputPts;
 
 //    LinearRing ring = geomFactory.createLinearRing(polyPts);
@@ -195,8 +211,8 @@ public class ConvexHull
 
     // add points defining polygon
     Set<Coordinate> reducedSet = new HashSet();
-    for (int i = 0; i < innerRingPts.length; i++) {
-      reducedSet.add(innerRingPts[i]);
+    for (int i = 0; i < innerPolyPts.length; i++) {
+      reducedSet.add(innerPolyPts[i]);
     }
     /**
      * Add all unique points not in the interior poly.
@@ -205,7 +221,7 @@ public class ConvexHull
      * are forced to be in the reduced set.
      */
     for (int i = 0; i < inputPts.length; i++) {
-      if (! PointLocation.isInRing(inputPts[i], innerRingPts)) {
+      if (! PointLocation.isInRing(inputPts[i], innerPolyPts)) {
         reducedSet.add(inputPts[i]);
       }
     }
@@ -313,8 +329,8 @@ public class ConvexHull
     return false;
   }
 
-  private Coordinate[] computeInnerOctagonRing(Coordinate[] inputPts) {
-    Coordinate[] octPts = computeInnerOctagonPts(inputPts);
+  private Coordinate[] computeInnerOctolateralRing(Coordinate[] inputPts) {
+    Coordinate[] octPts = computeInnerOctolateralPts(inputPts);
     CoordinateList coordList = new CoordinateList();
     coordList.add(octPts, false);
 
@@ -326,7 +342,14 @@ public class ConvexHull
     return coordList.toCoordinateArray();
   }
 
-  private Coordinate[] computeInnerOctagonPts(Coordinate[] inputPts)
+  /**
+   * Computes the extremal points of an inner octolateral.
+   * Some points may be duplicates - these are collapsed later.
+   * 
+   * @param inputPts the points to compute the octolateral for
+   * @return the extremal points of the octolateral
+   */
+  private Coordinate[] computeInnerOctolateralPts(Coordinate[] inputPts)
   {
     Coordinate[] pts = new Coordinate[8];
     for (int j = 0; j < pts.length; j++) {
@@ -374,8 +397,6 @@ public class ConvexHull
     coordinates = cleanRing(coordinates);
     if (coordinates.length == 3) {
       return geomFactory.createLineString(new Coordinate[]{coordinates[0], coordinates[1]});
-//      return new LineString(new Coordinate[]{coordinates[0], coordinates[1]},
-//          geometry.getPrecisionModel(), geometry.getSRID());
     }
     LinearRing linearRing = geomFactory.createLinearRing(coordinates);
     return geomFactory.createPolygon(linearRing);
