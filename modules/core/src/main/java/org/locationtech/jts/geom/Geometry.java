@@ -346,13 +346,14 @@ public abstract class Geometry
   }
 
   /**
-   *  Returns a vertex of this <code>Geometry</code>
-   *  (usually, but not necessarily, the first one).
+   *  Returns a vertex of this geometry
+   *  (usually, but not necessarily, the first one),
+   *  or <code>null</code> if the geometry is empty.
    *  The returned coordinate should not be assumed
-   *  to be an actual Coordinate object used in
+   *  to be an actual <code>Coordinate</code> object used in
    *  the internal representation.
    *
-   *@return    a {@link Coordinate} which is a vertex of this <code>Geometry</code>.
+   *@return a coordinate which is a vertex of this <code>Geometry</code>.
    *@return null if this Geometry is empty
    */
   public abstract Coordinate getCoordinate();
