@@ -57,8 +57,12 @@ public class GeometryCollection extends Geometry {
   }
 
   public Coordinate getCoordinate() {
-    if (isEmpty()) return null;
-    return geometries[0].getCoordinate();
+    for (int i = 0; i < geometries.length; i++) {
+      if (! geometries[i].isEmpty()) {
+        return geometries[i].getCoordinate();
+      }
+    }
+    return null;
   }
 
   /**
