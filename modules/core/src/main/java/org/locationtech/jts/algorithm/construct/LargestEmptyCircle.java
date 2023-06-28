@@ -131,8 +131,8 @@ public class LargestEmptyCircle {
   private double tolerance;
 
   private GeometryFactory factory;
-  private IndexedPointInAreaLocator ptLocater;
-  private IndexedFacetDistance obstacleDistance;
+  private IndexedDistanceToPoint obstacleDistance;
+  private IndexedPointInAreaLocator boundaryPtLocater;
   private IndexedFacetDistance boundaryDistance;
   private Envelope gridEnv;
   private Cell farthestCell;
@@ -168,7 +168,7 @@ public class LargestEmptyCircle {
     this.boundary = boundary;
     this.factory = obstacles.getFactory();
     this.tolerance = tolerance;
-    obstacleDistance = new IndexedFacetDistance( obstacles );
+    obstacleDistance = new IndexedDistanceToPoint( obstacles );
   }
 
   /**
@@ -220,7 +220,7 @@ public class LargestEmptyCircle {
    * @return the signed distance to the constraints (negative indicates outside the boundary)
    */
   private double distanceToConstraints(Point p) {
-    boolean isOutide = Location.EXTERIOR == ptLocater.locate(p.getCoordinate());
+    boolean isOutide = Location.EXTERIOR == boundaryPtLocater.locate(p.getCoordinate());
     if (isOutide) {
       double boundaryDist = boundaryDistance.distance(p);
       return -boundaryDist;
@@ -244,7 +244,7 @@ public class LargestEmptyCircle {
     gridEnv = bounds.getEnvelopeInternal();
     // if bounds does not enclose an area cannot create a ptLocater
     if (bounds.getDimension() >= 2) {
-      ptLocater = new IndexedPointInAreaLocator( bounds );
+      boundaryPtLocater = new IndexedPointInAreaLocator( bounds );
       boundaryDistance = new IndexedFacetDistance( bounds );
     }
   }
@@ -255,8 +255,8 @@ public class LargestEmptyCircle {
     // check if already computed
     if (centerCell != null) return;
     
-    // if ptLocater is not present then result is degenerate (represented as zero-radius circle)
-    if (ptLocater == null) {
+    // if boundaryPtLocater is not present then result is degenerate (represented as zero-radius circle)
+    if (boundaryPtLocater == null) {
       Coordinate pt = obstacles.getCoordinate();
       centerPt = pt.copy();
       centerPoint = factory.createPoint(pt);

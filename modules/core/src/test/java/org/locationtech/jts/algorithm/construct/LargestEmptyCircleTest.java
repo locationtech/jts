@@ -93,8 +93,14 @@ public class LargestEmptyCircleTest extends GeometryTestCase {
   }
   
   public void testBoundaryAsObstacle() {
-    checkCircle("GEOMETRYCOLLECTION (POLYGON ((1 9, 9 9, 9 1, 1 1, 1 9)), POINT (4 3), POINT (7 6))", 
+    checkCircle("GEOMETRYCOLLECTION (LINESTRING (1 9, 9 9, 9 1, 1 1, 1 9), POINT (4 3), POINT (7 6))", 
         "POLYGON ((1 9, 9 9, 9 1, 1 1, 1 9))",
+        0.01, 4, 6, 3 );
+  }
+  
+  
+  public void testObstacleEmpty() {
+    checkCircle("GEOMETRYCOLLECTION (LINESTRING EMPTY, POINT (4 3), POINT (7 6))", 
         0.01, 4, 6, 3 );
   }
   
