@@ -29,8 +29,7 @@ import org.locationtech.jts.operation.distance.IndexedFacetDistance;
 /**
  * Constructs the Largest Empty Circle for a set
  * of obstacle geometries, up to a given accuracy distance tolerance.
- * The obstacles are point and line geometries.
- * (Polygonal obstacles may be supplied, but only their boundaries are used.)
+ * The obstacles may be any combination of point, linear and polygonal geometries.
  * <p>
  * The Largest Empty Circle (LEC) is the largest circle 
  * whose interior does not intersect with any obstacle
@@ -45,18 +44,13 @@ import org.locationtech.jts.operation.distance.IndexedFacetDistance;
  * If it is not specified the convex hull of the obstacles is used as the boundary.
  * <p>
  * To compute an LEC which lies <i>wholly</i> within
- * a polygonal boundary, include the boundary polygon as an obstacle as well.
+ * a polygonal boundary, include the boundary of the polygon(s) as an obstacle.
  * <p>
  * The implementation uses a successive-approximation technique
  * over a grid of square cells covering the obstacles and boundary.
  * The grid is refined using a branch-and-bound algorithm. 
  * Point containment and distance are computed in a performant
  * way by using spatial indexes.
- * <p>
- * <h3>Future Enhancements</h3>
- * <ul>
- * <li>Support polygons as obstacles
- * </ul>
  * 
  * @author Martin Davis
  * 
@@ -131,8 +125,8 @@ public class LargestEmptyCircle {
   private double tolerance;
 
   private GeometryFactory factory;
-  private IndexedPointInAreaLocator ptLocater;
-  private IndexedFacetDistance obstacleDistance;
+  private IndexedDistanceToPoint obstacleDistance;
+  private IndexedPointInAreaLocator boundaryPtLocater;
   private IndexedFacetDistance boundaryDistance;
   private Envelope gridEnv;
   private Cell farthestCell;
@@ -168,7 +162,7 @@ public class LargestEmptyCircle {
     this.boundary = boundary;
     this.factory = obstacles.getFactory();
     this.tolerance = tolerance;
-    obstacleDistance = new IndexedFacetDistance( obstacles );
+    obstacleDistance = new IndexedDistanceToPoint( obstacles );
   }
 
   /**
@@ -220,7 +214,7 @@ public class LargestEmptyCircle {
    * @return the signed distance to the constraints (negative indicates outside the boundary)
    */
   private double distanceToConstraints(Point p) {
-    boolean isOutide = Location.EXTERIOR == ptLocater.locate(p.getCoordinate());
+    boolean isOutide = Location.EXTERIOR == boundaryPtLocater.locate(p.getCoordinate());
     if (isOutide) {
       double boundaryDist = boundaryDistance.distance(p);
       return -boundaryDist;
@@ -244,7 +238,7 @@ public class LargestEmptyCircle {
     gridEnv = bounds.getEnvelopeInternal();
     // if bounds does not enclose an area cannot create a ptLocater
     if (bounds.getDimension() >= 2) {
-      ptLocater = new IndexedPointInAreaLocator( bounds );
+      boundaryPtLocater = new IndexedPointInAreaLocator( bounds );
       boundaryDistance = new IndexedFacetDistance( bounds );
     }
   }
@@ -255,8 +249,8 @@ public class LargestEmptyCircle {
     // check if already computed
     if (centerCell != null) return;
     
-    // if ptLocater is not present then result is degenerate (represented as zero-radius circle)
-    if (ptLocater == null) {
+    // if boundaryPtLocater is not present then result is degenerate (represented as zero-radius circle)
+    if (boundaryPtLocater == null) {
       Coordinate pt = obstacles.getCoordinate();
       centerPt = pt.copy();
       centerPoint = factory.createPoint(pt);
