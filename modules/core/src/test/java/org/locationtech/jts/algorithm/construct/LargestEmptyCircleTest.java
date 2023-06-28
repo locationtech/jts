@@ -98,10 +98,9 @@ public class LargestEmptyCircleTest extends GeometryTestCase {
         0.01, 4, 6, 3 );
   }
   
-  
-  public void testObstacleEmpty() {
-    checkCircle("GEOMETRYCOLLECTION (LINESTRING EMPTY, POINT (4 3), POINT (7 6))", 
-        0.01, 4, 6, 3 );
+  public void testObstacleEmptyElement() {
+    checkCircle("GEOMETRYCOLLECTION (LINESTRING EMPTY, POINT (4 3), POINT (7 6), POINT (4 6))", 
+        0.01, 5.5, 4.5, 2.12 );
   }
   
   //========================================================
