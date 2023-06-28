@@ -54,6 +54,7 @@ Distributions for older JTS versions can be obtained at the
 * Fix `MaximumInscribedCircle` and `LargestEmptyCircle` to avoid long looping for thin inputs (#978)
 * Fix `OffsetCurve` to use a minimum QuadrantSegs value (#981)
 * Fix `HilbertEncoder` Y extent handling
+* Fix `Geometry.getCoordinate` to return non-null coordinate for collections with empty first element (#987)
 
 ### Performance Improvements
 
