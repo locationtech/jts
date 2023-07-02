@@ -1,5 +1,4 @@
 <run>
-  <precisionModel scale="1.0" offsetx="0.0" offsety="0.0"/>
 
 <case>
   <desc>LL - disjoint, non-overlapping envelopes</desc>
@@ -308,7 +307,7 @@
 </case>
 
 <case>
-<desc>LA - closed multiline / empty line</desc>
+<desc>LL - closed multiline / empty line</desc>
   <a>
     MULTILINESTRING ((0 0, 0 1), (0 1, 1 1, 1 0, 0 0))
   </a>
@@ -318,6 +317,52 @@
   <test>
     <op name="relate" arg1="A" arg2="B" arg3="FF1FFFFF2">true</op>
   </test>
+</case>
+
+<case>
+<desc>LL - test intersection node computation (see https://github.com/locationtech/jts/issues/396)</desc>
+  <a>
+    LINESTRING (1 0, 0 2, 0 0, 2 2)
+  </a>
+  <b>
+    LINESTRING (0 0, 2 2)
+  </b>
+  <test>
+    <op name="relate" arg1="A" arg2="B" arg3="101F00FF2">true</op>
+  </test>
+  <test><op name="contains"   arg1="A" arg2="B"> true  </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> false </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> true  </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> false </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> true  </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> false </op></test>
+</case>
+
+<case>
+<desc>LL - test intersection node computation (see https://github.com/libgeos/geos/issues/933)</desc>
+  <a>
+    MULTILINESTRING ((0 0, 1 1), (0.5 0.5, 1 0.1, -1 0.1))
+  </a>
+  <b>
+    LINESTRING (0 0, 1 1)
+  </b>
+  <test>
+    <op name="relate" arg1="A" arg2="B" arg3="1F1000FF2">true</op>
+  </test>
+  <test><op name="contains"   arg1="A" arg2="B"> true  </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> false </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> true  </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> false </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> true  </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> false </op></test>
 </case>
 
 </run>

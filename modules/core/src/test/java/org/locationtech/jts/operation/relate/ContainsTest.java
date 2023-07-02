@@ -16,8 +16,8 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.io.WKTReader;
 
-import junit.framework.TestCase;
 import junit.textui.TestRunner;
+import test.jts.GeometryTestCase;
 
 
 /**
@@ -27,9 +27,9 @@ import junit.textui.TestRunner;
  * @version 1.7
  */
 public class ContainsTest
-    extends TestCase
+    extends GeometryTestCase
 {
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     TestRunner.run(ContainsTest.class);
   }
 
@@ -45,6 +45,8 @@ public class ContainsTest
    * From GEOS #572.
    * A case where B is contained in A, but 
    * the JTS relate algorithm fails to compute this correctly.
+   * when using an FP intersection algorithm.
+   * This case works when using CGAlgorithmsDD#intersection(Coordinate, Coordinate, Coordinate, Coordinate).
    * 
    * The cause is that the long segment in A nodes the single-segment line in B.
    * The node location cannot be computed precisely.
@@ -63,8 +65,35 @@ public class ContainsTest
   {
     String a = "LINESTRING (1 0, 0 2, 0 0, 2 2)";
     String b = "LINESTRING (0 0, 2 2)";
-
-    // for now assert this as false, although it should be true
-    assertTrue(! a.contains(b));
+    checkContains(a, b);
+  }
+  
+  /**
+   * From GEOS #933.
+   * A case where B is contained in A, but 
+   * the JTS relate algorithm fails to compute this correctly.
+   * when using an FP intersection algorithm.
+   * This case works when using CGAlgorithmsDD#intersection(Coordinate, Coordinate, Coordinate, Coordinate).
+  */
+  public void testContainsGEOS933()
+      throws Exception
+  {
+    String a = "MULTILINESTRING ((0 0, 1 1), (0.5 0.5, 1 0.1, -1 0.1))";
+    String b = "LINESTRING (0 0, 1 1)";
+    checkContains(a, b);
+  }
+  
+  private void checkContains(String wktA, String wktB) {
+    Geometry geomA = read(wktA);
+    Geometry geomB = read(wktB);
+    boolean actual = geomA.contains(geomB);
+    assertTrue(actual);
+  }
+  
+  private void checkContainsError(String wktA, String wktB) {
+    Geometry geomA = read(wktA);
+    Geometry geomB = read(wktB);
+    boolean actual = geomA.contains(geomB);
+    assertFalse(actual);
   }
 }
