@@ -56,6 +56,7 @@ Distributions for older JTS versions can be obtained at the
 * Fix `HilbertEncoder` Y extent handling
 * Fix `Geometry.getCoordinate` to return non-null coordinate for collections with empty first element (#987)
 * Fix `LargestEmptyCircle` to handle polygonal obstacles (#988)
+* Make intersection computation more robust (#989)
 
 ### Performance Improvements
 
