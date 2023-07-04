@@ -44,6 +44,23 @@ public class Intersection {
    * @see CGAlgorithmsDD#intersection(Coordinate, Coordinate, Coordinate, Coordinate)
    */
   public static Coordinate intersection(Coordinate p1, Coordinate p2, Coordinate q1, Coordinate q2) {
+    return CGAlgorithmsDD.intersection(p1, p2, q1, q2);
+  }
+  
+  /**
+   * Compute intersection of two lines, using a floating-point algorithm.
+   * This is less accurate than {@link CGAlgorithmsDD#intersection(Coordinate, Coordinate, Coordinate, Coordinate)}.
+   * It has caused spatial predicate failures in some cases.
+   * This is kept for testing purposes.
+   * 
+   * @param p1 an endpoint of line 1
+   * @param p2 an endpoint of line 1
+   * @param q1 an endpoint of line 2
+   * @param q2 an endpoint of line 2
+   * @return the intersection point between the lines, if there is one,
+   * or null if the lines are parallel or collinear
+   */
+  private static Coordinate intersectionFP(Coordinate p1, Coordinate p2, Coordinate q1, Coordinate q2) {
     // compute midpoint of "kernel envelope"
     double minX0 = p1.x < p2.x ? p1.x : p2.x;
     double minY0 = p1.y < p2.y ? p1.y : p2.y;

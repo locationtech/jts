@@ -42,21 +42,37 @@ public class RelateTest
   }
 
   /**
-   * From GEOS #572
+   * From https://github.com/locationtech/jts/issues/396
    * 
-   * The cause is that the longer line nodes the single-segment line.
-   * The node then tests as not lying precisely on the original longer line.
+   * The original failure is caused by the intersection computed
+   * during noding not lying exactly on each original line segment.
+   * This is due to numerical error in the FP intersection algorithm.
+   * This is fixed by using DD intersection calculation.
    */
-  public void testContainsIncorrectIMMatrix()
+  public void testContainsNoding()
   {
     String a = "LINESTRING (1 0, 0 2, 0 0, 2 2)";
     String b = "LINESTRING (0 0, 2 2)";
 
-    // actual matrix is 001F001F2
-    // true matrix should be 101F00FF2
-    runRelateTest(a, b,  "001F001F2"    );
+    runRelateTest(a, b,  "101F00FF2"    );
   }
 
+  /**
+   * From GEOS https://github.com/libgeos/geos/issues/933
+   * 
+   * The original failure is caused by the intersection computed
+   * during noding not lying exactly on each original line segment.
+   * This is due to numerical error in the FP intersection algorithm.
+   * This is fixed by using DD intersection calculation.
+   */
+  public void testContainsNoding2()
+  {
+    String a = "MULTILINESTRING ((0 0, 1 1), (0.5 0.5, 1 0.1, -1 0.1))";
+    String b = "LINESTRING (0 0, 1 1)";
+
+    runRelateTest(a, b,  "1F1000FF2"    );
+  }
+  
   /**
    * Tests case where segments intersect properly, but computed intersection point
    * snaps to a boundary endpoint due to roundoff.
@@ -93,6 +109,6 @@ public class RelateTest
     IntersectionMatrix im = RelateOp.relate(g1, g2);
     String imStr = im.toString();
     //System.out.println(imStr);
-    assertTrue(im.matches(expectedIM));
+    assertEquals(expectedIM, imStr);
   }
 }
