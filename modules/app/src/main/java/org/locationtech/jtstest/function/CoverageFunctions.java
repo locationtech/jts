@@ -34,16 +34,16 @@ public class CoverageFunctions {
     return CoveragePolygonValidator.validate(geom, toGeometryArray(adjacentPolys), gapWidth);
   }
   
-  public static Geometry validateCoverage(Geometry geom) {
+  public static Geometry validate(Geometry geom) {
     Geometry[] invalid = CoverageValidator.validate(toGeometryArray(geom));
-    return FunctionsUtil.buildGeometry(invalid);
+    return FunctionsUtil.buildGeometryCollection(invalid, geom.getFactory().createLineString());
   }
 
-  public static Geometry validateCoverageWithGaps(Geometry geom, 
+  public static Geometry validateWithGaps(Geometry geom, 
       @Metadata(title="Gap width")
       double gapWidth) {
     Geometry[] invalid = CoverageValidator.validate(toGeometryArray(geom), gapWidth);
-    return FunctionsUtil.buildGeometry(invalid);
+    return FunctionsUtil.buildGeometryCollection(invalid, geom.getFactory().createLineString());
   }
 
   public static Geometry findGaps(Geometry geom, 
@@ -53,7 +53,7 @@ public class CoverageFunctions {
   }
 
   @Metadata(description="Fast Union of a coverage")
-  public static Geometry unionCoverage(Geometry coverage) {
+  public static Geometry union(Geometry coverage) {
     Geometry[] cov = toGeometryArray(coverage);
     return CoverageUnion.union(cov);
   }
