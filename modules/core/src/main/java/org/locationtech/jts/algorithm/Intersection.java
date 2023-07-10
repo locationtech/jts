@@ -45,6 +45,9 @@ public class Intersection {
    */
   public static Coordinate intersection(Coordinate p1, Coordinate p2, Coordinate q1, Coordinate q2) {
     return CGAlgorithmsDD.intersection(p1, p2, q1, q2);
+    //-- this is less robust
+    //return intersectionFP(p1, p2, q1, q2);
+
   }
   
   /**
