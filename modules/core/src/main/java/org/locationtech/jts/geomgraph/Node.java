@@ -152,4 +152,9 @@ public class Node
   {
     out.println("node " + coord + " lbl: " + label);
   }
+  
+  public String toString() {
+    return "Node(" + coord.x + ", " + coord.y + ")";
+  }
+  
 }
