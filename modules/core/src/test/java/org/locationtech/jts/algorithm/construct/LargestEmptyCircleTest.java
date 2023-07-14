@@ -15,6 +15,8 @@ public class LargestEmptyCircleTest extends GeometryTestCase {
 
   public LargestEmptyCircleTest(String name) { super(name); }
   
+  //------------ Point Obstacles -----------------
+  
   public void testPointsSquare() {
     checkCircle("MULTIPOINT ((100 100), (100 200), (200 200), (200 100))", 
        0.01, 150, 150, 70.71 );
@@ -29,6 +31,13 @@ public class LargestEmptyCircleTest extends GeometryTestCase {
     checkCircle("MULTIPOINT ((100 100), (300 100), (200 250))", 
        0.01, 200.00, 141.66, 108.33 );
   }
+
+  public void testPoint() {
+    checkCircleZeroRadius("POINT (100 100)", 
+       0.01 );
+  }
+  
+  //------------ Line Obstacles -----------------
 
   public void testLinesOpenDiamond() {
     checkCircle("MULTILINESTRING ((50 100, 150 50), (250 50, 350 100), (350 150, 250 200), (50 150, 150 200))", 
@@ -45,14 +54,9 @@ public class LargestEmptyCircleTest extends GeometryTestCase {
        0.01, 77.52, 249.99, 54.81 );
   }
 
-  public void testPointsLinesTriangle() {
+  public void testLinePointTriangle() {
     checkCircle("GEOMETRYCOLLECTION (LINESTRING (100 100, 300 100), POINT (250 200))", 
        0.01, 196.49, 164.31, 64.31 );
-  }
-
-  public void testPoint() {
-    checkCircleZeroRadius("POINT (100 100)", 
-       0.01 );
   }
 
   public void testLineFlat() {
@@ -65,6 +69,23 @@ public class LargestEmptyCircleTest extends GeometryTestCase {
        0.01 );
   }
 
+  //------------ Polygon Obstacles -----------------
+
+  public void testPolygonConcave() {
+    checkCircle("POLYGON ((1 9, 9 6, 6 5, 5 3, 8 3, 9 4, 9 1, 1 1, 1 9))", 
+        0.01, 7.495, 4.216, 1.21);
+  } 
+  
+  public void testPolygonsBoxes() {
+    checkCircle("MULTIPOLYGON (((1 6, 6 6, 6 1, 1 1, 1 6)), ((6 7, 4 7, 4 9, 6 9, 6 7)))", 
+        0.01, 2.50, 7.50, 1.50);
+  } 
+  
+  public void testPolygonLines() {
+    checkCircle("GEOMETRYCOLLECTION (POLYGON ((1 6, 6 6, 6 1, 1 1, 1 6)), LINESTRING (6 7, 3 9), LINESTRING (1 7, 3 8))", 
+        0.01, 3.74, 7.14, 1.14);
+  } 
+  
   //---------------------------------------------------------
   // Obstacles and Boundary
   
@@ -106,7 +127,7 @@ public class LargestEmptyCircleTest extends GeometryTestCase {
   //========================================================
   
   /**
-   * A coarse distance check, mainly testing 
+   * A simple distance check, mainly testing 
    * that there is not a huge number of iterations.
    * (This will be revealed by CI taking a very long time!)
    * 
