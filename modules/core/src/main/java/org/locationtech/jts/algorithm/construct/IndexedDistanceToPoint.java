@@ -30,7 +30,7 @@ class IndexedDistanceToPoint {
   
   private Geometry targetGeometry;
   private IndexedFacetDistance facetDistance;
-  private IndexedPointInPolygonsLocater ptLocater;
+  private IndexedPointInPolygonsLocator ptLocater;
 
   public IndexedDistanceToPoint(Geometry geom) {
     this.targetGeometry = geom;
@@ -40,7 +40,7 @@ class IndexedDistanceToPoint {
     if (facetDistance != null)
       return;
     facetDistance = new IndexedFacetDistance(targetGeometry);
-    ptLocater = new IndexedPointInPolygonsLocater(targetGeometry);
+    ptLocater = new IndexedPointInPolygonsLocator(targetGeometry);
   }
   
   /**

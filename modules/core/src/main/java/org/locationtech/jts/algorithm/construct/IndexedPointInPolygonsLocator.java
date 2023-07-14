@@ -29,13 +29,13 @@ import org.locationtech.jts.index.strtree.STRtree;
  * @author mdavis
  *
  */
-class IndexedPointInPolygonsLocater implements PointOnGeometryLocator {
+class IndexedPointInPolygonsLocator implements PointOnGeometryLocator {
 
   private Geometry geom;
   private List<Geometry> polys;
   private STRtree index;
 
-  public IndexedPointInPolygonsLocater(Geometry geom) {
+  public IndexedPointInPolygonsLocator(Geometry geom) {
     this.geom = geom;
   }
   
