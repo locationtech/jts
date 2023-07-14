@@ -32,7 +32,6 @@ import org.locationtech.jts.index.strtree.STRtree;
 class IndexedPointInPolygonsLocator implements PointOnGeometryLocator {
 
   private Geometry geom;
-  private List<Geometry> polys;
   private STRtree index;
 
   public IndexedPointInPolygonsLocator(Geometry geom) {
@@ -40,9 +39,9 @@ class IndexedPointInPolygonsLocator implements PointOnGeometryLocator {
   }
   
   private void init() {
-    if (polys != null)
+    if (index != null)
       return;
-    polys = PolygonalExtracter.getPolygonals(geom);
+    List<Geometry> polys = PolygonalExtracter.getPolygonals(geom);
     index = new STRtree();
     for (int i = 0; i < polys.size(); i++) {
       Geometry poly = polys.get(i);
@@ -54,9 +53,8 @@ class IndexedPointInPolygonsLocator implements PointOnGeometryLocator {
   public int locate(Coordinate p) {
     init();
 
-    List results = index.query(new Envelope(p));
-    for (int i = 0; i < results.size(); i++) {
-      IndexedPointInAreaLocator ptLocater = (IndexedPointInAreaLocator) results.get(i);
+    List<IndexedPointInAreaLocator> results = index.query(new Envelope(p));
+    for (IndexedPointInAreaLocator ptLocater : results) {
       int loc = ptLocater.locate(p);
       if (loc != Location.EXTERIOR)
         return loc;
