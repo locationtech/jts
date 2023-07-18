@@ -44,7 +44,7 @@ import org.locationtech.jts.operation.distance.IndexedFacetDistance;
  * If it is not specified the convex hull of the obstacles is used as the boundary.
  * <p>
  * To compute an LEC which lies <i>wholly</i> within
- * a polygonal boundary, include the boundary of the polygon(s) as an obstacle.
+ * a polygonal boundary, include the boundary of the polygon(s) as a linear obstacle.
  * <p>
  * The implementation uses a successive-approximation technique
  * over a grid of square cells covering the obstacles and boundary.
@@ -64,9 +64,10 @@ public class LargestEmptyCircle {
    * Computes the center point of the Largest Empty Circle 
    * interior-disjoint to a set of obstacles, 
    * with accuracy to a given tolerance distance.
+   * The obstacles may be any collection of points, lines and polygons.
    * The center of the LEC lies within the convex hull of the obstacles.
    * 
-   * @param obstacles a geometry representing the obstacles (points and lines)
+   * @param obstacles a geometry representing the obstacles
    * @param tolerance the distance tolerance for computing the center point
    * @return the center point of the Largest Empty Circle
    */
@@ -78,9 +79,10 @@ public class LargestEmptyCircle {
    * Computes the center point of the Largest Empty Circle 
    * interior-disjoint to a set of obstacles and within a polygonal boundary, 
    * with accuracy to a given tolerance distance.
-   * The center of the LEC lies within the boundary.
+   * The obstacles may be any collection of points, lines and polygons.
+   * The center of the LEC lies within the given boundary.
    * 
-   * @param obstacles a geometry representing the obstacles (points and lines)
+   * @param obstacles a geometry representing the obstacles
    * @param boundary a polygonal geometry to contain the LEC center
    * @param tolerance the distance tolerance for computing the center point
    * @return the center point of the Largest Empty Circle
@@ -94,9 +96,10 @@ public class LargestEmptyCircle {
    * Computes a radius line of the Largest Empty Circle
    * interior-disjoint to a set of obstacles, 
    * with accuracy to a given tolerance distance.
+   * The obstacles may be any collection of points, lines and polygons.
    * The center of the LEC lies within the convex hull of the obstacles.
    * 
-   * @param obstacles a geometry representing the obstacles (points and lines)
+   * @param obstacles a geometry representing the obstacles
    * @param tolerance the distance tolerance for computing the center point
    * @return a line from the center of the circle to a point on the edge
    */
@@ -108,9 +111,10 @@ public class LargestEmptyCircle {
    * Computes a radius line of the Largest Empty Circle
    * interior-disjoint to a set of obstacles and within a polygonal boundary, 
    * with accuracy to a given tolerance distance.
-   * The center of the LEC lies within the boundary.
+   * The obstacles may be any collection of points, lines and polygons.
+   * The center of the LEC lies within the given boundary.
    * 
-   * @param obstacles a geometry representing the obstacles (points and lines)
+   * @param obstacles a geometry representing the obstacles
    * @param boundary a polygonal geometry to contain the LEC center
    * @param tolerance the distance tolerance for computing the center point
    * @return a line from the center of the circle to a point on the edge
@@ -140,11 +144,13 @@ public class LargestEmptyCircle {
 
   /**
    * Creates a new instance of a Largest Empty Circle construction,
-   * interior-disjoint to a set of obstacle geometries and within a polygonal boundary.
+   * interior-disjoint to a set of obstacle geometries 
+   * and having its center within a polygonal boundary.
+   * The obstacles may be any collection of points, lines and polygons.
    * If the boundary is null or empty the convex hull
    * of the obstacles is used as the boundary.
    * 
-   * @param obstacles a non-empty geometry representing the obstacles (points and lines)
+   * @param obstacles a non-empty geometry representing the obstacles
    * @param boundary a polygonal geometry (may be null or empty)
    * @param tolerance a distance tolerance for computing the circle center point (a positive value)
    */
