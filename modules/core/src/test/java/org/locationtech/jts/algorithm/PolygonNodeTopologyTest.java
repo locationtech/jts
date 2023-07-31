@@ -20,13 +20,13 @@ public class PolygonNodeTopologyTest extends GeometryTestCase {
   }
 
   public void testNonCrossingQuadrant2() {
-    checkCrossing("LINESTRING (500 1000, 1000 1000, 1000 1500)",
-        "LINESTRING (300 1200, 1000 1000, 500 1500)", false); 
+    checkNonCrossing("LINESTRING (500 1000, 1000 1000, 1000 1500)",
+        "LINESTRING (300 1200, 1000 1000, 500 1500)"); 
   }
 
   public void testNonCrossingQuadrant4() {
-    checkCrossing("LINESTRING (500 1000, 1000 1000, 1000 1500)",
-        "LINESTRING (1000 500, 1000 1000, 1500 1000)", false);
+    checkNonCrossing("LINESTRING (500 1000, 1000 1000, 1000 1500)",
+        "LINESTRING (1000 500, 1000 1000, 1500 1000)");
   }
 
   public void testInteriorSegment() {
@@ -42,6 +42,10 @@ public class PolygonNodeTopologyTest extends GeometryTestCase {
   
   private void checkCrossing(String wktA, String wktB) {
     checkCrossing(wktA, wktB, true);
+  }
+
+  private void checkNonCrossing(String wktA, String wktB) {
+    checkCrossing(wktA, wktB, false);
   }
 
   private void checkCrossing(String wktA, String wktB, boolean isExpected) {
