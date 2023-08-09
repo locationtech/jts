@@ -57,6 +57,7 @@ Distributions for older JTS versions can be obtained at the
 * Fix `Geometry.getCoordinate` to return non-null coordinate for collections with empty first element (#987)
 * Fix `LargestEmptyCircle` to handle polygonal obstacles (#988)
 * Make intersection computation more robust (#989)
+* Fix `VariableBuffer` to handle zero vertex buffer distances correctly (#997)
 
 ### Performance Improvements
 
