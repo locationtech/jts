@@ -11,13 +11,17 @@
  */
 package org.locationtech.jts.operation.buffer;
 
+import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LineString;
 
 import test.jts.GeometryTestCase;
 
 public class VariableBufferTest extends GeometryTestCase {
 
-  private static final double DEFAULT_TOLERANCE = 1.0e-6;
+  //-- low tolerance reduces expected geometry literal size
+  private static final double DEFAULT_TOLERANCE = 1.0e-2;
 
   public VariableBufferTest(String name) {
     super(name);
@@ -74,10 +78,32 @@ public class VariableBufferTest extends GeometryTestCase {
         );
   }
 
+  public void testZeroDistanceAtVertex() {
+    checkBuffer("LINESTRING( 10 10, 20 20, 30 30)",
+        new double[] { 5, 0, 5 },
+        "MULTIPOLYGON (((5.096 10.975, 5.381 11.913, 5.843 12.778, 6.464 13.536, 7.222 14.157, 7.943 14.557, 20 20, 14.557 7.943, 14.157 7.222, 13.536 6.464, 12.778 5.843, 11.913 5.381, 10.975 5.096, 10 5, 9.025 5.096, 8.087 5.381, 7.222 5.843, 6.464 6.464, 5.843 7.222, 5.381 8.087, 5.096 9.025, 5 10, 5.096 10.975)), ((25.443 32.057, 25.843 32.778, 26.464 33.536, 27.222 34.157, 28.087 34.619, 29.025 34.904, 30 35, 30.975 34.904, 31.913 34.619, 32.778 34.157, 33.536 33.536, 34.157 32.778, 34.619 31.913, 34.904 30.975, 35 30, 34.904 29.025, 34.619 28.087, 34.157 27.222, 33.536 26.464, 32.057 25.443, 20 20, 25.443 32.057)))"
+        );
+  }
+  
+  public void testZeroDistancesForSegment() {
+    checkBuffer("LINESTRING( 10 10, 20 20, 30 30, 40 40)",
+        new double[] { 5, 0, 0, 5 },
+        "MULTIPOLYGON (((5.096 10.975, 5.381 11.913, 5.843 12.778, 6.464 13.536, 7.222 14.157, 7.943 14.557, 20 20, 14.557 7.943, 14.157 7.222, 13.536 6.464, 12.778 5.843, 11.913 5.381, 10.975 5.096, 10 5, 9.025 5.096, 8.087 5.381, 7.222 5.843, 6.464 6.464, 5.843 7.222, 5.381 8.087, 5.096 9.025, 5 10, 5.096 10.975)), ((35.443 42.057, 35.843 42.778, 36.464 43.536, 37.222 44.157, 38.087 44.619, 39.025 44.904, 40 45, 40.975 44.904, 41.913 44.619, 42.778 44.157, 43.536 43.536, 44.157 42.778, 44.619 41.913, 44.904 40.975, 45 40, 44.904 39.025, 44.619 38.087, 44.157 37.222, 43.536 36.464, 42.057 35.443, 30 30, 35.443 42.057)))"
+        );
+  }
+
   private void checkBuffer(String wkt, double startDist, double endDist, 
       String wktExpected) {
     Geometry geom = read(wkt);
     Geometry result = VariableBuffer.buffer(geom, startDist, endDist);
+    //System.out.println(result);
+    checkBuffer(result, wktExpected);
+  }
+
+  private void checkBuffer(String wkt, double[] dist, 
+      String wktExpected) {
+    Geometry geom = read(wkt);
+    Geometry result = VariableBuffer.buffer(geom, dist);
     //System.out.println(result);
     checkBuffer(result, wktExpected);
   }

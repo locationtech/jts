@@ -28,8 +28,9 @@ import org.locationtech.jts.geom.Polygon;
 /**
  * Creates a buffer polygon with a varying buffer distance 
  * at each vertex along a line.
+ * Vertex distances may be zero.
  * <p>
- * Only single lines are supported as input, since buffer widths 
+ * Only single linestrings are supported as input, since buffer widths 
  * are typically specified individually for each line.
  * 
  * @author Martin Davis
@@ -221,7 +222,7 @@ public class VariableBuffer {
   }
 
   /**
-   * Computes the buffer polygon.
+   * Computes the variable buffer polygon.
    * 
    * @return a buffer polygon
    */
@@ -244,7 +245,7 @@ public class VariableBuffer {
         .createGeometryCollection(GeometryFactory.toGeometryArray(parts));
     Geometry buffer = partsGeom.union();
     
-    // ensure an empty polygon is returned if needed
+    //-- ensure an empty polygon is returned if needed
     if (buffer.isEmpty()) {
       return geomFactory.createPolygon();
     }
@@ -256,15 +257,24 @@ public class VariableBuffer {
    * with the given endpoints and buffer distances.
    * The individual segment buffers are unioned
    * to form the final buffer.
+   * If one distance is zero, the end cap at that 
+   * segment end is the endpoint of the segment.
+   * If both distances are zero, no polygon is returned.
    * 
    * @param p0 the segment start point
    * @param p1 the segment end point
    * @param dist0 the buffer distance at the start point
    * @param dist1 the buffer distance at the end point
-   * @return the segment buffer.
+   * @return the segment buffer, or null if void
    */
   private Polygon segmentBuffer(Coordinate p0, Coordinate p1,
       double dist0, double dist1) {
+    /**
+     * Skip polygon if both distances are zero
+     */
+    if (dist0 <= 0 && dist1 <= 0)
+      return null;
+    
     /**
      * Compute for increasing distance only, so flip if needed
      */
@@ -293,22 +303,25 @@ public class VariableBuffer {
     LineSegment seg = new LineSegment(p0, p1);
     Coordinate tr0 = seg.reflect(t0);
     Coordinate tr1 = seg.reflect(t1);
+    //-- avoid numeric jitter if first distance is zero
+    if (dist0 == 0)
+      tr0 = p0.copy();
     
     CoordinateList coords = new CoordinateList();
-    coords.add(t0);
-    coords.add(t1);
+    coords.add(t0, false);
+    coords.add(t1, false);
 
     // end cap
     addCap(p1, dist1, t1, tr1, coords);
     
-    coords.add(tr1);
-    coords.add(tr0);
+    coords.add(tr1, false);
+    coords.add(tr0, false);
     
     // start cap
     addCap(p0, dist0,  tr0, t0, coords);
     
     // close
-    coords.add(t0);
+    coords.add(t0, false);
     
     Coordinate[] pts = coords.toCoordinateArray();
     Polygon polygon = geomFactory.createPolygon(pts);
@@ -345,6 +358,11 @@ public class VariableBuffer {
    * @param coords the coordinate list to add to
    */
   private void addCap(Coordinate p, double r, Coordinate t1, Coordinate t2, CoordinateList coords) {
+    //-- handle zero-width at vertex
+    if (r == 0) {
+      coords.add(p.copy(), false);
+      return;
+    }
     
     double angStart = Angle.angle(p, t1);
     double angEnd = Angle.angle(p, t2);
@@ -357,7 +375,7 @@ public class VariableBuffer {
     for (int i = indexStart; i > indexEnd; i--) {
       // use negative increment to create points CW
       double ang = capAngle(i);
-      coords.add( projectPolar(p, r, ang) );
+      coords.add( projectPolar(p, r, ang), false );
     }
   }  
   
