@@ -111,31 +111,45 @@ public class IncrementalDelaunayTriangulator
 		// Examine suspect edges to ensure that the Delaunay condition
 		// is satisfied.
 		do {
-      QuadEdge t = e.oPrev();
-      if (t.dest().rightOf(e)) {
-        boolean doFlip = false;
-        
-        if (subdiv.isFrameVertex(e.dest())) {
-          //-- if an edge adjacent to e is a frame edge, don't flip
-          if (subdiv.isFrameTriangleEdge(e.dNext()) || subdiv.isFrameTriangleEdge(e.dPrev())) {
-            doFlip = false;
-          }
-          else {
-            //TODO: check for concave boundary
-            doFlip = isConcaveAtOrigin(e);
-          }
+      boolean doFlip = false;
+      
+      if (subdiv.isFrameVertex(e.dest())) {
+        //-- if an edge adjacent to e is a frame edge, don't flip
+        if (subdiv.isFrameTriangleEdge(e.dNext()) || subdiv.isFrameTriangleEdge(e.dPrev())) {
+          doFlip = false;
         }
         else {
-          doFlip = v.isInCircle(e.orig(), t.dest(), e.dest());
-        }
-        
-        //-- flip the edge within its quadrilateral
-        if (doFlip) {
-          QuadEdge.swap(e);
-          e = e.oPrev();
-          continue;
+          //-- flip if boundary is concave
+          doFlip = isConcaveAtOrigin(e);
         }
       }
+      else if (subdiv.isFrameVertex(e.orig())) {
+        //-- if an edge adjacent to e is a frame edge, don't flip
+        if (subdiv.isFrameTriangleEdge(e.oNext()) || subdiv.isFrameTriangleEdge(e.oPrev())) {
+          doFlip = false;
+        }
+        else {
+          //-- flip if boundary is concave
+          doFlip = isConcaveAtOrigin(e.sym());
+        }
+      }
+      else if (isBetweenInsertedAndFrame(e, v)) {
+        //-- don't flip if edge lies between the inserted vertex and a frame vertex
+        doFlip = false;
+      }
+      else {
+        //-- flip if vertex is in circumcircle
+        QuadEdge t = e.oPrev();
+        doFlip = t.dest().rightOf(e) && v.isInCircle(e.orig(), t.dest(), e.dest());
+      }
+      
+      //-- flip the edge within its quadrilateral
+      if (doFlip) {
+        QuadEdge.swap(e);
+        e = e.oPrev();
+        continue;
+      }
+      
       if (e.oNext() == startEdge) {
         return base; // no more suspect edges.
       } else {
@@ -144,14 +158,22 @@ public class IncrementalDelaunayTriangulator
     } while (true);
 	}
 
+  private boolean isBetweenInsertedAndFrame(QuadEdge e, Vertex vInsert) {
+    Vertex v1 = e.oNext().dest();
+    Vertex v2 = e.oPrev().dest();
+    return (v1 == vInsert && subdiv.isFrameVertex(v1))
+        || (v2 == vInsert && subdiv.isFrameVertex(v1));
+  }
+
   private static boolean isConcaveAtOrigin(QuadEdge e) {
     Coordinate p = e.orig().getCoordinate();
     Coordinate pp = e.oPrev().dest().getCoordinate();
     Coordinate pn = e.oNext().dest().getCoordinate();
     boolean isConcave = Orientation.COUNTERCLOCKWISE == Orientation.index(pp, pn, p);
-    if (isConcave) {
-      System.out.println(WKTWriter.toLineString(new Coordinate[] { pn, pp, p}));
-    }
+    // DEBUG
+    //if (isConcave) {
+      //System.out.println(WKTWriter.toLineString(new Coordinate[] { pn, pp, p}));
+    //}
 
     return isConcave;
   }
