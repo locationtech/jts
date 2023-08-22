@@ -418,6 +418,17 @@ public class QuadEdgeSubdivision {
 	}
 
 	/**
+	 * Tests whether an edge is part of a frame triangle (both vertices are frame vertices).
+	 * @param e the edge to test
+	 * @return true if the edge is a frame triangle edge
+	 */
+	 public boolean isFrameTriangleEdge(QuadEdge e) {
+	    if (isFrameVertex(e.orig()) && isFrameVertex(e.dest()))
+	      return true;
+	    return false;
+	  }
+	 
+	/**
 	 * Tests whether a QuadEdge is an edge on the border of the frame facets and
 	 * the internal facets. E.g. an edge which does not itself touch a frame
 	 * vertex, but which touches an edge which does.

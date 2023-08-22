@@ -18,12 +18,13 @@ import org.locationtech.jts.io.WKTReader;
 
 import junit.framework.TestCase;
 import junit.textui.TestRunner;
+import test.jts.GeometryTestCase;
 
 /**
  * Tests Delaunay Triangulation classes
  * 
  */
-public class DelaunayTest extends TestCase {
+public class DelaunayTest extends GeometryTestCase {
 
   public static void main(String args[]) {
     TestRunner.run(DelaunayTest.class);
@@ -88,6 +89,14 @@ public class DelaunayTest extends TestCase {
     runDelaunay(wkt, true, expected);
   }
   
+  public void testFlattishTriangle()
+  throws ParseException
+  {
+    String wkt = "MULTIPOINT ((100 200), (200 190), (300 200))";
+    String expected = "GEOMETRYCOLLECTION (POLYGON ((100 200, 300 200, 200 190, 100 200)))";
+    runDelaunay(wkt, true, expected);
+  }
+  
 	static final double COMPARISON_TOLERANCE = 1.0e-7;
 	
   void runDelaunayEdges(String sitesWKT, String expectedWKT)
@@ -115,6 +124,6 @@ public class DelaunayTest extends TestCase {
   	Geometry expected = reader.read(expectedWKT);
   	result.normalize();
   	expected.normalize();
-  	assertTrue(expected.equalsExact(result, COMPARISON_TOLERANCE));
+  	checkEqual(expected, result, COMPARISON_TOLERANCE);
   }
 }

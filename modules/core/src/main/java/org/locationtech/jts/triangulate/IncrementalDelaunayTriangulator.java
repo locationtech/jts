@@ -15,6 +15,9 @@ package org.locationtech.jts.triangulate;
 import java.util.Collection;
 import java.util.Iterator;
 
+import org.locationtech.jts.algorithm.Orientation;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.io.WKTWriter;
 import org.locationtech.jts.triangulate.quadedge.LocateFailureException;
 import org.locationtech.jts.triangulate.quadedge.QuadEdge;
 import org.locationtech.jts.triangulate.quadedge.QuadEdgeSubdivision;
@@ -108,16 +111,49 @@ public class IncrementalDelaunayTriangulator
 		// Examine suspect edges to ensure that the Delaunay condition
 		// is satisfied.
 		do {
-			QuadEdge t = e.oPrev();
-			if (t.dest().rightOf(e) && v.isInCircle(e.orig(), t.dest(), e.dest())) {
-				QuadEdge.swap(e);
-				e = e.oPrev();
-			} else if (e.oNext() == startEdge) {
-				return base; // no more suspect edges.
-			} else {
-				e = e.oNext().lPrev();
-			}
-		} while (true);
+      QuadEdge t = e.oPrev();
+      if (t.dest().rightOf(e)) {
+        boolean doFlip = false;
+        
+        if (subdiv.isFrameVertex(e.dest())) {
+          //-- if an edge adjacent to e is a frame edge, don't flip
+          if (subdiv.isFrameTriangleEdge(e.dNext()) || subdiv.isFrameTriangleEdge(e.dPrev())) {
+            doFlip = false;
+          }
+          else {
+            //TODO: check for concave boundary
+            doFlip = isConcaveAtOrigin(e);
+          }
+        }
+        else {
+          doFlip = v.isInCircle(e.orig(), t.dest(), e.dest());
+        }
+        
+        //-- flip the edge within its quadrilateral
+        if (doFlip) {
+          QuadEdge.swap(e);
+          e = e.oPrev();
+          continue;
+        }
+      }
+      if (e.oNext() == startEdge) {
+        return base; // no more suspect edges.
+      } else {
+        e = e.oNext().lPrev();
+      }
+    } while (true);
 	}
+
+  private static boolean isConcaveAtOrigin(QuadEdge e) {
+    Coordinate p = e.orig().getCoordinate();
+    Coordinate pp = e.oPrev().dest().getCoordinate();
+    Coordinate pn = e.oNext().dest().getCoordinate();
+    boolean isConcave = Orientation.COUNTERCLOCKWISE == Orientation.index(pp, pn, p);
+    if (isConcave) {
+      System.out.println(WKTWriter.toLineString(new Coordinate[] { pn, pp, p}));
+    }
+
+    return isConcave;
+  }
 
 }
