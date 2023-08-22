@@ -108,8 +108,14 @@ public class IncrementalDelaunayTriangulator
 			e = base.oPrev();
 		} while (e.lNext() != startEdge);
 
-		// Examine suspect edges to ensure that the Delaunay condition
-		// is satisfied.
+		/**
+		 * Examine suspect edges to ensure that the Delaunay condition is satisfied.
+		 * If it is not, flip the edge and continue testing.
+		 * 
+		 * Since the frame is not infinitely far away,
+		 * edges which touch the frame or are adjacent too it require special logic
+		 * to ensure they maintain a convex boundary for the inner triangulation.
+		 */
 		do {
       boolean doFlip = false;
       
