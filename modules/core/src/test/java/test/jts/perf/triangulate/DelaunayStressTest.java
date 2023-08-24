@@ -15,9 +15,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.locationtech.jts.algorithm.ConvexHull;
+import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.operation.overlayng.CoverageUnion;
 import org.locationtech.jts.triangulate.DelaunayTriangulationBuilder;
@@ -33,8 +35,8 @@ import org.locationtech.jts.util.Stopwatch;
  */
 public class DelaunayStressTest 
 {
-  private static final int N_PTS = 5;
-  private static final int RUN_COUNT = 100;
+  private static final int N_PTS = 50;
+  private static final int RUN_COUNT = 10000;
   final static double SIDE_LEN = 1000.0;
   final static double BASE_OFFSET = 0;
 
@@ -88,13 +90,13 @@ public class DelaunayStressTest
 	  checkConvex(tris, union);
   }
 
-  private void checkConvex(Geometry tris, Geometry union) {
-    Geometry convexHull = convexHull(tris);
+  private void checkConvex(Geometry tris, Geometry triHull) {
+    Geometry convexHull = convexHull(tris); 
+    boolean isEqual = triHull.equalsTopo(convexHull);
+    
+    boolean isConvex = isConvex((Polygon) triHull);
 	  
-    //boolean isEqual = union.norm().equalsExact(convexHull.norm());
-    boolean isEqual = union.equalsTopo(convexHull);
-	  
-	  if (! isEqual) {
+	  if (! isConvex) {
       System.out.println("Tris:");
       System.out.println(tris);
       System.out.println("Convex Hull:");
@@ -108,6 +110,19 @@ public class DelaunayStressTest
     return hull.getConvexHull();
   }
 
+  private boolean isConvex(Polygon poly) {
+    Coordinate[] pts = poly.getCoordinates();
+    for (int i = 0; i < pts.length - 1; i++) {
+      int iprev = i - 1;
+      if (iprev < 0) iprev = pts.length - 2;
+      int inext = i + 1;
+      //-- orientation must be CLOCKWISE or COLLINEAR
+      boolean isConvex = Orientation.COUNTERCLOCKWISE != Orientation.index(pts[iprev], pts[i], pts[inext]);
+      if (! isConvex)
+        return false;
+    }
+    return true;
+  }
   static List<Coordinate> randomPointsInGrid(int nPts, double basex, double basey, double width, double height, double scale)
 	{
     PrecisionModel pm = null;

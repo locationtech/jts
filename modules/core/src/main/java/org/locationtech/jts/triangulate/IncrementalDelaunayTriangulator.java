@@ -111,37 +111,25 @@ public class IncrementalDelaunayTriangulator
 
 		/**
 		 * Examine suspect edges to ensure that the Delaunay condition is satisfied.
-		 * If it is not, flip the edge and continue testing.
+		 * If it is not, flip the edge and continue scanning.
 		 * 
 		 * Since the frame is not infinitely far away,
-		 * edges which touch the frame or are adjacent to it require logic
+		 * edges which touch the frame or are adjacent to it require special logic
 		 * to ensure the inner triangulation maintains a convex boundary.
 		 */
 		do {
-System.out.println(e);
-if (e.dest().getCoordinate().equals2D(new Coordinate(2, 204))) {
-  System.out.println("---> " + e);
-  System.out.println(subdiv.getTriangles(true, new GeometryFactory()));
-}
-System.out.println(subdiv.getTriangles(true, new GeometryFactory()));
-
-      boolean doFlip = false;
-      if (subdiv.isFrameVertex(e.dest())) {
-        doFlip = doFlipAtFrameVertex(e);
+       //-- general case - flip if vertex is in circumcircle
+      QuadEdge t = e.oPrev();
+      boolean doFlip = t.dest().rightOf(e) && v.isInCircle(e.orig(), t.dest(), e.dest());
+      
+      //-- special cases to ensure triangulation boundary is convex
+      if (isConcaveBoundary(e)) {
+        //-- flip if the triangulation boundary is concave
+        doFlip = true;
       }
-      else if (subdiv.isFrameVertex(e.orig())) {
-        doFlip = doFlipAtFrameVertex(e.sym());
-      }
-      /*
       else if (isBetweenFrameAndInserted(e, v)) {
         //-- don't flip if edge lies between the inserted vertex and a frame vertex
         doFlip = false;
-      }
-      */
-      else {
-        //-- general case - flip if vertex is in circumcircle
-        QuadEdge t = e.oPrev();
-        doFlip = t.dest().rightOf(e) && v.isInCircle(e.orig(), t.dest(), e.dest());
       }
       
       if (doFlip) {
@@ -160,30 +148,33 @@ System.out.println(subdiv.getTriangles(true, new GeometryFactory()));
 	}
 
 	/**
-	 * Tests if a edge terminating in a frame vertex should be flipped.
-	 * The edge is flipped if it creates a concavity in the triangulation boundary.
+	 * Tests if a edge touching a frame vertex 
+	 * creates a concavity in the triangulation boundary.
 	 * 
-	 * @param e an edge whose dest is a frame vertex
-	 * @return true if the edge should be flipped
+	 * @param e the edge to test
+	 * @return true if the triangulation boundary is concave at the edge
 	 */
-  private boolean doFlipAtFrameVertex(QuadEdge e) {
-    //-- if an edge adjacent to e is a frame edge, don't flip
-    if (subdiv.isFrameTriangleEdge(e.dNext()) || subdiv.isFrameTriangleEdge(e.dPrev())) {
-      return false;
+  private boolean isConcaveBoundary(QuadEdge e) {
+    if (subdiv.isFrameVertex(e.dest())) {
+      return isConcaveAtOrigin(e);
     }
-    //-- flip if boundary is concave
-    return isConcaveAtOrigin(e);
+    if (subdiv.isFrameVertex(e.orig())) {
+      return isConcaveAtOrigin(e.sym());
+    }
+    return false;
   }
 
+  /**
+   * Tests if the quadrilateral surrounding an edge is concave at the edge origin.
+   * Used to determine if the triangulation boundary has a concavity.
+   * @param e
+   * @return
+   */
   private static boolean isConcaveAtOrigin(QuadEdge e) {
     Coordinate p = e.orig().getCoordinate();
     Coordinate pp = e.oPrev().dest().getCoordinate();
     Coordinate pn = e.oNext().dest().getCoordinate();
     boolean isConcave = Orientation.COUNTERCLOCKWISE == Orientation.index(pp, pn, p);
-    // DEBUG
-    //if (isConcave) {
-      //System.out.println(WKTWriter.toLineString(new Coordinate[] { pn, pp, p}));
-    //}
     return isConcave;
   }
 
