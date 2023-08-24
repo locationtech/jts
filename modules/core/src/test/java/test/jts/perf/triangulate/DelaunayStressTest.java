@@ -33,7 +33,7 @@ import org.locationtech.jts.util.Stopwatch;
  */
 public class DelaunayStressTest 
 {
-  private static final int N_PTS = 10;
+  private static final int N_PTS = 5;
   private static final int RUN_COUNT = 100;
   final static double SIDE_LEN = 1000.0;
   final static double BASE_OFFSET = 0;
