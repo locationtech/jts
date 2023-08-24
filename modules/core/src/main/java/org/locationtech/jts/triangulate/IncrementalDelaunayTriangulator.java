@@ -17,6 +17,7 @@ import java.util.Iterator;
 
 import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.io.WKTWriter;
 import org.locationtech.jts.triangulate.quadedge.LocateFailureException;
 import org.locationtech.jts.triangulate.quadedge.QuadEdge;
@@ -113,22 +114,30 @@ public class IncrementalDelaunayTriangulator
 		 * If it is not, flip the edge and continue testing.
 		 * 
 		 * Since the frame is not infinitely far away,
-		 * edges which touch the frame or are adjacent too it require special logic
-		 * to ensure they maintain a convex boundary for the inner triangulation.
+		 * edges which touch the frame or are adjacent to it require logic
+		 * to ensure the inner triangulation maintains a convex boundary.
 		 */
 		do {
+System.out.println(e);
+if (e.dest().getCoordinate().equals2D(new Coordinate(2, 204))) {
+  System.out.println("---> " + e);
+  System.out.println(subdiv.getTriangles(true, new GeometryFactory()));
+}
+System.out.println(subdiv.getTriangles(true, new GeometryFactory()));
+
       boolean doFlip = false;
-      
       if (subdiv.isFrameVertex(e.dest())) {
         doFlip = doFlipAtFrameVertex(e);
       }
       else if (subdiv.isFrameVertex(e.orig())) {
         doFlip = doFlipAtFrameVertex(e.sym());
       }
+      /*
       else if (isBetweenFrameAndInserted(e, v)) {
         //-- don't flip if edge lies between the inserted vertex and a frame vertex
         doFlip = false;
       }
+      */
       else {
         //-- general case - flip if vertex is in circumcircle
         QuadEdge t = e.oPrev();
@@ -150,17 +159,20 @@ public class IncrementalDelaunayTriangulator
     } while (true);
 	}
 
+	/**
+	 * Tests if a edge terminating in a frame vertex should be flipped.
+	 * The edge is flipped if it creates a concavity in the triangulation boundary.
+	 * 
+	 * @param e an edge whose dest is a frame vertex
+	 * @return true if the edge should be flipped
+	 */
   private boolean doFlipAtFrameVertex(QuadEdge e) {
-    boolean doFlip;
     //-- if an edge adjacent to e is a frame edge, don't flip
     if (subdiv.isFrameTriangleEdge(e.dNext()) || subdiv.isFrameTriangleEdge(e.dPrev())) {
-      doFlip = false;
+      return false;
     }
-    else {
-      //-- flip if boundary is concave
-      doFlip = isConcaveAtOrigin(e);
-    }
-    return doFlip;
+    //-- flip if boundary is concave
+    return isConcaveAtOrigin(e);
   }
 
   private static boolean isConcaveAtOrigin(QuadEdge e) {
@@ -175,7 +187,14 @@ public class IncrementalDelaunayTriangulator
     return isConcave;
   }
 
-
+  /**
+   * Edges whose adjacent triangles contain
+   * a frame vertex and the inserted vertex must not be flipped.
+   *
+   * @param e the edge to test
+   * @param vInsert the inserted vertex
+   * @return true if the edge is between the frame and inserted vertex
+   */
   private boolean isBetweenFrameAndInserted(QuadEdge e, Vertex vInsert) {
     Vertex v1 = e.oNext().dest();
     Vertex v2 = e.oPrev().dest();

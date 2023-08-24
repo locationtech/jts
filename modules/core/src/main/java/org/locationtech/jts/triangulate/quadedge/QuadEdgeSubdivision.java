@@ -878,6 +878,18 @@ public class QuadEdgeSubdivision {
 		return geomFact.createGeometryCollection(tris);
 	}
 
+	 public Geometry getTriangles(boolean includeFrame, GeometryFactory geomFact) {
+	    List triPtsList = getTriangleCoordinates(includeFrame);
+	    Polygon[] tris = new Polygon[triPtsList.size()];
+	    int i = 0;
+	    for (Iterator it = triPtsList.iterator(); it.hasNext();) {
+	      Coordinate[] triPt = (Coordinate[]) it.next();
+	      tris[i++] = geomFact
+	          .createPolygon(geomFact.createLinearRing(triPt));
+	    }
+	    return geomFact.createGeometryCollection(tris);
+	  }
+	 
 	/**
 	 * Gets the cells in the Voronoi diagram for this triangulation.
 	 * The cells are returned as a {@link GeometryCollection} of {@link Polygon}s
