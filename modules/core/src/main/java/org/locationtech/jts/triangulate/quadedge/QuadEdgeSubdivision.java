@@ -617,6 +617,23 @@ public class QuadEdgeSubdivision {
 		return edges;
 	}
   
+	/**
+	 * Gets the edges which touch frame vertices.
+	 * The returned edges are oriented so that their origin is a frame vertex.
+	 * @return the edges which touch the frame
+	 */
+	public List<QuadEdge> getFrameEdges() {
+	  List<QuadEdge> edges = getPrimaryEdges(true);
+	  List<QuadEdge> frameEdges = new ArrayList<QuadEdge>();
+	  for (QuadEdge e : edges) {
+	    if (isFrameEdge(e)) {
+	      QuadEdge fe = isFrameVertex(e.orig()) ? e : e.sym();
+	      frameEdges.add(fe);
+	    }
+	  }
+	  return frameEdges;
+	}
+	
   /**
    * A TriangleVisitor which computes and sets the 
    * circumcentre as the origin of the dual 
@@ -967,6 +984,66 @@ public class QuadEdgeSubdivision {
     Vertex v = startQE.orig();
     cellPoly.setUserData(v.getCoordinate());
     return cellPoly;
+  }
+  
+  public void makeFrameDelaunay() {
+    List<QuadEdge> edges = getFrameEdges();
+    for (QuadEdge e : edges) {
+      Vertex a0 = e.oPrev().dest();
+      Vertex a1 = e.oNext().dest();
+      boolean isDelaunay = ! a1.isInCircle(e.orig(), a0, e.dest());
+      if (! isDelaunay) {
+        QuadEdge.swap(e);
+      }
+    }
+  }
+  
+  /**
+   * Tests whether a subdivision is a valid Delaunay Triangulation.
+   * This is the case iff every edge is locally Delaunay, meaning that
+   * the apex of one adjacent triangle is not inside the circumcircle 
+   * of the other adjacent triangle.
+   * 
+   * @return true if the subdivision is Delaunay
+   */
+  public boolean isDelaunay() {
+    List<QuadEdge> edges = getPrimaryEdges(true);
+    for (QuadEdge e : edges) {
+      Vertex a0 = e.oPrev().dest();
+      Vertex a1 = e.oNext().dest();
+      boolean isDelaunay = ! a1.isInCircle(e.orig(), a0, e.dest());
+      if (! isDelaunay) {
+        /*
+        System.out.println(WKTWriter.toLineString(new Coordinate[] {
+            e.orig().getCoordinate(), a0.getCoordinate(), e.dest().getCoordinate()
+        }));
+        */
+        return false;
+      }
+    }
+    return true;
+  }
+  
+  /**
+   * Tests whether the frame edges are Delaunay
+   * @return true if the frame edges are Delaunay
+   */
+  public boolean isFrameDelaunay() {
+    List<QuadEdge> edges = getFrameEdges();
+    for (QuadEdge e : edges) {
+      Vertex a0 = e.oPrev().dest();
+      Vertex a1 = e.oNext().dest();
+      boolean isDelaunay = ! a1.isInCircle(e.orig(), a0, e.dest());
+      if (! isDelaunay) {
+        /*
+        System.out.println(WKTWriter.toLineString(new Coordinate[] {
+            e.orig().getCoordinate(), a0.getCoordinate(), e.dest().getCoordinate()
+        }));
+        */
+        return false;
+      }
+    }
+    return true;
   }
   
 }

@@ -74,6 +74,6 @@ public class VoronoiTest extends GeometryTestCase {
   	Geometry expected = read(expectedWKT);
   	result.normalize();
   	expected.normalize();
-  	assertTrue(expected.equalsExact(result, COMPARISON_TOLERANCE));
+  	checkEqual(expected, result, COMPARISON_TOLERANCE);
   }
 }
