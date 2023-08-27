@@ -52,6 +52,15 @@ public class TriangleFunctions {
       return Triangle.circumradius(pts[0], pts[1], pts[2]);
   }
   
+  public static Geometry circumcircle(Geometry g, int quadSegs)
+  {
+    Coordinate[] pts = trianglePts(g);
+    Coordinate cc = Triangle.circumcentreDD(pts[0], pts[1], pts[2]);
+    Geometry ccPt = g.getFactory().createPoint(cc);
+    double cr = Triangle.circumradius(pts[0], pts[1], pts[2]);
+    return ccPt.buffer(cr, quadSegs);
+  }
+  
   public static Geometry circumcentreDD(Geometry g)
   {
     return GeometryMapper.map(g, 
