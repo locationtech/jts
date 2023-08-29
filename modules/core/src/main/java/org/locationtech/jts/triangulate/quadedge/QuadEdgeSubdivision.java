@@ -416,7 +416,7 @@ public class QuadEdgeSubdivision {
 			return true;
 		return false;
 	}
-	 
+
 	/**
 	 * Tests whether a QuadEdge is an edge on the border of the frame facets and
 	 * the internal facets. E.g. an edge which does not itself touch a frame
