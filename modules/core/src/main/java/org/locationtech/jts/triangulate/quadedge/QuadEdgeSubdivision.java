@@ -986,18 +986,6 @@ public class QuadEdgeSubdivision {
     return cellPoly;
   }
   
-  public void makeFrameDelaunay() {
-    List<QuadEdge> edges = getFrameEdges();
-    for (QuadEdge e : edges) {
-      Vertex a0 = e.oPrev().dest();
-      Vertex a1 = e.oNext().dest();
-      boolean isDelaunay = ! a1.isInCircle(e.orig(), a0, e.dest());
-      if (! isDelaunay) {
-        QuadEdge.swap(e);
-      }
-    }
-  }
-  
   /**
    * Tests whether a subdivision is a valid Delaunay Triangulation.
    * This is the case iff every edge is locally Delaunay, meaning that
@@ -1028,6 +1016,7 @@ public class QuadEdgeSubdivision {
    * Tests whether the frame edges are Delaunay
    * @return true if the frame edges are Delaunay
    */
+  /*
   public boolean isFrameDelaunay() {
     List<QuadEdge> edges = getFrameEdges();
     for (QuadEdge e : edges) {
@@ -1035,15 +1024,23 @@ public class QuadEdgeSubdivision {
       Vertex a1 = e.oNext().dest();
       boolean isDelaunay = ! a1.isInCircle(e.orig(), a0, e.dest());
       if (! isDelaunay) {
-        /*
-        System.out.println(WKTWriter.toLineString(new Coordinate[] {
-            e.orig().getCoordinate(), a0.getCoordinate(), e.dest().getCoordinate()
-        }));
-        */
+
         return false;
       }
     }
     return true;
   }
   
+  public void makeFrameDelaunay() {
+    List<QuadEdge> edges = getFrameEdges();
+    for (QuadEdge e : edges) {
+      Vertex a0 = e.oPrev().dest();
+      Vertex a1 = e.oNext().dest();
+      boolean isDelaunay = ! a1.isInCircle(e.orig(), a0, e.dest());
+      if (! isDelaunay) {
+        QuadEdge.swap(e);
+      }
+    }
+  }
+  */
 }

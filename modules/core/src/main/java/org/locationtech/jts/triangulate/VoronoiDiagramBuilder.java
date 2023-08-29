@@ -22,10 +22,7 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryCollection;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Polygon;
-import org.locationtech.jts.io.WKTWriter;
-import org.locationtech.jts.triangulate.quadedge.QuadEdge;
 import org.locationtech.jts.triangulate.quadedge.QuadEdgeSubdivision;
-import org.locationtech.jts.triangulate.quadedge.Vertex;
 
 
 /**
@@ -128,12 +125,12 @@ public class VoronoiDiagramBuilder
 		List vertices = DelaunayTriangulationBuilder.toVertices(siteCoords);
 		subdiv = new QuadEdgeSubdivision(diagramEnv, tolerance);
 		IncrementalDelaunayTriangulator triangulator = new IncrementalDelaunayTriangulator(subdiv);
-		triangulator.insertSites(vertices);
 		/**
-		 * The logic in IncrementalDelaunayTriangulator to ensure a convex boundary
-		 * can sometimes leave the frame edges as non-Delaunay.
+		 * Avoid creating very narrow triangles along triangulation boundary.
+		 * These otherwise can cause malformed Voronoi cells.
 		 */
-    subdiv.makeFrameDelaunay();
+		triangulator.forceConvex(false);
+		triangulator.insertSites(vertices);
 	}
   
 	/**
@@ -164,11 +161,13 @@ public class VoronoiDiagramBuilder
 		Geometry polys = subdiv.getVoronoiDiagram(geomFact);
 		
 		/*
+    System.out.println(polys);
 		Geometry tris = subdiv.getTriangles(true, geomFact);
+		System.out.println(tris);
 		if (! subdiv.isFrameDelaunay()) {
 		  throw new IllegalStateException("Triangulation frame is not Delaunay");
 		}
-		*/
+		//*/
 		
 		//-- clip polys to diagramEnv
 		return clipGeometryCollection(polys, diagramEnv);

@@ -17,8 +17,6 @@ import java.util.Iterator;
 
 import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.io.WKTWriter;
 import org.locationtech.jts.triangulate.quadedge.LocateFailureException;
 import org.locationtech.jts.triangulate.quadedge.QuadEdge;
 import org.locationtech.jts.triangulate.quadedge.QuadEdgeSubdivision;
@@ -36,6 +34,7 @@ public class IncrementalDelaunayTriangulator
 {
 	private QuadEdgeSubdivision subdiv;
 	private boolean isUsingTolerance = false;
+  private boolean isForceConvex = true;
 
 	/**
 	 * Creates a new triangulator using the given {@link QuadEdgeSubdivision}.
@@ -50,6 +49,23 @@ public class IncrementalDelaunayTriangulator
 		
 	}
 
+	/**
+	 * Sets whether the triangulation is forced to have a convex boundary.
+	 * Because of the use of a finite-size frame, this condition requires
+	 * special logic to enforce.
+	 * The default is true, since this is a requirement for some uses
+	 * of Delaunay Triangulations (such as Concave Hull generation).
+	 * However, forcing the triangulation boundary to be convex
+	 * may cause the overall frame triangulation to be non-Delaunay.
+	 * This can cause a problem for Voronoi generation,
+	 * so the logic can be disabled via this method.
+	 * 
+	 * @param isForceConvex true if the triangulation boundary is forced to be convex
+	 */
+  public void forceConvex(boolean isForceConvex) {
+    this.isForceConvex = isForceConvex;
+  }
+  
 	/**
 	 * Inserts all sites in a collection. The inserted vertices <b>MUST</b> be
 	 * unique up to the provided tolerance value. (i.e. no two vertices should be
@@ -122,14 +138,16 @@ public class IncrementalDelaunayTriangulator
       QuadEdge t = e.oPrev();
       boolean doFlip = t.dest().rightOf(e) && v.isInCircle(e.orig(), t.dest(), e.dest());
       
-      //-- special cases to ensure triangulation boundary is convex
-      if (isConcaveBoundary(e)) {
-        //-- flip if the triangulation boundary is concave
-        doFlip = true;
-      }
-      else if (isBetweenFrameAndInserted(e, v)) {
-        //-- don't flip if edge lies between the inserted vertex and a frame vertex
-        doFlip = false;
+      if (isForceConvex) {
+        //-- special cases to ensure triangulation boundary is convex
+        if (isConcaveBoundary(e)) {
+          //-- flip if the triangulation boundary is concave
+          doFlip = true;
+        }
+        else if (isBetweenFrameAndInserted(e, v)) {
+          //-- don't flip if edge lies between the inserted vertex and a frame vertex
+          doFlip = false;
+        }
       }
       
       if (doFlip) {
