@@ -617,22 +617,23 @@ public class QuadEdgeSubdivision {
 		return edges;
 	}
   
-	/**
-	 * Gets the edges which touch frame vertices.
-	 * The returned edges are oriented so that their origin is a frame vertex.
-	 * @return the edges which touch the frame
-	 */
-	public List<QuadEdge> getFrameEdges() {
-	  List<QuadEdge> edges = getPrimaryEdges(true);
-	  List<QuadEdge> frameEdges = new ArrayList<QuadEdge>();
-	  for (QuadEdge e : edges) {
-	    if (isFrameEdge(e)) {
-	      QuadEdge fe = isFrameVertex(e.orig()) ? e : e.sym();
-	      frameEdges.add(fe);
-	    }
-	  }
-	  return frameEdges;
-	}
+  /**
+   * Gets the edges which touch frame vertices. The returned edges are oriented so
+   * that their origin is a frame vertex.
+   * 
+   * @return the edges which touch the frame
+   */
+  public List<QuadEdge> getFrameEdges() {
+    List<QuadEdge> edges = getPrimaryEdges(true);
+    List<QuadEdge> frameEdges = new ArrayList<QuadEdge>();
+    for (QuadEdge e : edges) {
+      if (isFrameEdge(e)) {
+        QuadEdge fe = isFrameVertex(e.orig()) ? e : e.sym();
+        frameEdges.add(fe);
+      }
+    }
+    return frameEdges;
+  }
 	
   /**
    * A TriangleVisitor which computes and sets the 
