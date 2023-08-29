@@ -23,12 +23,13 @@ import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.operation.overlayng.CoverageUnion;
 import org.locationtech.jts.triangulate.DelaunayTriangulationBuilder;
+import org.locationtech.jts.triangulate.VoronoiDiagramBuilder;
 import org.locationtech.jts.util.Memory;
 import org.locationtech.jts.util.Stopwatch;
 
 /**
- * Test correctness of Delaunay computation with various larger 
- * synthetic datasets.
+ * Test correctness of Delaunay computation with 
+ * synthetic random datasets.
  * 
  * @author Martin Davis
  *
@@ -46,7 +47,7 @@ public class DelaunayStressTest
   }
 	
 	final static GeometryFactory geomFact = new GeometryFactory();
-  private static final double WIDTH = 1;
+  private static final double WIDTH = 100;
   private static final double HEIGHT = 100;
 	
 	
@@ -75,12 +76,22 @@ public class DelaunayStressTest
 		Geometry tris = builder.getTriangles(geomFact);
 		checkDelaunay(tris);
 		
+		checkVoronoi(pts);
+		
 		System.out.println("  --  Time: " + sw.getTimeString()
 				+ "  Mem: " + Memory.usedTotalString());
 //		System.out.println(g);
 	}
 	
-	private void checkDelaunay(Geometry tris) {
+	private void checkVoronoi(List<Coordinate> pts) {
+	  VoronoiDiagramBuilder vdb = new VoronoiDiagramBuilder();
+	  vdb.setSites(pts);
+	  vdb.getDiagram(geomFact);
+	  
+	  //-- for now simply confirm the Voronoi is computed with no failure
+  }
+
+  private void checkDelaunay(Geometry tris) {
 	  //TODO: check all elements are triangles
 	  
 	  //-- check triangulation is a coverage
