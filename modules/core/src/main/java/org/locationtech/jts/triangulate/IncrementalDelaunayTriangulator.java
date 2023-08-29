@@ -15,6 +15,8 @@ package org.locationtech.jts.triangulate;
 import java.util.Collection;
 import java.util.Iterator;
 
+import org.locationtech.jts.algorithm.Orientation;
+import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.triangulate.quadedge.LocateFailureException;
 import org.locationtech.jts.triangulate.quadedge.QuadEdge;
 import org.locationtech.jts.triangulate.quadedge.QuadEdgeSubdivision;
@@ -32,6 +34,7 @@ public class IncrementalDelaunayTriangulator
 {
 	private QuadEdgeSubdivision subdiv;
 	private boolean isUsingTolerance = false;
+  private boolean isForceConvex = true;
 
 	/**
 	 * Creates a new triangulator using the given {@link QuadEdgeSubdivision}.
@@ -46,6 +49,22 @@ public class IncrementalDelaunayTriangulator
 		
 	}
 
+  /**
+   * Sets whether the triangulation is forced to have a convex boundary. Because
+   * of the use of a finite-size frame, this condition requires special logic to
+   * enforce. The default is true, since this is a requirement for some uses of
+   * Delaunay Triangulations (such as Concave Hull generation). However, forcing
+   * the triangulation boundary to be convex may cause the overall frame
+   * triangulation to be non-Delaunay. This can cause a problem for Voronoi
+   * generation, so the logic can be disabled via this method.
+   * 
+   * @param isForceConvex true if the triangulation boundary is forced to be
+   *                      convex
+   */
+  public void forceConvex(boolean isForceConvex) {
+    this.isForceConvex = isForceConvex;
+  }
+  
 	/**
 	 * Inserts all sites in a collection. The inserted vertices <b>MUST</b> be
 	 * unique up to the provided tolerance value. (i.e. no two vertices should be
@@ -105,19 +124,89 @@ public class IncrementalDelaunayTriangulator
 			e = base.oPrev();
 		} while (e.lNext() != startEdge);
 
-		// Examine suspect edges to ensure that the Delaunay condition
-		// is satisfied.
+		/**
+		 * Examine suspect edges to ensure that the Delaunay condition is satisfied.
+		 * If it is not, flip the edge and continue scanning.
+		 * 
+		 * Since the frame is not infinitely far away,
+		 * edges which touch the frame or are adjacent to it require special logic
+		 * to ensure the inner triangulation maintains a convex boundary.
+		 */
 		do {
-			QuadEdge t = e.oPrev();
-			if (t.dest().rightOf(e) && v.isInCircle(e.orig(), t.dest(), e.dest())) {
-				QuadEdge.swap(e);
-				e = e.oPrev();
-			} else if (e.oNext() == startEdge) {
-				return base; // no more suspect edges.
-			} else {
-				e = e.oNext().lPrev();
-			}
-		} while (true);
+       //-- general case - flip if vertex is in circumcircle
+      QuadEdge t = e.oPrev();
+      boolean doFlip = t.dest().rightOf(e) && v.isInCircle(e.orig(), t.dest(), e.dest());
+      
+      if (isForceConvex) {
+        //-- special cases to ensure triangulation boundary is convex
+        if (isConcaveBoundary(e)) {
+          //-- flip if the triangulation boundary is concave
+          doFlip = true;
+        }
+        else if (isBetweenFrameAndInserted(e, v)) {
+          //-- don't flip if edge lies between the inserted vertex and a frame vertex
+          doFlip = false;
+        }
+      }
+      
+      if (doFlip) {
+        //-- flip the edge within its quadrilateral
+        QuadEdge.swap(e);
+        e = e.oPrev();
+        continue;
+      }
+      
+      if (e.oNext() == startEdge) {
+        return base; // no more suspect edges.
+      } else {
+        e = e.oNext().lPrev();
+      }
+    } while (true);
 	}
 
+	/**
+	 * Tests if a edge touching a frame vertex 
+	 * creates a concavity in the triangulation boundary.
+	 * 
+	 * @param e the edge to test
+	 * @return true if the triangulation boundary is concave at the edge
+	 */
+  private boolean isConcaveBoundary(QuadEdge e) {
+    if (subdiv.isFrameVertex(e.dest())) {
+      return isConcaveAtOrigin(e);
+    }
+    if (subdiv.isFrameVertex(e.orig())) {
+      return isConcaveAtOrigin(e.sym());
+    }
+    return false;
+  }
+
+  /**
+   * Tests if the quadrilateral surrounding an edge is concave at the edge origin.
+   * Used to determine if the triangulation boundary has a concavity.
+   * @param e
+   * @return
+   */
+  private static boolean isConcaveAtOrigin(QuadEdge e) {
+    Coordinate p = e.orig().getCoordinate();
+    Coordinate pp = e.oPrev().dest().getCoordinate();
+    Coordinate pn = e.oNext().dest().getCoordinate();
+    boolean isConcave = Orientation.COUNTERCLOCKWISE == Orientation.index(pp, pn, p);
+    return isConcave;
+  }
+
+  /**
+   * Edges whose adjacent triangles contain
+   * a frame vertex and the inserted vertex must not be flipped.
+   *
+   * @param e the edge to test
+   * @param vInsert the inserted vertex
+   * @return true if the edge is between the frame and inserted vertex
+   */
+  private boolean isBetweenFrameAndInserted(QuadEdge e, Vertex vInsert) {
+    Vertex v1 = e.oNext().dest();
+    Vertex v2 = e.oPrev().dest();
+    return (v1 == vInsert && subdiv.isFrameVertex(v2))
+        || (v2 == vInsert && subdiv.isFrameVertex(v1));
+  }
 }

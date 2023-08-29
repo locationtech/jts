@@ -125,9 +125,14 @@ public class VoronoiDiagramBuilder
 		List vertices = DelaunayTriangulationBuilder.toVertices(siteCoords);
 		subdiv = new QuadEdgeSubdivision(diagramEnv, tolerance);
 		IncrementalDelaunayTriangulator triangulator = new IncrementalDelaunayTriangulator(subdiv);
+		/**
+		 * Avoid creating very narrow triangles along triangulation boundary.
+		 * These otherwise can cause malformed Voronoi cells.
+		 */
+		triangulator.forceConvex(false);
 		triangulator.insertSites(vertices);
 	}
-	
+  
 	/**
 	 * Gets the {@link QuadEdgeSubdivision} which models the computed diagram.
 	 * 
@@ -155,11 +160,20 @@ public class VoronoiDiagramBuilder
 		create();
 		Geometry polys = subdiv.getVoronoiDiagram(geomFact);
 		
-		// clip polys to diagramEnv
+		/*
+    System.out.println(polys);
+		Geometry tris = subdiv.getTriangles(true, geomFact);
+		System.out.println(tris);
+		if (! subdiv.isFrameDelaunay()) {
+		  throw new IllegalStateException("Triangulation frame is not Delaunay");
+		}
+		//*/
+		
+		//-- clip polys to diagramEnv
 		return clipGeometryCollection(polys, diagramEnv);
 	}
-	
-	private static Geometry clipGeometryCollection(Geometry geom, Envelope clipEnv)
+
+  private static Geometry clipGeometryCollection(Geometry geom, Envelope clipEnv)
 	{
 		Geometry clipPoly = geom.getFactory().toGeometry(clipEnv);
 		List clipped = new ArrayList();
