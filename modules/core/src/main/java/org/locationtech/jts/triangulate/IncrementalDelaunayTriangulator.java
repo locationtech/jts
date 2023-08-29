@@ -49,19 +49,18 @@ public class IncrementalDelaunayTriangulator
 		
 	}
 
-	/**
-	 * Sets whether the triangulation is forced to have a convex boundary.
-	 * Because of the use of a finite-size frame, this condition requires
-	 * special logic to enforce.
-	 * The default is true, since this is a requirement for some uses
-	 * of Delaunay Triangulations (such as Concave Hull generation).
-	 * However, forcing the triangulation boundary to be convex
-	 * may cause the overall frame triangulation to be non-Delaunay.
-	 * This can cause a problem for Voronoi generation,
-	 * so the logic can be disabled via this method.
-	 * 
-	 * @param isForceConvex true if the triangulation boundary is forced to be convex
-	 */
+  /**
+   * Sets whether the triangulation is forced to have a convex boundary. Because
+   * of the use of a finite-size frame, this condition requires special logic to
+   * enforce. The default is true, since this is a requirement for some uses of
+   * Delaunay Triangulations (such as Concave Hull generation). However, forcing
+   * the triangulation boundary to be convex may cause the overall frame
+   * triangulation to be non-Delaunay. This can cause a problem for Voronoi
+   * generation, so the logic can be disabled via this method.
+   * 
+   * @param isForceConvex true if the triangulation boundary is forced to be
+   *                      convex
+   */
   public void forceConvex(boolean isForceConvex) {
     this.isForceConvex = isForceConvex;
   }

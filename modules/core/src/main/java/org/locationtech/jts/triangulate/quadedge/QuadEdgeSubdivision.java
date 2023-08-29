@@ -884,17 +884,24 @@ public class QuadEdgeSubdivision {
 		return geomFact.createGeometryCollection(tris);
 	}
 
-	 public Geometry getTriangles(boolean includeFrame, GeometryFactory geomFact) {
-	    List triPtsList = getTriangleCoordinates(includeFrame);
-	    Polygon[] tris = new Polygon[triPtsList.size()];
-	    int i = 0;
-	    for (Iterator it = triPtsList.iterator(); it.hasNext();) {
-	      Coordinate[] triPt = (Coordinate[]) it.next();
-	      tris[i++] = geomFact
-	          .createPolygon(geomFact.createLinearRing(triPt));
-	    }
-	    return geomFact.createGeometryCollection(tris);
-	  }
+	/**
+   * Gets the geometry for the triangles in a triangulated subdivision as a {@link GeometryCollection}
+   * of triangular {@link Polygon}s, optionally including the frame triangles.
+   * 
+ 	 * @param includeFrame true if the frame triangles should be included
+ 	 * @param geomFact the GeometryFactory to use
+   * @return a GeometryCollection of triangular Polygons
+	 */
+  public Geometry getTriangles(boolean includeFrame, GeometryFactory geomFact) {
+    List triPtsList = getTriangleCoordinates(includeFrame);
+    Polygon[] tris = new Polygon[triPtsList.size()];
+    int i = 0;
+    for (Iterator it = triPtsList.iterator(); it.hasNext();) {
+      Coordinate[] triPt = (Coordinate[]) it.next();
+      tris[i++] = geomFact.createPolygon(geomFact.createLinearRing(triPt));
+    }
+    return geomFact.createGeometryCollection(tris);
+  }
 	 
 	/**
 	 * Gets the cells in the Voronoi diagram for this triangulation.
