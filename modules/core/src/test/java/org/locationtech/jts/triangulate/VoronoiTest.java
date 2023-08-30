@@ -52,6 +52,16 @@ public class VoronoiTest extends GeometryTestCase {
     runVoronoi(wkt);    
   }
   
+  /**
+   * This test fails if the frame is forced to be convex via {@link IncrementalDelaunayTriangulator#forceConvex(boolean)}.
+   * It is also dependent on the frame size factor - a value of 10 causes failure, 
+   * but larger values may not.
+   */
+  public void testFrameDisableForceConvex() {
+    String wkt = "MULTIPOINT ((259 289), (46 194), (396 359), (243 349), (206 99), (470 40), (429 185), (54 9), (78 208), (457 406), (355 191), (346 497), (144 79), (35 459), (322 37), (181 371), (359 257), (57 331), (225 139), (475 245), (416 364), (155 477), (123 232), (102 141), (251 434))";
+    runVoronoi(wkt);    
+  }
+  
   static final double COMPARISON_TOLERANCE = 1.0e-7;
 	
 	private void runVoronoi(String sitesWKT) {
