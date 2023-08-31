@@ -158,9 +158,9 @@ public class IncrementalDelaunayTriangulator
       
       if (e.oNext() == startEdge) {
         return base; // no more suspect edges.
-      } else {
-        e = e.oNext().lPrev();
       }
+      //-- check next edge
+      e = e.oNext().lPrev();
     } while (true);
 	}
 
