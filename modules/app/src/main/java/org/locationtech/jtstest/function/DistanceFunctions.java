@@ -82,6 +82,10 @@ public class DistanceFunctions {
     return IndexedFacetDistance.distance(a, b);
   }
   
+  public static boolean isWithinDistanceIndexed(Geometry a, Geometry b, double distance) {
+    return IndexedFacetDistance.isWithinDistance(a, b, distance);
+  }
+  
   public static Geometry nearestPointsIndexed(Geometry a, Geometry b) {
     Coordinate[] pts =  IndexedFacetDistance.nearestPoints(a, b);
     return a.getFactory().createLineString(pts);
