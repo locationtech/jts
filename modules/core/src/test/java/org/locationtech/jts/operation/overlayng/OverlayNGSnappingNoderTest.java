@@ -11,6 +11,7 @@
  */
 package org.locationtech.jts.operation.overlayng;
 
+import static org.locationtech.jts.operation.overlayng.OverlayNG.DIFFERENCE;
 import static org.locationtech.jts.operation.overlayng.OverlayNG.INTERSECTION;
 import static org.locationtech.jts.operation.overlayng.OverlayNG.UNION;
 
@@ -70,9 +71,25 @@ public class OverlayNGSnappingNoderTest extends GeometryTestCase {
     checkEqual(expected, union(a, b, 0.1));
   }
   
+  /**
+   * Failing due to OverlayUtil#isResultAreaConsistent
+   * See https://github.com/locationtech/jts/issues/951
+   */
+  public void testRotatedVerticesDifference() {
+    Geometry a = read("POLYGON ((0.37676311 2.57570853, 7.28652472 0.00028375, 7.60034931 0.81686059, 0.50229292 3.4551325, 0.37676311 2.57570853))");
+    Geometry b = read("POLYGON ((0.50229292 3.4551325, 7.60034931 0.81686059, 7.28652472 0.00028375, 0.37676311 2.57570853, 0.50229292 3.4551325))");
+    Geometry expected = read("POLYGON EMPTY");
+    checkEqual(expected, difference(a, b, 0.00001));
+  }
+  
   public static Geometry union(Geometry a, Geometry b, double tolerance) {
     Noder noder = getNoder(tolerance);
     return OverlayNG.overlay(a, b, UNION, null, noder );
+  }
+
+  public static Geometry difference(Geometry a, Geometry b, double tolerance) {
+    Noder noder = getNoder(tolerance);
+    return OverlayNG.overlay(a, b, DIFFERENCE, null, noder );
   }
 
   private static Noder getNoder(double tolerance) {
