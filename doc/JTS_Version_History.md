@@ -59,6 +59,7 @@ Distributions for older JTS versions can be obtained at the
 * Make intersection computation more robust (#989)
 * Fix `VariableBuffer` to handle zero vertex buffer distances correctly (#997)
 * Fix IncrementalDelaunayTriangulator to ensure triangulation boundary is convex (#1004)
+* Fix OverlayNG Area Check heuristic for difference (#1005)
 
 ### Performance Improvements
 
