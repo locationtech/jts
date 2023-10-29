@@ -74,7 +74,7 @@ If you are interested in contributing to JTS please read the [**Contributing Gui
 * [**GEOS**](https://trac.osgeo.org/geos) - C++
 * [**NetTopologySuite**](https://github.com/NetTopologySuite/NetTopologySuite) - .NET
 * [**JSTS**](https://github.com/bjornharrtell/jsts) - JavaScript
-* [**dart_jts]([https://pub.dev/packages/dart_jts](https://github.com/moovida/dart_jts)) - Dart
+* [**dart_jts]([https://pub.dev/packages/dart_jts](https://github.com/moovida/dart_jts) - Dart
 
 ### Via GEOS
 * [**Shapely**](https://github.com/Toblerity/Shapely) - Python wrapper of GEOS
