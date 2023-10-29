@@ -56,6 +56,9 @@ public class InteriorPointPoint {
    */
   private void add(Geometry geom)
   {
+    if (geom.isEmpty())
+      return;
+    
     if (geom instanceof Point) {
       add(geom.getCoordinate());
     }
