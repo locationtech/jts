@@ -6,6 +6,7 @@
   <a>    POINT(10 10)  </a>
   <b>    POINT EMPTY  </b>
 <test><op name="distance" arg1="A" arg2="B">    0.0   </op></test>
+<test><op name="distance" arg1="B" arg2="A">    0.0   </op></test>
 </case>
 
 <case>
@@ -13,6 +14,31 @@
   <a>    POINT(10 10)  </a>
   <b>    POINT (10 0)  </b>
 <test><op name="distance" arg1="A" arg2="B">    10.0   </op></test>
+<test><op name="distance" arg1="B" arg2="A">    10.0   </op></test>
+</case>
+
+<case>
+  <desc>PP - point to multipoint</desc>
+  <a>    POINT(10 10)  </a>
+  <b>    MULTIPOINT ((10 0), (30 30))  </b>
+<test><op name="distance" arg1="A" arg2="B">    10.0   </op></test>
+<test><op name="distance" arg1="B" arg2="A">    10.0   </op></test>
+</case>
+
+<case>
+  <desc>PP - point to multipoint with empty element</desc>
+  <a>    POINT(10 10)  </a>
+  <b>    MULTIPOINT ((10 0), EMPTY)  </b>
+<test><op name="distance" arg1="A" arg2="B">    10.0   </op></test>
+<test><op name="distance" arg1="B" arg2="A">    10.0   </op></test>
+</case>
+
+<case>
+  <desc>LL - line to empty line</desc>
+  <a>    LINESTRING (0 0, 0 10)  </a>
+  <b>    LINESTRING EMPTY  </b>
+<test><op name="distance" arg1="A" arg2="B">    0.0   </op></test>
+<test><op name="distance" arg1="B" arg2="A">    0.0   </op></test>
 </case>
 
 <case>
@@ -20,6 +46,31 @@
   <a>    LINESTRING (0 0, 0 10)  </a>
   <b>    LINESTRING (10 0, 10 10)  </b>
 <test><op name="distance" arg1="A" arg2="B">    10.0   </op></test>
+<test><op name="distance" arg1="B" arg2="A">    10.0   </op></test>
+</case>
+
+<case>
+  <desc>LL - line to multiline</desc>
+  <a>    LINESTRING (0 0, 0 10)  </a>
+  <b>    MULTILINESTRING ((10 0, 10 10), (50 50, 60 60))  </b>
+<test><op name="distance" arg1="A" arg2="B">    10.0   </op></test>
+<test><op name="distance" arg1="B" arg2="A">    10.0   </op></test>
+</case>
+
+<case>
+  <desc>LL - line to multiline with empty element</desc>
+  <a>    LINESTRING (0 0, 0 10)  </a>
+  <b>    MULTILINESTRING ((10 0, 10 10), EMPTY)  </b>
+<test><op name="distance" arg1="A" arg2="B">    10.0   </op></test>
+<test><op name="distance" arg1="B" arg2="A">    10.0   </op></test>
+</case>
+
+<case>
+  <desc>PA - point to empty polygon</desc>
+  <a>    POINT (240 160)  </a>
+  <b>    POLYGON EMPTY  </b>
+<test><op name="distance" arg1="A" arg2="B" >    0.0   </op></test>
+<test><op name="distance" arg1="B" arg2="A" >    0.0   </op></test>
 </case>
 
 <case>
@@ -27,6 +78,7 @@
   <a>    POINT (240 160)  </a>
   <b>    POLYGON ((100 260, 340 180, 100 60, 180 160, 100 260))  </b>
 <test><op name="distance" arg1="A" arg2="B" >    0.0   </op></test>
+<test><op name="distance" arg1="B" arg2="A" >    0.0   </op></test>
 </case>
 
 <case>
@@ -34,6 +86,7 @@
   <a>    LINESTRING (40 300, 280 220, 60 160, 140 60)  </a>
   <b>    LINESTRING (140 360, 260 280, 240 120, 120 160)  </b>
 <test><op name="distance" arg1="A" arg2="B" >    0.0   </op></test>
+<test><op name="distance" arg1="B" arg2="A" >    0.0   </op></test>
 </case>
 
 <case>
@@ -41,6 +94,7 @@
   <a>    POLYGON ((60 260, 260 180, 100 60, 60 160, 60 260))  </a>
   <b>    POLYGON ((220 280, 120 160, 300 60, 360 220, 220 280))  </b>
 <test><op name="distance" arg1="A" arg2="B" >    0.0   </op></test>
+<test><op name="distance" arg1="B" arg2="A" >    0.0   </op></test>
 </case>
 
 <case>
@@ -48,6 +102,7 @@
   <a>    POLYGON ((100 320, 60 120, 240 180, 200 260, 100 320))  </a>
   <b>    POLYGON ((420 320, 280 260, 400 100, 420 320))  </b>
 <test><op name="distance" arg1="A" arg2="B" >   71.55417527999327  </op></test>
+<test><op name="distance" arg1="B" arg2="A" >   71.55417527999327  </op></test>
 </case>
 
 <case>
@@ -55,13 +110,23 @@
   <a>    MULTIPOLYGON (((40 240, 160 320, 40 380, 40 240)),   ((100 240, 240 60, 40 40, 100 240)))  </a>
   <b>    MULTIPOLYGON (((220 280, 120 160, 300 60, 360 220, 220 280)),   ((240 380, 280 300, 420 340, 240 380)))  </b>
 <test><op name="distance" arg1="A" arg2="B" >    0.0   </op></test>
+<test><op name="distance" arg1="B" arg2="A" >    0.0   </op></test>
 </case>
 
 <case>
-  <desc>mAmA - multipolygon with empty component</desc>
+  <desc>mAmA - multipolygon with empty element</desc>
   <a> MULTIPOLYGON (EMPTY, ((98 200, 200 200, 200 99, 98 99, 98 200))) </a>
   <b> POLYGON ((300 200, 400 200, 400 100, 300 100, 300 200)) </b>
 <test><op name="distance" arg1="A" arg2="B" >    100.0   </op></test>
+<test><op name="distance" arg1="B" arg2="A" >    100.0   </op></test>
+</case>
+
+<case>
+  <desc>GCGC - geometry collections with mixed dimensions</desc>
+  <a> GEOMETRYCOLLECTION (LINESTRING (10 10, 50 10), POINT (90 10)) </a>
+  <b> GEOMETRYCOLLECTION (POLYGON ((90 20, 60 20, 60 50, 90 50, 90 20)), LINESTRING (10 50, 30 70)) </b>
+<test><op name="distance" arg1="A" arg2="B" >    10.0   </op></test>
+<test><op name="distance" arg1="B" arg2="A" >    10.0   </op></test>
 </case>
 
 </run>
