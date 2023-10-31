@@ -348,8 +348,12 @@ public class DistanceOp
   {
     for (int i = 0; i < points0.size(); i++) {
       Point pt0 = (Point) points0.get(i);
+      if (pt0.isEmpty())
+        continue;
       for (int j = 0; j < points1.size(); j++) {
         Point pt1 = (Point) points1.get(j);
+        if (pt1.isEmpty())
+          continue;
         double dist = pt0.getCoordinate().distance(pt1.getCoordinate());
         if (dist < minDistance) {
           minDistance = dist;
@@ -368,6 +372,8 @@ public class DistanceOp
       LineString line = (LineString) lines.get(i);
       for (int j = 0; j < points.size(); j++) {
         Point pt = (Point) points.get(j);
+        if (pt.isEmpty())
+          continue;
         computeMinDistance(line, pt, locGeom);
         if (minDistance <= terminateDistance) return;
       }
