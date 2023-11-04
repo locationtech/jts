@@ -168,7 +168,6 @@ public class HPRtree<T>
   }
 
   private static boolean intersects(double[] bounds, int nodeIndex, Envelope env) {
-    //nodeIntersectsCount++;
     boolean isBeyond = (env.getMaxX() < bounds[nodeIndex])
     || (env.getMaxY() < bounds[nodeIndex+1])
     || (env.getMinX() > bounds[nodeIndex+2])
@@ -234,7 +233,6 @@ public class HPRtree<T>
     if (itemsToLoad.size() <= nodeCapacity) return;
 
     sortItems();
-    //dumpItems(items);
 
     layerStartIndex = computeLayerIndices(numItems, nodeCapacity);
     // allocate storage
@@ -246,7 +244,6 @@ public class HPRtree<T>
     for (int i = 1; i < layerStartIndex.length - 1; i++) {
       computeLayerNodes(i);
     }
-    //dumpNodes();
   }
 
   private void prepareItems() {
@@ -266,24 +263,6 @@ public class HPRtree<T>
     // and let GC free the original list
     itemsToLoad = null;
   }
-
-  /*
-  private void dumpNodes() {
-    GeometryFactory fact = new GeometryFactory();
-    for (int i = 0; i < nodeMinX.length; i++) {
-      Envelope env = new Envelope(nodeMinX[i], nodeMaxX[i], nodeMinY[i], nodeMaxY[i]);;
-      System.out.println(fact.toGeometry(env));
-    }
-  }
-
-  private static void dumpItems(List<Item> items) {
-    GeometryFactory fact = new GeometryFactory();
-    for (Item item : items) {
-      Envelope env = item.getEnvelope();
-      System.out.println(fact.toGeometry(env));
-    }
-  }
-  */
 
   private static double[] createBoundsArray(int size) {
     double[] a = new double[4*size];
@@ -305,7 +284,6 @@ public class HPRtree<T>
     for (int i = 0; i < layerSize; i += ENV_SIZE) {
       int childStart = childLayerStart + nodeCapacity * i;
       computeNodeBounds(layerStart + i, childStart, childLayerEnd);
-      //System.out.println("Layer: " + layerIndex + " node: " + i + " - " + getNodeEnvelope(layerStart + i));
     }
   }
 
