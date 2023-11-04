@@ -216,41 +216,41 @@ public class HPRtree<T>
   /**
    * Builds the index, if not already built.
    */
-  public synchronized void build() {
+  public void build() {
     // skip if already built
     if (!isBuilt) {
       synchronized (this) {
         if (!isBuilt) {
-          this.isBuilt = true;
-          // don't need to build an empty or very small tree
-          if (itemsToLoad.size() <= nodeCapacity) {
-            prepareItems();
-            itemsToLoad = null;
-            return;
-          }
-
-          sortItems();
+          prepareIndex();
           prepareItems();
-          //dumpItems(items);
-
-          layerStartIndex = computeLayerIndices(numItems, nodeCapacity);
-          // allocate storage
-          int nodeCount = layerStartIndex[ layerStartIndex.length - 1 ] / 4;
-          nodeBounds = createBoundsArray(nodeCount);
-
-          // compute tree nodes
-          computeLeafNodes(layerStartIndex[1]);
-          for (int i = 1; i < layerStartIndex.length - 1; i++) {
-            computeLayerNodes(i);
-          }
-          itemsToLoad = null;
-          //dumpNodes();
+          this.isBuilt = true;
         }
       }
     }
   }
 
+  private void prepareIndex() {
+    // don't need to build an empty or very small tree
+    if (itemsToLoad.size() <= nodeCapacity) return;
+
+    sortItems();
+    //dumpItems(items);
+
+    layerStartIndex = computeLayerIndices(numItems, nodeCapacity);
+    // allocate storage
+    int nodeCount = layerStartIndex[ layerStartIndex.length - 1 ] / 4;
+    nodeBounds = createBoundsArray(nodeCount);
+
+    // compute tree nodes
+    computeLeafNodes(layerStartIndex[1]);
+    for (int i = 1; i < layerStartIndex.length - 1; i++) {
+      computeLayerNodes(i);
+    }
+    //dumpNodes();
+  }
+
   private void prepareItems() {
+    // copy item contents out to arrays for querying
     int boundsIndex = 0;
     int valueIndex = 0;
     itemBounds = new double[itemsToLoad.size() * 4];
@@ -263,6 +263,8 @@ public class HPRtree<T>
       itemBounds[boundsIndex++] = envelope.getMaxY();
       itemValues[valueIndex++] = item.getItem();
     }
+    // and let GC free the original list
+    itemsToLoad = null;
   }
 
   /*
@@ -388,30 +390,36 @@ public class HPRtree<T>
     for (Item<T> item : itemsToLoad) {
       hilbertValues[pos++] = encoder.encode(item.getEnvelope());
     }
-    sortItemsIntoNodes(itemsToLoad, hilbertValues, 0, itemsToLoad.size() - 1, nodeCapacity);
+    quickSortItemsIntoNodes(hilbertValues, 0, itemsToLoad.size() - 1);
   }
 
-  private static <I> void sortItemsIntoNodes(List<Item<I>> items, int[] values, int left, int right, int nodeCapacity) {
-    if (left / nodeCapacity >= right / nodeCapacity) return;
-    long pivot = values[(left + right) >> 1];
-    int i = left - 1;
-    int j = right + 1;
+  private void quickSortItemsIntoNodes(int[] values, int lo, int hi) {
+    // stop sorting when left/right pointers are within the same node
+    // because queryItems just searches through them all sequentially
+    if (lo / nodeCapacity < hi / nodeCapacity) {
+      int pivot = hoarePartition(values, lo, hi);
+      quickSortItemsIntoNodes(values, lo, pivot);
+      quickSortItemsIntoNodes(values, pivot + 1, hi);
+    }
+  }
+
+  private int hoarePartition(int[] values, int lo, int hi) {
+    int pivot = values[(lo + hi) >> 1];
+    int i = lo - 1;
+    int j = hi + 1;
 
     while (true) {
       do i++; while (values[i] < pivot);
       do j--; while (values[j] > pivot);
-      if (i >= j) break;
-      swap(items, values, i, j);
+      if (i >= j) return j;
+      swapItems(values, i, j);
     }
-
-    sortItemsIntoNodes(items, values, left, j, nodeCapacity);
-    sortItemsIntoNodes(items, values, j + 1, right, nodeCapacity);
   }
 
-  private static <I> void swap(List<Item<I>> items, int[] values, int i, int j) {
-    Item<I> tmpItemp = items.get(i);
-    items.set(i, items.get(j));
-    items.set(j, tmpItemp);
+  private void swapItems(int[] values, int i, int j) {
+    Item<T> tmpItemp = itemsToLoad.get(i);
+    itemsToLoad.set(i, itemsToLoad.get(j));
+    itemsToLoad.set(j, tmpItemp);
 
     int tmpValue = values[i];
     values[i] = values[j];
