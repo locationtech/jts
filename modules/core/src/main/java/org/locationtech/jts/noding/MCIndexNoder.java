@@ -21,6 +21,7 @@ import org.locationtech.jts.index.SpatialIndex;
 import org.locationtech.jts.index.chain.MonotoneChain;
 import org.locationtech.jts.index.chain.MonotoneChainBuilder;
 import org.locationtech.jts.index.chain.MonotoneChainOverlapAction;
+import org.locationtech.jts.index.hprtree.HPRtree;
 import org.locationtech.jts.index.strtree.STRtree;
 
 /**
@@ -40,7 +41,7 @@ public class MCIndexNoder
     extends SinglePassNoder
 {
   private List monoChains = new ArrayList();
-  private SpatialIndex index= new STRtree();
+  private SpatialIndex index= new HPRtree();
   private int idCounter = 0;
   private Collection nodedSegStrings;
   // statistics
