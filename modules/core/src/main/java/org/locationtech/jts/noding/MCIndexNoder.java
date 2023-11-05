@@ -39,8 +39,8 @@ import org.locationtech.jts.index.hprtree.HPRtree;
 public class MCIndexNoder
     extends SinglePassNoder
 {
-  private List monoChains = new ArrayList();
-  private SpatialIndex index= new HPRtree();
+  private final List<MonotoneChain> monoChains = new ArrayList<>();
+  private final SpatialIndex<MonotoneChain> index = new HPRtree<>();
   private int idCounter = 0;
   private Collection nodedSegStrings;
   // statistics
@@ -69,9 +69,9 @@ public class MCIndexNoder
     this.overlapTolerance = overlapTolerance;
   }
 
-  public List getMonotoneChains() { return monoChains; }
+  public List<MonotoneChain> getMonotoneChains() { return monoChains; }
 
-  public SpatialIndex getIndex() { return index; }
+  public SpatialIndex<MonotoneChain> getIndex() { return index; }
 
   public Collection getNodedSubstrings()
   {
@@ -92,25 +92,26 @@ public class MCIndexNoder
   {
     MonotoneChainOverlapAction overlapAction = new SegmentOverlapAction(segInt);
 
-    for (Iterator i = monoChains.iterator(); i.hasNext(); ) {
-      MonotoneChain queryChain = (MonotoneChain) i.next();
-      Envelope queryEnv = queryChain.getEnvelope(overlapTolerance);
-      List overlapChains = index.query(queryEnv);
-      for (Iterator j = overlapChains.iterator(); j.hasNext(); ) {
-        MonotoneChain testChain = (MonotoneChain) j.next();
-        /**
-         * following test makes sure we only compare each pair of chains once
-         * and that we don't compare a chain to itself
-         */
-        if (testChain.getId() > queryChain.getId()) {
-          queryChain.computeOverlaps(testChain, overlapTolerance, overlapAction);
-          nOverlaps++;
-        }
-        // short-circuit if possible
-        if (segInt.isDone())
-        	return;
+      /**
+       * following test makes sure we only compare each pair of chains once
+       * and that we don't compare a chain to itself
+       */
+      for (MonotoneChain queryChain : monoChains) {
+          Envelope queryEnv = queryChain.getEnvelope(overlapTolerance);
+          for (MonotoneChain testChain : index.query(queryEnv)) {
+              /**
+               * following test makes sure we only compare each pair of chains once
+               * and that we don't compare a chain to itself
+               */
+              if (testChain.getId() > queryChain.getId()) {
+                  queryChain.computeOverlaps(testChain, overlapTolerance, overlapAction);
+                  nOverlaps++;
+              }
+              // short-circuit if possible
+              if (segInt.isDone())
+                  return;
+          }
       }
-    }
   }
 
   private void add(SegmentString segStr)
