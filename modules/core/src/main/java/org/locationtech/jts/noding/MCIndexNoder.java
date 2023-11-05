@@ -91,27 +91,21 @@ public class MCIndexNoder
   private void intersectChains()
   {
     MonotoneChainOverlapAction overlapAction = new SegmentOverlapAction(segInt);
-
-      /**
-       * following test makes sure we only compare each pair of chains once
-       * and that we don't compare a chain to itself
-       */
-      for (MonotoneChain queryChain : monoChains) {
-          Envelope queryEnv = queryChain.getEnvelope(overlapTolerance);
-          for (MonotoneChain testChain : index.query(queryEnv)) {
-              /**
-               * following test makes sure we only compare each pair of chains once
-               * and that we don't compare a chain to itself
-               */
-              if (testChain.getId() > queryChain.getId()) {
-                  queryChain.computeOverlaps(testChain, overlapTolerance, overlapAction);
-                  nOverlaps++;
-              }
-              // short-circuit if possible
-              if (segInt.isDone())
-                  return;
-          }
+    for (MonotoneChain queryChain : monoChains) {
+      Envelope queryEnv = queryChain.getEnvelope(overlapTolerance);
+      for (MonotoneChain testChain : index.query(queryEnv)) {
+        /**
+         * following test makes sure we only compare each pair of chains once
+         * and that we don't compare a chain to itself
+         */
+        if (testChain.getId() > queryChain.getId()) {
+          queryChain.computeOverlaps(testChain, overlapTolerance, overlapAction);
+          nOverlaps++;
+        }
+        // short-circuit if possible
+        if (segInt.isDone()) return;
       }
+    }
   }
 
   private void add(SegmentString segStr)
