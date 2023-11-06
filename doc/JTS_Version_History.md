@@ -36,6 +36,7 @@ Distributions for older JTS versions can be obtained at the
 * Improve `OffsetCurve` to return more linework for some input situations (#956)
 * Reduce buffer curve short fillet segments (#960)
 * Added ability to specify boundary for `LargestEmptyCircle` (#973)
+* Improve `DouglaPeuckerSimplifier` and `TopologyPreservingSimplifier` to handle ring endpoints (#1013)
 
 ### Bug Fixes
 * Fix `PreparedGeometry` handling of EMPTY elements (#904)
