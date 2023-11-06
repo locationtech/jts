@@ -135,13 +135,14 @@ static class DPTransformer
 	
   protected CoordinateSequence transformCoordinates(CoordinateSequence coords, Geometry parent)
   {
+    boolean isPreserveEndpoint = ! (parent instanceof LinearRing);
     Coordinate[] inputPts = coords.toCoordinateArray();
     Coordinate[] newPts = null;
     if (inputPts.length == 0) {
       newPts = new Coordinate[0];
     }
     else {
-      newPts = DouglasPeuckerLineSimplifier.simplify(inputPts, distanceTolerance);
+      newPts = DouglasPeuckerLineSimplifier.simplify(inputPts, distanceTolerance, isPreserveEndpoint);
     }
     return factory.getCoordinateSequenceFactory().create(newPts);
   }
