@@ -60,6 +60,10 @@ public abstract class GeometryTestCase extends TestCase{
     return geomFactory;
   }
   
+  protected void checkValid(Geometry geom) {
+    assertTrue(geom.isValid());
+  }
+  
   /**
    * Checks that the normalized values of the expected and actual
    * geometries are exactly equal.

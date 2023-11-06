@@ -34,17 +34,23 @@ class TaggedLineString
   private TaggedLineSegment[] segs;
   private List resultSegs = new ArrayList();
   private int minimumSize;
+  private boolean isPreserveEndpoint = true;
 
   public TaggedLineString(LineString parentLine) {
-    this(parentLine, 2);
+    this(parentLine, 2, true);
   }
 
-  public TaggedLineString(LineString parentLine, int minimumSize) {
+  public TaggedLineString(LineString parentLine, int minimumSize, boolean isPreserveEndpoint) {
     this.parentLine = parentLine;
     this.minimumSize = minimumSize;
+    this.isPreserveEndpoint = isPreserveEndpoint;
     init();
   }
 
+  public boolean isPreserveEndpoint() {
+    return isPreserveEndpoint;
+  }
+  
   public int getMinimumSize()  {    return minimumSize;  }
   public LineString getParent() { return parentLine; }
   public Coordinate[] getParentCoordinates() { return parentLine.getCoordinates(); }
@@ -57,6 +63,20 @@ class TaggedLineString
   }
 
   public TaggedLineSegment getSegment(int i) { return segs[i]; }
+
+  /**
+   * Gets a segment of the result list.
+   * Negative indexes can be used to retrieve from the end of the list.
+   * @param i the segment index to retrieve
+   * @return the result segment
+   */
+  public LineSegment getResultSegment(int i) { 
+    int index = i;
+    if (i < 0) {
+      index = resultSegs.size() + i;
+    }
+    return (LineSegment) resultSegs.get(index);
+  }
 
   private void init()
   {
@@ -98,5 +118,12 @@ class TaggedLineString
     return pts;
   }
 
+  void removeRingEndpoint()
+  {
+    LineSegment firstSeg = (LineSegment) resultSegs.get(0);
+    LineSegment lastSeg = (LineSegment) resultSegs.get(resultSegs.size() - 1);
 
+    firstSeg.p0 = lastSeg.p0;
+    resultSegs.remove(resultSegs.size() - 1);
+  }
 }

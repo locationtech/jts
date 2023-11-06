@@ -45,6 +45,9 @@ import org.locationtech.jts.geom.util.GeometryTransformer;
  * any intersecting line segments, this property
  * will be preserved in the output.
  * <p>
+ * For polygonal geometries and LinearRings the endpoint will participate
+ * in simplification.  For LineStrings the endpoints will not be unchanged.
+ * <p>
  * For all geometry types, the result will contain 
  * enough vertices to ensure validity.  For polygons
  * and closed linear geometries, the result will have at
@@ -175,7 +178,8 @@ public class TopologyPreservingSimplifier
         if (line.isEmpty()) return;
         
         int minSize = ((LineString) line).isClosed() ? 4 : 2;
-        TaggedLineString taggedLine = new TaggedLineString((LineString) line, minSize);
+        boolean isPreserveEndpoint = (line instanceof LinearRing) ? false : true;
+        TaggedLineString taggedLine = new TaggedLineString((LineString) line, minSize, isPreserveEndpoint);
         tps.linestringMap.put(line, taggedLine);
       }
     }

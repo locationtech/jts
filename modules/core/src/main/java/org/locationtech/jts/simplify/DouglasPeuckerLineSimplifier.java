@@ -13,6 +13,7 @@
 package org.locationtech.jts.simplify;
 
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateArrays;
 import org.locationtech.jts.geom.CoordinateList;
 import org.locationtech.jts.geom.LineSegment;
 
@@ -24,16 +25,18 @@ import org.locationtech.jts.geom.LineSegment;
  */
 class DouglasPeuckerLineSimplifier
 {
-  public static Coordinate[] simplify(Coordinate[] pts, double distanceTolerance)
+  public static Coordinate[] simplify(Coordinate[] pts, double distanceTolerance, boolean isPreserveEndpoint)
   {
     DouglasPeuckerLineSimplifier simp = new DouglasPeuckerLineSimplifier(pts);
     simp.setDistanceTolerance(distanceTolerance);
+    simp.setPreserveEndpoint(isPreserveEndpoint);
     return simp.simplify();
   }
 
   private Coordinate[] pts;
   private boolean[] usePt;
   private double distanceTolerance;
+  private boolean isPreserveEndpoint = false;
 
   public DouglasPeuckerLineSimplifier(Coordinate[] pts)
   {
@@ -50,6 +53,10 @@ class DouglasPeuckerLineSimplifier
     this.distanceTolerance = distanceTolerance;
   }
 
+  private void setPreserveEndpoint(boolean isPreserveEndpoint) {
+    this.isPreserveEndpoint  = isPreserveEndpoint;
+  }
+  
   public Coordinate[] simplify()
   {
     usePt = new boolean[pts.length];
@@ -57,12 +64,33 @@ class DouglasPeuckerLineSimplifier
       usePt[i] = true;
     }
     simplifySection(0, pts.length - 1);
+    
     CoordinateList coordList = new CoordinateList();
     for (int i = 0; i < pts.length; i++) {
       if (usePt[i])
         coordList.add(new Coordinate(pts[i]));
     }
-    return coordList.toCoordinateArray();
+    
+    if (! isPreserveEndpoint && CoordinateArrays.isRing(pts)) {
+      simplifyRingEndpoint(coordList);
+    }
+
+   return coordList.toCoordinateArray();
+  }
+
+  private void simplifyRingEndpoint(CoordinateList pts) {
+    //-- avoid collapsing triangles
+    if (pts.size() < 4)
+      return;
+    //-- base segment for endpoint
+    seg.p0 = pts.get(1);
+    seg.p1 = pts.get(pts.size() - 2); 
+    double distance = seg.distance(pts.get(0));
+    if (distance <= distanceTolerance) {
+      pts.remove(0);
+      pts.remove(pts.size() - 1);
+      pts.closeRing();
+    }
   }
 
   private LineSegment seg = new LineSegment();
