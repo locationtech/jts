@@ -32,10 +32,10 @@ public class MCIndexPointSnapper
 {
   //public static final int nSnaps = 0;
 
-  private STRtree index;
+  private SpatialIndex index;
 
   public MCIndexPointSnapper(SpatialIndex index) {
-    this.index = (STRtree) index;
+    this.index = index;
   }
 
   /**
