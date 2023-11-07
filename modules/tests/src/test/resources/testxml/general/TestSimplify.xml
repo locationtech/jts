@@ -1,0 +1,207 @@
+<run>
+  <desc>Test cases for DouglasPeuckerSimplifier</desc>
+  <precisionModel type="FLOATING"/>
+
+<case>
+  <desc>P - point</desc>
+  <a> POINT(10 10) 
+    </a>
+  <test> <op name="simplifyDP" arg1="A" arg2="1"> 
+      POINT(10 10)
+    </op> </test>
+  <test> <op name="simplifyTP" arg1="A" arg2="1"> 
+      POINT(10 10)
+    </op> </test>
+</case>
+
+<case>
+  <desc>mP - point with EMPTY</desc>
+  <a> MULTIPOINT( EMPTY, (10 10), (20 20)) 
+    </a>
+  <test> <op name="simplifyDP" arg1="A" arg2="1"> 
+      MULTIPOINT((10 10), (20 20))
+    </op> </test>
+  <test> <op name="simplifyTP" arg1="A" arg2="1"> 
+      MULTIPOINT((10 10), (20 20))
+    </op> </test>
+</case>
+
+<case>
+  <desc>L - empty line</desc>
+  <a> LINESTRING EMPTY 
+    </a>
+  <test> <op name="simplifyDP" arg1="A" arg2="10"> 
+      LINESTRING EMPTY 
+    </op> </test>
+  <test> <op name="simplifyTP" arg1="A" arg2="10"> 
+      LINESTRING EMPTY 
+    </op> </test>
+</case>
+
+<case>
+  <desc>L - line</desc>
+  <a> LINESTRING (10 10, 20 21, 30 30) 
+    </a>
+  <test> <op name="simplifyDP" arg1="A" arg2="10"> 
+      LINESTRING (10 10, 30 30)
+    </op> </test>
+  <test> <op name="simplifyTP" arg1="A" arg2="10"> 
+      LINESTRING (10 10, 30 30)
+    </op> </test>
+</case>
+
+<case>
+  <desc>L - short line</desc>
+  <a> LINESTRING (0 5, 1 5, 2 5, 5 5)
+    </a>
+  <test> <op name="simplifyDP" arg1="A" arg2="10"> 
+      LINESTRING (0 5, 5 5)
+    </op> </test>
+  <test> <op name="simplifyTP" arg1="A" arg2="10"> 
+      LINESTRING (0 5, 5 5)
+    </op> </test>
+</case>
+
+<case>
+  <desc>mL - lines with EMPTY</desc>
+  <a> MULTILINESTRING(EMPTY, (10 10, 20 21, 30 30), (10 10, 10 30, 30 30)) 
+    </a>
+  <test> <op name="simplifyDP" arg1="A" arg2="10"> 
+      MULTILINESTRING ((10 10, 30 30), (10 10, 10 30, 30 30))
+    </op> </test>
+  <test> <op name="simplifyTP" arg1="A" arg2="10"> 
+      MULTILINESTRING ((10 10, 30 30), (10 10, 10 30, 30 30))
+    </op> </test>
+</case>
+
+<case>
+  <desc>A - polygon with flat endpoint</desc>
+  <a> POLYGON ((5 1, 1 1, 1 9, 9 9, 9 1, 5 1))
+    </a>
+  <test> <op name="simplifyDP" arg1="A" arg2="1"> 
+      POLYGON ((1 1, 1 9, 9 9, 9 1, 1 1))
+    </op> </test>
+  <test> <op name="simplifyTP" arg1="A" arg2="1"> 
+      POLYGON ((1 1, 1 9, 9 9, 9 1, 1 1))
+    </op> </test>
+</case>
+
+<case>
+  <desc>A - polygon simplification</desc>
+  <a> POLYGON ((10 10, 10 90, 60.5 87, 90 90, 90 10, 12 12, 10 10))
+    </a>
+  <test> <op name="simplifyDP" arg1="A" arg2="10"> 
+      POLYGON ((10 10, 10 90, 90 90, 90 10, 10 10))
+    </op> </test>
+  <test> <op name="simplifyTP" arg1="A" arg2="10"> 
+      POLYGON ((10 10, 10 90, 90 90, 90 10, 10 10))
+    </op> </test>
+</case>
+
+<case>
+  <desc>A - polygon with edge collapse.
+    DP: polygon is split
+    TP: unchanged
+    </desc>
+  <a> POLYGON ((40 240, 160 241, 280 240, 280 160, 160 240, 40 140, 40 240))
+    </a>
+  <test> <op name="simplifyDP" arg1="A" arg2="1"> 
+      MULTIPOLYGON (((40 240, 160 240, 40 140, 40 240)), ((160 240, 280 240, 280 160, 160 240)))
+    </op> </test>
+  <test> <op name="simplifyTP" arg1="A" arg2="1"> 
+      POLYGON ((40 240, 160 241, 280 240, 280 160, 160 240, 40 140, 40 240))
+    </op> </test>
+</case>
+
+<case>
+  <desc>A - polygon collapse for DP</desc>
+  <a> POLYGON ((5 2, 9 1, 1 1, 5 2))
+    </a>
+  <test> <op name="simplifyDP" arg1="A" arg2="1"> 
+      POLYGON EMPTY
+    </op> </test>
+  <test> <op name="simplifyTP" arg1="A" arg2="1"> 
+      POLYGON ((5 2, 9 1, 1 1, 5 2))
+    </op> </test>
+</case>
+
+<case>
+  <desc>A - polygon with touching hole</desc>
+  <a> POLYGON ((10 10, 10 90, 90 90, 90 10, 10 10), (80 20, 20 20, 20 80, 50 90, 80 80, 80 20))
+    </a>
+  <test> <op name="simplifyDP" arg1="A" arg2="10"> 
+      POLYGON ((10 10, 10 90, 90 90, 90 10, 10 10), (80 20, 20 20, 20 80, 80 80, 80 20))
+    </op> </test>
+  <test> <op name="simplifyTP" arg1="A" arg2="10"> 
+      POLYGON ((10 10, 10 90, 90 90, 90 10, 10 10), (80 20, 20 20, 20 80, 80 80, 80 20))
+    </op> </test>
+</case>
+
+<case>
+  <desc>A - polygon with large hole near edge.
+    DP: simplified and fixed
+    TP: unchanged
+  </desc>
+  <a> POLYGON ((10 10, 10 80, 50 90, 90 80, 90 10, 10 10), (80 20, 20 20, 50 90, 80 20))
+    </a>
+  <test> <op name="simplifyDP" arg1="A" arg2="10"> 
+      POLYGON ((10 10, 10 80, 45.714285714285715 80, 20 20, 80 20, 54.285714285714285 80, 90 80, 90 10, 10 10))
+    </op> </test>
+  <test> <op name="simplifyTP" arg1="A" arg2="10"> 
+      POLYGON ((10 10, 10 80, 50 90, 90 80, 90 10, 10 10), (80 20, 20 20, 50 90, 80 20))
+    </op> </test>
+</case>
+
+<case>
+  <desc>A - polygon with small hole near simplified edge
+    DP: hole is remmoved
+    TP: hole is skipped over - BUG! 
+  </desc>
+  <a> POLYGON ((10 10, 10 80, 50 90, 90 80, 90 10, 10 10), (70 81, 30 81, 50 90, 70 81))
+    </a>
+  <test> <op name="simplifyDP" arg1="A" arg2="10"> 
+      POLYGON ((10 10, 10 80, 90 80, 90 10, 10 10))
+    </op> </test>
+  <test> <op name="simplifyTP" arg1="A" arg2="10"> 
+      POLYGON ((10 10, 10 80, 90 80, 90 10, 10 10), (70 81, 30 81, 50 90, 70 81))
+    </op> </test>
+</case>
+
+<case>
+  <desc>mA - multipolygon with EMPTY</desc>
+  <a> MULTIPOLYGON (EMPTY, ((10 90, 10 10, 90 10, 50 60, 10 90)), ((70 90, 90 90, 90 70, 70 70, 70 90)))
+    </a>
+  <test> <op name="simplifyDP" arg1="A" arg2="10"> 
+      MULTIPOLYGON (((10 90, 10 10, 90 10, 10 90)), ((70 90, 90 90, 90 70, 70 70, 70 90)))
+    </op> </test>
+  <test> <op name="simplifyTP" arg1="A" arg2="10"> 
+      MULTIPOLYGON (((10 90, 10 10, 90 10, 50 60, 10 90)), ((70 90, 90 90, 90 70, 70 70, 70 90)))
+    </op> </test>
+</case>
+
+<case>
+  <desc>mA - multipolygon with small element removed</desc>
+  <a> MULTIPOLYGON (((10 90, 10 10, 90 10, 50 60, 10 90)), ((90 90, 90 85, 85 85, 85 90, 90 90)))
+    </a>
+  <test> <op name="simplifyDP" arg1="A" arg2="10"> 
+      POLYGON ((10 90, 10 10, 90 10, 10 90))
+    </op> </test>
+  <test> <op name="simplifyTP" arg1="A" arg2="10"> 
+      MULTIPOLYGON (((10 90, 10 10, 90 10, 50 60, 10 90)), ((85 90, 90 85, 85 85, 85 90)))
+    </op> </test>
+</case>
+
+<case>
+  <desc>GC - geometry collection</desc>
+  <a> GEOMETRYCOLLECTION (POLYGON ((10 90, 10 10, 90 10, 50 60, 10 90)), LINESTRING (30 90, 65 65, 90 30), MULTIPOINT ((80 90), (90 90)))
+    </a>
+  <test> <op name="simplifyDP" arg1="A" arg2="10"> 
+      GEOMETRYCOLLECTION (POLYGON ((10 90, 10 10, 90 10, 10 90)), LINESTRING (30 90, 90 30), MULTIPOINT ((80 90), (90 90)))
+    </op> </test>
+  <test> <op name="simplifyTP" arg1="A" arg2="10"> 
+      GEOMETRYCOLLECTION (POLYGON ((10 90, 10 10, 90 10, 50 60, 10 90)), LINESTRING (30 90, 90 30), MULTIPOINT ((80 90), (90 90)))
+    </op> </test>
+</case>
+
+
+</run>

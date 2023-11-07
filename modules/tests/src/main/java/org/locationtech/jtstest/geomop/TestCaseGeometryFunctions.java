@@ -23,6 +23,8 @@ import org.locationtech.jts.operation.overlayng.OverlayNG;
 import org.locationtech.jts.operation.polygonize.Polygonizer;
 import org.locationtech.jts.precision.GeometryPrecisionReducer;
 import org.locationtech.jts.precision.MinimumClearance;
+import org.locationtech.jts.simplify.DouglasPeuckerSimplifier;
+import org.locationtech.jts.simplify.TopologyPreservingSimplifier;
 
 /**
  * Geometry functions which
@@ -77,6 +79,14 @@ public class TestCaseGeometryFunctions
   
   public static Geometry polygonizeValidPolygonal(Geometry g) {
     return polygonize(g, true);
+  }
+  
+  public static Geometry simplifyDP(Geometry g, double distance) {
+    return DouglasPeuckerSimplifier.simplify(g, distance);
+  }
+  
+  public static Geometry simplifyTP(Geometry g, double distance) {
+    return TopologyPreservingSimplifier.simplify(g, distance);
   }
   
   public static Geometry reducePrecision(Geometry g, double scaleFactor) {
