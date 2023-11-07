@@ -158,7 +158,41 @@ public class AngleTest extends TestCase {
     
     assertEquals(45, Math.toDegrees(Angle.bisector(p(13,10), p(10,10), p(10,20))), 0.01);
   }
-  
+
+  public void testSinCosSnap() {
+
+    // -720 to 720 degrees with 1 degree increments
+    for (int angdeg = -720; angdeg <= 720; angdeg++) {
+      double ang = Angle.toRadians(angdeg);
+
+      double rSin = Angle.sinSnap(ang);
+      double rCos = Angle.cosSnap(ang);
+
+      double cSin = Math.sin(ang);
+      double cCos = Math.cos(ang);
+      if ( (angdeg % 90) == 0 ) {
+        // not always the same for multiples of 90 degrees
+        assertTrue(Math.abs(rSin - cSin) < 1e-15);
+        assertTrue(Math.abs(rCos - cCos) < 1e-15);
+      } else {
+        assertEquals(rSin, cSin);
+        assertEquals(rCos, cCos);
+      }
+
+    }
+
+    // use radian increments that don't snap to exact degrees or zero
+    for (double angrad = -6.3; angrad < 6.3; angrad += 0.013) {
+
+      double rSin = Angle.sinSnap(angrad);
+      double rCos = Angle.cosSnap(angrad);
+
+      assertEquals(rSin, Math.sin(angrad));
+      assertEquals(rCos, Math.cos(angrad));
+
+    }
+  }
+
   private static Coordinate p(double x, double y) {
     return new Coordinate(x, y);
   }

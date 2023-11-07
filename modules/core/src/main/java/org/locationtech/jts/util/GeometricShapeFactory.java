@@ -11,6 +11,7 @@
  */
 package org.locationtech.jts.util;
 
+import org.locationtech.jts.algorithm.Angle;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
@@ -222,8 +223,8 @@ public class GeometricShapeFactory
     int iPt = 0;
     for (int i = 0; i < nPts; i++) {
         double ang = i * (2 * Math.PI / nPts);
-        double x = xRadius * Math.cos(ang) + centreX;
-        double y = yRadius * Math.sin(ang) + centreY;
+        double x = xRadius * Angle.cosSnap(ang) + centreX;
+        double y = yRadius * Angle.sinSnap(ang) + centreY;
         pts[iPt++] = coord(x, y);
     }
     pts[iPt] = new Coordinate(pts[0]);
@@ -319,16 +320,16 @@ public class GeometricShapeFactory
     double centreY = env.getMinY() + yRadius;
 
      double angSize = angExtent;
-     if (angSize <= 0.0 || angSize > 2 * Math.PI)
-       angSize = 2 * Math.PI;
+     if (angSize <= 0.0 || angSize > Angle.PI_TIMES_2)
+       angSize = Angle.PI_TIMES_2;
      double angInc = angSize / (nPts - 1);
 
      Coordinate[] pts = new Coordinate[nPts];
      int iPt = 0;
      for (int i = 0; i < nPts; i++) {
          double ang = startAng + i * angInc;
-         double x = xRadius * Math.cos(ang) + centreX;
-         double y = yRadius * Math.sin(ang) + centreY;
+         double x = xRadius * Angle.cosSnap(ang) + centreX;
+         double y = yRadius * Angle.sinSnap(ang) + centreY;
          pts[iPt++] = coord(x, y);
      }
      LineString line = geomFact.createLineString(pts);
@@ -353,8 +354,8 @@ public class GeometricShapeFactory
     double centreY = env.getMinY() + yRadius;
 
     double angSize = angExtent;
-    if (angSize <= 0.0 || angSize > 2 * Math.PI)
-      angSize = 2 * Math.PI;
+    if (angSize <= 0.0 || angSize > Angle.PI_TIMES_2)
+      angSize = Angle.PI_TIMES_2;
     double angInc = angSize / (nPts - 1);
     // double check = angInc * nPts;
     // double checkEndAng = startAng + check;
@@ -366,8 +367,8 @@ public class GeometricShapeFactory
     for (int i = 0; i < nPts; i++) {
       double ang = startAng + angInc * i;
 
-      double x = xRadius * Math.cos(ang) + centreX;
-      double y = yRadius * Math.sin(ang) + centreY;
+      double x = xRadius * Angle.cosSnap(ang) + centreX;
+      double y = yRadius * Angle.sinSnap(ang) + centreY;
       pts[iPt++] = coord(x, y);
     }
     pts[iPt++] = coord(centreX, centreY);
