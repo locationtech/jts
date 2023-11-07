@@ -58,29 +58,30 @@ public class DouglasPeuckerSimplifierTest
   }
   
   public void testPolygonWithTouchingHole() {
-    checkDP("POLYGON ((80 200, 240 200, 240 60, 80 60, 80 200), (120 120, 220 120, 180 199, 160 200, 140 199, 120 120))",
+    checkDP("POLYGON ((10 10, 10 90, 90 90, 90 10, 10 10), (80 20, 20 20, 20 80, 50 90, 80 80, 80 20))",
         10,
-        "POLYGON ((80 200, 240 200, 240 60, 80 60, 80 200), (120 120, 220 120, 180 199, 160 200, 140 199, 120 120))");
+        "POLYGON ((10 10, 10 90, 90 90, 90 10, 10 10), (80 20, 20 20, 20 80, 80 80, 80 20))");
   }
-  public void testFlattishPolygon() {
+  
+  public void testPolygonFlattish() {
     checkDP("POLYGON ((0 0, 50 0, 53 0, 55 0, 100 0, 70 1,  60 1, 50 1, 40 1, 0 0))",
         10,
         "POLYGON EMPTY");
   }
   
-  public void testTinySquare() {
+  public void testPolygonTinySquare() {
     checkDP("POLYGON ((0 5, 5 5, 5 0, 0 0, 0 1, 0 5))",
         10,
         "POLYGON EMPTY");
   }
   
-  public void testTinyHole() {
+  public void testPolygonTinyHole() {
     checkDP("POLYGON ((10 10, 10 310, 370 310, 370 10, 10 10), (160 190, 180 190, 180 170, 160 190))",
         30,
         "POLYGON ((10 10, 10 310, 370 310, 370 10, 10 10))");
   }
   
-  public void testTinyLineString() {
+  public void testLineStringTiny() {
     checkDP("LINESTRING (0 5, 1 5, 2 5, 5 5)",
         10,
         "LINESTRING (0 5, 5 5)");
