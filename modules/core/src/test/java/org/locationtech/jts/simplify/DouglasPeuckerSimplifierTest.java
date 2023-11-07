@@ -53,8 +53,8 @@ public class DouglasPeuckerSimplifierTest
   
   public void testPolygonReduction() {
     checkDP("POLYGON ((120 120, 121 121, 122 122, 220 120, 180 199, 160 200, 140 199, 120 120))",
-        10.0, 
-        "POLYGON ((120 120, 220 120, 180 199, 160 200, 140 199, 120 120)))");
+        10, 
+        "POLYGON ((120 120, 220 120, 180 199, 160 200, 140 199, 120 120))");
   }
   
   public void testPolygonWithTouchingHole() {

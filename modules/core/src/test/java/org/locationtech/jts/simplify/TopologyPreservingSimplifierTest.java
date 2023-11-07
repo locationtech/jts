@@ -158,6 +158,11 @@ public class TopologyPreservingSimplifierTest
         );
   }
   
+  public void testPolygonKeepFlatEndpointWithTouch() throws Exception {
+    checkTPSNoChange("POLYGON ((0 0, 5 2.05, 10 0, 10 10, 0 10, 0 0),  (5 2.1, 6 2, 6 4, 4 4, 4 2, 5 2.1))",
+        0.1 );
+  }
+  
   public void testPolygonKeepEndpointWithCross() throws Exception {
     checkTPS(
       "POLYGON ((50 52, 60 50, 90 60, 90 10, 10 10, 10 90, 60 90, 50 55, 40 80, 20 60, 40 50, 50 52))",
