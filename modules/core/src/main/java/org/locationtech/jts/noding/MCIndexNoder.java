@@ -39,8 +39,8 @@ import org.locationtech.jts.index.hprtree.HPRtree;
 public class MCIndexNoder
     extends SinglePassNoder
 {
-  private final List<MonotoneChain> monoChains = new ArrayList<>();
-  private final SpatialIndex<MonotoneChain> index = new HPRtree<>();
+  private List monoChains = new ArrayList();
+  private SpatialIndex index= new HPRtree();
   private int idCounter = 0;
   private Collection nodedSegStrings;
   // statistics
@@ -69,9 +69,9 @@ public class MCIndexNoder
     this.overlapTolerance = overlapTolerance;
   }
 
-  public List<MonotoneChain> getMonotoneChains() { return monoChains; }
+  public List getMonotoneChains() { return monoChains; }
 
-  public SpatialIndex<MonotoneChain> getIndex() { return index; }
+  public SpatialIndex getIndex() { return index; }
 
   public Collection getNodedSubstrings()
   {
@@ -91,9 +91,13 @@ public class MCIndexNoder
   private void intersectChains()
   {
     MonotoneChainOverlapAction overlapAction = new SegmentOverlapAction(segInt);
-    for (MonotoneChain queryChain : monoChains) {
+
+    for (Iterator i = monoChains.iterator(); i.hasNext(); ) {
+      MonotoneChain queryChain = (MonotoneChain) i.next();
       Envelope queryEnv = queryChain.getEnvelope(overlapTolerance);
-      for (MonotoneChain testChain : index.query(queryEnv)) {
+      List overlapChains = index.query(queryEnv);
+      for (Iterator j = overlapChains.iterator(); j.hasNext(); ) {
+        MonotoneChain testChain = (MonotoneChain) j.next();
         /**
          * following test makes sure we only compare each pair of chains once
          * and that we don't compare a chain to itself
@@ -103,7 +107,8 @@ public class MCIndexNoder
           nOverlaps++;
         }
         // short-circuit if possible
-        if (segInt.isDone()) return;
+        if (segInt.isDone())
+        	return;
       }
     }
   }

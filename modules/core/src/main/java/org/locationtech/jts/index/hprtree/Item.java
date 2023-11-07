@@ -13,12 +13,12 @@ package org.locationtech.jts.index.hprtree;
 
 import org.locationtech.jts.geom.Envelope;
 
-public class Item<T> {
+public class Item {
 
-  private final Envelope env;
-  private final T item;
+  private Envelope env;
+  private Object item;
 
-  public Item(Envelope env, T item) {
+  public Item(Envelope env, Object item) {
     this.env = env;
     this.item = item;
   }
@@ -27,7 +27,7 @@ public class Item<T> {
     return env;
   }
   
-  public T getItem() {
+  public Object getItem() {
     return item;
   }
   

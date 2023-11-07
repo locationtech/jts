@@ -19,11 +19,11 @@ import java.util.ArrayList;
  * 
  * @version 1.7
  */
-public class ArrayListVisitor<T>
-    implements ItemVisitor<T>
+public class ArrayListVisitor
+    implements ItemVisitor
 {
 
-  private final ArrayList<T> items = new ArrayList<>();
+  private ArrayList items = new ArrayList();
   
   /**
    * Creates a new instance.
@@ -36,7 +36,7 @@ public class ArrayListVisitor<T>
    * 
    * @param item the item to visit
    */
-  public void visitItem(T item)
+  public void visitItem(Object item)
   {
     items.add(item);
   }
@@ -46,6 +46,6 @@ public class ArrayListVisitor<T>
    * 
    * @return the array of items
    */
-  public ArrayList<T> getItems() { return items; }
+  public ArrayList getItems() { return items; }
 
 }
