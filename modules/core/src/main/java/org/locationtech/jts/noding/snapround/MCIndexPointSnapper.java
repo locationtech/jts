@@ -18,7 +18,6 @@ import org.locationtech.jts.index.ItemVisitor;
 import org.locationtech.jts.index.SpatialIndex;
 import org.locationtech.jts.index.chain.MonotoneChain;
 import org.locationtech.jts.index.chain.MonotoneChainSelectAction;
-import org.locationtech.jts.index.strtree.STRtree;
 import org.locationtech.jts.noding.NodedSegmentString;
 import org.locationtech.jts.noding.SegmentString;
 
