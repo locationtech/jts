@@ -180,6 +180,15 @@ public class TopologyPreservingSimplifierTest
         );
   }
 
+  //-- vertex is not removed due to overly-restrictive heuristic result length calculation? 
+  public void testPolygonSize5NotSimplfied() throws Exception {
+    checkTPS(
+      "POLYGON ((10 90, 10 10, 90 10, 47 57, 10 90))",
+        10,
+        "POLYGON ((10 90, 10 10, 90 10, 47 57, 10 90))"
+        );
+  }
+  
   /**
    * Test is from http://postgis.refractions.net/pipermail/postgis-users/2008-April/019327.html
    * Exhibits the issue where simplified polygon shells can "jump" across
