@@ -181,25 +181,25 @@
 
 <case>
   <desc>mA - multipolygon with small element removed</desc>
-  <a> MULTIPOLYGON (((10 90, 10 10, 90 10, 50 60, 10 90)), ((90 90, 90 85, 85 85, 85 90, 90 90)))
+  <a> MULTIPOLYGON (((10 90, 10 10, 40 40, 90 10, 47 57, 10 90)), ((90 90, 90 85, 85 85, 85 90, 90 90)))
     </a>
   <test> <op name="simplifyDP" arg1="A" arg2="10"> 
-      POLYGON ((10 90, 10 10, 90 10, 10 90))
+      POLYGON ((10 90, 10 10, 40 40, 90 10, 10 90))
     </op> </test>
   <test> <op name="simplifyTP" arg1="A" arg2="10"> 
-      MULTIPOLYGON (((10 90, 10 10, 90 10, 50 60, 10 90)), ((85 90, 90 85, 85 85, 85 90)))
+      MULTIPOLYGON (((10 90, 10 10, 40 40, 90 10, 10 90)), ((85 90, 90 85, 85 85, 85 90)))
     </op> </test>
 </case>
 
 <case>
   <desc>GC - geometry collection</desc>
-  <a> GEOMETRYCOLLECTION (POLYGON ((10 90, 10 10, 90 10, 50 60, 10 90)), LINESTRING (30 90, 65 65, 90 30), MULTIPOINT ((80 90), (90 90)))
+  <a> GEOMETRYCOLLECTION (POLYGON ((10 90, 10 10, 40 40, 90 10, 47 57, 10 90)), LINESTRING (30 90, 65 65, 90 30), MULTIPOINT ((80 90), (90 90)))
     </a>
   <test> <op name="simplifyDP" arg1="A" arg2="10"> 
-      GEOMETRYCOLLECTION (POLYGON ((10 90, 10 10, 90 10, 10 90)), LINESTRING (30 90, 90 30), MULTIPOINT ((80 90), (90 90)))
+      GEOMETRYCOLLECTION (POLYGON ((10 90, 10 10, 40 40, 90 10, 10 90)), LINESTRING (30 90, 90 30), MULTIPOINT ((80 90), (90 90)))
     </op> </test>
   <test> <op name="simplifyTP" arg1="A" arg2="10"> 
-      GEOMETRYCOLLECTION (POLYGON ((10 90, 10 10, 90 10, 50 60, 10 90)), LINESTRING (30 90, 90 30), MULTIPOINT ((80 90), (90 90)))
+      GEOMETRYCOLLECTION (POLYGON ((10 90, 10 10, 40 40, 90 10, 10 90)), LINESTRING (30 90, 90 30), MULTIPOINT ((80 90), (90 90)))
     </op> </test>
 </case>
 
