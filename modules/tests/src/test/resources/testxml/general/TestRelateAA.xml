@@ -99,7 +99,7 @@
       (120 140, 260 140, 260 260, 120 260, 120 140))
   </b>
 <test>
-  <op name="relate" arg3="212101212" arg1="A" arg2="B">true</op>
+  <op name="relate" arg3="212101212" arg1="A" arg2="B"> true  </op>
 </test>
 <test>  <op name="intersects" arg1="A" arg2="B">   true   </op></test>
 <test>  <op name="contains" arg1="A" arg2="B">   false   </op></test>
