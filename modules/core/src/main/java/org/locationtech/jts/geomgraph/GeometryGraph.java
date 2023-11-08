@@ -222,7 +222,9 @@ public class GeometryGraph
   {
     for (int i = 0; i < gc.getNumGeometries(); i++) {
       Geometry g = gc.getGeometryN(i);
-      add(g);
+      if (! g.isEmpty()) {
+        add(g);
+      }
     }
   }
   /**

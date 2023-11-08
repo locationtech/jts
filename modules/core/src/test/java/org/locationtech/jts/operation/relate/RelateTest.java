@@ -101,6 +101,12 @@ public class RelateTest
     runRelateTest(a, b,  "FF10F0102"  );
   }
   
+  public void testMultiPointWithEmpty()
+  {
+    String a = "MULTIPOINT(EMPTY,(0 0))";
+    String b = "POLYGON ((1 0,0 1,-1 0,0 -1, 1 0))";
+    runRelateTest(a, b,  "0FFFFF212"  );
+  }
   
   void runRelateTest(String wkt1, String wkt2, String expectedIM)
   {

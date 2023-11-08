@@ -107,6 +107,9 @@ public class PointLocator
 
   private void computeLocation(Coordinate p, Geometry geom)
   {
+    if (geom.isEmpty())
+      return;
+    
     if (geom instanceof Point) {
       updateLocationInfo(locateOnPoint(p, (Point) geom));
     }
