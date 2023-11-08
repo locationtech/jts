@@ -1,5 +1,5 @@
 <run>
-  <desc>Test cases for DouglasPeuckerSimplifier</desc>
+  <desc>Test cases for DouglasPeuckerSimplifier and TopologyPreservingSimplifier</desc>
   <precisionModel type="FLOATING"/>
 
 <case>
