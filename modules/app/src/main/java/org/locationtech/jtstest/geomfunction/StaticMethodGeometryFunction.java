@@ -158,8 +158,7 @@ public class StaticMethodGeometryFunction
     isRequiredB = extractRequiredB(method);
 	}
 
-  @Override
-  public Object invoke(Geometry g, Object[] arg)
+  public Object invoke(Geometry g, Object[] arg) 
   {
     return invoke(method, null, createFullArgs(g, arg));
   }

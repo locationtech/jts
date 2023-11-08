@@ -180,7 +180,6 @@ public class GMLHandler extends DefaultHandler {
 	/**
 	 * @see org.xml.sax.helpers.DefaultHandler#characters(char[], int, int)
 	 */
-	@Override
 	public void characters(char[] ch, int start, int length) throws SAXException {
 		if (!stack.isEmpty())
 			((Handler) stack.peek()).addText(new String(ch, start, length));
@@ -189,7 +188,6 @@ public class GMLHandler extends DefaultHandler {
 	/**
 	 * @see org.xml.sax.helpers.DefaultHandler#ignorableWhitespace(char[], int, int)
 	 */
-	@Override
 	public void ignorableWhitespace(char[] ch, int start, int length)
 			throws SAXException {
 		if (!stack.isEmpty())
@@ -199,7 +197,6 @@ public class GMLHandler extends DefaultHandler {
 	/**
 	 * @see org.xml.sax.helpers.DefaultHandler#endElement(java.lang.String, java.lang.String, java.lang.String)
 	 */
-	@Override
 	public void endElement(String uri, String localName, String qName)
 			throws SAXException {
 		Handler thisAction = (Handler) stack.pop();
@@ -209,9 +206,8 @@ public class GMLHandler extends DefaultHandler {
 	/**
 	 * @see org.xml.sax.helpers.DefaultHandler#startElement(java.lang.String, java.lang.String, java.lang.String, org.xml.sax.Attributes)
 	 */
-	@Override
 	public void startElement(String uri, String localName, String qName,
-							 Attributes attributes) throws SAXException {
+			Attributes attributes) throws SAXException {
 		// create a handler
 		ParseStrategy ps = GeometryStrategies.findStrategy(uri, localName);
 		if (ps == null) {
@@ -229,7 +225,6 @@ public class GMLHandler extends DefaultHandler {
 	/**
 	 * @see org.xml.sax.helpers.DefaultHandler#setDocumentLocator(org.xml.sax.Locator)
 	 */
-	@Override
 	public void setDocumentLocator(Locator locator) {
 		this.locator = locator;
 		if (delegate instanceof ContentHandler)
@@ -249,7 +244,6 @@ public class GMLHandler extends DefaultHandler {
 	/**
 	 * @see org.xml.sax.helpers.DefaultHandler#fatalError(org.xml.sax.SAXParseException)
 	 */
-	@Override
 	public void fatalError(SAXParseException e) throws SAXException {
 		if (delegate != null)
 			delegate.fatalError(e);
@@ -260,7 +254,6 @@ public class GMLHandler extends DefaultHandler {
 	/**
 	 * @see org.xml.sax.helpers.DefaultHandler#error(org.xml.sax.SAXParseException)
 	 */
-	@Override
 	public void error(SAXParseException e) throws SAXException {
 		if (delegate != null)
 			delegate.error(e);
@@ -271,7 +264,6 @@ public class GMLHandler extends DefaultHandler {
 	/**
 	 * @see org.xml.sax.helpers.DefaultHandler#warning(org.xml.sax.SAXParseException)
 	 */
-	@Override
 	public void warning(SAXParseException e) throws SAXException {
 		if (delegate != null)
 			delegate.warning(e);

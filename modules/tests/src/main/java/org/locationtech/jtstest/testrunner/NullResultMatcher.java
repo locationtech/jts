@@ -28,10 +28,9 @@ public class NullResultMatcher
 	 * 
 	 * @return true always
 	 */
-	@Override
-    public boolean isMatch(Geometry geom, String opName, Object[] args,
-                           Result actualResult, Result expectedResult,
-                           double tolerance)
+	public boolean isMatch(Geometry geom, String opName, Object[] args, 
+			Result actualResult, Result expectedResult,
+			double tolerance)
 	{
 		return true;
 	}

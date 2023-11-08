@@ -46,8 +46,7 @@ public class CoordinatePrecisionReducerFilter
 	/**
 	 * Rounds the Coordinates in the sequence to match the PrecisionModel
 	 */
-	@Override
-    public void filter(CoordinateSequence seq, int i)
+	public void filter(CoordinateSequence seq, int i)
 	{
 		seq.setOrdinate(i, 0, precModel.makePrecise(seq.getOrdinate(i, 0)));
 		seq.setOrdinate(i, 1, precModel.makePrecise(seq.getOrdinate(i, 1)));
@@ -58,7 +57,6 @@ public class CoordinatePrecisionReducerFilter
 	 *  
 	 * @return false
 	 */
-  @Override
   public boolean isDone()  {  	return false;  }
   
   /**
@@ -66,6 +64,5 @@ public class CoordinatePrecisionReducerFilter
    * 
    * @return true
    */
-  @Override
   public boolean isGeometryChanged() { return true;   }
 }

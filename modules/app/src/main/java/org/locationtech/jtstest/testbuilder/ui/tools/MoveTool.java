@@ -57,7 +57,6 @@ extends IndicatorTool
     return geoms.get(0).getComponent();
   }
   
-  @Override
   public void mousePressed(MouseEvent e) {
     startIndicatorLoc = null;
     //TODO: only start move if cursor is over geometry
@@ -79,7 +78,6 @@ extends IndicatorTool
     redrawIndicator();
   }
 
-  @Override
   public void mouseReleased(MouseEvent e) {
     clearIndicator();
     // execute the move
@@ -105,15 +103,13 @@ extends IndicatorTool
     geomModel().setGeometry(geomTrans);
   }
 
-  @Override
   public void mouseDragged(MouseEvent e) {
   	currentVertexLoc = toModelSnapped(e.getPoint());
     if (startIndicatorLoc != null)
       redrawIndicator();
   }
 
-  @Override
-  protected Shape getShape()
+  protected Shape getShape() 
   {
     Point2D currentIndicatorLoc = toView(currentVertexLoc);
     GeneralPath line = new GeneralPath();

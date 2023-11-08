@@ -39,7 +39,6 @@ implements GeometryOperation
   	
   }
   
-  @Override
   public Class getReturnType(String opName)
   {
   	if (isPreparedOp(opName))
@@ -77,8 +76,7 @@ implements GeometryOperation
    * @throws Exception
    * @see GeometryOperation#invoke
    */
-	@Override
-    public Result invoke(String opName, Geometry geometry, Object[] args)
+	public Result invoke(String opName, Geometry geometry, Object[] args)
 	  throws Exception
 	{	  
 	  if (! isPreparedOp(opName)) {

@@ -48,7 +48,6 @@ extends IndicatorTool
     super(AppCursors.EDIT_VERTEX);
   }
 
-  @Override
   public void mousePressed(MouseEvent e) {
   	currentVertexLoc = null;
     if (SwingUtilities.isRightMouseButton(e))
@@ -66,7 +65,6 @@ extends IndicatorTool
     }
   }
 
-  @Override
   public void mouseReleased(MouseEvent e) {
     if (SwingUtilities.isRightMouseButton(e))
       return;
@@ -79,14 +77,12 @@ extends IndicatorTool
     }
   }
 
-  @Override
   public void mouseDragged(MouseEvent e) {
   	currentVertexLoc = toModelSnapped(e.getPoint());
     if (selectedVertexLocation != null)
       redrawIndicator();
   }
 
-  @Override
   public void mouseClicked(MouseEvent e) {
     if (! SwingUtilities.isRightMouseButton(e))
       return;
@@ -111,8 +107,7 @@ extends IndicatorTool
     }
   }
 
-  @Override
-  protected Shape getShape()
+  protected Shape getShape() 
   {
   	GeometryCollectionShape ind = new GeometryCollectionShape();
   	Point2D currentIndicatorLoc = toView(currentVertexLoc);

@@ -71,8 +71,7 @@ class PreparedPolygonContains
 	 * @param geom the test geometry
 	 * @return true if this prepared polygon contains the test geometry
 	 */
-	@Override
-    protected boolean fullTopologicalPredicate(Geometry geom)
+	protected boolean fullTopologicalPredicate(Geometry geom)
 	{
 		boolean isContained = prepPoly.getGeometry().contains(geom);
 		return isContained;

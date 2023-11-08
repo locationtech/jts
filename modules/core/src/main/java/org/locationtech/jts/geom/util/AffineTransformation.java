@@ -1009,13 +1009,11 @@ public class AffineTransformation
    *@param seq  a <code>CoordinateSequence</code>
    *@param i the index of the coordinate to transform
    */
-  @Override
   public void filter(CoordinateSequence seq, int i)
   {
     transform(seq, i);
   }
   
-  @Override
   public boolean isGeometryChanged()
   {
     return true;
@@ -1027,8 +1025,7 @@ public class AffineTransformation
    * 
    * @return false
    */
-  @Override
-  public boolean isDone()
+  public boolean isDone() 
   {
     return false;
   }
@@ -1113,7 +1110,6 @@ public class AffineTransformation
    * 
    * @return a copy of this transformation
    */
-  @Override
   public Object clone()
   {
   	try {

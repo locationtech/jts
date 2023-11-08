@@ -33,8 +33,7 @@ public abstract class LineStringStyle
   public LineStringStyle() {
   }
 
-  @Override
-  public void paint(Geometry geom, Viewport viewport, Graphics2D g)
+  public void paint(Geometry geom, Viewport viewport, Graphics2D g) 
     throws Exception
   {
     // cull non-visible geometries

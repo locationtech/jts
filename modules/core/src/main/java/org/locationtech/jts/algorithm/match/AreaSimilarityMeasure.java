@@ -43,8 +43,7 @@ public class AreaSimilarityMeasure
 	{
 	}
 	
-	@Override
-    public double measure(Geometry g1, Geometry g2)
+	public double measure(Geometry g1, Geometry g2)
 	{		
 		double areaInt = g1.intersection(g2).getArea();
 		double areaUnion = g1.union(g2).getArea();

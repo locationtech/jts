@@ -39,10 +39,9 @@ extends LineStringStyle
     this.color = color;
   }
 
-  @Override
   protected void paintLineString(LineString lineString,
-                                 int lineType,
-                                 Viewport viewport, Graphics2D gr)
+      int lineType,
+      Viewport viewport, Graphics2D gr)
   throws Exception
   {
     if (lineType == POLY_HOLE) 

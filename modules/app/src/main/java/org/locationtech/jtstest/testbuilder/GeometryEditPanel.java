@@ -115,7 +115,6 @@ public class GeometryEditPanel extends JPanel
   void initUI() throws Exception {
     this.addComponentListener(new java.awt.event.ComponentAdapter() {
 
-      @Override
       public void componentResized(ComponentEvent e) {
         this_componentResized(e);
       }
@@ -133,13 +132,11 @@ public class GeometryEditPanel extends JPanel
 
   class PopupClickListener extends MouseAdapter
   {
-    @Override
     public void mousePressed(MouseEvent e)
     {
       if (e.isPopupTrigger())
         doPopUp(e);
     }
-    @Override
     public void mouseReleased(MouseEvent e)
     {
       if (e.isPopupTrigger())
@@ -245,7 +242,6 @@ public class GeometryEditPanel extends JPanel
     getGeomModel().geomChanged();
   }
   
-  @Override
   public String getToolTipText(MouseEvent event) {
 //    if (event.getPoint().x < 100) return null;
     Coordinate pt = viewport.toModelCoordinate(event.getPoint());
@@ -270,7 +266,6 @@ public class GeometryEditPanel extends JPanel
     return writer.writeLocationString(getLayerList(), pt, toleranceInModel);
   }
 
-  @Override
   public void paintComponent(Graphics g) {
     super.paintComponent(g);
     renderMgr.render();
@@ -601,7 +596,6 @@ public class GeometryEditPanel extends JPanel
       }  		
   	}
   	
-    @Override
     public void render(Graphics2D g2)
     {
       g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
@@ -801,8 +795,7 @@ public class GeometryEditPanel extends JPanel
   
     }
     
-  	@Override
-    public synchronized void cancel()
+  	public synchronized void cancel()
   	{
   		if (currentRenderer != null)
   			currentRenderer.cancel();

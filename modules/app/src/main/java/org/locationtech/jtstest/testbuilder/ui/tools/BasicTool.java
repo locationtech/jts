@@ -56,30 +56,18 @@ public abstract class BasicTool implements Tool
     return g;
   }
 
-  @Override
   public void mouseClicked(MouseEvent e) {}
-  @Override
   public void mousePressed(MouseEvent e) {}
-  @Override
   public void mouseReleased(MouseEvent e) {}
-  @Override
   public void mouseEntered(MouseEvent e) {}
-  @Override
   public void mouseExited(MouseEvent e) {}
-  @Override
   public void mouseDragged(MouseEvent e)   {  }
-  @Override
   public void keyPressed(KeyEvent e)  { }
-  @Override
   public void keyReleased(KeyEvent e)  { }
-  @Override
   public void keyTyped(KeyEvent e)  {  }
-  @Override
   public void mouseMoved(MouseEvent e) {  }
-  @Override
   public void mouseWheelMoved(MouseWheelEvent e) {  }
   
-  @Override
   public Cursor getCursor()
   {
     return cursor;
@@ -90,8 +78,7 @@ public abstract class BasicTool implements Tool
    * 
    * If subclasses override this method they must call <tt>super.activate()</tt>.
    */
-  @Override
-  public void activate(GeometryEditPanel panel)
+  public void activate(GeometryEditPanel panel) 
   {
     this.panel = panel;
   	gridPM = getViewport().getGridPrecisionModel();
@@ -101,8 +88,7 @@ public abstract class BasicTool implements Tool
     this.panel.addMouseWheelListener(this);
   }
  
-  @Override
-  public void deactivate()
+  public void deactivate() 
   {
     this.panel.removeMouseListener(this);
     this.panel.removeMouseMotionListener(this);

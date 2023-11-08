@@ -97,7 +97,6 @@ public class LayerListPanel extends JPanel {
     btnCopy = SwingUtil.createButton(AppIcons.ADD, 
         "Copy layer to a new layer",
             new ActionListener() {
-          @Override
           public void actionPerformed(ActionEvent e) {
             layerCopy();
           }
@@ -107,7 +106,6 @@ public class LayerListPanel extends JPanel {
     btnInspect = SwingUtil.createButton(AppIcons.GEOM_INSPECT, 
         "Inspect layer geometry",
             new ActionListener() {
-          @Override
           public void actionPerformed(ActionEvent e) {
             layerInspect();
           }
@@ -117,7 +115,6 @@ public class LayerListPanel extends JPanel {
     btnPaste = SwingUtil.createButton(AppIcons.PASTE, 
         "Paste geometry into layer",
             new ActionListener() {
-          @Override
           public void actionPerformed(ActionEvent e) {
             layerPaste(focusLayer);
           }
@@ -126,7 +123,6 @@ public class LayerListPanel extends JPanel {
     btnUp = SwingUtil.createButton(AppIcons.UP, 
         "Move layer up",
             new ActionListener() {
-          @Override
           public void actionPerformed(ActionEvent e) {
             layerUp(focusLayer);
           }
@@ -135,7 +131,6 @@ public class LayerListPanel extends JPanel {
     btnDown = SwingUtil.createButton(AppIcons.DOWN, 
         "Move layer down",
             new ActionListener() {
-          @Override
           public void actionPerformed(ActionEvent e) {
             layerDown(focusLayer);
           }
@@ -145,7 +140,6 @@ public class LayerListPanel extends JPanel {
     btnDelete = SwingUtil.createButton(AppIcons.DELETE, 
         AppStrings.TIP_LAYER_CLEAR,
             new ActionListener() {
-          @Override
           public void actionPerformed(ActionEvent e) {
             if (SwingUtil.isCtlKeyPressed(e)) {
               layerDelete(focusLayer);
@@ -321,7 +315,6 @@ class LayerItemPanel extends JPanel {
     self = this;
   }
 
-  @Override
   public String getToolTipText(MouseEvent e) {
     return layer.getNameInfo();
   }
@@ -359,7 +352,6 @@ class LayerItemPanel extends JPanel {
     add(checkbox);
     checkbox.setAlignmentX(Component.LEFT_ALIGNMENT);
     checkbox.addActionListener(new java.awt.event.ActionListener() {
-      @Override
       public void actionPerformed(ActionEvent e) {
         layerVisAction();
       }
@@ -377,8 +369,7 @@ class LayerItemPanel extends JPanel {
     lblName.addMouseListener(new HighlightMouseListener(this));
     lblName.addMouseListener(new MouseAdapter()  
     {  
-      @Override
-      public void mouseClicked(MouseEvent e)
+      public void mouseClicked(MouseEvent e)  
       {  
         lyrListPanel.setLayerFocus(self);
       }
@@ -417,7 +408,6 @@ class LayerItemPanel extends JPanel {
       this.comp = comp;
     }
     
-    @Override
     public void mouseEntered(MouseEvent e) {
       if (comp.isFocusLayer()) return;
       comp.setBackground(CLR_HIGHLIGHT);
@@ -425,7 +415,6 @@ class LayerItemPanel extends JPanel {
       comp.revalidate();
     }
 
-    @Override
     public void mouseExited(MouseEvent e) {
       if (comp.isFocusLayer()) return;
       comp.setBackground(AppColors.BACKGROUND);
@@ -445,7 +434,6 @@ class LayerName extends JLabel {
     setToolTipText(layer.getName()); 
   }
 
-  @Override
   public String getToolTipText(MouseEvent e) {
     return layer.getNameSummary();
   }
@@ -471,7 +459,6 @@ class LayerStyleSwatchControl extends JPanel {
     setToolTipText(layer.getName()); 
   }
 
-  @Override
   public String getToolTipText(MouseEvent e) {
     return layer.getNameSummary();
   }

@@ -22,8 +22,7 @@ import org.locationtech.jtstest.testbuilder.ui.Viewport;
 public abstract class ComponentStyle
   implements Style
 {
-  @Override
-  public void paint(Geometry geom, Viewport viewport, Graphics2D g)
+  public void paint(Geometry geom, Viewport viewport, Graphics2D g) 
     throws Exception
   {
     // cull non-visible geometries

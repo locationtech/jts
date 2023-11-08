@@ -75,8 +75,7 @@ public class PolygonHandler implements ShapeHandler{
         return false;
     }
     
-    @Override
-    public Geometry read(EndianDataInputStream file , GeometryFactory geometryFactory, int contentLength)
+    public Geometry read( EndianDataInputStream file , GeometryFactory geometryFactory, int contentLength)
     throws IOException, InvalidShapefileException
     {
     
@@ -298,11 +297,9 @@ public class PolygonHandler implements ShapeHandler{
       }
     
     
-    @Override
     public int getShapeType(){
         return myShapeType;
     }
-    @Override
     public int getLength(Geometry geometry){
         
          int nrings=0;

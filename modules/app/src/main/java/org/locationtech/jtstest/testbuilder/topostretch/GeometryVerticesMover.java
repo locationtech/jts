@@ -62,9 +62,8 @@ public class GeometryVerticesMover
     }
     
     
-    @Override
     public Coordinate[] edit(Coordinate[] coords,
-                             Geometry geometry)
+        Geometry geometry)
     {
       Coordinate[] newPts = new Coordinate[coords.length];
       for (int i = 0; i < coords.length; i++) {

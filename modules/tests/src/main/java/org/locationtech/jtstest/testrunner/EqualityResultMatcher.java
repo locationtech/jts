@@ -29,10 +29,9 @@ public class EqualityResultMatcher
 	 * 
 	 * @return true if the actual and expected results are considered equal
 	 */
-	@Override
-    public boolean isMatch(Geometry geom, String opName, Object[] args,
-                           Result actualResult, Result expectedResult,
-                           double tolerance)
+	public boolean isMatch(Geometry geom, String opName, Object[] args, 
+			Result actualResult, Result expectedResult,
+			double tolerance)
 	{
 		return actualResult.equals(expectedResult, tolerance);
 	}

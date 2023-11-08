@@ -74,8 +74,7 @@ public class StaticMethodGeometryFunction
     this.method = method;
 	}
 	
-  @Override
-  public Object invoke(Geometry g, Object[] arg)
+  public Object invoke(Geometry g, Object[] arg) 
   {
     return invoke(method, null, createFullArgs(g, arg));
   }
