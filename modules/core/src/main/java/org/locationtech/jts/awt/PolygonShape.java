@@ -101,42 +101,52 @@ public class PolygonShape implements Shape
       return path;
   }
 
+    @Override
     public Rectangle getBounds() {
       return polygonPath.getBounds();
     }
 
+    @Override
     public Rectangle2D getBounds2D() {
         return polygonPath.getBounds2D();
     }
 
+    @Override
     public boolean contains(double x, double y) {
       return polygonPath.contains(x, y);
     }
 
+    @Override
     public boolean contains(Point2D p) {
       return polygonPath.contains(p);
     }
 
+    @Override
     public boolean intersects(double x, double y, double w, double h) {
       return polygonPath.intersects(x, y, w, h);
     }
 
+    @Override
     public boolean intersects(Rectangle2D r) {
       return polygonPath.intersects(r);
     }
 
+    @Override
     public boolean contains(double x, double y, double w, double h) {
       return polygonPath.contains(x, y, w, h);
     }
 
+    @Override
     public boolean contains(Rectangle2D r) {
       return polygonPath.contains(r);
     }
 
+    @Override
     public PathIterator getPathIterator(AffineTransform at) {
         return polygonPath.getPathIterator(at);
     }
 
+    @Override
     public PathIterator getPathIterator(AffineTransform at, double flatness) {
     	return polygonPath.getPathIterator(at, flatness);
     }

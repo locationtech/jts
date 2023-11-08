@@ -62,6 +62,7 @@ public class PolygonGenerator extends GeometryGenerator {
 	 * @throws IllegalStateException When the alg is not valid or the number of points is invalid
 	 * @throws NullPointerException when either the Geometry Factory, or the Bounding Box are undefined.
 	 */
+	@Override
 	public Geometry create() {
 
 		if(geometryFactory == null){

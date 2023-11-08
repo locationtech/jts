@@ -31,7 +31,9 @@ public class SIRtreeTest extends TestCase {
 
   private static class TestTree extends SIRtree {
     public TestTree(int nodeCapacity) { super(nodeCapacity); }
+    @Override
     public AbstractNode getRoot() { return super.getRoot(); }
+    @Override
     protected List boundablesAtLevel(int level) { return super.boundablesAtLevel(level); }
   }
 

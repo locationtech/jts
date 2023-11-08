@@ -32,6 +32,7 @@ public class StreamPolygonTool extends AbstractStreamDrawTool
       super();
     }
     
+    @Override
     protected int getGeometryType()
     {
     	return GeometryType.POLYGON;

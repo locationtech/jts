@@ -90,6 +90,7 @@ public class Root
   /**
    * The root node matches all searches
    */
+  @Override
   protected boolean isSearchMatch(Interval interval)
   {
     return true;

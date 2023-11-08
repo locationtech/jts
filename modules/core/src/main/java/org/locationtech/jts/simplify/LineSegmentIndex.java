@@ -84,6 +84,7 @@ class LineSegmentVisitor
     this.querySeg = querySeg;
   }
 
+  @Override
   public void visitItem(Object item)
   {
     LineSegment seg = (LineSegment) item;

@@ -83,6 +83,7 @@ public class CoordinateXYM extends Coordinate {
    * 
    * @return a copy of this CoordinateXYM
    */
+  @Override
   public CoordinateXYM copy() {
     return new CoordinateXYM(this);
   }
@@ -101,10 +102,12 @@ public class CoordinateXYM extends Coordinate {
   protected double m;
 
   /** The m-measure, if available. */
+  @Override
   public double getM() {
     return m;
   }
 
+  @Override
   public void setM(double m) {
     this.m = m;
   }

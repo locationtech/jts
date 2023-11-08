@@ -79,12 +79,14 @@ public class DDOrientationIndexAccuracyTest extends GeometryTestCase {
 		DD convert(double x);
 	}
 	static final DDConverter DD_STD = new DDConverter() {
-		public DD convert(double x) {
+		@Override
+        public DD convert(double x) {
 			return DD.valueOf(x);
 		}
 	};
 	static final DDConverter DD_DEC = new DDConverter() {
-		public DD convert(double x) {
+		@Override
+        public DD convert(double x) {
 			return DD.valueOf(x + "");
 		}
 	};

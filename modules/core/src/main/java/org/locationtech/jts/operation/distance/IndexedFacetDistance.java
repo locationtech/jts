@@ -194,6 +194,7 @@ public class IndexedFacetDistance
   private static class FacetSequenceDistance
   implements ItemDistance
   {
+    @Override
     public double distance(ItemBoundable item1, ItemBoundable item2) {
       FacetSequence fs1 = (FacetSequence) item1.getItem();
       FacetSequence fs2 = (FacetSequence) item2.getItem();

@@ -25,11 +25,13 @@ implements GeometryMatcher
 		
 	}
 	
+	@Override
 	public void setTolerance(double tolerance)
 	{
 		this.tolerance = tolerance;
 	}
 	
+	@Override
 	public boolean match(Geometry a, Geometry b)
 	{
     Geometry aClone = (Geometry)a.clone();

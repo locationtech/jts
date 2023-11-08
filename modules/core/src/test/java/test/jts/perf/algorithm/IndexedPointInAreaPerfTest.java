@@ -28,6 +28,7 @@ public class IndexedPointInAreaPerfTest extends PerformanceTestCase {
   List<Coordinate> coords;
   Polygon polygon;
   
+  @Override
   public void startRun(int num)
   {
     System.out.println("Running with size " + num);

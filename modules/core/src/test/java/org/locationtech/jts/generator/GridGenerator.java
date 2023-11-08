@@ -49,6 +49,7 @@ public class GridGenerator extends GeometryGenerator {
 	 * @throws NoSuchElementException when all the grids have been created (@see #create())
 	 * @throws NullPointerException when either the Geometry Factory, or the Bounding Box are undefined.
 	 */
+	@Override
 	public Geometry create() {
 		return geometryFactory.toGeometry(createEnv());
 	}
@@ -115,6 +116,7 @@ public class GridGenerator extends GeometryGenerator {
 	/**
 	 * @see org.locationtech.jts.generator.GeometryGenerator#setDimensions(int)
 	 */
+	@Override
 	public void setDimensions(int dimensions) {
 		if(dimensions!=2)
 			throw new IllegalStateException("MAY NOT CHANGE GridGenerator's Dimensions");

@@ -73,6 +73,7 @@ public class CoordinateXY extends Coordinate {
    * 
    * @return a copy of this CoordinateXY
    */
+  @Override
   public CoordinateXY copy() {
     return new CoordinateXY(this);
   }

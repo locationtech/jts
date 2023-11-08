@@ -277,6 +277,7 @@ class BufferSubgraph
    * This relationship is used to sort the BufferSubgraphs so that shells are guaranteed to
    * be built before holes.
    */
+  @Override
   public int compareTo(Object o) {
     BufferSubgraph graph = (BufferSubgraph) o;
     if (this.rightMostCoord.x < graph.rightMostCoord.x) {

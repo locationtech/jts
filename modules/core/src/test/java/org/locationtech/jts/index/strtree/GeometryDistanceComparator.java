@@ -43,7 +43,8 @@ public class GeometryDistanceComparator implements Comparator<Geometry>, Seriali
 	/* (non-Javadoc)
 	 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
 	 */
-	public int compare(Geometry g1, Geometry g2) {
+	@Override
+    public int compare(Geometry g1, Geometry g2) {
 		double distance1 = g1.getEnvelopeInternal().distance(this.queryCenter.getEnvelopeInternal());
 		double distance2 = g2.getEnvelopeInternal().distance(this.queryCenter.getEnvelopeInternal());
 		if(this.normalOrder)

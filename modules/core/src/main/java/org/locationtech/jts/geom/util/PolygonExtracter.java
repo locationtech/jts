@@ -68,6 +68,7 @@ public class PolygonExtracter
     this.comps = comps;
   }
 
+  @Override
   public void filter(Geometry geom)
   {
     if (geom instanceof Polygon) comps.add(geom);

@@ -147,6 +147,7 @@ public class GeoJsonWriter {
 
       result.put(GeoJsonConstants.NAME_COORDINATES, new JSONAware() {
 
+        @Override
         public String toJSONString() {
           return jsonString;
         }
@@ -161,6 +162,7 @@ public class GeoJsonWriter {
 
       result.put(GeoJsonConstants.NAME_COORDINATES, new JSONAware() {
 
+        @Override
         public String toJSONString() {
           return jsonString;
         }
@@ -238,6 +240,7 @@ public class GeoJsonWriter {
           .getCoordinateSequence());
       result.add(new JSONAware() {
 
+        @Override
         public String toJSONString() {
           return jsonString;
         }
@@ -248,6 +251,7 @@ public class GeoJsonWriter {
           .getCoordinateSequence());
       result.add(new JSONAware() {
 
+        @Override
         public String toJSONString() {
           return jsonString;
         }
@@ -274,6 +278,7 @@ public class GeoJsonWriter {
             .getCoordinateSequence());
         list.add(new JSONAware() {
 
+          @Override
           public String toJSONString() {
             return jsonString;
           }
@@ -284,6 +289,7 @@ public class GeoJsonWriter {
         final String jsonString = getJsonString(point.getCoordinateSequence());
         list.add(new JSONAware() {
 
+          @Override
           public String toJSONString() {
             return jsonString;
           }

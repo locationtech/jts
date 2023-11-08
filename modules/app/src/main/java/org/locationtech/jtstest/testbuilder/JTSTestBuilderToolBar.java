@@ -104,6 +104,7 @@ public class JTSTestBuilderToolBar {
     JButton previousButton = createButton(
         AppStrings.TIP_PREV, leftIcon,
         new java.awt.event.ActionListener() {
+          @Override
           public void actionPerformed(ActionEvent e) {
             boolean isZoom = 0 == (e.getModifiers() & ActionEvent.CTRL_MASK);
             controller().caseMoveTo(-1, isZoom);
@@ -112,6 +113,7 @@ public class JTSTestBuilderToolBar {
     JButton nextButton = createButton(
         AppStrings.TIP_NEXT, rightIcon,
           new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
               boolean isZoom = 0 == (e.getModifiers() & ActionEvent.CTRL_MASK);
               controller().caseMoveTo(1, isZoom);
@@ -120,6 +122,7 @@ public class JTSTestBuilderToolBar {
     JButton newButton = createButton(
         AppStrings.TIP_CASE_ADD_NEW, plusIcon,
           new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
               controller().caseCreateNew();
             }
@@ -127,6 +130,7 @@ public class JTSTestBuilderToolBar {
     JButton copyButton = createButton(
         AppStrings.TIP_CASE_DUP, copyCaseIcon,
           new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
               controller().caseCopy();
             }
@@ -134,6 +138,7 @@ public class JTSTestBuilderToolBar {
     JButton deleteButton = createButton(
         AppStrings.TIP_CASE_DELETE, deleteIcon,
           new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
               controller().caseDelete();
             }
@@ -141,6 +146,7 @@ public class JTSTestBuilderToolBar {
     JButton oneToOneButton = createButton(
         AppStrings.TIP_ZOOM_1_1, zoomOneToOneIcon,
           new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
               controller().zoomOneToOne();
             }
@@ -148,6 +154,7 @@ public class JTSTestBuilderToolBar {
     JButton zoomToInputButton = createButton(
         "Zoom To Input", zoomToInputIcon,
           new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
               controller().zoomToInput();
             }
@@ -155,6 +162,7 @@ public class JTSTestBuilderToolBar {
     JButton zoomToInputAButton = createButton(
         AppStrings.TIP_ZOOM_TO_A, zoomToInputAIcon,
           new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
               controller().zoomToInputA();
             }
@@ -162,6 +170,7 @@ public class JTSTestBuilderToolBar {
     JButton zoomToInputBButton = createButton(
         AppStrings.TIP_ZOOM_TO_B, zoomToInputBIcon,
           new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
               controller().zoomToInputB();
             }
@@ -169,6 +178,7 @@ public class JTSTestBuilderToolBar {
     JButton zoomToResultButton = createButton(
         AppStrings.TIP_ZOOM_TO_RESULT, zoomToResultIcon,
           new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
               controller().zoomToResult();
             }
@@ -176,6 +186,7 @@ public class JTSTestBuilderToolBar {
     JButton zoomToFullExtentButton = createButton(
         AppStrings.TIP_ZOOM_TO_FULL_EXTENT, zoomToFullExtentIcon,
           new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
               controller().zoomToFullExtent();
             }
@@ -184,6 +195,7 @@ public class JTSTestBuilderToolBar {
       drawRectangleButton = createToggleButton(
           AppStrings.TIP_DRAW_RECTANGLE, drawRectangleIcon,
           new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
               controller().modeDrawRectangle();
             }
@@ -191,6 +203,7 @@ public class JTSTestBuilderToolBar {
       drawPolygonButton = createToggleButton(
           AppStrings.TIP_DRAW_POLY, drawPolygonIcon,
           new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
               controller().modeDrawPolygon();
             }
@@ -198,6 +211,7 @@ public class JTSTestBuilderToolBar {
       drawLineStringButton = createToggleButton(
           AppStrings.TIP_DRAW_LINE, drawLineStringIcon,
           new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
               controller().modeDrawLineString();
             }
@@ -205,6 +219,7 @@ public class JTSTestBuilderToolBar {
       drawPointButton = createToggleButton(
           AppStrings.TIP_DRAW_POINT, drawPointIcon,
           new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
               controller().modeDrawPoint();
             }
@@ -212,6 +227,7 @@ public class JTSTestBuilderToolBar {
       infoButton = createToggleButton(
           AppStrings.TIP_INFO, infoIcon,
           new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
               controller().modeInfo();
             }
@@ -219,6 +235,7 @@ public class JTSTestBuilderToolBar {
       zoomButton = createToggleButton(
           AppStrings.TIP_ZOOM, zoomIcon,
           new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
               controller().modeZoomIn();
             }
@@ -226,6 +243,7 @@ public class JTSTestBuilderToolBar {
       panButton = createToggleButton(
           AppStrings.TIP_PAN, panIcon,
           new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
               controller().modePan();
             }
@@ -234,6 +252,7 @@ public class JTSTestBuilderToolBar {
       btnEditVertex = createToggleButton(
           AppStrings.TIP_MOVE_VERTEX, moveVertexIcon,
         new java.awt.event.ActionListener() {
+          @Override
           public void actionPerformed(ActionEvent e) {
             controller().modeEditVertex();
           }
@@ -242,6 +261,7 @@ public class JTSTestBuilderToolBar {
       btnMove = createToggleButton(
           AppStrings.TIP_MOVE, AppIcons.MOVE,
         new java.awt.event.ActionListener() {
+          @Override
           public void actionPerformed(ActionEvent e) {
             controller().modeMove();
           }
@@ -251,6 +271,7 @@ public class JTSTestBuilderToolBar {
           AppStrings.TIP_EXTRACT_COMPONENTS,
           new ImageIcon(this.getClass().getResource("ExtractComponent.png")), 
           new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e)
             {
               controller().modeExtractComponent();
@@ -261,6 +282,7 @@ public class JTSTestBuilderToolBar {
           AppStrings.TIP_DELETE_VERTEX_COMPONENT,
           new ImageIcon(this.getClass().getResource("DeleteVertex.png")), 
           new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
               controller().modeDeleteVertex();
           }});

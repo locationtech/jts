@@ -70,6 +70,7 @@ public class MCIndexedPointInAreaLocator
    * @param p the point to test
    * @return the location of the point in the geometry  
    */
+	@Override
 	public int locate(Coordinate p)
 	{
 		RayCrossingCounter rcc = new RayCrossingCounter(p);
@@ -100,7 +101,8 @@ public class MCIndexedPointInAreaLocator
       this.rcc = rcc;
     }
 
-    public void select(LineSegment ls)
+    @Override
+	public void select(LineSegment ls)
     {
       rcc.countSegment(ls.getCoordinate(0), ls.getCoordinate(1));
     }

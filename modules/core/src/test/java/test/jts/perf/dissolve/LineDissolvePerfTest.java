@@ -45,6 +45,7 @@ public class LineDissolvePerfTest  extends PerformanceTestCase
 
   Collection data;
   
+  @Override
   public void setUp() throws IOException, ParseException
   {
     System.out.println("Loading data...");

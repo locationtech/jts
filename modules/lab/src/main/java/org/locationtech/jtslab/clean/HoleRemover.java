@@ -57,6 +57,7 @@ public class HoleRemover {
   }
   
   private class HoleRemoverMapOp implements MapOp {
+    @Override
     public Geometry map(Geometry geom) {
       if (geom instanceof Polygon)
         return  PolygonHoleRemover.clean((Polygon) geom, isRemoved);

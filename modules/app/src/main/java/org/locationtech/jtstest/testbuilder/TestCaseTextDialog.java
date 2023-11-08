@@ -90,6 +90,7 @@ public class TestCaseTextDialog extends JDialog {
         btnCopy.setText("Copy");
         btnCopy.addActionListener(new java.awt.event.ActionListener() {
 
+            @Override
             public void actionPerformed(ActionEvent e) {
                 btnSelect_actionPerformed(e);
             }
@@ -98,6 +99,7 @@ public class TestCaseTextDialog extends JDialog {
         btnOk.setText("Close");
         btnOk.addActionListener(new java.awt.event.ActionListener() {
 
+            @Override
             public void actionPerformed(ActionEvent e) {
                 btnOk_actionPerformed(e);
             }
@@ -106,6 +108,7 @@ public class TestCaseTextDialog extends JDialog {
         rbXML.setToolTipText("");
         rbXML.addActionListener(new java.awt.event.ActionListener() {
 
+            @Override
             public void actionPerformed(ActionEvent e) {
                 rbXML_actionPerformed(e);
             }
@@ -114,6 +117,7 @@ public class TestCaseTextDialog extends JDialog {
         rbXMLWKB.setToolTipText("");
         rbXMLWKB.addActionListener(new java.awt.event.ActionListener() {
 
+            @Override
             public void actionPerformed(ActionEvent e) {
                 rbXMLWKB_actionPerformed(e);
             }
@@ -121,6 +125,7 @@ public class TestCaseTextDialog extends JDialog {
         rbSVG.setText("SVG");
         rbSVG.setToolTipText("");
         rbSVG.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 rbSVG_actionPerformed(e);
             }
@@ -129,6 +134,7 @@ public class TestCaseTextDialog extends JDialog {
         rbTestCaseJava.setText("TestCase Java");
         rbTestCaseJava.setToolTipText("");
         rbTestCaseJava.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 rbTestCaseJava_actionPerformed(e);
             }
@@ -138,6 +144,7 @@ public class TestCaseTextDialog extends JDialog {
         
         rbWKT.setText("WKT");
         rbWKT.addActionListener(new java.awt.event.ActionListener() {
+          @Override
           public void actionPerformed(ActionEvent e) {
               rbWKT_actionPerformed(e);
           }
@@ -145,6 +152,7 @@ public class TestCaseTextDialog extends JDialog {
         
         rbWKTFormatted.setText("WKT-Formatted");
         rbWKTFormatted.addActionListener(new java.awt.event.ActionListener() {
+          @Override
           public void actionPerformed(ActionEvent e) {
               rbWKTFormatted_actionPerformed(e);
           }
@@ -152,12 +160,14 @@ public class TestCaseTextDialog extends JDialog {
         
         rbWKB.setText("WKB");
         rbWKB.addActionListener(new java.awt.event.ActionListener() {
+          @Override
           public void actionPerformed(ActionEvent e) {
               rbWKB_actionPerformed(e);
           }
       });
         rbGML.setText("GML");
         rbGML.addActionListener(new java.awt.event.ActionListener() {
+          @Override
           public void actionPerformed(ActionEvent e) {
               rbGML_actionPerformed(e);
           }

@@ -49,8 +49,9 @@ public class GeometryTreePanel extends JPanel implements TreeWillExpandListener
 		public GeometryTreeCellRenderer() {
 		}
 
-		public Component getTreeCellRendererComponent(JTree tree, Object value,
-				boolean sel, boolean expanded, boolean leaf, int row, boolean hasFocus) {
+		@Override
+        public Component getTreeCellRendererComponent(JTree tree, Object value,
+                                                      boolean sel, boolean expanded, boolean leaf, int row, boolean hasFocus) {
 
 			super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row,
 					hasFocus);
@@ -94,7 +95,8 @@ public class GeometryTreePanel extends JPanel implements TreeWillExpandListener
 
 
 		tree.addMouseListener(new MouseAdapter() {
-			public void mouseClicked(MouseEvent e) {
+			@Override
+            public void mouseClicked(MouseEvent e) {
 			  Geometry geom = getSelectedGeometry();
 			  if (geom == null) return;
 			  
@@ -108,7 +110,8 @@ public class GeometryTreePanel extends JPanel implements TreeWillExpandListener
 			}
 		});
 		tree.addTreeSelectionListener(new TreeSelectionListener() {
-			public void valueChanged(TreeSelectionEvent e) {
+			@Override
+            public void valueChanged(TreeSelectionEvent e) {
 				//GeometryFunction fun = getFunction();
 				//if (fun != null)
 					//fireFunctionSelected(new GeometryFunctionEvent(fun));
@@ -168,13 +171,15 @@ public class GeometryTreePanel extends JPanel implements TreeWillExpandListener
   }
 
   //Required by TreeWillExpandListener interface.
-  public void treeWillExpand(TreeExpansionEvent e) 
+  @Override
+  public void treeWillExpand(TreeExpansionEvent e)
               throws ExpandVetoException {
   	TreePath path = e.getPath();
   	Object lastComp = path.getLastPathComponent(); 
   }
 
   //Required by TreeWillExpandListener interface.
+  @Override
   public void treeWillCollapse(TreeExpansionEvent e) {
     // take no action
   }

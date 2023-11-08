@@ -55,6 +55,7 @@ public class MCIndexPointSnapper
     final HotPixelSnapAction hotPixelSnapAction = new HotPixelSnapAction(hotPixel, parentEdge, hotPixelVertexIndex);
 
     index.query(pixelEnv, new ItemVisitor() {
+      @Override
       public void visitItem(Object item) {
         MonotoneChain testChain = (MonotoneChain) item;
         testChain.select(pixelEnv, hotPixelSnapAction);
@@ -117,6 +118,7 @@ public class MCIndexPointSnapper
      * contain the vertex (which otherwise
      * would cause every vertex to be noded).
      */
+    @Override
     public void select(MonotoneChain mc, int startIndex)
     {
     	NodedSegmentString ss = (NodedSegmentString) mc.getContext();

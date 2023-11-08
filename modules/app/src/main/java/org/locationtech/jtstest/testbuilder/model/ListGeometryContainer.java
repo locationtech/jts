@@ -31,11 +31,13 @@ public class ListGeometryContainer implements GeometryContainer {
     cache = null;
   }
 
+  @Override
   public void clear() {
     cache = null;
     geomList.clear();
   }
 
+  @Override
   public Geometry getGeometry() {
     if ( cache == null ) {
       cache = createCache(geomList);

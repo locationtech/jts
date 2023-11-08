@@ -88,6 +88,7 @@ public class GeometryInputDialog extends JDialog {
         btnLoad.setText("Load");
         btnLoad.addActionListener(new java.awt.event.ActionListener() {
 
+            @Override
             public void actionPerformed(ActionEvent e) {
                 btnLoad_actionPerformed(e);
             }
@@ -95,6 +96,7 @@ public class GeometryInputDialog extends JDialog {
         btnCancel.setText("Cancel");
         btnCancel.addActionListener(new java.awt.event.ActionListener() {
 
+            @Override
             public void actionPerformed(ActionEvent e) {
                 btnCancel_actionPerformed(e);
             }

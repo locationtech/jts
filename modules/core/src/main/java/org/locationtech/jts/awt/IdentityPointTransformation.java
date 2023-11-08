@@ -24,7 +24,8 @@ import org.locationtech.jts.geom.Coordinate;
 public class IdentityPointTransformation
 implements PointTransformation
 {
-	public void transform(Coordinate model, Point2D view)
+	@Override
+    public void transform(Coordinate model, Point2D view)
 	{
 		view.setLocation(model.x, model.y);
 	}

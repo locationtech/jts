@@ -70,6 +70,7 @@ public abstract class LineBandTool extends IndicatorTool
     return (Coordinate) coordinates.get(coordinates.size()-1);
   }
   
+  @Override
   public void mouseReleased(MouseEvent e) {
     try {
       // Can't assert that coordinates is not empty at this point
@@ -134,11 +135,13 @@ public abstract class LineBandTool extends IndicatorTool
     }
   }
 
+  @Override
   public void mouseMoved(MouseEvent e) {
     super.mouseMoved(e);
     mouseLocationChanged(e);
   }
 
+  @Override
   public void mouseDragged(MouseEvent e) {
     super.mouseDragged(e);
     mouseLocationChanged(e);
@@ -151,6 +154,7 @@ public abstract class LineBandTool extends IndicatorTool
     coordinates.add(c);
   }
 
+  @Override
   public void mousePressed(MouseEvent e) {
     try {
       super.mousePressed(e);
@@ -170,6 +174,7 @@ public abstract class LineBandTool extends IndicatorTool
     }
   }
 
+  @Override
   protected Shape getShape() {
     if (coordinates.isEmpty()) {
       return null;

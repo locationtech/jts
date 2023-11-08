@@ -160,11 +160,13 @@ public abstract class IndicatorTool extends BasicTool
   
 //  protected void gestureFinished() throws Exception;
 
-  public void mouseDragged(MouseEvent e) 
+  @Override
+  public void mouseDragged(MouseEvent e)
   {
     recordLabel(e.getPoint());    
   }
 
+  @Override
   public void mouseMoved(MouseEvent e) {
     recordLabel(e.getPoint());
   }

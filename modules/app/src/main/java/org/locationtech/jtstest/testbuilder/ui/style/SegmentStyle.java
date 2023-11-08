@@ -29,6 +29,7 @@ extends LineStringStyle
     super();
   }
 
+  @Override
   protected void paintLineString(LineString lineString, int lineType, Viewport viewport, Graphics2D graphics) throws Exception {
     for (int i = 0; i < lineString.getNumPoints() - 1; i++) {
       paint(i, 

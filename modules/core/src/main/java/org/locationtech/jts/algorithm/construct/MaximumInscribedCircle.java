@@ -361,6 +361,7 @@ public class MaximumInscribedCircle {
      * For maximum efficieny sort the PriorityQueue with largest maxDistance at front.
      * Since Java PQ sorts least-first, need to invert the comparison
      */
+    @Override
     public int compareTo(Cell o) {
       return -Double.compare(maxDist, o.maxDist);
     }

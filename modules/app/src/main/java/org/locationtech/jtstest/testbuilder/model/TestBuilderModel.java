@@ -241,6 +241,7 @@ public class TestBuilderModel
   //=============================================================
   
   private CaseList caseList = new CaseList(new CaseList.CaseFactory() {
+    @Override
     public TestCaseEdit create() {
       return new TestCaseEdit(precisionModel);
     }

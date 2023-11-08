@@ -134,6 +134,7 @@ public class ResultController
     worker = new SwingWorker() {
     	Stopwatch timer;
     	
+      @Override
       public Object construct()
       {
         return computeResult();
@@ -162,6 +163,7 @@ public class ResultController
         return result;
       }
 
+      @Override
       public void finished() {
         stopFunctionMonitor();
         resetUI();
@@ -189,6 +191,7 @@ public class ResultController
       funcTimer.stop();
     }
     funcTimer = new Timer(TIMER_DELAY_IN_MILLIS, new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
 //        Stopwatch timer = testCasePanel.getSpatialFunctionPanel().getTimer();
         runMillis += TIMER_DELAY_IN_MILLIS;

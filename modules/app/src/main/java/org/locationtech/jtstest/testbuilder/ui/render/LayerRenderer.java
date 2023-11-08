@@ -46,6 +46,7 @@ public class LayerRenderer implements Renderer
 		this.viewport = viewport;
 	}
 	
+  @Override
   public void render(Graphics2D g)
   {
     if (! layer.isEnabled()) return;
@@ -137,6 +138,7 @@ public class LayerRenderer implements Renderer
     }  
   }
   
+  @Override
   public void cancel()
 	{
 		isCancelled = true;

@@ -58,6 +58,7 @@ public class GeometryViewStylePanel extends LabelComponentsPanel {
     cbTitle.setSelected(viewStyle.isTitleEnabled());
     cbTitle.setAlignmentX(Component.LEFT_ALIGNMENT);
     cbTitle.addActionListener(new java.awt.event.ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         updateView();      }
     });
@@ -65,6 +66,7 @@ public class GeometryViewStylePanel extends LabelComponentsPanel {
     cbTitleBorder.setSelected(viewStyle.isTitleBorderEnabled());
     cbTitleBorder.setAlignmentX(Component.LEFT_ALIGNMENT);
     cbTitleBorder.addActionListener(new java.awt.event.ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         updateView();      }
     });
@@ -72,6 +74,7 @@ public class GeometryViewStylePanel extends LabelComponentsPanel {
         "Title fill color",
         viewStyle.getTitleFill(),
         new ColorControl.ColorListener() {
+          @Override
           public void colorChanged(Color clr) {
             updateView();
           }
@@ -84,6 +87,7 @@ public class GeometryViewStylePanel extends LabelComponentsPanel {
     cbLegend.setSelected(viewStyle.isLegendEnabled());
     cbLegend.setAlignmentX(Component.LEFT_ALIGNMENT);
     cbLegend.addActionListener(new java.awt.event.ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         updateView();      }
     });
@@ -91,6 +95,7 @@ public class GeometryViewStylePanel extends LabelComponentsPanel {
     cbLegendBorder.setSelected(viewStyle.isLegendBorderEnabled());
     cbLegendBorder.setAlignmentX(Component.LEFT_ALIGNMENT);
     cbLegendBorder.addActionListener(new java.awt.event.ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         updateView();      }
     });
@@ -98,6 +103,7 @@ public class GeometryViewStylePanel extends LabelComponentsPanel {
         "Legend fill color",
         viewStyle.getLegendFill(),
         new ColorControl.ColorListener() {
+          @Override
           public void colorChanged(Color clr) {
             updateView();
           }
@@ -107,6 +113,7 @@ public class GeometryViewStylePanel extends LabelComponentsPanel {
     cbLegendStats.setSelected(viewStyle.isLegendStatsEnabled());
     cbLegendStats.setAlignmentX(Component.LEFT_ALIGNMENT);
     cbLegendStats.addActionListener(new java.awt.event.ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         updateView();      }
     });
@@ -114,6 +121,7 @@ public class GeometryViewStylePanel extends LabelComponentsPanel {
     cbLegendMetrics.setSelected(viewStyle.isLegendStatsEnabled());
     cbLegendMetrics.setAlignmentX(Component.LEFT_ALIGNMENT);
     cbLegendMetrics.addActionListener(new java.awt.event.ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         updateView();      }
     });
@@ -124,6 +132,7 @@ public class GeometryViewStylePanel extends LabelComponentsPanel {
     cbViewBorder.setSelected(viewStyle.isBorderEnabled());
     cbViewBorder.setAlignmentX(Component.LEFT_ALIGNMENT);
     cbViewBorder.addActionListener(new java.awt.event.ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         updateView();      }
     });
@@ -131,6 +140,7 @@ public class GeometryViewStylePanel extends LabelComponentsPanel {
         "Border Color",
         viewStyle.getBorderColor(),
         new ColorControl.ColorListener() {
+          @Override
           public void colorChanged(Color clr) {
             updateView();
           }
@@ -143,6 +153,7 @@ public class GeometryViewStylePanel extends LabelComponentsPanel {
     cbGrid.setSelected(viewStyle.isGridEnabled());
     cbGrid.setAlignmentX(Component.LEFT_ALIGNMENT);
     cbGrid.addActionListener(new java.awt.event.ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         updateView();      }
     });
@@ -151,6 +162,7 @@ public class GeometryViewStylePanel extends LabelComponentsPanel {
         "Background Color",
         viewStyle.getBackground(),
         new ColorControl.ColorListener() {
+          @Override
           public void colorChanged(Color clr) {
             updateView();
           }

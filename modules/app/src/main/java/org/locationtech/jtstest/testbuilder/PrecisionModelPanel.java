@@ -70,6 +70,7 @@ private PrecisionModel precisionModel;
     " * This is the default precision model used in JTS\n");
     rbFixed.setText("Fixed");
     rbFixed.addActionListener(new java.awt.event.ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         rbFixed_actionPerformed(e);
       }
@@ -77,11 +78,13 @@ private PrecisionModel precisionModel;
     rbFloating.setText("Floating (Double)");
     rbFloating.setToolTipText("");
     rbFloating.addActionListener(new java.awt.event.ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         rbFloating_actionPerformed(e);
       }
     });
     rbFloatingSingle.addActionListener(new java.awt.event.ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         rbFloatingSingle_actionPerformed(e);
       }

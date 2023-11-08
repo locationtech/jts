@@ -40,30 +40,37 @@ public class RepeaterGeometryFunction implements GeometryFunction {
     hasRepeatableArg = hasRepeatableArg(fun);
   }
   
+  @Override
   public String getCategory() {
     return fun.getCategory();
   }
 
+  @Override
   public String getName() {
     return fun.getName() + repeatAnnotation();
   }
 
+  @Override
   public String getDescription() {
     return fun.getDescription();
   }
 
+  @Override
   public String[] getParameterNames() {
     return fun.getParameterNames();
   }
 
+  @Override
   public Class<?>[] getParameterTypes() {
     return fun.getParameterTypes();
   }
 
+  @Override
   public Class<?> getReturnType() {
     return fun.getReturnType();
   }
 
+  @Override
   public String getSignature() {
     return fun.getSignature();
   }
@@ -72,14 +79,17 @@ public class RepeaterGeometryFunction implements GeometryFunction {
     return "*" + count;
   }
 
+  @Override
   public boolean isBinary() {
     return fun.isBinary();
   }
   
+  @Override
   public boolean isRequiredB() {
     return fun.isRequiredB();
   }
   
+  @Override
   public Object invoke(Geometry geom, Object[] args) {
     
     if (! isRepeatable(fun)) {

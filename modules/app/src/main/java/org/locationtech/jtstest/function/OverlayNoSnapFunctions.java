@@ -26,7 +26,8 @@ public class OverlayNoSnapFunctions {
 	 public static Geometry unaryUnion(Geometry a) {
 	    UnionStrategy unionSRFun = new UnionStrategy() {
 
-	      public Geometry union(Geometry g0, Geometry g1) {
+	      @Override
+          public Geometry union(Geometry g0, Geometry g1) {
 	         return OverlayOp.overlayOp(g0, g1, OverlayOp.UNION );
 	      }
 

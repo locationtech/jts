@@ -155,6 +155,7 @@ public class Densifier {
 	    this.isValidated = isValidated;
     }
 	  
+		@Override
 		protected CoordinateSequence transformCoordinates(
 				CoordinateSequence coords, Geometry parent) {
 			Coordinate[] inputPts = coords.toCoordinateArray();
@@ -167,6 +168,7 @@ public class Densifier {
 			return factory.getCoordinateSequenceFactory().create(newPts);
 		}
 
+		@Override
 		protected Geometry transformPolygon(Polygon geom, Geometry parent) {
 			Geometry roughGeom = super.transformPolygon(geom, parent);
 			// don't try and correct if the parent is going to do this
@@ -176,6 +178,7 @@ public class Densifier {
 			return createValidArea(roughGeom);
 		}
 
+		@Override
 		protected Geometry transformMultiPolygon(MultiPolygon geom, Geometry parent) {
 			Geometry roughGeom = super.transformMultiPolygon(geom, parent);
 			return createValidArea(roughGeom);

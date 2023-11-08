@@ -56,6 +56,7 @@ public class ScaledNoder
 
   public boolean isIntegerPrecision() { return scaleFactor == 1.0; }
 
+  @Override
   public Collection getNodedSubstrings()
   {
     Collection splitSS = noder.getNodedSubstrings();
@@ -63,6 +64,7 @@ public class ScaledNoder
     return splitSS;
   }
 
+  @Override
   public void computeNodes(Collection inputSegStrings)
   {
     Collection intSegStrings = inputSegStrings;

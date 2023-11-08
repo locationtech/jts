@@ -75,6 +75,7 @@ public class SweepLineEvent
    * items whose Insert and Delete events occur at the same x-value will be
    * correctly handled.
    */
+  @Override
   public int compareTo(Object o) {
     SweepLineEvent pe = (SweepLineEvent) o;
     if (xValue < pe.xValue) return  -1;

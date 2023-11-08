@@ -327,6 +327,7 @@ public class QuadEdgeTriangle
 		public QuadEdgeTriangleBuilderVisitor() {
 		}
 
+		@Override
 		public void visit(QuadEdge[] edges) {
 			triangles.add(new QuadEdgeTriangle(edges));
 		}

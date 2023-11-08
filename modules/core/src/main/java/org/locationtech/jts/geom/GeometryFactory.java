@@ -667,6 +667,7 @@ public class GeometryFactory
     public CoordSeqCloneOp(CoordinateSequenceFactory coordinateSequenceFactory) {
       this.coordinateSequenceFactory = coordinateSequenceFactory;
     }
+    @Override
     public CoordinateSequence edit(CoordinateSequence coordSeq, Geometry geometry) {
       return coordinateSequenceFactory.create(coordSeq);
     }

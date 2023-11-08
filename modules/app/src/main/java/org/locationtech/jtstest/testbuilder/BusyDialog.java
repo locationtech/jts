@@ -58,6 +58,7 @@ public class BusyDialog extends JDialog {
     private String stackTrace = null;
     private javax.swing.Timer timer = new javax.swing.Timer(250, new ActionListener() {
 
+        @Override
         public void actionPerformed(ActionEvent evt) {
             label.setText(description);
             if (!thread.isAlive()) {
@@ -94,6 +95,7 @@ public class BusyDialog extends JDialog {
         this.getContentPane().setLayout(gridBagLayout1);
         this.addWindowListener(new java.awt.event.WindowAdapter() {
 
+            @Override
             public void windowOpened(WindowEvent e) {
                 this_windowOpened(e);
             }
@@ -136,6 +138,7 @@ public class BusyDialog extends JDialog {
         label.setText(description);
         Runnable runnable = new Runnable() {
 
+            @Override
             public void run() {
                 try {
                     executable.execute();

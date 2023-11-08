@@ -55,6 +55,7 @@ public class OverlayNGRobustFunctions {
   public static Geometry unaryUnion(Geometry a) {
     UnionStrategy unionSRFun = new UnionStrategy() {
 
+      @Override
       public Geometry union(Geometry g0, Geometry g1) {
          return overlay(g0, g1, UNION );
       }

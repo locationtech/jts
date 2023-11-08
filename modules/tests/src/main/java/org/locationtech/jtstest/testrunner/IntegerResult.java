@@ -23,6 +23,7 @@ public class IntegerResult implements Result {
     this.value = value.intValue();
   }
 
+  @Override
   public boolean equals(Result other, double tolerance) {
     if (!(other instanceof IntegerResult)) {
       return false;
@@ -33,14 +34,17 @@ public class IntegerResult implements Result {
     return Math.abs(value-otherValue) <= tolerance;
   }
 
+  @Override
   public String toLongString() {
     return Integer.toString(value);
   }
 
+  @Override
   public String toFormattedString() {
     return Integer.toString(value);
   }
 
+  @Override
   public String toShortString() {
     return Integer.toString(value);
   }

@@ -27,6 +27,7 @@ public class InputStreamInStream
     this.is = is;
   }
 
+  @Override
   public int read(byte[] buf) throws IOException
   {
     return is.read(buf);

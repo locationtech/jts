@@ -33,6 +33,7 @@ public class SimpleEdgeSetIntersector
   public SimpleEdgeSetIntersector() {
   }
 
+  @Override
   public void computeIntersections(List edges, SegmentIntersector si, boolean testAllSegments)
   {
     nOverlaps = 0;
@@ -48,6 +49,7 @@ public class SimpleEdgeSetIntersector
   }
 
 
+  @Override
   public void computeIntersections(List edges0, List edges1, SegmentIntersector si)
   {
     nOverlaps = 0;

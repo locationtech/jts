@@ -415,12 +415,15 @@ public class DiscreteFrechetDistance {
       Arrays.fill(this.matrix, defaultValue);
     }
 
+    @Override
     public double get(int i, int j) { return this.matrix[i * numCols + j]; }
 
+    @Override
     public void set(int i, int j, double value) {
       this.matrix[i * numCols + j] = value;
     }
 
+    @Override
     public boolean isValueSet(int i, int j) {
       return Double.doubleToLongBits(get(i, j)) != Double.doubleToLongBits(this.defaultValue);
     }
@@ -550,16 +553,19 @@ public class DiscreteFrechetDistance {
       this.matrix = new HashMap<>();
     }
 
+    @Override
     public double get(int i, int j) {
       long key = (long)i << 32 | j;
       return matrix.getOrDefault(key, this.defaultValue);
     }
 
+    @Override
     public void set(int i, int j, double value) {
       long key = (long)i << 32 | j;
       matrix.put(key, value);
     }
 
+    @Override
     public boolean isValueSet(int i, int j) {
       long key = (long)i << 32 | j;
       return matrix.containsKey(key);

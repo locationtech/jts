@@ -26,6 +26,7 @@ public class BooleanResult implements Result {
         this(result.booleanValue());
     }
 
+    @Override
     public boolean equals(Result other, double tolerance) {
         if (!(other instanceof BooleanResult))
             return false;
@@ -33,14 +34,17 @@ public class BooleanResult implements Result {
         return result == otherBooleanResult.result;
     }
 
+    @Override
     public String toFormattedString() {
         return toShortString();
     }
 
+    @Override
     public String toLongString() {
         return toShortString();
     }
 
+    @Override
     public String toShortString() {
         return result ? "true" : "false";
     }

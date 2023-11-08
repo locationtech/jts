@@ -26,6 +26,7 @@ public class ConvexHullPerfTest extends PerformanceTestCase {
     setRunIterations(100);
   }
  
+  @Override
   public void startRun(int num)
   {
     System.out.println("Running with size " + num);

@@ -31,6 +31,7 @@ public class PolygonTool extends AbstractDrawTool
     {
     }
     
+    @Override
     protected int getGeometryType()
     {
     	return GeometryType.POLYGON;

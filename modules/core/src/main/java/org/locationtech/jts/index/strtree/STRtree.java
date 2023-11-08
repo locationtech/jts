@@ -61,6 +61,7 @@ implements SpatialIndex, Serializable
       super(level);
     }
 
+    @Override
     protected Object computeBounds() {
       Envelope bounds = null;
       for (Iterator i = getChildBoundables().iterator(); i.hasNext(); ) {
@@ -83,6 +84,7 @@ implements SpatialIndex, Serializable
   
   private static Comparator xComparator =
     new Comparator() {
+      @Override
       public int compare(Object o1, Object o2) {
         return compareDoubles(
             centreX((Envelope)((Boundable)o1).getBounds()),
@@ -91,6 +93,7 @@ implements SpatialIndex, Serializable
     };
   private static Comparator yComparator =
     new Comparator() {
+      @Override
       public int compare(Object o1, Object o2) {
         return compareDoubles(
             centreY((Envelope)((Boundable)o1).getBounds()),
@@ -109,6 +112,7 @@ implements SpatialIndex, Serializable
   private static double avg(double a, double b) { return (a + b) / 2d; }
 
   private static IntersectsOp intersectsOp = new IntersectsOp() {
+    @Override
     public boolean intersects(Object aBounds, Object bBounds) {
       return ((Envelope)aBounds).intersects((Envelope)bBounds);
     }
@@ -121,6 +125,7 @@ implements SpatialIndex, Serializable
    * group them into runs of size M (the node capacity). For each run, creates
    * a new (parent) node.
    */
+  @Override
   protected List createParentBoundables(List childBoundables, int newLevel) {
     Assert.isTrue(!childBoundables.isEmpty());
     int minLeafCount = (int) Math.ceil((childBoundables.size() / (double) getNodeCapacity()));
@@ -207,10 +212,12 @@ implements SpatialIndex, Serializable
     super(nodeCapacity, itemBoundables);
   }
 
+  @Override
   protected AbstractNode createNode(int level) {
     return new STRtreeNode(level);
   }
 
+  @Override
   protected IntersectsOp getIntersectsOp() {
     return intersectsOp;
   }
@@ -218,6 +225,7 @@ implements SpatialIndex, Serializable
   /**
    * Inserts an item having the given bounds into the tree.
    */
+  @Override
   public void insert(Envelope itemEnv, Object item) {
     if (itemEnv.isNull()) { return; }
     super.insert(itemEnv, item);
@@ -226,6 +234,7 @@ implements SpatialIndex, Serializable
   /**
    * Returns items whose bounds intersect the given envelope.
    */
+  @Override
   public List query(Envelope searchEnv) {
     //Yes this method does something. It specifies that the bounds is an
     //Envelope. super.query takes an Object, not an Envelope. [Jon Aquino 10/24/2003]
@@ -235,6 +244,7 @@ implements SpatialIndex, Serializable
   /**
    * Returns items whose bounds intersect the given envelope.
    */
+  @Override
   public void query(Envelope searchEnv, ItemVisitor visitor) {
     //Yes this method does something. It specifies that the bounds is an
     //Envelope. super.query takes an Object, not an Envelope. [Jon Aquino 10/24/2003]
@@ -248,6 +258,7 @@ implements SpatialIndex, Serializable
    * @param item the item to remove
    * @return <code>true</code> if the item was found
    */
+  @Override
   public boolean remove(Envelope itemEnv, Object item) {
     return super.remove(itemEnv, item);
   }
@@ -257,6 +268,7 @@ implements SpatialIndex, Serializable
    *
    * @return the number of items in the tree
    */
+  @Override
   public int size()
   {
     return super.size();
@@ -267,11 +279,13 @@ implements SpatialIndex, Serializable
    *
    * @return the number of levels in the tree
    */
+  @Override
   public int depth()
   {
     return super.depth();
   }
 
+  @Override
   protected Comparator getComparator() {
     return yComparator;
   }

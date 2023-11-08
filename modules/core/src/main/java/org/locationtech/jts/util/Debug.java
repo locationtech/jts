@@ -230,6 +230,7 @@ public class Debug {
 
     public boolean hasSegment() { return hasSegment; }
 
+    @Override
     public void filter(CoordinateSequence seq, int i)
     {
       if (i == 0) return;
@@ -237,11 +238,13 @@ public class Debug {
           && p1.equals2D(seq.getCoordinate(i));
     }
     
+    @Override
     public boolean isDone()
     {
       return hasSegment; 
     }
     
+    @Override
     public boolean isGeometryChanged()
     {
       return false;

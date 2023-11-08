@@ -31,6 +31,7 @@ public class LineStringTool extends AbstractStreamDrawTool
     {
     }
     
+    @Override
     protected int getGeometryType()
     {
     	return GeometryType.LINESTRING;

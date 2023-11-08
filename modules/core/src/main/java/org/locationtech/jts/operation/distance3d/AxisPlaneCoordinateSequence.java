@@ -78,63 +78,77 @@ public class AxisPlaneCoordinateSequence implements CoordinateSequence {
 		this.indexMap = indexMap;
 	}
 
+	@Override
 	public int getDimension() {
 		return 2;
 	}
 
+	@Override
 	public Coordinate getCoordinate(int i) {
 		return getCoordinateCopy(i);
 	}
 
+	@Override
 	public Coordinate getCoordinateCopy(int i) {
 		return new Coordinate(getX(i), getY(i), getZ(i));
 	}
 
+	@Override
 	public void getCoordinate(int index, Coordinate coord) {
 		coord.x = getOrdinate(index, X);
 		coord.y = getOrdinate(index, Y);
 		coord.setZ(getOrdinate(index, Z));
 	}
 
+	@Override
 	public double getX(int index) {
 		return getOrdinate(index, X);
 	}
 
+	@Override
 	public double getY(int index) {
 		return getOrdinate(index, Y);
 	}
 
+	@Override
 	public double getZ(int index) {
 		return getOrdinate(index, Z);
 	}
 
+	@Override
 	public double getOrdinate(int index, int ordinateIndex) {
 		// Z ord is always 0
 		if (ordinateIndex > 1) return 0;
 		return seq.getOrdinate(index, indexMap[ordinateIndex]);
 	}
 
+	@Override
 	public int size() {
 		return seq.size();
 	}
 
+	@Override
 	public void setOrdinate(int index, int ordinateIndex, double value) {
 		throw new UnsupportedOperationException();
 	}
 
+	@Override
 	public Coordinate[] toCoordinateArray() {
 		throw new UnsupportedOperationException();
 	}
 
+	@Override
 	public Envelope expandEnvelope(Envelope env) {
 		throw new UnsupportedOperationException();
 	}
 
+	@Override
 	public Object clone()
 	{
 		throw new UnsupportedOperationException();		
 	}
 	
+	@Override
 	public AxisPlaneCoordinateSequence copy()
 	{
 		throw new UnsupportedOperationException();		

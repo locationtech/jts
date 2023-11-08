@@ -55,14 +55,17 @@ public class MultiLineString
     super(lineStrings, factory);
   }
 
+  @Override
   public int getDimension() {
     return 1;
   }
 
+  @Override
   public boolean hasDimension(int dim) {
     return dim == 1;
   }
   
+  @Override
   public int getBoundaryDimension() {
     if (isClosed()) {
       return Dimension.FALSE;
@@ -70,6 +73,7 @@ public class MultiLineString
     return 0;
   }
 
+  @Override
   public String getGeometryType() {
     return Geometry.TYPENAME_MULTILINESTRING;
   }
@@ -93,6 +97,7 @@ public class MultiLineString
    * @return the boundary geometry
    * @see Geometry#getBoundary
    */
+  @Override
   public Geometry getBoundary()
   {
     return (new BoundaryOp(this)).getBoundary();
@@ -107,10 +112,12 @@ public class MultiLineString
    *
    * @return a {@link MultiLineString} in the reverse order
    */
+  @Override
   public MultiLineString reverse() {
     return (MultiLineString) super.reverse();
   }
 
+  @Override
   protected MultiLineString reverseInternal() {
     LineString[] lineStrings = new LineString[this.geometries.length];
     for (int i = 0; i < lineStrings.length; i++) {
@@ -119,6 +126,7 @@ public class MultiLineString
     return new MultiLineString(lineStrings, factory);
   }
   
+  @Override
   protected MultiLineString copyInternal() {
     LineString[] lineStrings = new LineString[this.geometries.length];
     for (int i = 0; i < lineStrings.length; i++) {
@@ -127,6 +135,7 @@ public class MultiLineString
     return new MultiLineString(lineStrings, factory);
   }
 
+  @Override
   public boolean equalsExact(Geometry other, double tolerance) {
     if (!isEquivalentClass(other)) {
       return false;
@@ -134,6 +143,7 @@ public class MultiLineString
     return super.equalsExact(other, tolerance);
   }
 
+  @Override
   protected int getTypeCode() {
     return Geometry.TYPECODE_MULTILINESTRING;
   }

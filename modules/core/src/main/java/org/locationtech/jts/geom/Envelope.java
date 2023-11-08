@@ -810,6 +810,7 @@ public class Envelope
    * 
    * @param o an Envelope object
    */
+  @Override
   public int compareTo(Object o) {
     Envelope env = (Envelope) o;
     // compare nulls if present
