@@ -63,6 +63,7 @@ Distributions for older JTS versions can be obtained at the
 * Fix OverlayNG Area Check heuristic for difference (#1005)
 * Fix `InteriorPointPoint` to handle empty elements
 * Fix `DistanceOp` for empty elements (#1010)
+* Fix predicates for MultiPoint with EMPTY (#1015)
 
 ### Performance Improvements
 
