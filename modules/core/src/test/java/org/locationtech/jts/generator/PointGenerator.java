@@ -28,6 +28,7 @@ public class PointGenerator extends GeometryGenerator {
 	 * @see org.locationtech.jts.generator.GeometryGenerator#create()
 	 * @throws NullPointerException when either the Geometry Factory, or the Bounding Box are undefined.
 	 */
+	@Override
 	public Geometry create() {
 		if(geometryFactory == null){
 			throw new NullPointerException("GeometryFactory is not declared");

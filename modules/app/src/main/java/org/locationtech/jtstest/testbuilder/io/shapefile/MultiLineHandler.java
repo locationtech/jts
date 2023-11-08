@@ -52,6 +52,7 @@ public class MultiLineHandler implements ShapeHandler {
     }
     
     
+    @Override
     public Geometry read( EndianDataInputStream file , GeometryFactory geometryFactory, int contentLength) throws IOException,InvalidShapefileException
     {
         
@@ -186,10 +187,12 @@ public class MultiLineHandler implements ShapeHandler {
     /**
      * Get the type of shape stored (Shapefile.ARC)
      */
+    @Override
     public int getShapeType(){
         return myShapeType;
     }
     
+    @Override
     public int getLength(Geometry geometry){
         MultiLineString multi = (MultiLineString) geometry;
         

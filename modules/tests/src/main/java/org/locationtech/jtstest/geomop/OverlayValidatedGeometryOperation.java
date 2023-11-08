@@ -56,6 +56,7 @@ public class OverlayValidatedGeometryOperation
   	
   }
   
+  @Override
   public Class getReturnType(String opName)
   {
   	return chainOp.getReturnType(opName);
@@ -82,6 +83,7 @@ public class OverlayValidatedGeometryOperation
    * @throws Exception
    * @see GeometryOperation#invoke
    */
+	@Override
 	public Result invoke(String opName, Geometry geometry, Object[] args)
 	  throws Exception
 	{

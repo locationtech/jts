@@ -133,6 +133,7 @@ static class DPTransformer
 		this.distanceTolerance = distanceTolerance;
 	}
 	
+  @Override
   protected CoordinateSequence transformCoordinates(CoordinateSequence coords, Geometry parent)
   {
     boolean isPreserveEndpoint = ! (parent instanceof LinearRing);
@@ -150,6 +151,7 @@ static class DPTransformer
   /**
    * Simplifies a polygon, fixing it if required.
    */
+  @Override
   protected Geometry transformPolygon(Polygon geom, Geometry parent) {
     // empty geometries are simply removed
     if (geom.isEmpty())
@@ -169,7 +171,8 @@ static class DPTransformer
    * @return null if the simplification results in a degenerate ring
    */
   //*
-  protected Geometry transformLinearRing(LinearRing geom, Geometry parent) 
+  @Override
+  protected Geometry transformLinearRing(LinearRing geom, Geometry parent)
   {
   	boolean removeDegenerateRings = parent instanceof Polygon;
   	Geometry simpResult = super.transformLinearRing(geom, parent);
@@ -182,6 +185,7 @@ static class DPTransformer
   /**
    * Simplifies a MultiPolygon, fixing it if required.
    */
+  @Override
   protected Geometry transformMultiPolygon(MultiPolygon geom, Geometry parent) {
     Geometry rawGeom = super.transformMultiPolygon(geom, parent);
     return createValidArea(rawGeom);

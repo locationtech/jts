@@ -38,6 +38,7 @@ public class GeometryVertexMover
       this.toLoc = toLoc;
     }
     
+    @Override
     public Coordinate[] edit(Coordinate[] coords,
         Geometry geometry)
     {

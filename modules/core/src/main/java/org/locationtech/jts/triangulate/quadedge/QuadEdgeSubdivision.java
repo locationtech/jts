@@ -648,7 +648,8 @@ public class QuadEdgeSubdivision {
 		public TriangleCircumcentreVisitor() {
 		}
 
-		public void visit(QuadEdge[] triEdges) 
+		@Override
+		public void visit(QuadEdge[] triEdges)
 		{
 			Coordinate a = triEdges[0].orig().getCoordinate();
 			Coordinate b = triEdges[1].orig().getCoordinate();
@@ -754,6 +755,7 @@ public class QuadEdgeSubdivision {
 	private static class TriangleEdgesListVisitor implements TriangleVisitor {
 		private List triList = new ArrayList();
 
+		@Override
 		public void visit(QuadEdge[] triEdges) {
 			triList.add(new QuadEdge[]{triEdges[0], triEdges[1], triEdges[2]});
 		}
@@ -780,6 +782,7 @@ public class QuadEdgeSubdivision {
 	private static class TriangleVertexListVisitor implements TriangleVisitor {
 		private List triList = new ArrayList();
 
+		@Override
 		public void visit(QuadEdge[] triEdges) {
 			triList.add(new Vertex[] { triEdges[0].orig(), triEdges[1].orig(),
 					triEdges[2].orig() });
@@ -811,6 +814,7 @@ public class QuadEdgeSubdivision {
 		public TriangleCoordinatesVisitor() {
 		}
 
+		@Override
 		public void visit(QuadEdge[] triEdges) {
 			coordList.clear();
 			for (int i = 0; i < 3; i++) {

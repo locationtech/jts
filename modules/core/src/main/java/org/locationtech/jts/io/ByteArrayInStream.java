@@ -52,6 +52,7 @@ public class ByteArrayInStream
 	 * @param buf the buffer to place the read bytes into
    * @return the number of bytes read
 	 */
+	@Override
 	public int read(final byte[] buf) {
 		int numToRead = buf.length;
 		// don't try and copy past the end of the input

@@ -27,16 +27,19 @@ public class ClipImage implements Transferable, ClipboardOwner {
 		image = im;
 	}
 
+	@Override
 	public DataFlavor[] getTransferDataFlavors()
 	{
 		return new DataFlavor[] { DataFlavor.imageFlavor };
 	}
 
+	@Override
 	public boolean isDataFlavorSupported(DataFlavor flavor)
 	{
 		return DataFlavor.imageFlavor.equals(flavor);
 	}
 
+	@Override
 	public Object getTransferData(DataFlavor flavor) throws
 	UnsupportedFlavorException
 	{
@@ -45,6 +48,7 @@ public class ClipImage implements Transferable, ClipboardOwner {
 		return Toolkit.getDefaultToolkit().createImage(image);
 	}
 
+	@Override
 	public void lostOwnership(java.awt.datatransfer.Clipboard clip,
 	java.awt.datatransfer.Transferable tr)
 

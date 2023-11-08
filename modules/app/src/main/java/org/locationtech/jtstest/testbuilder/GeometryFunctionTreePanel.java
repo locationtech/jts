@@ -75,6 +75,7 @@ public class GeometryFunctionTreePanel extends JPanel {
 		public GeometryFunctionRenderer() {
 		}
 
+		@Override
 		public Component getTreeCellRendererComponent(JTree tree, Object value,
 				boolean sel, boolean expanded, boolean leaf, int row, boolean hasFocus) {
 
@@ -127,6 +128,7 @@ public class GeometryFunctionTreePanel extends JPanel {
 				TreeSelectionModel.SINGLE_TREE_SELECTION);
 
 		tree.addMouseListener(new MouseAdapter() {
+			@Override
 			public void mouseClicked(MouseEvent e) {
 				if (e.getClickCount() == 2) {
 					GeometryFunction fun = getFunction();
@@ -137,6 +139,7 @@ public class GeometryFunctionTreePanel extends JPanel {
 			}
 		});
 		tree.addTreeSelectionListener(new TreeSelectionListener() {
+			@Override
 			public void valueChanged(TreeSelectionEvent e) {
 				GeometryFunction fun = getFunction();
 				if (fun != null)

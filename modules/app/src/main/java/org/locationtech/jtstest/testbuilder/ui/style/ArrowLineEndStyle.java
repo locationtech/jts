@@ -44,6 +44,7 @@ public class ArrowLineEndStyle
     this.color = ColorUtil.setAlpha(color, FILL_ALPHA);
   }
 
+  @Override
   protected void paint(Point2D terminal, Point2D next, Viewport viewport,
       Graphics2D g) throws NoninvertibleTransformException 
   {
