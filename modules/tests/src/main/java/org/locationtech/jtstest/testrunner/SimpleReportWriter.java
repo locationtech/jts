@@ -70,7 +70,7 @@ private boolean verbose;
       id += " " + test.getArgument(i);
     }
     if (test.getExpectedResult() instanceof BooleanResult) {
-      id += ", " + test.getExpectedResult().toShortString();
+      id += " -> " + test.getExpectedResult().toShortString();
     }
     if (test.getDescription().length() > 0) {
       id += ", " + test.getDescription();
