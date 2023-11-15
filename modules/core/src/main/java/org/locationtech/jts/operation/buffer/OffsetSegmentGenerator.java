@@ -114,7 +114,7 @@ class OffsetSegmentGenerator
     
     int quadSegs = bufParams.getQuadrantSegments();
     if (quadSegs < 1) quadSegs = 1;
-    filletAngleQuantum = Math.PI / 2.0 / quadSegs;
+    filletAngleQuantum = Angle.PI_OVER_2 / quadSegs;
 
     /**
      * Non-round joins cause issues with short closing segments, so don't use
@@ -428,7 +428,7 @@ class OffsetSegmentGenerator
       case BufferParameters.CAP_ROUND:
         // add offset seg points with a fillet between them
         segList.addPt(offsetL.p1);
-        addDirectedFillet(p1, angle + Math.PI / 2, angle - Math.PI / 2, Orientation.CLOCKWISE, distance);
+        addDirectedFillet(p1, angle + Angle.PI_OVER_2, angle - Angle.PI_OVER_2, Orientation.CLOCKWISE, distance);
         segList.addPt(offsetR.p1);
         break;
       case BufferParameters.CAP_FLAT:
@@ -439,8 +439,8 @@ class OffsetSegmentGenerator
       case BufferParameters.CAP_SQUARE:
         // add a square defined by extensions of the offset segment endpoints
         Coordinate squareCapSideOffset = new Coordinate();
-        squareCapSideOffset.x = Math.abs(distance) * Math.cos(angle);
-        squareCapSideOffset.y = Math.abs(distance) * Math.sin(angle);
+        squareCapSideOffset.x = Math.abs(distance) * Angle.cosSnap(angle);
+        squareCapSideOffset.y = Math.abs(distance) * Angle.sinSnap(angle);
 
         Coordinate squareCapLOffset = new Coordinate(
             offsetL.p1.x + squareCapSideOffset.x,
@@ -534,7 +534,7 @@ class OffsetSegmentGenerator
     Coordinate bevelMidPt = project(cornerPt, -mitreLimitDistance, dirBisector);
     
     // direction of bevel segment (at right angle to corner bisector)
-    double dirBevel = Angle.normalize(dirBisector + Math.PI/2.0);
+    double dirBevel = Angle.normalize(dirBisector + Angle.PI_OVER_2);
     
     // compute the candidate bevel segment by projecting both sides of the midpoint
     Coordinate bevel0 = project(bevelMidPt, distance, dirBevel);
@@ -567,8 +567,8 @@ class OffsetSegmentGenerator
    * @return the projected point
    */
   private static Coordinate project(Coordinate pt, double d, double dir) {
-    double x = pt.x + d * Math.cos(dir);
-    double y = pt.y + d * Math.sin(dir);
+    double x = pt.x + d * Angle.cosSnap(dir);
+    double y = pt.y + d * Angle.sinSnap(dir);
     return new Coordinate(x, y);
   }
   
@@ -607,10 +607,10 @@ class OffsetSegmentGenerator
     double endAngle = Math.atan2(dy1, dx1);
 
     if (direction == Orientation.CLOCKWISE) {
-      if (startAngle <= endAngle) startAngle += 2.0 * Math.PI;
+      if (startAngle <= endAngle) startAngle += Angle.PI_TIMES_2;
     }
     else {    // direction == COUNTERCLOCKWISE
-      if (startAngle >= endAngle) startAngle -= 2.0 * Math.PI;
+      if (startAngle >= endAngle) startAngle -= Angle.PI_TIMES_2;
     }
     segList.addPt(p0);
     addDirectedFillet(p, startAngle, endAngle, direction, radius);
@@ -641,8 +641,8 @@ class OffsetSegmentGenerator
     Coordinate pt = new Coordinate();
     for (int i = 0; i < nSegs; i++) {
       double angle = startAngle + directionFactor * i * angleInc;
-      pt.x = p.x + radius * Math.cos(angle);
-      pt.y = p.y + radius * Math.sin(angle);
+      pt.x = p.x + radius * Angle.cosSnap(angle);
+      pt.y = p.y + radius * Angle.sinSnap(angle);
       segList.addPt(pt);
     }
   }
@@ -655,7 +655,7 @@ class OffsetSegmentGenerator
     // add start point
     Coordinate pt = new Coordinate(p.x + distance, p.y);
     segList.addPt(pt);
-    addDirectedFillet(p, 0.0, 2.0 * Math.PI, -1, distance);
+    addDirectedFillet(p, 0.0, Angle.PI_TIMES_2, -1, distance);
     segList.closeRing();
   }
 

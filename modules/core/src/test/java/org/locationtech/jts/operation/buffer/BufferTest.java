@@ -11,6 +11,7 @@
  */
 package org.locationtech.jts.operation.buffer;
 
+import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryCollection;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -600,6 +601,24 @@ public class BufferTest extends GeometryTestCase {
       if (poly.getNumInteriorRing() > 0) return true;
     }
     return false;
+  }
+
+  /**
+   * See GEOS PR https://github.com/libgeos/geos/pull/978
+   */
+  public void testDefaultBuffer() {
+    Geometry g = read("POINT (0 0)").buffer(1.0);
+    Geometry b = g.getBoundary();
+    Coordinate[] coords = b.getCoordinates();
+    assertEquals(33, coords.length);
+    assertEquals(coords[0].x, 1.0);
+    assertEquals(coords[0].y, 0.0);
+    assertEquals(coords[8].x, 0.0);
+    assertEquals(coords[8].y, -1.0);
+    assertEquals(coords[16].x, -1.0);
+    assertEquals(coords[16].y, 0.0);
+    assertEquals(coords[24].x, 0.0);
+    assertEquals(coords[24].y, 1.0);
   }
 
 }

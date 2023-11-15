@@ -313,12 +313,36 @@ import org.locationtech.jts.geom.Coordinate;
     }
 
     if (delAngle > Math.PI) {
-      delAngle = (2 * Math.PI) - delAngle;
+      delAngle = PI_TIMES_2 - delAngle;
     }
 
     return delAngle;
   }
-  
+
+  /**
+   * Computes sin of an angle, snapping near-zero values to zero.
+   *
+   * @param ang the input angle (in radians)
+   * @return the result of the trigonometric function
+   */
+  public static double sinSnap(double ang) {
+    double res = Math.sin(ang);
+    if (Math.abs(res) < 5e-16) return 0.0;
+    return res;
+  }
+
+  /**
+   * Computes cos of an angle, snapping near-zero values to zero.
+   *
+   * @param ang the input angle (in radians)
+   * @return the result of the trigonometric function
+   */
+  public static double cosSnap(double ang) {
+    double res = Math.cos(ang);
+    if (Math.abs(res) < 5e-16) return 0.0;
+    return res;
+  }
+
   /**
    * Projects a point by a given angle and distance.
    * 
@@ -328,8 +352,8 @@ import org.locationtech.jts.geom.Coordinate;
    * @return the projected point
    */
   public static Coordinate project(Coordinate p, double angle, double dist) {
-    double x = p.getX() + dist * Math.cos(angle);
-    double y = p.getY() + dist * Math.sin(angle);
+    double x = p.getX() + dist * Angle.cosSnap(angle);
+    double y = p.getY() + dist * Angle.sinSnap(angle);
     return new Coordinate(x, y);
   }
 }

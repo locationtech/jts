@@ -11,6 +11,8 @@
  */
 package org.locationtech.jts.operation.buffer;
 
+import org.locationtech.jts.algorithm.Angle;
+
 /**
  * A value class containing the parameters which 
  * specify how a buffer should be constructed.
@@ -176,7 +178,7 @@ public class BufferParameters
    */
   public static double bufferDistanceError(int quadSegs)
   {
-    double alpha = Math.PI / 2.0 / quadSegs;
+    double alpha = Angle.PI_OVER_2 / quadSegs;
     return 1 - Math.cos(alpha / 2.0);
   }
   
