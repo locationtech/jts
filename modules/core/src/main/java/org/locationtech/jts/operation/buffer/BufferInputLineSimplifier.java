@@ -14,18 +14,20 @@ package org.locationtech.jts.operation.buffer;
 import org.locationtech.jts.algorithm.Distance;
 import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateArrays;
 import org.locationtech.jts.geom.CoordinateList;
 
 /**
  * Simplifies a buffer input line to 
  * remove concavities with shallow depth.
  * <p>
- * The most important benefit of doing this
+ * The major benefit of doing this
  * is to reduce the number of points and the complexity of
  * shape which will be buffered.
+ * This improve performance and robustness.
  * It also reduces the risk of gores created by
  * the quantized fillet arcs (although this issue
- * should be eliminated in any case by the 
+ * should be eliminated by the 
  * offset curve generation logic).
  * <p>
  * A key aspect of the simplification is that it
@@ -35,8 +37,9 @@ import org.locationtech.jts.geom.CoordinateList;
  * lies at the correct distance from the input geometry.
  * <p>
  * Another important heuristic used is that the end segments
- * of the input are never simplified.  This ensures that
+ * of linear inputs are never simplified.  This ensures that
  * the client buffer code is able to generate end caps faithfully.
+ * Ring inputs can have end segments removed by simplification.
  * <p>
  * No attempt is made to avoid self-intersections in the output.
  * This is acceptable for use for generating a buffer offset curve,
@@ -67,18 +70,18 @@ public class BufferInputLineSimplifier
     return simp.simplify(distanceTol);
   }
   
-  private static final int INIT = 0;
   private static final int DELETE = 1;
-  private static final int KEEP = 1;
-  
   
   private Coordinate[] inputLine;
   private double distanceTol;
-  private byte[] isDeleted;
+  private boolean isRing;
+  private boolean[] isDeleted;
   private int angleOrientation = Orientation.COUNTERCLOCKWISE;
+
   
   public BufferInputLineSimplifier(Coordinate[] inputLine) {
     this.inputLine = inputLine;
+    isRing = CoordinateArrays.isRing(inputLine);
   }
 
   /**
@@ -94,11 +97,12 @@ public class BufferInputLineSimplifier
   public Coordinate[] simplify(double distanceTol)
   {
     this.distanceTol = Math.abs(distanceTol);
+    angleOrientation = Orientation.COUNTERCLOCKWISE;
     if (distanceTol < 0)
       angleOrientation = Orientation.CLOCKWISE;
     
-    // rely on fact that boolean array is filled with false value
-    isDeleted = new byte[inputLine.length];
+    // rely on fact that boolean array is filled with false values
+    isDeleted = new boolean[inputLine.length];
     
     boolean isChanged = false;
     do {
@@ -112,18 +116,19 @@ public class BufferInputLineSimplifier
    * Uses a sliding window containing 3 vertices to detect shallow angles
    * in which the middle vertex can be deleted, since it does not
    * affect the shape of the resulting buffer in a significant way.
-   * @return
+   * 
+   * @return true if any vertices were deleted
    */
   private boolean deleteShallowConcavities()
   {
     /**
-     * Do not simplify end line segments of the line string.
+     * Do not simplify end line segments of lines.
      * This ensures that end caps are generated consistently.
      */
-    int index = 1;
+    int index = isRing ? 0 : 1;
 
-    int midIndex = findNextNonDeletedIndex(index);
-    int lastIndex = findNextNonDeletedIndex(midIndex);
+    int midIndex = nextIndex(index);
+    int lastIndex = nextIndex(midIndex);
     
     boolean isChanged = false;
     while (lastIndex < inputLine.length) {
@@ -131,7 +136,7 @@ public class BufferInputLineSimplifier
     	boolean isMiddleVertexDeleted = false;
       if (isDeletable(index, midIndex, lastIndex, 
           distanceTol)) {
-        isDeleted[midIndex] = DELETE;
+        isDeleted[midIndex] = true;
         isMiddleVertexDeleted = true;
         isChanged = true;
       }
@@ -141,8 +146,8 @@ public class BufferInputLineSimplifier
       else 
       	index = midIndex;
       
-      midIndex = findNextNonDeletedIndex(index);
-      lastIndex = findNextNonDeletedIndex(midIndex);
+      midIndex = nextIndex(index);
+      lastIndex = nextIndex(midIndex);
     }
     return isChanged;
   }
@@ -153,10 +158,10 @@ public class BufferInputLineSimplifier
    * @return the next non-deleted index, if any
    * or inputLine.length if there are no more non-deleted indices
    */
-  private int findNextNonDeletedIndex(int index)
+  private int nextIndex(int index)
   {
     int next = index + 1;
-    while (next < inputLine.length && isDeleted[next] == DELETE)
+    while (next < inputLine.length && isDeleted[next])
       next++;
     return next;  
   }
@@ -165,10 +170,9 @@ public class BufferInputLineSimplifier
   {
     CoordinateList coordList = new CoordinateList();
     for (int i = 0; i < inputLine.length; i++) {
-      if (isDeleted[i] != DELETE)
+      if (! isDeleted[i])
         coordList.add(inputLine[i]);
     }
-//    if (coordList.size() < inputLine.length)      System.out.println("Simplified " + (inputLine.length - coordList.size()) + " pts");
     return coordList.toCoordinateArray();
   }
   
@@ -181,21 +185,7 @@ public class BufferInputLineSimplifier
   	if (! isConcave(p0, p1, p2)) return false;
   	if (! isShallow(p0, p1, p2, distanceTol)) return false;
   	
-  	// MD - don't use this heuristic - it's too restricting 
-//  	if (p0.distance(p2) > distanceTol) return false;
-  	
   	return isShallowSampled(p0, p1, i0, i2, distanceTol);
-  }
-
-  private boolean isShallowConcavity(Coordinate p0, Coordinate p1, Coordinate p2, double distanceTol)
-  {
-    int orientation = Orientation.index(p0, p1, p2);
-    boolean isAngleToSimplify = (orientation == angleOrientation);
-    if (! isAngleToSimplify)
-      return false;
-    
-    double dist = Distance.pointToSegment(p1, p0, p2);
-    return dist < distanceTol;
   }
   
   private static final int NUM_PTS_TO_CHECK = 10;
@@ -219,17 +209,16 @@ public class BufferInputLineSimplifier
   	if (inc <= 0) inc = 1;
   	
   	for (int i = i0; i < i2; i += inc) {
-  		if (! isShallow(p0, p2, inputLine[i], distanceTol)) return false;
+  		if (! isShallow(p0, inputLine[i], p2, distanceTol)) return false;
   	}
   	return true;
   }
   
-  private boolean isShallow(Coordinate p0, Coordinate p1, Coordinate p2, double distanceTol)
+  private static boolean isShallow(Coordinate p0, Coordinate p1, Coordinate p2, double distanceTol)
   {
     double dist = Distance.pointToSegment(p1, p0, p2);
     return dist < distanceTol;
   }
-  
   
   private boolean isConcave(Coordinate p0, Coordinate p1, Coordinate p2)
   {

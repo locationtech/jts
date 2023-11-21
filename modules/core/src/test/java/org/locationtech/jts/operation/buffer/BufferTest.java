@@ -575,7 +575,53 @@ public class BufferTest extends GeometryTestCase {
     checkBufferHasHole(wkt, 70, false);
   }
   
+  /**
+   * See GEOS PR https://github.com/libgeos/geos/pull/978
+   */
+  public void testDefaultBuffer() {
+    Geometry g = read("POINT (0 0)").buffer(1.0);
+    Geometry b = g.getBoundary();
+    Coordinate[] coords = b.getCoordinates();
+    assertEquals(33, coords.length);
+    assertEquals(coords[0].x, 1.0);
+    assertEquals(coords[0].y, 0.0);
+    assertEquals(coords[8].x, 0.0);
+    assertEquals(coords[8].y, -1.0);
+    assertEquals(coords[16].x, -1.0);
+    assertEquals(coords[16].y, 0.0);
+    assertEquals(coords[24].x, 0.0);
+    assertEquals(coords[24].y, 1.0);
+  }
+  
+  public void testRingStartSimplified() {
+    checkBuffer("POLYGON ((200 300, 200 299.9999, 350 100, 30 40, 200 300))",
+        20, bufParamRoundMitre(5),
+        "POLYGON ((198.88 334.83, 385.3 86.27, -12.4 11.7, 198.88 334.83))"
+        );
+  }
+  
+  public void testRingEndSimplified() {
+    checkBuffer("POLYGON ((200 300, 350 100, 30 40, 200 299.9999, 200 300))",
+        20, bufParamRoundMitre(5),
+        "POLYGON ((198.88 334.83, 385.3 86.27, -12.4 11.7, 198.88 334.83))"
+        );
+  }
+  
   //===================================================
+  
+  private static BufferParameters bufParamRoundMitre(double mitreLimit) {
+    BufferParameters param = new BufferParameters();
+    param.setJoinStyle(BufferParameters.JOIN_MITRE);
+    param.setMitreLimit(mitreLimit);
+    return param;
+  }
+  
+  private void checkBuffer(String wkt, double dist, BufferParameters param, String wktExpected) {
+    Geometry geom = read(wkt);
+    Geometry result = BufferOp.bufferOp(geom, dist, param);
+    Geometry expected = read(wktExpected);
+    checkEqual(expected, result, 0.01);
+  }
   
   private void checkBufferEmpty(String wkt, double dist, boolean isEmptyExpected) {
     Geometry a = read(wkt);
@@ -603,22 +649,6 @@ public class BufferTest extends GeometryTestCase {
     return false;
   }
 
-  /**
-   * See GEOS PR https://github.com/libgeos/geos/pull/978
-   */
-  public void testDefaultBuffer() {
-    Geometry g = read("POINT (0 0)").buffer(1.0);
-    Geometry b = g.getBoundary();
-    Coordinate[] coords = b.getCoordinates();
-    assertEquals(33, coords.length);
-    assertEquals(coords[0].x, 1.0);
-    assertEquals(coords[0].y, 0.0);
-    assertEquals(coords[8].x, 0.0);
-    assertEquals(coords[8].y, -1.0);
-    assertEquals(coords[16].x, -1.0);
-    assertEquals(coords[16].y, 0.0);
-    assertEquals(coords[24].x, 0.0);
-    assertEquals(coords[24].y, 1.0);
-  }
+
 
 }
