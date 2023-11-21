@@ -38,6 +38,7 @@ Distributions for older JTS versions can be obtained at the
 * Added ability to specify boundary for `LargestEmptyCircle` (#973)
 * Improve `DouglaPeuckerSimplifier` and `TopologyPreservingSimplifier` to handle ring endpoints (#1013)
 * Add Angle.sinSnap and .cosSnap to avoid small errors, e.g. with buffer operations (#1016)
+* Improve Buffer input simplification for rings (#1022)
 
 ### Bug Fixes
 * Fix `PreparedGeometry` handling of EMPTY elements (#904)
