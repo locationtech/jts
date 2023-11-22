@@ -140,7 +140,6 @@ public class DiscreteHausdorffDistance
   {
     private PointPairDistance maxPtDist = new PointPairDistance();
     private PointPairDistance minPtDist = new PointPairDistance();
-    private DistanceToPoint euclideanDist = new DistanceToPoint();
     private Geometry geom;
 
     public MaxPointDistanceFilter(Geometry geom)
