@@ -113,9 +113,7 @@ public class TaggedLineStringSimplifier
       LineSegment candidateSeg = new LineSegment();
       candidateSeg.p0 = linePts[i];
       candidateSeg.p1 = linePts[j];
-      if (hasBadIntersection(line, i, j, candidateSeg)) {
-        isValidToSimplify = false;
-      }
+      isValidToSimplify = isTopologyValid(line, i, j, candidateSeg);
     }
     
     if (isValidToSimplify) {
@@ -137,7 +135,7 @@ public class TaggedLineStringSimplifier
       //-- the excluded segments are the ones containing the endpoint
       Coordinate endPt = firstSeg.p0;
       if (simpSeg.distance(endPt) <= distanceTolerance
-          && ! hasBadIntersection(line, line.getSegments().length - 2, 1, simpSeg)) {
+          && isTopologyValid(line, line.getSegments().length - 2, 1, simpSeg)) {
         line.removeRingEndpoint();
       }
     }
@@ -198,19 +196,19 @@ public class TaggedLineStringSimplifier
    * @param candidateSeg
    * @return
    */
-  private boolean hasBadIntersection(TaggedLineString line,
+  private boolean isTopologyValid(TaggedLineString line,
                        int excludeStart, int excludeEnd,
                        LineSegment candidateSeg)
   {
     System.out.println("Flattening candidate: " + candidateSeg);
-    if (hasBadOutputIntersection(candidateSeg)) return true;
-    if (hasBadInputIntersection(line, excludeStart, excludeEnd, candidateSeg)) return true;
-    if (crossChecker.isCross(line, excludeStart, excludeEnd, candidateSeg)) return true;
+    if (hasOutputIntersection(candidateSeg)) return false;
+    if (hasInputIntersection(line, excludeStart, excludeEnd, candidateSeg)) return false;
+    if (crossChecker.isCross(line, excludeStart, excludeEnd, candidateSeg)) return false;
 System.out.println("OK TO FLATTEN\n\n");
-    return false;
+    return true;
   }
 
-  private boolean hasBadOutputIntersection(LineSegment candidateSeg)
+  private boolean hasOutputIntersection(LineSegment candidateSeg)
   {
     List querySegs = outputIndex.query(candidateSeg);
     for (Iterator i = querySegs.iterator(); i.hasNext(); ) {
@@ -222,7 +220,7 @@ System.out.println("OK TO FLATTEN\n\n");
     return false;
   }
 
-  private boolean hasBadInputIntersection(TaggedLineString line,
+  private boolean hasInputIntersection(TaggedLineString line,
                         int excludeStart, int excludeEnd,
                        LineSegment candidateSeg)
   {
