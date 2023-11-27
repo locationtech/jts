@@ -32,17 +32,20 @@ import org.locationtech.jts.geom.LineSegment;
 public class TaggedLineStringSimplifier
 {
   private LineIntersector li = new RobustLineIntersector();
-  private LineSegmentIndex inputIndex = new LineSegmentIndex();
-  private LineSegmentIndex outputIndex = new LineSegmentIndex();
+  private LineSegmentIndex inputIndex;
+  private LineSegmentIndex outputIndex;
+  private ComponentCrossChecker crossChecker;
   private TaggedLineString line;
   private Coordinate[] linePts;
   private double distanceTolerance = 0.0;
 
   public TaggedLineStringSimplifier(LineSegmentIndex inputIndex,
-                                     LineSegmentIndex outputIndex)
+                                     LineSegmentIndex outputIndex, 
+                                     ComponentCrossChecker crossChecker)
   {
     this.inputIndex = inputIndex;
     this.outputIndex = outputIndex;
+    this.crossChecker = crossChecker;
   }
 
   /**
@@ -99,16 +102,22 @@ public class TaggedLineStringSimplifier
 
     double[] distance = new double[1];
     int furthestPtIndex = findFurthestPoint(linePts, i, j, distance);
+    
     // flattening must be less than distanceTolerance
-    if (distance[0] > distanceTolerance) isValidToSimplify = false;
-    // test if flattened section would cause intersection
-    LineSegment candidateSeg = new LineSegment();
-    candidateSeg.p0 = linePts[i];
-    candidateSeg.p1 = linePts[j];
-    if (hasBadIntersection(line, i, j, candidateSeg)) {
+    if (distance[0] > distanceTolerance) {
       isValidToSimplify = false;
     }
-
+    
+    if (isValidToSimplify) {
+      // test if flattened section would cause intersection
+      LineSegment candidateSeg = new LineSegment();
+      candidateSeg.p0 = linePts[i];
+      candidateSeg.p1 = linePts[j];
+      if (hasBadIntersection(line, i, j, candidateSeg)) {
+        isValidToSimplify = false;
+      }
+    }
+    
     if (isValidToSimplify) {
       LineSegment newSeg = flatten(i, j);
       line.addToResult(newSeg);
@@ -126,8 +135,9 @@ public class TaggedLineStringSimplifier
 
       LineSegment simpSeg = new LineSegment(lastSeg.p0, firstSeg.p1);
       //-- the excluded segments are the ones containing the endpoint
-      if (simpSeg.distance(firstSeg.p0) <= distanceTolerance
-          && ! hasBadIntersection(line, line.getSegments().length - 2, 0, simpSeg)) {
+      Coordinate endPt = firstSeg.p0;
+      if (simpSeg.distance(endPt) <= distanceTolerance
+          && ! hasBadIntersection(line, line.getSegments().length - 2, 1, simpSeg)) {
         line.removeRingEndpoint();
       }
     }
@@ -192,8 +202,11 @@ public class TaggedLineStringSimplifier
                        int excludeStart, int excludeEnd,
                        LineSegment candidateSeg)
   {
+    System.out.println("Flattening candidate: " + candidateSeg);
     if (hasBadOutputIntersection(candidateSeg)) return true;
     if (hasBadInputIntersection(line, excludeStart, excludeEnd, candidateSeg)) return true;
+    if (crossChecker.isCross(line, excludeStart, excludeEnd, candidateSeg)) return true;
+System.out.println("OK TO FLATTEN\n\n");
     return false;
   }
 

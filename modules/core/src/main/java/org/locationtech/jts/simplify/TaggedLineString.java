@@ -56,6 +56,14 @@ class TaggedLineString
   public Coordinate[] getParentCoordinates() { return parentLine.getCoordinates(); }
   public Coordinate[] getResultCoordinates() { return extractCoordinates(resultSegs); }
 
+  public Coordinate getCoordinate(int i) {
+    return parentLine.getCoordinateN(i);
+  }
+
+  public int size() {
+    return parentLine.getNumPoints();
+  }
+  
   public int getResultSize()
   {
     int resultSegsSize = resultSegs.size();
@@ -126,4 +134,6 @@ class TaggedLineString
     firstSeg.p0 = lastSeg.p0;
     resultSegs.remove(resultSegs.size() - 1);
   }
+
+
 }

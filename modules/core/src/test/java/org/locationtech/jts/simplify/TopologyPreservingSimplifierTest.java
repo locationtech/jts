@@ -212,6 +212,18 @@ public class TopologyPreservingSimplifierTest
         "POLYGON ((3312459.605 6646878.353, 3312460.524 6646875.969, 3312459.427 6646878.421, 3312460.014 6646886.391, 3312465.889 6646887.398, 3312470.827 6646884.839, 3312477.289 6646871.694, 3312472.748 6646869.547, 3312459.605 6646878.353))");
   }
   
+  public void testLineComponentCross() {
+    checkTPS("MULTILINESTRING ((0 0, 10 2, 20 0), (9 1, 11 1))",
+        4,
+        "MULTILINESTRING ((0 0, 10 2, 20 0), (9 1, 11 1))");
+  }
+  
+  public void testPolygonComponentCrossAtEndpoint() {
+    checkTPS("MULTIPOLYGON (((50 40, 40 60, 80 40, 0 0, 30 70, 50 40)), ((40 56, 40 57, 41 56, 40 56)))",
+        30,
+        "MULTIPOLYGON (((50 40, 80 40, 0 0, 30 70, 50 40)), ((40 56, 40 57, 41 56, 40 56)))");
+  }
+  
   private void checkTPS(String wkt, double tolerance, String wktExpected) {
     Geometry geom = read(wkt);
     Geometry actual = TopologyPreservingSimplifier.simplify(geom, tolerance);
