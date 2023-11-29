@@ -34,18 +34,18 @@ public class TaggedLineStringSimplifier
   private LineIntersector li = new RobustLineIntersector();
   private LineSegmentIndex inputIndex;
   private LineSegmentIndex outputIndex;
-  private ComponentCrossChecker crossChecker;
+  private ComponentJumpChecker jumpChecker;
   private TaggedLineString line;
   private Coordinate[] linePts;
   private double distanceTolerance = 0.0;
 
   public TaggedLineStringSimplifier(LineSegmentIndex inputIndex,
                                      LineSegmentIndex outputIndex, 
-                                     ComponentCrossChecker crossChecker)
+                                     ComponentJumpChecker crossChecker)
   {
     this.inputIndex = inputIndex;
     this.outputIndex = outputIndex;
-    this.crossChecker = crossChecker;
+    this.jumpChecker = crossChecker;
   }
 
   /**
@@ -79,10 +79,12 @@ public class TaggedLineStringSimplifier
   private void simplifySection(int i, int j, int depth)
   {
     depth += 1;
+    //-- for section of length 1 just keep it
     if ((i+1) == j) {
       LineSegment newSeg = line.getSegment(i);
       line.addToResult(newSeg);
-      // leave this segment in the input index, for efficiency
+      //-- do not add segment to output index, since it is unchanged
+      //-- leave the segment in the input index, for efficiency
       return;
     }
 
@@ -109,7 +111,7 @@ public class TaggedLineStringSimplifier
     }
     
     if (isValidToSimplify) {
-      // test if flattened section would cause intersection
+      // test if flattened section would cause intersection or jump
       LineSegment candidateSeg = new LineSegment();
       candidateSeg.p0 = linePts[i];
       candidateSeg.p1 = linePts[j];
@@ -125,6 +127,11 @@ public class TaggedLineStringSimplifier
     simplifySection(furthestPtIndex, j, depth);
   }
 
+  /**
+   * Simplifies the result segments on either side of a ring endpoint
+   * (which has not been changed by prior simplification).
+   * This ensures that simplification removes flat endpoints.
+   */
   private void simplifyRingEndpoint()
   {
     if (line.getResultSize() > line.getMinimumSize()) {
@@ -135,12 +142,12 @@ public class TaggedLineStringSimplifier
       //-- the excluded segments are the ones containing the endpoint
       Coordinate endPt = firstSeg.p0;
       if (simpSeg.distance(endPt) <= distanceTolerance
-          && isTopologyValid(line, line.getSegments().length - 2, 1, simpSeg)) {
+          && isTopologyValid(line, firstSeg, lastSeg, simpSeg)) {
         line.removeRingEndpoint();
       }
     }
   }
-  
+
   private int findFurthestPoint(Coordinate[] pts, int i, int j, double[] maxDistance)
   {
     LineSegment seg = new LineSegment();
@@ -177,37 +184,47 @@ public class TaggedLineStringSimplifier
     Coordinate p0 = linePts[start];
     Coordinate p1 = linePts[end];
     LineSegment newSeg = new LineSegment(p0, p1);
-    // update the indexes
-    remove(line, start, end);
+    // update the input and output indexes
     outputIndex.add(newSeg);
+    remove(line, start, end);
+    
     return newSeg;
   }
 
   /**
-   * Tests if a flattening segment intersects a line 
-   * (excluding a given section of segments).
-   * The excluded section is being replaced by the flattening segment, 
+   * Tests if line topology remains valid after flattening a section of the line.
+   * The flattened section is being replaced by the flattening segment, 
    * so there is no need to test it 
    * (and it may well intersect the segment).
    * 
    * @param line
-   * @param excludeStart
-   * @param excludeEnd
+   * @param sectionStart
+   * @param sectionEnd
    * @param candidateSeg
-   * @return
+   * @return true if the flattening leaves valid topology
    */
   private boolean isTopologyValid(TaggedLineString line,
-                       int excludeStart, int excludeEnd,
+                       int sectionStart, int sectionEnd,
                        LineSegment candidateSeg)
   {
     System.out.println("Flattening candidate: " + candidateSeg);
     if (hasOutputIntersection(candidateSeg)) return false;
-    if (hasInputIntersection(line, excludeStart, excludeEnd, candidateSeg)) return false;
-    if (crossChecker.isCross(line, excludeStart, excludeEnd, candidateSeg)) return false;
+    if (hasInputIntersection(line, sectionStart, sectionEnd, candidateSeg)) return false;
+    if (jumpChecker.hasJump(line, sectionStart, sectionEnd, candidateSeg)) return false;
 System.out.println("OK TO FLATTEN\n\n");
     return true;
   }
 
+  private boolean isTopologyValid(TaggedLineString line2, LineSegment seg1, LineSegment seg2,
+      LineSegment candidateSeg) {
+System.out.println("Flattening candidate: " + candidateSeg);
+    if (hasOutputIntersection(candidateSeg)) return false;
+    if (hasInputIntersection(candidateSeg)) return false;
+    if (jumpChecker.hasJump(line, seg1, seg2, candidateSeg)) return false;
+System.out.println("OK TO FLATTEN\n\n");
+    return true;
+  }
+  
   private boolean hasOutputIntersection(LineSegment candidateSeg)
   {
     List querySegs = outputIndex.query(candidateSeg);
@@ -220,6 +237,11 @@ System.out.println("OK TO FLATTEN\n\n");
     return false;
   }
 
+  private boolean hasInputIntersection(LineSegment candidateSeg)
+  {
+    return hasInputIntersection(null, -1, -1, candidateSeg);
+  }
+  
   private boolean hasInputIntersection(TaggedLineString line,
                         int excludeStart, int excludeEnd,
                        LineSegment candidateSeg)
@@ -232,7 +254,8 @@ System.out.println("OK TO FLATTEN\n\n");
            * Ignore the intersection if the intersecting segment is part of the section being collapsed
            * to the candidate segment
            */
-          if (isInLineSection(line, excludeStart, excludeEnd, querySeg))
+          if (line != null 
+              && isInLineSection(line, excludeStart, excludeEnd, querySeg))
             continue;
           return true;
       }

@@ -50,14 +50,14 @@ class TaggedLinesSimplifier
    * @param taggedLines the collection of lines to simplify
    */
   public void simplify(Collection taggedLines) {
-    ComponentCrossChecker crossChecker = new ComponentCrossChecker(taggedLines);
+    ComponentJumpChecker jumpChecker = new ComponentJumpChecker(taggedLines);
     
     for (Iterator i = taggedLines.iterator(); i.hasNext(); ) {
       inputIndex.add((TaggedLineString) i.next());
     }
     for (Iterator i = taggedLines.iterator(); i.hasNext(); ) {
       TaggedLineStringSimplifier tlss
-                    = new TaggedLineStringSimplifier(inputIndex, outputIndex, crossChecker);
+                    = new TaggedLineStringSimplifier(inputIndex, outputIndex, jumpChecker);
       tlss.setDistanceTolerance(distanceTolerance);
       tlss.simplify((TaggedLineString) i.next());
     }

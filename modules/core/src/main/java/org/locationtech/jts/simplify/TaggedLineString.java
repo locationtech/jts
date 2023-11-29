@@ -64,6 +64,10 @@ class TaggedLineString
     return parentLine.getNumPoints();
   }
   
+  public Coordinate getComponentPoint() {
+    return getParentCoordinates()[1];
+  }
+  
   public int getResultSize()
   {
     int resultSegsSize = resultSegs.size();
@@ -99,6 +103,13 @@ class TaggedLineString
 
   public TaggedLineSegment[] getSegments() { return segs; }
 
+  /**
+   * Add a simplified segment to the result.
+   * This assumes simplified segments are computed in the order
+   * they occur in the line.
+   * 
+   * @param seg the result segment to add
+   */
   public void addToResult(LineSegment seg)
   {
     resultSegs.add(seg);
