@@ -59,8 +59,7 @@ public class InteriorPoint {
       return null;
     
     Coordinate interiorPt = null;
-    //int dim = geom.getDimension();
-    int dim = effectiveDimension(geom);
+    int dim = dimensionNonEmpty(geom);
     // this should not happen, but just in case...
     if (dim < 0) {
       return null;
@@ -77,13 +76,13 @@ public class InteriorPoint {
     return interiorPt;
   }
 
-  private static int effectiveDimension(Geometry geom) {
-    EffectiveDimensionFilter dimFilter = new EffectiveDimensionFilter();
+  private static int dimensionNonEmpty(Geometry geom) {
+    DimensionNonEmptyFilter dimFilter = new DimensionNonEmptyFilter();
     geom.apply(dimFilter);
     return dimFilter.getDimension();
   }
   
-  private static class EffectiveDimensionFilter implements GeometryFilter
+  private static class DimensionNonEmptyFilter implements GeometryFilter
   {
     private int dim = -1;
     
