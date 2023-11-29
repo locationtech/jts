@@ -50,6 +50,10 @@ public class InteriorPointTest extends GeometryTestCase
     checkInteriorPoint(read("POLYGON ((10 10, 10 10, 10 10, 10 10))"), new Coordinate(10, 10));
   }
   
+  public void testMultiLineWithEmpty() {
+    checkInteriorPoint(read("MULTILINESTRING ((0 0, 1 1), EMPTY)"), new Coordinate(0, 0));
+  }
+  
   public void testAll() throws Exception
   {
     checkInteriorPointFile(TestFiles.getResourceFilePath("world.wkt"));
