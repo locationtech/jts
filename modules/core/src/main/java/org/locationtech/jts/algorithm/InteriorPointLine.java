@@ -69,6 +69,9 @@ public class InteriorPointLine {
    */
   private void addInterior(Geometry geom)
   {
+    if (geom.isEmpty())
+      return;
+    
     if (geom instanceof LineString) {
       addInterior(geom.getCoordinates());
     }
@@ -93,6 +96,9 @@ public class InteriorPointLine {
    */
   private void addEndpoints(Geometry geom)
   {
+    if (geom.isEmpty())
+      return;
+    
     if (geom instanceof LineString) {
       addEndpoints(geom.getCoordinates());
     }
