@@ -50,6 +50,14 @@
 </case>
 
 <case>
+  <desc>mP - with empty element</desc>
+  <a>
+    MULTIPOINT (EMPTY, (80 220), (160 220))
+  </a>
+<test><op name="isSimple" arg1="A"> true </op></test>
+</case>
+
+<case>
   <desc>L - simple line</desc>
   <a>
     LINESTRING(10 10, 20 20)
@@ -350,6 +358,14 @@
 </case>
 
 <case>
+  <desc>mL - with empty element</desc>
+  <a>
+    MULTILINESTRING ((0 0, 100 100), EMPTY)
+  </a>
+<test><op name="isSimple" arg1="A"> true </op></test>
+</case>
+
+<case>
   <desc>LR - valid ring</desc>
   <a>
     LINEARRING (100 300, 200 300, 200 200, 100 200, 100 300)
@@ -454,6 +470,14 @@ MULTIPOLYGON (((100 100, 100 200, 200 100, 200 200, 100 100)), ((100 400, 200 40
 </case>
 
 <case>
+  <desc>mA - with empty element</desc>
+  <a>
+MULTIPOLYGON (((0 10, 10 10, 10 0, 0 0, 0 10)), EMPTY)
+</a>
+<test><op name="isSimple" arg1="A"> true </op></test>
+</case>
+
+<case>
   <desc>GC - all components simple</desc>
   <a>
 GEOMETRYCOLLECTION (POLYGON ((100 200, 200 200, 200 100, 100 100, 100 200)), 
@@ -475,6 +499,15 @@ GEOMETRYCOLLECTION (POLYGON ((100 100, 100 200, 200 100, 200 200, 100 100)),
 <test>
   <op name="isSimple" arg1="A"> false </op>
 </test>
+</case>
+
+<case>
+  <desc>GC - with empty element</desc>
+  <a>
+GEOMETRYCOLLECTION (POLYGON ((0 10, 10 10, 10 0, 0 0, 0 10)), 
+  LINESTRING (100 300, 200 250), 
+  POINT EMPTY)</a>
+<test><op name="isSimple" arg1="A"> true </op></test>
 </case>
 
 </run>
