@@ -14,22 +14,29 @@ package org.locationtech.jtstest.testbuilder;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.Vector;
+
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.WKTWriter;
 import org.locationtech.jts.operation.valid.IsSimpleOp;
 import org.locationtech.jts.operation.valid.IsValidOp;
@@ -54,7 +61,7 @@ public class ValidPanel extends JPanel {
   JTextField txtIsSimple = new JTextField();
   JTextArea taInvalidMsg = new JTextArea();
   JLabel lblValidSimple = new JLabel();
-  JPanel jPanel1 = new JPanel();
+  JPanel panelValidSimple = new JPanel();
   private transient Vector validPanelListeners;
   GridLayout gridLayout1 = new GridLayout();
   JPanel markPanel = new JPanel();
@@ -66,6 +73,9 @@ public class ValidPanel extends JPanel {
   JButton btnClearMark = new JButton();
   JButton btnSetMark = new JButton();
   private JCheckBox cbInvertedRingAllowed;
+  JRadioButton rbA = new JRadioButton();
+  JRadioButton rbB = new JRadioButton();
+  JRadioButton rbResult = new JRadioButton();
 
   public ValidPanel() {
     try {
@@ -98,7 +108,47 @@ public class ValidPanel extends JPanel {
         clearAll();
       }
     });
+
+    rbA.setSelected(true);
+    rbA.setText("A");
+    rbA.setForeground(AppColors.A);
+    rbB.setText("B");
+    rbB.setForeground(AppColors.B);
+    rbResult.setText("Result");
     
+    rbA.addItemListener(new ItemListener() {
+      @Override
+      public void itemStateChanged(ItemEvent e) {
+        if (e.getStateChange() == ItemEvent.SELECTED) {
+          clearAll();
+      }
+    }});
+    rbB.addItemListener(new ItemListener() {
+      @Override
+      public void itemStateChanged(ItemEvent e) {
+        if (e.getStateChange() == ItemEvent.SELECTED) {
+          clearAll();
+      }
+    }});
+    rbResult.addItemListener(new ItemListener() {
+      @Override
+      public void itemStateChanged(ItemEvent e) {
+        if (e.getStateChange() == ItemEvent.SELECTED) {
+          clearAll();
+      }
+    }});
+
+
+    ButtonGroup btnGrpStdInFormat = new ButtonGroup();
+    btnGrpStdInFormat.add(rbA);
+    btnGrpStdInFormat.add(rbB);
+    btnGrpStdInFormat.add(rbResult);
+
+    JPanel panelABR = new JPanel();
+    panelABR.setLayout(new BoxLayout(panelABR, BoxLayout.X_AXIS));
+    panelABR.add(rbA);
+    panelABR.add(rbB);
+    panelABR.add(rbResult);
     
     cbInvertedRingAllowed = new JCheckBox();
     cbInvertedRingAllowed.setToolTipText(AppStrings.TIP_ALLOW_INVERTED_RINGS);
@@ -152,9 +202,9 @@ public class ValidPanel extends JPanel {
       }
     });
     
-    JPanel panelValidSimple = new JPanel();
-    panelValidSimple.add(btnValidate);
-    panelValidSimple.add(txtIsValid);
+    JPanel panelValid = new JPanel();
+    panelValid.add(btnValidate);
+    panelValid.add(txtIsValid);
     
     JPanel panelSimple = new JPanel();
     panelSimple.add(btnSimple);
@@ -164,28 +214,18 @@ public class ValidPanel extends JPanel {
     panelMsg.add(taInvalidMsg);
     
     JPanel panelClear = new JPanel();
-    panelClear.add(btnClear);
+    panelClear.setLayout(new BorderLayout());
+    panelClear.add(cbInvertedRingAllowed, BorderLayout.WEST);
+    panelClear.add(btnClear, BorderLayout.EAST);
     
-    jPanel1.setLayout(new GridBagLayout());
-    jPanel1.add(panelSimple, new GridBagConstraints(0, 1, 2, 1, 0.0, 0.0
-        ,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(10, 5, 10, 5), 0, 0));
-    jPanel1.add(panelValidSimple, new GridBagConstraints(0, 2, 2, 1, 0.0, 0.0
-        ,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(10, 5, 10, 5), 0, 0));
-    jPanel1.add(cbInvertedRingAllowed, new GridBagConstraints(0, 3, 2, 1, 1.0, 0.0
-        ,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(4, 0, 4, 0), 10, 0));
+    panelValidSimple.setLayout(new BoxLayout(panelValidSimple, BoxLayout.Y_AXIS));
+    panelValidSimple.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+    panelValidSimple.add(panelABR);
+    panelValidSimple.add(panelSimple);
+    panelValidSimple.add(panelValid);
+    panelValidSimple.add(panelClear);
+    panelValidSimple.add(panelMsg);
     
-    /*jPanel1.add(lblValidSimple, new GridBagConstraints(0, 4, 1, 1, 1.0, 0.0
-            ,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 4, 0, 4), 0, 0));
-*/
-    /*
-    jPanel1.add(txtIsValid, new GridBagConstraints(1, 4, 1, 1, 1.0, 0.0
-        ,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(4, 0, 4, 0), 10, 0));
-    */
-    jPanel1.add(panelMsg, new GridBagConstraints(0, 4, 2, 1, 0.0, 0.0
-        ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 4, 0, 4), 0, 0));
-    jPanel1.add(panelClear, new GridBagConstraints(0, 5, 2, 1, 0.0, 0.0
-        ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 4, 0, 4), 0, 0));
-   
     //----------------------------------------------
     txtMarkLocation.setBorder(BorderFactory.createLoweredBevelBorder());
     txtMarkLocation.setToolTipText("");
@@ -209,7 +249,7 @@ public class ValidPanel extends JPanel {
     
     //----------------------------------------------
     this.setLayout(new BorderLayout());
-    this.add(jPanel1, BorderLayout.CENTER);
+    this.add(panelValidSimple, BorderLayout.NORTH);
     this.add(markPanel, BorderLayout.SOUTH);
   }
 
@@ -228,14 +268,12 @@ public class ValidPanel extends JPanel {
 
   void btnValidate_actionPerformed(ActionEvent e) 
   {
-    TopologyValidationError err = null;
-    if (testCase.getGeometry(0) != null) {
-      IsValidOp validOp = new IsValidOp(testCase.getGeometry(0));
-      if (cbInvertedRingAllowed.isSelected()) {
-        validOp.setSelfTouchingRingFormingHoleValid(true);
-      }
-      err = validOp.getValidationError();
-    }
+    clearFlag(txtIsValid);
+    Geometry geom = getGeometry();
+    if (geom == null)
+      return;
+    
+    TopologyValidationError err = checkValid(geom, cbInvertedRingAllowed.isSelected());
     String msg = "";
     boolean isValid = true;
     Coordinate invalidPoint = null;
@@ -248,12 +286,34 @@ public class ValidPanel extends JPanel {
     setFlagText(txtIsValid, isValid);
     setMarkPoint(invalidPoint);
   }
+  
+  private TopologyValidationError checkValid(Geometry geom, boolean isAllowInverted) {
+    TopologyValidationError err = null;
+    if (geom != null) {
+      IsValidOp validOp = new IsValidOp(geom);
+      if (isAllowInverted) {
+        validOp.setSelfTouchingRingFormingHoleValid(true);
+      }
+      err = validOp.getValidationError();
+    }
+    return err;
+  }
+  
+  private Geometry getGeometry() {
+    if (rbA.isSelected()) 
+      return testCase.getGeometry(0);
+    if (rbB.isSelected()) 
+      return testCase.getGeometry(1);
+    return testCase.getResult();
+  }
+  
   void btnSimple_actionPerformed(ActionEvent e) 
   {
   	boolean isSimple = true;
   	Coordinate nonSimpleLoc = null;
-  	if (testCase.getGeometry(0) != null) {
-      IsSimpleOp simpleOp = new IsSimpleOp(testCase.getGeometry(0));
+  	Geometry geom = getGeometry();
+  	if (geom != null) {
+      IsSimpleOp simpleOp = new IsSimpleOp(geom);
       isSimple = simpleOp.isSimple();
       nonSimpleLoc = simpleOp.getNonSimpleLocation(); 
     }
