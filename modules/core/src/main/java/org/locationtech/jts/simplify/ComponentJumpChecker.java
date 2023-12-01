@@ -12,15 +12,20 @@
 package org.locationtech.jts.simplify;
 
 import java.util.Collection;
-import java.util.ArrayList;
-import java.util.List;
 
+import org.locationtech.jts.algorithm.RayCrossingCounter;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.LineSegment;
-import org.locationtech.jts.algorithm.RayCrossingCounter;
 
-public class ComponentJumpChecker {
+/**
+ * Checks if simplified (flattened) sections "jump" over other linestring components
+ * in the simplified geometry.
+ * 
+ * @author mdavis
+ *
+ */
+class ComponentJumpChecker {
   
   private Collection<TaggedLineString> components;
 
