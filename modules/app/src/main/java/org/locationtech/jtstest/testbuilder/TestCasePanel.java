@@ -356,9 +356,9 @@ public class TestCasePanel extends JPanel {
     tabFunctions.add(spatialFunctionPanel,  "Geometry");
     tabFunctions.add(scalarFunctionPanel,   "Scalar");
     
-    jTabbedPane1.add(tabFunctions, "Functions");
-    jTabbedPane1.add(relateTabPanel, "Predicates");
-    jTabbedPane1.add(validPanel, "Valid / Mark");
+    jTabbedPane1.add(tabFunctions, "Function");
+    jTabbedPane1.add(relateTabPanel, "Predicate");
+    jTabbedPane1.add(validPanel, "Valid/Mark");
 
     
     relateTabPanel.add(relatePanel, BorderLayout.CENTER);
