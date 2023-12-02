@@ -16,6 +16,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.locationtech.jts.algorithm.LineIntersector;
+import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.algorithm.RobustLineIntersector;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateArrays;
@@ -207,10 +208,13 @@ public class TaggedLineStringSimplifier
                        int sectionStart, int sectionEnd,
                        LineSegment candidateSeg)
   {
-    System.out.println("Flattening candidate: " + candidateSeg);
-    if (hasOutputIntersection(candidateSeg)) return false;
-    if (hasInputIntersection(line, sectionStart, sectionEnd, candidateSeg)) return false;
-    if (jumpChecker.hasJump(line, sectionStart, sectionEnd, candidateSeg)) return false;
+System.out.println("Flattening candidate: " + candidateSeg);
+    if (hasOutputIntersection(candidateSeg)) 
+      return false;
+    if (hasInputIntersection(line, sectionStart, sectionEnd, candidateSeg)) 
+      return false;
+    if (jumpChecker.hasJump(line, sectionStart, sectionEnd, candidateSeg)) 
+      return false;
 System.out.println("OK TO FLATTEN\n\n");
     return true;
   }
@@ -218,13 +222,23 @@ System.out.println("OK TO FLATTEN\n\n");
   private boolean isTopologyValid(TaggedLineString line2, LineSegment seg1, LineSegment seg2,
       LineSegment candidateSeg) {
 System.out.println("Flattening candidate: " + candidateSeg);
-    if (hasOutputIntersection(candidateSeg)) return false;
-    if (hasInputIntersection(candidateSeg)) return false;
-    if (jumpChecker.hasJump(line, seg1, seg2, candidateSeg)) return false;
+    if (hasOutputIntersection(candidateSeg)) 
+      return false;
+    //-- if segments are already flat, topology is unchanged and so valid
+    if (isCollinear(seg1.p0, candidateSeg)) 
+      return true;
+    if (hasInputIntersection(candidateSeg)) 
+      return false;
+    if (jumpChecker.hasJump(line, seg1, seg2, candidateSeg)) 
+      return false;
 System.out.println("OK TO FLATTEN\n\n");
     return true;
   }
   
+  private boolean isCollinear(Coordinate pt, LineSegment seg) {
+    return Orientation.COLLINEAR == seg.orientationIndex(pt);
+  }
+
   private boolean hasOutputIntersection(LineSegment candidateSeg)
   {
     List querySegs = outputIndex.query(candidateSeg);

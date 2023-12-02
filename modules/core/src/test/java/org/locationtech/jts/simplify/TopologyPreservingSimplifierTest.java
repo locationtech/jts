@@ -224,7 +224,7 @@ public class TopologyPreservingSimplifierTest
         "MULTIPOLYGON (((50 40, 80 40, 0 0, 30 70, 50 40)), ((40 56, 40 57, 41 56, 40 56)))");
   }
   
-  public void testPolygonInteresectingSegments() {
+  public void testPolygonIntersectingSegments() {
     checkTPS("MULTIPOLYGON (((0.63 0.2, 0.35 0, 0.73 0.66, 0.63 0.2)), ((1.42 4.01, 3.45 0.7, 1.79 1.47, 0 0.57, 1.42 4.01)))",
         10,
         "MULTIPOLYGON (((0.63 0.2, 0.35 0, 0.73 0.66, 0.63 0.2)), ((1.42 4.01, 3.45 0.7, 1.79 1.47, 0 0.57, 1.42 4.01)))");
