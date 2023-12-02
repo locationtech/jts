@@ -82,7 +82,7 @@ public class GeometryInputDialog extends JDialog {
         jLabel1.setFont(new java.awt.Font("Dialog", 1, 12));
         jLabel1.setForeground(AppColors.A);
         jLabel1.setToolTipText("");
-        jLabel1.setText("A");
+        jLabel1.setText(AppStrings.GEOM_LABEL_A);
         jPanel1.setLayout(gridBagLayout2);
         btnLoad.setToolTipText("");
         btnLoad.setText("Load");
@@ -101,7 +101,7 @@ public class GeometryInputDialog extends JDialog {
         });
         jLabel2.setFont(new java.awt.Font("Dialog", 1, 12));
         jLabel2.setForeground(AppColors.B);
-        jLabel2.setText("B");
+        jLabel2.setText(AppStrings.GEOM_LABEL_B);
         lblError.setToolTipText("");
         txtError.setLineWrap(true);
         txtError.setBorder(BorderFactory.createEtchedBorder());

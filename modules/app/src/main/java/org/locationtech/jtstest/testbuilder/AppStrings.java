@@ -18,6 +18,7 @@ public class AppStrings {
 
   public static final String GEOM_LABEL_A = "A";
   public static final String GEOM_LABEL_B = "B";
+  public static final String GEOM_LABEL_RESULT = "Result";
   
   public static final String TAB_LABEL_LOG = "Log";
   public static final String TAB_LABEL_VALUE = "Value";

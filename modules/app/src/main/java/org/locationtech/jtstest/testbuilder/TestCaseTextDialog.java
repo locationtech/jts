@@ -263,9 +263,9 @@ public class TestCaseTextDialog extends JDialog {
   private void writeView(String a, String b, String result)
   {
   	txtGeomView.setText("");
-  	writeViewGeometry("A", a);
-  	writeViewGeometry("B", b);
-  	writeViewGeometry("Result", result);
+  	writeViewGeometry(AppStrings.GEOM_LABEL_A, a);
+  	writeViewGeometry(AppStrings.GEOM_LABEL_B, b);
+  	writeViewGeometry(AppStrings.GEOM_LABEL_RESULT, result);
   }
   
   private void writeViewGeometry(String tag, String str)

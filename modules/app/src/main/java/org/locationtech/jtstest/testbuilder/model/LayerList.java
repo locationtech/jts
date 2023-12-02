@@ -19,6 +19,7 @@ import java.util.List;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jtstest.testbuilder.AppStrings;
 import org.locationtech.jtstest.testbuilder.geom.ComponentLocater;
 import org.locationtech.jtstest.testbuilder.geom.GeometryLocation;
 import org.locationtech.jtstest.testbuilder.geom.SegmentExtracter;
@@ -51,9 +52,9 @@ public class LayerList
   }
 
   void initFixed() {
-    layers.add(new Layer("A"));
-    layers.add(new Layer("B"));
-    layers.add(new Layer("Result"));
+    layers.add(new Layer(AppStrings.GEOM_LABEL_A));
+    layers.add(new Layer(AppStrings.GEOM_LABEL_B));
+    layers.add(new Layer(AppStrings.GEOM_LABEL_RESULT));
   }
   
   public int size() { return layers.size(); }

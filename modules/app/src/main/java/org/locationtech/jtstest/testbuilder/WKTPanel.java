@@ -151,13 +151,13 @@ public class WKTPanel extends JPanel
         
         aLabel.setFont(new java.awt.Font("Dialog", 1, 16));
         aLabel.setForeground(AppColors.A);
-        aLabel.setText("A");
+        aLabel.setText(AppStrings.GEOM_LABEL_A);
         aLabel.setPreferredSize(new Dimension(20, 20));
         aLabel.setHorizontalTextPosition(SwingConstants.LEFT);
         
         bLabel.setFont(new java.awt.Font("Dialog", 1, 16));
         bLabel.setForeground(AppColors.B);
-        bLabel.setText("B");
+        bLabel.setText(AppStrings.GEOM_LABEL_B);
         bLabel.setPreferredSize(new Dimension(20, 20));
         
         aScrollPane.setBorder(BorderFactory.createLoweredBevelBorder());
