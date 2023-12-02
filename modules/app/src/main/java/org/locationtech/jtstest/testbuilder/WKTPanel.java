@@ -150,13 +150,13 @@ public class WKTPanel extends JPanel
         panelAB.setLayout(gridBagLayout2);
         
         aLabel.setFont(new java.awt.Font("Dialog", 1, 16));
-        aLabel.setForeground(Color.blue);
+        aLabel.setForeground(AppColors.A);
         aLabel.setText("A");
         aLabel.setPreferredSize(new Dimension(20, 20));
         aLabel.setHorizontalTextPosition(SwingConstants.LEFT);
         
         bLabel.setFont(new java.awt.Font("Dialog", 1, 16));
-        bLabel.setForeground(Color.red);
+        bLabel.setForeground(AppColors.B);
         bLabel.setText("B");
         bLabel.setPreferredSize(new Dimension(20, 20));
         

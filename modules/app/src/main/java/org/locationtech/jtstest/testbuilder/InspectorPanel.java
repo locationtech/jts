@@ -199,7 +199,7 @@ public class InspectorPanel extends TestBuilderPanel  {
     btnDelete.setEnabled(isEditable);
     lblGeom.setText(tag);
     lblGeom.setToolTipText(tag);
-    lblGeom.setForeground(source == 0 ? Color.BLUE : Color.RED);
+    lblGeom.setForeground(source == 0 ? AppColors.A : AppColors.B);
     
     sortNone();
   }

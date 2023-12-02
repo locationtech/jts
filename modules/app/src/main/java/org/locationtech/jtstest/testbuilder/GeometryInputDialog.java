@@ -80,7 +80,7 @@ public class GeometryInputDialog extends JDialog {
         border1 = BorderFactory.createLineBorder(Color.gray, 2);
         panel1.setLayout(borderLayout1);
         jLabel1.setFont(new java.awt.Font("Dialog", 1, 12));
-        jLabel1.setForeground(Color.blue);
+        jLabel1.setForeground(AppColors.A);
         jLabel1.setToolTipText("");
         jLabel1.setText("A");
         jPanel1.setLayout(gridBagLayout2);
@@ -100,7 +100,7 @@ public class GeometryInputDialog extends JDialog {
             }
         });
         jLabel2.setFont(new java.awt.Font("Dialog", 1, 12));
-        jLabel2.setForeground(Color.red);
+        jLabel2.setForeground(AppColors.B);
         jLabel2.setText("B");
         lblError.setToolTipText("");
         txtError.setLineWrap(true);
@@ -211,9 +211,9 @@ public class GeometryInputDialog extends JDialog {
 
     void btnLoad_actionPerformed(ActionEvent e) {
         parseError = false;
-        geom[0] = parseGeometry(txtA, Color.blue);
+        geom[0] = parseGeometry(txtA, AppColors.A);
         if (!parseError)
-            geom[1] = parseGeometry(txtB, Color.red);
+            geom[1] = parseGeometry(txtB, AppColors.B);
         if (!parseError)
             setVisible(false);
     }
