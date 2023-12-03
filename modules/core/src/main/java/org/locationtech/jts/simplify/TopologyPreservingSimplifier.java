@@ -89,7 +89,7 @@ public class TopologyPreservingSimplifier
 
   private Geometry inputGeom;
   private TaggedLinesSimplifier lineSimplifier = new TaggedLinesSimplifier();
-  private Map linestringMap;
+  private Map<LineString, TaggedLineString> linestringMap;
 
   public TopologyPreservingSimplifier(Geometry inputGeom)
   {
@@ -116,7 +116,7 @@ public class TopologyPreservingSimplifier
     // empty input produces an empty result
     if (inputGeom.isEmpty()) return inputGeom.copy();
     
-    linestringMap = new HashMap();
+    linestringMap = new HashMap<LineString, TaggedLineString>();
     inputGeom.apply(new LineStringMapBuilderFilter(this));
     lineSimplifier.simplify(linestringMap.values());
     Geometry result = (new LineStringTransformer(linestringMap)).transform(inputGeom);
@@ -126,9 +126,9 @@ public class TopologyPreservingSimplifier
   static class LineStringTransformer
       extends GeometryTransformer
   {
-    private Map linestringMap;
+    private Map<LineString, TaggedLineString> linestringMap;
     
-    public LineStringTransformer(Map linestringMap) {
+    public LineStringTransformer(Map<LineString, TaggedLineString> linestringMap) {
       this.linestringMap = linestringMap;
     }
     
@@ -137,7 +137,7 @@ public class TopologyPreservingSimplifier
       if (coords.size() == 0) return null;
     	// for linear components (including rings), simplify the linestring
       if (parent instanceof LineString) {
-        TaggedLineString taggedLine = (TaggedLineString) linestringMap.get(parent);
+        TaggedLineString taggedLine = linestringMap.get(parent);
         return createCoordinateSequence(taggedLine.getResultCoordinates());
       }
       // for anything else (e.g. points) just copy the coordinates
@@ -178,8 +178,8 @@ public class TopologyPreservingSimplifier
         if (line.isEmpty()) return;
         
         int minSize = ((LineString) line).isClosed() ? 4 : 2;
-        boolean isPreserveEndpoint = (line instanceof LinearRing) ? false : true;
-        TaggedLineString taggedLine = new TaggedLineString((LineString) line, minSize, isPreserveEndpoint);
+        boolean isKeepEndpoint = (line instanceof LinearRing) ? false : true;
+        TaggedLineString taggedLine = new TaggedLineString((LineString) line, minSize, isKeepEndpoint);
         tps.linestringMap.put(line, taggedLine);
       }
     }

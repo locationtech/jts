@@ -52,13 +52,13 @@ class LineSegmentIndex
     index.remove(new Envelope(seg.p0, seg.p1), seg);
   }
 
-  public List query(LineSegment querySeg)
+  public List<Object> query(LineSegment querySeg)
   {
     Envelope env = new Envelope(querySeg.p0, querySeg.p1);
 
     LineSegmentVisitor visitor = new LineSegmentVisitor(querySeg);
     index.query(env, visitor);
-    List itemsFound = visitor.getItems();
+    List<Object> itemsFound = visitor.getItems();
 
 //    List listQueryItems = index.query(env);
 //    System.out.println("visitor size = " + itemsFound.size()
@@ -78,7 +78,7 @@ class LineSegmentVisitor
 // MD - only seems to make about a 10% difference in overall time.
 
   private LineSegment querySeg;
-  private ArrayList items = new ArrayList();
+  private ArrayList<Object> items = new ArrayList<Object>();
 
   public LineSegmentVisitor(LineSegment querySeg) {
     this.querySeg = querySeg;
@@ -91,5 +91,5 @@ class LineSegmentVisitor
       items.add(item);
   }
 
-  public ArrayList getItems() { return items; }
+  public ArrayList<Object> getItems() { return items; }
 }

@@ -34,6 +34,17 @@ class ComponentJumpChecker {
     components = taggedLines;
   }
 
+  /**
+   * Checks if a line section jumps a component if flattened.
+   * 
+   * Assumes start <= end.
+   * 
+   * @param line the line containing the section being flattened
+   * @param start start index of the section
+   * @param end end index of the section
+   * @param seg the flattening segment
+   * @return true if the flattened section jumps a component
+   */
   public boolean hasJump(TaggedLineString line, int start, int end, LineSegment seg) {
     Envelope sectionEnv = computeEnvelope(line, start, end);
     for (TaggedLineString comp : components) {
@@ -51,6 +62,18 @@ class ComponentJumpChecker {
     return false;
   }
 
+  /**
+   * Checks if two consecutive segments jumps a component if flattened.
+   * The segments are assumed to be consecutive.
+   * (so the seg1.p1 = seg2.p0).
+   * The flattening segment must be the segment between seg1.p0 and seg2.p1.
+   * 
+   * @param line the line containing the section being flattened
+   * @param seg1 the first replaced segment
+   * @param seg2 the next replaced segment
+   * @param seg the flattening segment
+   * @return true if the flattened segment jumps a component
+   */
   public boolean hasJump(TaggedLineString line, LineSegment seg1, LineSegment seg2, LineSegment seg) {
     Envelope sectionEnv = computeEnvelope(seg1, seg2);
     for (TaggedLineString comp : components) {

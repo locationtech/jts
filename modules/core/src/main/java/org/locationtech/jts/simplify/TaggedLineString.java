@@ -32,23 +32,23 @@ class TaggedLineString
 
   private LineString parentLine;
   private TaggedLineSegment[] segs;
-  private List resultSegs = new ArrayList();
+  private List<LineSegment> resultSegs = new ArrayList<LineSegment>();
   private int minimumSize;
-  private boolean isPreserveEndpoint = true;
+  private boolean isKeepEndpoint = true;
 
   public TaggedLineString(LineString parentLine) {
     this(parentLine, 2, true);
   }
 
-  public TaggedLineString(LineString parentLine, int minimumSize, boolean isPreserveEndpoint) {
+  public TaggedLineString(LineString parentLine, int minimumSize, boolean isKeepEndpoint) {
     this.parentLine = parentLine;
     this.minimumSize = minimumSize;
-    this.isPreserveEndpoint = isPreserveEndpoint;
+    this.isKeepEndpoint = isKeepEndpoint;
     init();
   }
 
-  public boolean isPreserveEndpoint() {
-    return isPreserveEndpoint;
+  public boolean isKeepEndpoint() {
+    return isKeepEndpoint;
   }
   
   public int getMinimumSize()  {    return minimumSize;  }
@@ -124,7 +124,7 @@ class TaggedLineString
     return parentLine.getFactory().createLinearRing(extractCoordinates(resultSegs));
   }
 
-  private static Coordinate[] extractCoordinates(List segs)
+  private static Coordinate[] extractCoordinates(List<LineSegment> segs)
   {
     Coordinate[] pts = new Coordinate[segs.size() + 1];
     LineSegment seg = null;

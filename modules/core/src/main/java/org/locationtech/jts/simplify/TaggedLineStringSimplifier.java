@@ -72,7 +72,7 @@ public class TaggedLineStringSimplifier
     linePts = line.getParentCoordinates();
     simplifySection(0, linePts.length - 1, 0);
     
-    if (! line.isPreserveEndpoint() && CoordinateArrays.isRing(linePts)) {
+    if (! line.isKeepEndpoint() && CoordinateArrays.isRing(linePts)) {
       simplifyRingEndpoint();
     }
   }
@@ -130,8 +130,8 @@ public class TaggedLineStringSimplifier
 
   /**
    * Simplifies the result segments on either side of a ring endpoint
-   * (which has not been changed by prior simplification).
-   * This ensures that simplification removes flat endpoints.
+   * (which was not processed by the initial simplification).
+   * This ensures that simplification removes flat (collinear) endpoints.
    */
   private void simplifyRingEndpoint()
   {
