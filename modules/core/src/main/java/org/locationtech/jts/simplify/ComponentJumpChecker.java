@@ -81,6 +81,12 @@ class ComponentJumpChecker {
     boolean hasJump = sectionCount % 2 != segCount % 2;
     return hasJump;
   }
+
+  private static int crossingCount(Coordinate compPt, LineSegment seg) {
+    RayCrossingCounter rcc = new RayCrossingCounter(compPt);
+    rcc.countSegment(seg.p0,  seg.p1);
+    return rcc.getCount();
+  }  
   
   private static int crossingCount(Coordinate compPt, LineSegment seg1, LineSegment seg2) {
     RayCrossingCounter rcc = new RayCrossingCounter(compPt);
@@ -89,42 +95,12 @@ class ComponentJumpChecker {
     return rcc.getCount();
   }
 
-  private static int crossingCount(Coordinate compPt, LineSegment seg) {
-    RayCrossingCounter rcc = new RayCrossingCounter(compPt);
-    rcc.countSegment(seg.p0,  seg.p1);
-    return rcc.getCount();
-  }
-
   private static int crossingCount(Coordinate compPt, TaggedLineString line, int start, int end) {
     RayCrossingCounter rcc = new RayCrossingCounter(compPt);
-    int i = start;
-    rcc.countSegment(line.getCoordinate(i), line.getCoordinate(i + 1));
-    do {
-      // increment segment index, with wrap-around
-      i = nextSegmentIndex(line, i);
+    for (int i = start; i < end; i++) {
       rcc.countSegment(line.getCoordinate(i), line.getCoordinate(i + 1));
-    } while (i != end - 1);
+    }
     return rcc.getCount();
-  }
-
-  private static int nextSegmentIndex(TaggedLineString line, int i) {
-    return (i >= line.size() - 2) ? 0 : i + 1;
-  }
-
-  private static Envelope computeEnvelope(TaggedLineString line, int start, int end) {
-    Envelope env = new Envelope();
-    int i = start;
-    env.expandToInclude(line.getCoordinate(i));
-    do {
-      i = nextIndex(line, i);
-      env.expandToInclude(line.getCoordinate(i));
-      // increment vertex index, with wrap-around
-    } while (i != end);
-    return env;
-  }
-
-  private static int nextIndex(TaggedLineString line, int i) {
-    return (i >= line.size() - 1) ? 0 : i + 1;
   }
 
   private static Envelope computeEnvelope(LineSegment seg1, LineSegment seg2) {
@@ -134,6 +110,13 @@ class ComponentJumpChecker {
     env.expandToInclude(seg2.p0);
     env.expandToInclude(seg2.p1);
     return env;
+  }  
+  
+  private static Envelope computeEnvelope(TaggedLineString line, int start, int end) {
+    Envelope env = new Envelope();
+    for (int i = start; i <= end; i++) {
+      env.expandToInclude(line.getCoordinate(i)); 
+    }
+    return env;
   }
-
 }
