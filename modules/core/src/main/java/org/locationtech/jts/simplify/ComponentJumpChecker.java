@@ -19,7 +19,7 @@ import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.LineSegment;
 
 /**
- * Checks if simplified (flattened) sections "jump" over other linestring components
+ * Checks if simplified (flattened) sections "jump" over other components
  * in the simplified geometry.
  * 
  * @author mdavis
@@ -27,6 +27,7 @@ import org.locationtech.jts.geom.LineSegment;
  */
 class ComponentJumpChecker {
   
+  //TODO: use a spatial index?
   private Collection<TaggedLineString> components;
 
   public ComponentJumpChecker(Collection<TaggedLineString> taggedLines) {
@@ -42,7 +43,7 @@ class ComponentJumpChecker {
       
       Coordinate compPt = comp.getComponentPoint();
       if (sectionEnv.intersects(compPt)) {
-        if (hasJumpForComponent(compPt, line, start, end, seg)) {
+        if (hasJumpAtComponent(compPt, line, start, end, seg)) {
           return true;
         }
       }
@@ -59,7 +60,7 @@ class ComponentJumpChecker {
       
       Coordinate compPt = comp.getComponentPoint();
       if (sectionEnv.intersects(compPt)) {
-        if (hasJumpForComponent(compPt, seg1, seg2, seg)) {
+        if (hasJumpAtComponent(compPt, seg1, seg2, seg)) {
           return true;
         }
       }
@@ -67,23 +68,17 @@ class ComponentJumpChecker {
     return false;
   }
 
-  private static boolean hasJumpForComponent(Coordinate compPt, TaggedLineString line, int start, int end, LineSegment seg) {
+  private static boolean hasJumpAtComponent(Coordinate compPt, TaggedLineString line, int start, int end, LineSegment seg) {
     int sectionCount = crossingCount(compPt, line, start, end);
     int segCount = crossingCount(compPt, seg);
     boolean hasJump = sectionCount % 2 != segCount % 2;
-    
-    System.out.println(compPt);
-    System.out.println("section count = " + sectionCount + " - seg count = " + segCount + "\n");
     return hasJump;
   }
   
-  private static boolean hasJumpForComponent(Coordinate compPt, LineSegment seg1, LineSegment seg2, LineSegment seg) {
+  private static boolean hasJumpAtComponent(Coordinate compPt, LineSegment seg1, LineSegment seg2, LineSegment seg) {
     int sectionCount = crossingCount(compPt, seg1, seg2);
     int segCount = crossingCount(compPt, seg);
     boolean hasJump = sectionCount % 2 != segCount % 2;
-    
-    System.out.println(compPt);
-    System.out.println("section count = " + sectionCount + " - seg count = " + segCount + "\n");
     return hasJump;
   }
   
