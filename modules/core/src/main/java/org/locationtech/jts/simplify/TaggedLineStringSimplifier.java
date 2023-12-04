@@ -80,7 +80,7 @@ public class TaggedLineStringSimplifier
   private void simplifySection(int i, int j, int depth)
   {
     depth += 1;
-    //-- for section of length 1 just keep it
+    //-- if section has only one segment just keep the segment
     if ((i+1) == j) {
       LineSegment newSeg = line.getSegment(i);
       line.addToResult(newSeg);
@@ -113,10 +113,10 @@ public class TaggedLineStringSimplifier
     
     if (isValidToSimplify) {
       // test if flattened section would cause intersection or jump
-      LineSegment candidateSeg = new LineSegment();
-      candidateSeg.p0 = linePts[i];
-      candidateSeg.p1 = linePts[j];
-      isValidToSimplify = isTopologyValid(line, i, j, candidateSeg);
+      LineSegment flatSeg = new LineSegment();
+      flatSeg.p0 = linePts[i];
+      flatSeg.p1 = linePts[j];
+      isValidToSimplify = isTopologyValid(line, i, j, flatSeg);
     }
     
     if (isValidToSimplify) {
@@ -201,33 +201,33 @@ public class TaggedLineStringSimplifier
    * @param line
    * @param sectionStart
    * @param sectionEnd
-   * @param candidateSeg
+   * @param flatSeg
    * @return true if the flattening leaves valid topology
    */
   private boolean isTopologyValid(TaggedLineString line,
                        int sectionStart, int sectionEnd,
-                       LineSegment candidateSeg)
+                       LineSegment flatSeg)
   {
-    if (hasOutputIntersection(candidateSeg)) 
+    if (hasOutputIntersection(flatSeg)) 
       return false;
-    if (hasInputIntersection(line, sectionStart, sectionEnd, candidateSeg)) 
+    if (hasInputIntersection(line, sectionStart, sectionEnd, flatSeg)) 
       return false;
-    if (jumpChecker.hasJump(line, sectionStart, sectionEnd, candidateSeg)) 
+    if (jumpChecker.hasJump(line, sectionStart, sectionEnd, flatSeg)) 
       return false;
     return true;
   }
 
   private boolean isTopologyValid(TaggedLineString line, LineSegment seg1, LineSegment seg2,
-      LineSegment candidateSeg) {
+      LineSegment flatSeg) {
     //-- if segments are already flat, topology is unchanged and so is valid
     //-- (otherwise, output and/or input intersection test would report false positive)
-    if (isCollinear(seg1.p0, candidateSeg)) 
+    if (isCollinear(seg1.p0, flatSeg)) 
       return true;
-    if (hasOutputIntersection(candidateSeg)) 
+    if (hasOutputIntersection(flatSeg)) 
       return false;
-    if (hasInputIntersection(candidateSeg)) 
+    if (hasInputIntersection(flatSeg)) 
       return false;
-    if (jumpChecker.hasJump(line, seg1, seg2, candidateSeg)) 
+    if (jumpChecker.hasJump(line, seg1, seg2, flatSeg)) 
       return false;
     return true;
   }
@@ -236,39 +236,39 @@ public class TaggedLineStringSimplifier
     return Orientation.COLLINEAR == seg.orientationIndex(pt);
   }
 
-  private boolean hasOutputIntersection(LineSegment candidateSeg)
+  private boolean hasOutputIntersection(LineSegment flatSeg)
   {
-    List querySegs = outputIndex.query(candidateSeg);
+    List querySegs = outputIndex.query(flatSeg);
     for (Iterator i = querySegs.iterator(); i.hasNext(); ) {
       LineSegment querySeg = (LineSegment) i.next();
-      if (hasInvalidIntersection(querySeg, candidateSeg)) {
+      if (hasInvalidIntersection(querySeg, flatSeg)) {
           return true;
       }
     }
     return false;
   }
 
-  private boolean hasInputIntersection(LineSegment candidateSeg)
+  private boolean hasInputIntersection(LineSegment flatSeg)
   {
-    return hasInputIntersection(null, -1, -1, candidateSeg);
+    return hasInputIntersection(null, -1, -1, flatSeg);
   }
   
   private boolean hasInputIntersection(TaggedLineString line,
                         int excludeStart, int excludeEnd,
-                       LineSegment candidateSeg)
+                       LineSegment flatSeg)
   {
-    List querySegs = inputIndex.query(candidateSeg);
+    List querySegs = inputIndex.query(flatSeg);
     for (Iterator i = querySegs.iterator(); i.hasNext(); ) {
       TaggedLineSegment querySeg = (TaggedLineSegment) i.next();
-      if (hasInvalidIntersection(querySeg, candidateSeg)) {
-          /**
-           * Ignore the intersection if the intersecting segment is part of the section being collapsed
-           * to the candidate segment
-           */
-          if (line != null 
-              && isInLineSection(line, excludeStart, excludeEnd, querySeg))
-            continue;
-          return true;
+      if (hasInvalidIntersection(querySeg, flatSeg)) {
+        /**
+         * Ignore the intersection if the intersecting segment is part of the section being collapsed
+         * to the candidate segment
+         */
+        if (line != null 
+            && isInLineSection(line, excludeStart, excludeEnd, querySeg))
+          continue;
+        return true;
       }
     }
     return false;

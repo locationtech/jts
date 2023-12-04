@@ -19,8 +19,8 @@ import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.LineSegment;
 
 /**
- * Checks if simplified (flattened) sections "jump" over other components
- * in the simplified geometry.
+ * Checks if simplifying (flattening) line sections or segments 
+ * would cause them to "jump" over other components in the geometry.
  * 
  * @author mdavis
  *
