@@ -58,8 +58,7 @@ class TaggedLinesSimplifier
     for (Iterator i = taggedLines.iterator(); i.hasNext(); ) {
       TaggedLineStringSimplifier tlss
                     = new TaggedLineStringSimplifier(inputIndex, outputIndex, jumpChecker);
-      tlss.setDistanceTolerance(distanceTolerance);
-      tlss.simplify((TaggedLineString) i.next());
+      tlss.simplify((TaggedLineString) i.next(), distanceTolerance);
     }
   }
 

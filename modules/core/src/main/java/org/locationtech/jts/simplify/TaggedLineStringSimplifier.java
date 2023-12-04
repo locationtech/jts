@@ -38,7 +38,6 @@ public class TaggedLineStringSimplifier
   private ComponentJumpChecker jumpChecker;
   private TaggedLineString line;
   private Coordinate[] linePts;
-  private double distanceTolerance = 0.0;
 
   public TaggedLineStringSimplifier(LineSegmentIndex inputIndex,
                                      LineSegmentIndex outputIndex, 
@@ -50,34 +49,24 @@ public class TaggedLineStringSimplifier
   }
 
   /**
-   * Sets the distance tolerance for the simplification.
-   * All vertices in the simplified geometry will be within this
-   * distance of the original geometry.
-   *
-   * @param distanceTolerance the approximation tolerance to use
-   */
-  public void setDistanceTolerance(double distanceTolerance) {
-    this.distanceTolerance = distanceTolerance;
-  }
-
-  /**
    * Simplifies the given {@link TaggedLineString}
    * using the distance tolerance specified.
    * 
    * @param line the linestring to simplify
+   * @param distanceTolerance the simplification distance tolerance
    */
-  void simplify(TaggedLineString line)
+  void simplify(TaggedLineString line, double distanceTolerance)
   {
     this.line = line;
     linePts = line.getParentCoordinates();
-    simplifySection(0, linePts.length - 1, 0);
+    simplifySection(0, linePts.length - 1, 0, distanceTolerance);
     
     if (line.isRing() && CoordinateArrays.isRing(linePts)) {
-      simplifyRingEndpoint();
+      simplifyRingEndpoint(distanceTolerance);
     }
   }
 
-  private void simplifySection(int i, int j, int depth)
+  private void simplifySection(int i, int j, int depth, double distanceTolerance)
   {
     depth += 1;
     //-- if section has only one segment just keep the segment
@@ -124,8 +113,8 @@ public class TaggedLineStringSimplifier
       line.addToResult(newSeg);
       return;
     }
-    simplifySection(i, furthestPtIndex, depth);
-    simplifySection(furthestPtIndex, j, depth);
+    simplifySection(i, furthestPtIndex, depth, distanceTolerance);
+    simplifySection(furthestPtIndex, j, depth, distanceTolerance);
   }
 
   /**
@@ -133,7 +122,7 @@ public class TaggedLineStringSimplifier
    * (which was not processed by the initial simplification).
    * This ensures that simplification removes flat (collinear) endpoints.
    */
-  private void simplifyRingEndpoint()
+  private void simplifyRingEndpoint(double distanceTolerance)
   {
     if (line.getResultSize() > line.getMinimumSize()) {
       LineSegment firstSeg = line.getResultSegment(0);
