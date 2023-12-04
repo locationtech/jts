@@ -28,8 +28,7 @@ import org.locationtech.jts.geom.util.GeometryTransformer;
  * Simplifies a geometry and ensures that
  * the result is a valid geometry having the
  * same dimension and number of components as the input,
- * and with the components having the same topological 
- * relationship.
+ * and with the components having the same topological relationship.
  * <p>
  * If the input is a polygonal geometry
  * ( {@link Polygon} or {@link MultiPolygon} ):
@@ -45,8 +44,8 @@ import org.locationtech.jts.geom.util.GeometryTransformer;
  * any intersecting line segments, this property
  * will be preserved in the output.
  * <p>
- * For polygonal geometries and LinearRings the endpoint will participate
- * in simplification.  For LineStrings the endpoints will not be unchanged.
+ * For polygonal geometries and LinearRings the ring endpoint will be simplified.
+ * For LineStrings the endpoints will be unchanged.
  * <p>
  * For all geometry types, the result will contain 
  * enough vertices to ensure validity.  For polygons
@@ -60,19 +59,6 @@ import org.locationtech.jts.geom.util.GeometryTransformer;
  * <p>
  * The simplification uses a maximum-distance difference algorithm
  * similar to the Douglas-Peucker algorithm.
- *
- * <h3>KNOWN BUGS</h3>
- * <ul>
- * <li>May create invalid topology if there are components which are 
- * small relative to the tolerance value.
- * In particular, if a small hole is very near an edge, it is possible for the edge to be moved by
- * a relatively large tolerance value and end up with the hole outside the result shell
- * (or inside another hole).
- * Similarly, it is possible for a small polygon component to end up inside
- * a nearby larger polygon.
- * A workaround is to test for this situation in post-processing and remove
- * any invalid holes or polygons.
- * </ul>
  * 
  * @author Martin Davis
  * @see DouglasPeuckerSimplifier
@@ -89,7 +75,7 @@ public class TopologyPreservingSimplifier
 
   private Geometry inputGeom;
   private TaggedLinesSimplifier lineSimplifier = new TaggedLinesSimplifier();
-  private Map linestringMap;
+  private Map<LineString, TaggedLineString> linestringMap;
 
   public TopologyPreservingSimplifier(Geometry inputGeom)
   {
@@ -116,7 +102,7 @@ public class TopologyPreservingSimplifier
     // empty input produces an empty result
     if (inputGeom.isEmpty()) return inputGeom.copy();
     
-    linestringMap = new HashMap();
+    linestringMap = new HashMap<LineString, TaggedLineString>();
     inputGeom.apply(new LineStringMapBuilderFilter(this));
     lineSimplifier.simplify(linestringMap.values());
     Geometry result = (new LineStringTransformer(linestringMap)).transform(inputGeom);
@@ -126,9 +112,9 @@ public class TopologyPreservingSimplifier
   static class LineStringTransformer
       extends GeometryTransformer
   {
-    private Map linestringMap;
+    private Map<LineString, TaggedLineString> linestringMap;
     
-    public LineStringTransformer(Map linestringMap) {
+    public LineStringTransformer(Map<LineString, TaggedLineString> linestringMap) {
       this.linestringMap = linestringMap;
     }
     
@@ -137,7 +123,7 @@ public class TopologyPreservingSimplifier
       if (coords.size() == 0) return null;
     	// for linear components (including rings), simplify the linestring
       if (parent instanceof LineString) {
-        TaggedLineString taggedLine = (TaggedLineString) linestringMap.get(parent);
+        TaggedLineString taggedLine = linestringMap.get(parent);
         return createCoordinateSequence(taggedLine.getResultCoordinates());
       }
       // for anything else (e.g. points) just copy the coordinates
@@ -178,8 +164,8 @@ public class TopologyPreservingSimplifier
         if (line.isEmpty()) return;
         
         int minSize = ((LineString) line).isClosed() ? 4 : 2;
-        boolean isPreserveEndpoint = (line instanceof LinearRing) ? false : true;
-        TaggedLineString taggedLine = new TaggedLineString((LineString) line, minSize, isPreserveEndpoint);
+        boolean isRing = (line instanceof LinearRing) ? true : false;
+        TaggedLineString taggedLine = new TaggedLineString((LineString) line, minSize, isRing);
         tps.linestringMap.put(line, taggedLine);
       }
     }

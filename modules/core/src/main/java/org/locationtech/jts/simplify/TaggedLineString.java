@@ -32,23 +32,19 @@ class TaggedLineString
 
   private LineString parentLine;
   private TaggedLineSegment[] segs;
-  private List resultSegs = new ArrayList();
+  private List<LineSegment> resultSegs = new ArrayList<LineSegment>();
   private int minimumSize;
-  private boolean isPreserveEndpoint = true;
+  private boolean isRing = true;
 
-  public TaggedLineString(LineString parentLine) {
-    this(parentLine, 2, true);
-  }
-
-  public TaggedLineString(LineString parentLine, int minimumSize, boolean isPreserveEndpoint) {
+  public TaggedLineString(LineString parentLine, int minimumSize, boolean isRing) {
     this.parentLine = parentLine;
     this.minimumSize = minimumSize;
-    this.isPreserveEndpoint = isPreserveEndpoint;
+    this.isRing = isRing;
     init();
   }
 
-  public boolean isPreserveEndpoint() {
-    return isPreserveEndpoint;
+  public boolean isRing() {
+    return isRing;
   }
   
   public int getMinimumSize()  {    return minimumSize;  }
@@ -56,6 +52,18 @@ class TaggedLineString
   public Coordinate[] getParentCoordinates() { return parentLine.getCoordinates(); }
   public Coordinate[] getResultCoordinates() { return extractCoordinates(resultSegs); }
 
+  public Coordinate getCoordinate(int i) {
+    return parentLine.getCoordinateN(i);
+  }
+
+  public int size() {
+    return parentLine.getNumPoints();
+  }
+  
+  public Coordinate getComponentPoint() {
+    return getParentCoordinates()[1];
+  }
+  
   public int getResultSize()
   {
     int resultSegsSize = resultSegs.size();
@@ -91,6 +99,13 @@ class TaggedLineString
 
   public TaggedLineSegment[] getSegments() { return segs; }
 
+  /**
+   * Add a simplified segment to the result.
+   * This assumes simplified segments are computed in the order
+   * they occur in the line.
+   * 
+   * @param seg the result segment to add
+   */
   public void addToResult(LineSegment seg)
   {
     resultSegs.add(seg);
@@ -105,7 +120,7 @@ class TaggedLineString
     return parentLine.getFactory().createLinearRing(extractCoordinates(resultSegs));
   }
 
-  private static Coordinate[] extractCoordinates(List segs)
+  private static Coordinate[] extractCoordinates(List<LineSegment> segs)
   {
     Coordinate[] pts = new Coordinate[segs.size() + 1];
     LineSegment seg = null;
@@ -126,4 +141,6 @@ class TaggedLineString
     firstSeg.p0 = lastSeg.p0;
     resultSegs.remove(resultSegs.size() - 1);
   }
+
+
 }

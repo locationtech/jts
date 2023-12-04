@@ -174,15 +174,24 @@ public class RayCrossingCounter
 		}
 	}
 	
-/**
- * Reports whether the point lies exactly on one of the supplied segments.
- * This method may be called at any time as segments are processed.
- * If the result of this method is <tt>true</tt>, 
- * no further segments need be supplied, since the result
- * will never change again.
- * 
- * @return true if the point lies exactly on a segment
- */
+	/**
+	 * Gets the count of crossings.
+	 * 
+	 * @return the crossing count
+	 */
+	public int getCount() {
+	  return crossingCount;
+	}
+	
+  /**
+   * Reports whether the point lies exactly on one of the supplied segments.
+   * This method may be called at any time as segments are processed.
+   * If the result of this method is <tt>true</tt>, 
+   * no further segments need be supplied, since the result
+   * will never change again.
+   * 
+   * @return true if the point lies exactly on a segment
+   */
 	public boolean isOnSegment() { return isPointOnSegment; }
 	
 	/**
