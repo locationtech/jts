@@ -219,11 +219,12 @@ public class TaggedLineStringSimplifier
 
   private boolean isTopologyValid(TaggedLineString line, LineSegment seg1, LineSegment seg2,
       LineSegment candidateSeg) {
-    if (hasOutputIntersection(candidateSeg)) 
-      return false;
-    //-- if segments are already flat, topology is unchanged and so valid
+    //-- if segments are already flat, topology is unchanged and so is valid
+    //-- (otherwise, output and/or input intersection test would report false positive)
     if (isCollinear(seg1.p0, candidateSeg)) 
       return true;
+    if (hasOutputIntersection(candidateSeg)) 
+      return false;
     if (hasInputIntersection(candidateSeg)) 
       return false;
     if (jumpChecker.hasJump(line, seg1, seg2, candidateSeg)) 

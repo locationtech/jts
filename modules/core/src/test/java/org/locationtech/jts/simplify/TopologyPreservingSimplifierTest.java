@@ -180,6 +180,14 @@ public class TopologyPreservingSimplifierTest
         );
   }
 
+  public void testPolygonManyFlatSegments() throws Exception {
+    checkTPS(
+      "POLYGON ((5 5, 7 5, 9 5, 9 1, 1 1, 1 5, 3 5, 5 5))",
+        1,
+        "POLYGON ((9 5, 9 1, 1 1, 1 5, 9 5))"
+        );
+  }
+  
   //-- vertex is not removed due to overly-restrictive heuristic result length calculation? 
   public void testPolygonSize5NotSimplfied() throws Exception {
     checkTPS(

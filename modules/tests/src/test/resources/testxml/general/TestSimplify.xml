@@ -63,6 +63,18 @@
 </case>
 
 <case>
+  <desc>mL - lines with constrained topology</desc>
+  <a> MULTILINESTRING ((10 60, 39 50, 70 60, 90 50), (35 55, 46 55), (65 55, 75 55), (10 40, 40 30, 70 40, 90 30)) 
+    </a>
+  <test> <op name="simplifyDP" arg1="A" arg2="10"> 
+      MULTILINESTRING ((10 60, 90 50), (35 55, 46 55), (65 55, 75 55), (10 40, 90 30))
+    </op> </test>
+  <test> <op name="simplifyTP" arg1="A" arg2="10"> 
+      MULTILINESTRING ((10 60, 39 50, 70 60, 90 50), (35 55, 46 55), (65 55, 75 55), (10 40, 90 30))
+    </op> </test>
+</case>
+
+<case>
   <desc>mL - lines with EMPTY</desc>
   <a> MULTILINESTRING(EMPTY, (10 10, 20 21, 30 30), (10 10, 10 30, 30 30)) 
     </a>
@@ -83,6 +95,18 @@
     </op> </test>
   <test> <op name="simplifyTP" arg1="A" arg2="1"> 
       POLYGON ((1 1, 1 9, 9 9, 9 1, 1 1))
+    </op> </test>
+</case>
+
+<case>
+  <desc>A - polygon with multiple flat segments around endpoint</desc>
+  <a> POLYGON ((5 5, 7 5, 9 5, 9 1, 1 1, 1 5, 3 5, 5 5))
+    </a>
+  <test> <op name="simplifyDP" arg1="A" arg2="1"> 
+      POLYGON ((9 5, 9 1, 1 1, 1 5, 9 5))
+    </op> </test>
+  <test> <op name="simplifyTP" arg1="A" arg2="1"> 
+      POLYGON ((9 5, 9 1, 1 1, 1 5, 9 5))
     </op> </test>
 </case>
 
