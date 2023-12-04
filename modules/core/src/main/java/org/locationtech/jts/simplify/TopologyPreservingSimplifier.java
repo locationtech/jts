@@ -164,8 +164,8 @@ public class TopologyPreservingSimplifier
         if (line.isEmpty()) return;
         
         int minSize = ((LineString) line).isClosed() ? 4 : 2;
-        boolean isKeepEndpoint = (line instanceof LinearRing) ? false : true;
-        TaggedLineString taggedLine = new TaggedLineString((LineString) line, minSize, isKeepEndpoint);
+        boolean isRing = (line instanceof LinearRing) ? false : true;
+        TaggedLineString taggedLine = new TaggedLineString((LineString) line, minSize, isRing);
         tps.linestringMap.put(line, taggedLine);
       }
     }

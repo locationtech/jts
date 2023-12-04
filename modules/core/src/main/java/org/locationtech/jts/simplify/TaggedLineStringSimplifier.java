@@ -72,7 +72,7 @@ public class TaggedLineStringSimplifier
     linePts = line.getParentCoordinates();
     simplifySection(0, linePts.length - 1, 0);
     
-    if (! line.isKeepEndpoint() && CoordinateArrays.isRing(linePts)) {
+    if (line.isRing() && CoordinateArrays.isRing(linePts)) {
       simplifyRingEndpoint();
     }
   }

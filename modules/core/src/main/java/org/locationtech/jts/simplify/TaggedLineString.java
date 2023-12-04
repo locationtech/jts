@@ -34,21 +34,17 @@ class TaggedLineString
   private TaggedLineSegment[] segs;
   private List<LineSegment> resultSegs = new ArrayList<LineSegment>();
   private int minimumSize;
-  private boolean isKeepEndpoint = true;
+  private boolean isRing = true;
 
-  public TaggedLineString(LineString parentLine) {
-    this(parentLine, 2, true);
-  }
-
-  public TaggedLineString(LineString parentLine, int minimumSize, boolean isKeepEndpoint) {
+  public TaggedLineString(LineString parentLine, int minimumSize, boolean isRing) {
     this.parentLine = parentLine;
     this.minimumSize = minimumSize;
-    this.isKeepEndpoint = isKeepEndpoint;
+    this.isRing = isRing;
     init();
   }
 
-  public boolean isKeepEndpoint() {
-    return isKeepEndpoint;
+  public boolean isRing() {
+    return isRing;
   }
   
   public int getMinimumSize()  {    return minimumSize;  }
