@@ -67,6 +67,7 @@ Distributions for older JTS versions can be obtained at the
 * Fix `DistanceOp` for empty elements (#1010)
 * Fix predicates for MultiPoint with EMPTY (#1015)
 * Fix `InteriorPoint` for MultiLineString with EMPTY (#1023)
+* Fix TopologyPreservingSimplifier to prevent incorrect topology from jumping components (#1024)
 
 ### Performance Improvements
 
