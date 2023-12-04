@@ -208,20 +208,17 @@ public class TaggedLineStringSimplifier
                        int sectionStart, int sectionEnd,
                        LineSegment candidateSeg)
   {
-System.out.println("Flattening candidate: " + candidateSeg);
     if (hasOutputIntersection(candidateSeg)) 
       return false;
     if (hasInputIntersection(line, sectionStart, sectionEnd, candidateSeg)) 
       return false;
     if (jumpChecker.hasJump(line, sectionStart, sectionEnd, candidateSeg)) 
       return false;
-System.out.println("OK TO FLATTEN\n\n");
     return true;
   }
 
-  private boolean isTopologyValid(TaggedLineString line2, LineSegment seg1, LineSegment seg2,
+  private boolean isTopologyValid(TaggedLineString line, LineSegment seg1, LineSegment seg2,
       LineSegment candidateSeg) {
-System.out.println("Flattening candidate: " + candidateSeg);
     if (hasOutputIntersection(candidateSeg)) 
       return false;
     //-- if segments are already flat, topology is unchanged and so valid
@@ -231,7 +228,6 @@ System.out.println("Flattening candidate: " + candidateSeg);
       return false;
     if (jumpChecker.hasJump(line, seg1, seg2, candidateSeg)) 
       return false;
-System.out.println("OK TO FLATTEN\n\n");
     return true;
   }
   
