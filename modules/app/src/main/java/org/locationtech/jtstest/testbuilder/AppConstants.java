@@ -23,12 +23,12 @@ public class AppConstants
 {
   public static final int POINT_SIZE = 5;
   public static final int VERTEX_SIZE = 4;
-  public static double HIGHLIGHT_SIZE = 50.0;
-  public static double VERTEX_SHADOW_SIZE = 100;
+  public static final double HIGHLIGHT_SIZE = 50.0;
+  public static final double VERTEX_SHADOW_SIZE = 100;
   
-	public static double TOPO_STRETCH_VIEW_DIST = 5;
+	public static final double TOPO_STRETCH_VIEW_DIST = 5;
 	
-	public static double  MASK_WIDTH_FRAC = 0.3333;
+	public static final double  MASK_WIDTH_FRAC = 0.3333;
 	// a very light gray
 	public static final Color MASK_CLR = new Color(230, 230, 230);
 	

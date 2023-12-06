@@ -16,13 +16,31 @@ import javax.swing.UIManager;
 
 public class AppColors {
 
-  public static final Color A = Color.BLUE;
-  public static final Color B = Color.RED;
-  public static final Color Result = Color.GREEN;
+  public static final Color GEOM_A = Color.BLUE;
+  public static final Color GEOM_B = Color.RED;
+  public static final Color GEOM_RESULT = new Color(100, 150, 0); // YellowGreen
 
+  public static final Color GEOM_A_HIGHLIGHT_CLR = new Color(0, 0, 255);
+  public static final Color GEOM_A_LINE_CLR = new Color(0, 0, 255, 150);
+  public static final Color GEOM_A_FILL_CLR = new Color(200, 200, 255, 150);
+  public static final Color GEOM_A_BAND = Color.cyan;
+  
+  public static final Color GEOM_B_HIGHLIGHT_CLR = new Color(255, 0, 0);
+  public static final Color GEOM_B_LINE_CLR = new Color(150, 0, 0, 150);
+  public static final Color GEOM_B_FILL_CLR = new Color(255, 200, 200, 150);
+  public static final Color GEOM_B_BAND = Color.pink;
+  // YellowGreen
+  public static final Color GEOM_RESULT_LINE_CLR = new Color(120, 180, 0, 200);
+  // Yellow
+  public static final Color GEOM_RESULT_FILL_CLR = new Color(255, 255, 100, 100);
+  
+  public static final Color GEOM_VIEW_BACKGROUND = Color.white;
+  
+  public static final Color BACKGROUND_FOCUS = Color.white;
   public static final Color BACKGROUND = UIManager.getColor ( "Panel.background" );
   public static final Color BACKGROUND_ERROR = Color.PINK;
   public static final Color TAB_FOCUS = UIManager.getColor ("TabbedPane.highlight" );
-  public static final Color GEOM_VIEW_BACKGROUND = Color.white;
+  
+  
 
 }

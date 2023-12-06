@@ -466,10 +466,6 @@ public class JTSTestBuilderFrame extends JFrame
     jSplitPane1.add(panelTop, JSplitPane.TOP);
     jSplitPane1.add(panelBottom, JSplitPane.BOTTOM);
     
-    /*
-    border4 = BorderFactory.createBevelBorder(BevelBorder.LOWERED, Color.white,
-        Color.white, new Color(93, 93, 93), new Color(134, 134, 134));
-        */
     contentPane = (JPanel) this.getContentPane();
     contentPane.setLayout(contentLayout);
     contentPane.setPreferredSize(new Dimension(601, 690));

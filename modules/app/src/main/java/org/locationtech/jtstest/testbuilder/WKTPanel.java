@@ -150,13 +150,13 @@ public class WKTPanel extends JPanel
         panelAB.setLayout(gridBagLayout2);
         
         aLabel.setFont(new java.awt.Font("Dialog", 1, 16));
-        aLabel.setForeground(AppColors.A);
+        aLabel.setForeground(AppColors.GEOM_A);
         aLabel.setText(AppStrings.GEOM_LABEL_A);
         aLabel.setPreferredSize(new Dimension(20, 20));
         aLabel.setHorizontalTextPosition(SwingConstants.LEFT);
         
         bLabel.setFont(new java.awt.Font("Dialog", 1, 16));
-        bLabel.setForeground(AppColors.B);
+        bLabel.setForeground(AppColors.GEOM_B);
         bLabel.setText(AppStrings.GEOM_LABEL_B);
         bLabel.setPreferredSize(new Dimension(20, 20));
         
@@ -501,7 +501,7 @@ public class WKTPanel extends JPanel
     //Border otherBorder = BorderFactory.createEmptyBorder();
     Border otherBorder = BorderFactory.createMatteBorder(0, 2, 0, 0, Color.white);
     
-    private static Color focusBackgroundColor = Color.white; //new Color(240,255,250);
+    private static Color focusBackgroundColor = AppColors.BACKGROUND_FOCUS;
     private static Color otherBackgroundColor = AppColors.BACKGROUND;
     
     private void setFocusGeometry(int index) {

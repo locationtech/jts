@@ -111,10 +111,11 @@ public class ValidPanel extends JPanel {
 
     rbA.setSelected(true);
     rbA.setText(AppStrings.GEOM_LABEL_A);
-    rbA.setForeground(AppColors.A);
+    rbA.setForeground(AppColors.GEOM_A);
     rbB.setText(AppStrings.GEOM_LABEL_B);
-    rbB.setForeground(AppColors.B);
+    rbB.setForeground(AppColors.GEOM_B);
     rbResult.setText(AppStrings.GEOM_LABEL_RESULT);
+    rbResult.setForeground(AppColors.GEOM_RESULT);
     
     rbA.addItemListener(new ItemListener() {
       @Override

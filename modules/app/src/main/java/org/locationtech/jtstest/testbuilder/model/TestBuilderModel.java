@@ -30,9 +30,9 @@ import org.locationtech.jts.math.MathUtil;
 import org.locationtech.jts.util.Assert;
 import org.locationtech.jtstest.test.TestCaseList;
 import org.locationtech.jtstest.test.Testable;
+import org.locationtech.jtstest.testbuilder.AppColors;
 import org.locationtech.jtstest.testbuilder.AppConstants;
 import org.locationtech.jtstest.testbuilder.AppStrings;
-import org.locationtech.jtstest.testbuilder.GeometryDepiction;
 import org.locationtech.jtstest.testbuilder.ui.SwingUtil;
 import org.locationtech.jtstest.testbuilder.ui.style.BasicStyle;
 import org.locationtech.jtstest.testrunner.TestReader;
@@ -165,16 +165,16 @@ public class TestBuilderModel
           new ResultGeometryContainer(geomEditModel));
 
     Layer lyrA = layerList.getLayer(LayerList.LYR_A);
-    lyrA.setGeometryStyle(new BasicStyle(GeometryDepiction.GEOM_A_LINE_CLR,
-        GeometryDepiction.GEOM_A_FILL_CLR));
+    lyrA.setGeometryStyle(new BasicStyle(AppColors.GEOM_A_LINE_CLR,
+        AppColors.GEOM_A_FILL_CLR));
     
     Layer lyrB = layerList.getLayer(LayerList.LYR_B);
-    lyrB.setGeometryStyle(new BasicStyle(GeometryDepiction.GEOM_B_LINE_CLR,
-        GeometryDepiction.GEOM_B_FILL_CLR));
+    lyrB.setGeometryStyle(new BasicStyle(AppColors.GEOM_B_LINE_CLR,
+        AppColors.GEOM_B_FILL_CLR));
     
     Layer lyrR = layerList.getLayer(LayerList.LYR_RESULT);
-    lyrR.setGeometryStyle(new BasicStyle(GeometryDepiction.GEOM_RESULT_LINE_CLR,
-        GeometryDepiction.GEOM_RESULT_FILL_CLR));
+    lyrR.setGeometryStyle(new BasicStyle(AppColors.GEOM_RESULT_LINE_CLR,
+        AppColors.GEOM_RESULT_FILL_CLR));
   }
 
   public void pasteGeometry(int geomIndex) throws Exception {

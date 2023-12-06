@@ -733,8 +733,8 @@ public class GeometryEditPanel extends JPanel
         for (int j = 0; j < stretchedVerts.size(); j++) {
           Coordinate p = (Coordinate) stretchedVerts.get(j);
           drawHighlightedVertex(g, p, 
-            i == 0 ? GeometryDepiction.GEOM_A_HIGHLIGHT_CLR :
-              GeometryDepiction.GEOM_B_HIGHLIGHT_CLR);
+            i == 0 ? AppColors.GEOM_A_HIGHLIGHT_CLR :
+              AppColors.GEOM_B_HIGHLIGHT_CLR);
         } 
       }
     }
