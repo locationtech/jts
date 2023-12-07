@@ -12,6 +12,7 @@
 package test.jts.perf.index;
 
 import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.index.SpatialIndex;
 import org.locationtech.jts.index.hprtree.HPRtree;
 import org.locationtech.jts.index.strtree.STRtree;
 import org.locationtech.jts.util.Stopwatch;
@@ -19,6 +20,8 @@ import test.jts.perf.PerformanceTestCase;
 import test.jts.perf.PerformanceTestRunner;
 
 import java.util.Random;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * Reproduce the performance benchmark scenario that
@@ -26,16 +29,16 @@ import java.util.Random;
  * uses, and run against spatial indexes.
  */
 public class FlatbushPerfTest extends PerformanceTestCase {
-  private static final int ITEMS = 1_000_000;
-  private static final int QUERIES = 1_000;
+  private static final int NUM_ITEMS = 1_000_000;
+  private static final int NUM_QUERIES = 1_000;
+  private Envelope[] items;
+  private Envelope[] queries;
+  private HPRtree hprtree;
+  private STRtree strtree;
 
   public static void main(String[] args) {
     PerformanceTestRunner.run(FlatbushPerfTest.class);
   }
-
-  private HPRtree hprtree;
-  private STRtree strtree;
-  private Envelope[] boxes;
 
   public FlatbushPerfTest(String name) {
     super(name);
@@ -54,42 +57,55 @@ public class FlatbushPerfTest extends PerformanceTestCase {
   public void setUp()
   {
     Random random = new Random(0);
-    Envelope[] envs = new Envelope[ITEMS];
+    items = new Envelope[NUM_ITEMS];
 
-    for (int i = 0; i < ITEMS; i++) {
-      envs[i] = randomBox(random, 1);
+    for (int i = 0; i < NUM_ITEMS; i++) {
+      items[i] = randomBox(random, 1);
     }
 
-    hprtree = new HPRtree();
+    // warmup the jvm by building once and running queries
+    warmupQueries(createIndex(HPRtree::new, HPRtree::build));
+    warmupQueries(createIndex(STRtree::new, STRtree::build));
+
     Stopwatch sw = new Stopwatch();
-    for (Envelope env : envs) {
-      hprtree.insert(env, env);
-    }
-    hprtree.build();
+    hprtree = createIndex(HPRtree::new, HPRtree::build);
     System.out.println("HPRTree Build time = " + sw.getTimeString());
 
-    strtree = new STRtree();
     sw = new Stopwatch();
-    for (Envelope env : envs) {
-      strtree.insert(env, env);
-    }
-    strtree.build();
+    strtree = createIndex(STRtree::new, STRtree::build);
     System.out.println("STRTree Build time = " + sw.getTimeString());
   }
   
+  private <T extends SpatialIndex> T createIndex(Supplier<T> supplier, Consumer<T> builder) {
+    T index = supplier.get();
+    for (Envelope env : items) {
+      index.insert(env, env);
+    }
+    builder.accept(index);
+    return index;
+  }
+
+  private void warmupQueries(SpatialIndex index) {
+    Random random = new Random(0);
+    CountItemVisitor visitor = new CountItemVisitor();
+    for (int i = 0; i < NUM_QUERIES; i++) {
+      index.query(randomBox(random, 1), visitor);
+    }
+  }
+
   public void startRun(int size)
   {
     System.out.println("----- Query size: " + size);
     Random random = new Random(0);
-    boxes = new Envelope[QUERIES];
-    for (int i = 0; i < QUERIES; i++) {
-      boxes[i] = randomBox(random, size);
+    queries = new Envelope[NUM_QUERIES];
+    for (int i = 0; i < NUM_QUERIES; i++) {
+      queries[i] = randomBox(random, size);
     }
   }
   
   public void runQueriesHPR() {
     CountItemVisitor visitor = new CountItemVisitor();
-    for (Envelope box : boxes) {
+    for (Envelope box : queries) {
         hprtree.query(box, visitor);
     }
     System.out.println("HPRTree query result items = " + visitor.count);
@@ -97,7 +113,7 @@ public class FlatbushPerfTest extends PerformanceTestCase {
 
   public void runQueriesSTR() {
     CountItemVisitor visitor = new CountItemVisitor();
-    for (Envelope box : boxes) {
+    for (Envelope box : queries) {
       strtree.query(box, visitor);
     }
     System.out.println("STRTree query result items = " + visitor.count);
