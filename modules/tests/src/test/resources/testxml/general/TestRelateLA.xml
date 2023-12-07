@@ -1,5 +1,4 @@
 <run>
-  <precisionModel scale="1.0" offsetx="0.0" offsety="0.0"/>
 
 <case>
   <desc>LA - intersection at NV: {A-Bdy, A-Int} = {B-Bdy, B-Int}</desc>
