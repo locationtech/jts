@@ -1,6 +1,6 @@
 <run>
   <desc>http://trac.osgeo.org/geos/ticket/350</desc>
-  <precisionModel type="FLOATING" />
+
 
 <case>
   <desc>

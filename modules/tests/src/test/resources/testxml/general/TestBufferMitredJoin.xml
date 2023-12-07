@@ -2,7 +2,7 @@
   <desc>
     Test cases for buffers with mitred joins.
   </desc>
-  <precisionModel type="FLOATING" />
+
   <resultMatcher>org.locationtech.jtstest.testrunner.BufferResultMatcher</resultMatcher>
 
 <case>

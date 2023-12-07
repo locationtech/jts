@@ -2,7 +2,7 @@
   <desc>
 http://trac.osgeo.org/geos/ticket/398
   </desc>
-  <precisionModel type="FLOATING" />
+
 
 <case>
   <desc><![CDATA[

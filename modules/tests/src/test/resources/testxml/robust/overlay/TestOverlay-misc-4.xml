@@ -1,5 +1,5 @@
 <run>
-  <precisionModel type="FLOATING" />
+
 
 <case>
   <desc>AA - causes failure due to snapping making input invalid (JTS 1.10)</desc>

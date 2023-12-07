@@ -1,6 +1,6 @@
 
 <run>
-  <precisionModel type="FLOATING" />
+
   <tolerance>.01</tolerance>
 
   <case>

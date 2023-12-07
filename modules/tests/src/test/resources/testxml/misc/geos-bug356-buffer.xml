@@ -2,7 +2,7 @@
   <desc>
 http://trac.osgeo.org/geos/ticket/356
   </desc>
-  <precisionModel type="FLOATING" />
+
   <resultMatcher>com.vividsolutions.jtstest.testrunner.BufferResultMatcher</resultMatcher>
 
 <case>

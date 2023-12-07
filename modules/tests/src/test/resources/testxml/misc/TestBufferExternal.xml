@@ -4,7 +4,7 @@
     in previous versions of JTS.  
     The cases in this file should all pass in the current version of JTS.
   </desc>
-  <precisionModel type="FLOATING" />
+
   <resultMatcher>com.vividsolutions.jtstest.testrunner.BufferResultMatcher</resultMatcher>
 
 <case>

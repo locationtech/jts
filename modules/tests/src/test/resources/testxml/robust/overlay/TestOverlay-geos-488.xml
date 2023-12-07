@@ -3,7 +3,7 @@
   <desc>
     http://trac.osgeo.org/geos/ticket/488
   </desc>
-  <precisionModel type="FLOATING" />
+
   <tolerance>1E-7</tolerance>
 
   <case>

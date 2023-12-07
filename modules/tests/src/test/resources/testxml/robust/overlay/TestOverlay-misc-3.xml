@@ -1,5 +1,5 @@
 <run>
-  <precisionModel type="FLOATING" />
+
 <case>
   <desc>AA - OLD robustness failure (works with snapping)</desc>
   <a>

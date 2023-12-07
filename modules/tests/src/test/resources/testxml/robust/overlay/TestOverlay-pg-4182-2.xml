@@ -3,7 +3,7 @@
     https://trac.osgeo.org/postgis/ticket/4182
     Overlay Topology Exception
   </desc>
-  <precisionModel type="FLOATING" />
+
 
 <case>
   <desc>

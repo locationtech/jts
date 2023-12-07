@@ -5,7 +5,7 @@
     See https://github.com/libgeos/geos/issues/511
     Cases cause a TopologyException.  Expected result is just a placeholder
   </desc>
-  <precisionModel type="FLOATING" />
+
 
 <case>
 <desc>This used to fail, but with a fix to SnapRoundingNoder now works</desc>
