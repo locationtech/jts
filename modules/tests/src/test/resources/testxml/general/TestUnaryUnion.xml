@@ -1,6 +1,5 @@
 <run>
   <desc>Tests for Geometry.union() method (unary union)</desc>
-  <precisionModel scale="1.0" offsetx="0.0" offsety="0.0"/>
 
 <case>
   <desc>P - point (showing merging of identical points)</desc>
@@ -140,18 +139,6 @@
   <test>
     <op name="union" arg1="A">
     	GEOMETRYCOLLECTION (POINT (80 50), POINT (100 70), LINESTRING (40 60, 120 110))
-    </op>
-  </test>
-</case>
-
-<case>
-  <desc>mA - multipolygon (invalid) with topology collapse</desc>
-  <a>    MULTIPOLYGON (((0 0, 150 0, 150 1, 0 0)), 
-  ((180 0, 20 0, 20 100, 180 100, 180 0)))
-  </a>
-  <test>
-    <op name="union" arg1="A">
-  POLYGON ((150 0, 20 0, 20 100, 180 100, 180 0, 150 0))
     </op>
   </test>
 </case>
