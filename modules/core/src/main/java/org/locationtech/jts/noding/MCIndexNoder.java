@@ -21,14 +21,14 @@ import org.locationtech.jts.index.SpatialIndex;
 import org.locationtech.jts.index.chain.MonotoneChain;
 import org.locationtech.jts.index.chain.MonotoneChainBuilder;
 import org.locationtech.jts.index.chain.MonotoneChainOverlapAction;
-import org.locationtech.jts.index.strtree.STRtree;
+import org.locationtech.jts.index.hprtree.HPRtree;
 
 /**
  * Nodes a set of {@link SegmentString}s using a index based
  * on {@link MonotoneChain}s and a {@link SpatialIndex}.
  * The {@link SpatialIndex} used should be something that supports
  * envelope (range) queries efficiently (such as a <code>Quadtree</code>}
- * or {@link STRtree} (which is the default index provided).
+ * or {@link HPRtree} (which is the default index provided).
  * <p>
  * The noder supports using an overlap tolerance distance .
  * This allows determining segment intersection using a buffer for uses
@@ -40,7 +40,7 @@ public class MCIndexNoder
     extends SinglePassNoder
 {
   private List monoChains = new ArrayList();
-  private SpatialIndex index= new STRtree();
+  private SpatialIndex index= new HPRtree();
   private int idCounter = 0;
   private Collection nodedSegStrings;
   // statistics

@@ -18,7 +18,6 @@ import org.locationtech.jts.index.ItemVisitor;
 import org.locationtech.jts.index.SpatialIndex;
 import org.locationtech.jts.index.chain.MonotoneChain;
 import org.locationtech.jts.index.chain.MonotoneChainSelectAction;
-import org.locationtech.jts.index.strtree.STRtree;
 import org.locationtech.jts.noding.NodedSegmentString;
 import org.locationtech.jts.noding.SegmentString;
 
@@ -32,10 +31,10 @@ public class MCIndexPointSnapper
 {
   //public static final int nSnaps = 0;
 
-  private STRtree index;
+  private SpatialIndex index;
 
   public MCIndexPointSnapper(SpatialIndex index) {
-    this.index = (STRtree) index;
+    this.index = index;
   }
 
   /**
