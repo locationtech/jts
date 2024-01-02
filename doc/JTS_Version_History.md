@@ -73,6 +73,8 @@ Distributions for older JTS versions can be obtained at the
 
 * Improve `Polygonizer` performance in some cases with many islands (#906)
 * Improve Convex Hull performance by avoiding duplicate uniquing (#985)
+* Improve `HPRtree` performance (#1012)
+* Improve performance of noding and overlay via `HPRtree` (#1012) 
 
 # Version 1.19
 
