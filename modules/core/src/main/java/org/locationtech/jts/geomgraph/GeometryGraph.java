@@ -221,12 +221,10 @@ public class GeometryGraph
   private void addCollection(GeometryCollection gc)
   {
     for (int i = 0; i < gc.getNumGeometries(); i++) {
-      Geometry g = gc.getGeometryN(i);
-      if (! g.isEmpty()) {
-        add(g);
-      }
+      add(gc.getGeometryN(i));
     }
   }
+  
   /**
    * Add a Point to the graph.
    */
