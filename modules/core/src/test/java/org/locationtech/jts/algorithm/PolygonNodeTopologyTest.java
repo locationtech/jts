@@ -29,6 +29,16 @@ public class PolygonNodeTopologyTest extends GeometryTestCase {
         "LINESTRING (1000 500, 1000 1000, 1500 1000)");
   }
 
+  public void testNonCrossingCollinear() {
+    checkNonCrossing("LINESTRING (3 1, 5 5, 9 9)",
+        "LINESTRING (2 1, 5 5, 9 9)");
+  }
+
+  public void testNonCrossingBothCollinear() {
+    checkNonCrossing("LINESTRING (3 1, 5 5, 9 9)",
+        "LINESTRING (3 1, 5 5, 9 9)");
+  }
+
   public void testInteriorSegment() {
     checkInterior("LINESTRING (5 9, 5 5, 9 5)", 
         "LINESTRING (5 5, 0 0)");

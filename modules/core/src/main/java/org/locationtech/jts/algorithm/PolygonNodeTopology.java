@@ -24,9 +24,10 @@ import org.locationtech.jts.geom.Quadrant;
 public class PolygonNodeTopology 
 {
   /**
-   * Check if the segments at a node between two rings (or one ring) cross.
+   * Check if four segments at a node cross.
+   * Typically the segments lie in two different rings, or different sections of one ring.
    * The node is topologically valid if the rings do not cross.
-   * This function assumes that the segments are not collinear. 
+   * If any segments are collinear, the test returns false.
    *  
    * @param nodePt the node location
    * @param a0 the previous segment endpoint in a ring
@@ -42,14 +43,24 @@ public class PolygonNodeTopology
       aLo = a1;
       aHi = a0;
     }
-    /**
-     * Find positions of b0 and b1.  
-     * If they are the same they do not cross the other edge
-     */
+    /*
     boolean isBetween0 = isBetween(nodePt, b0, aLo, aHi);
     boolean isBetween1 = isBetween(nodePt, b1, aLo, aHi);
     
     return isBetween0 != isBetween1;
+    */
+    
+    /**
+     * Find positions of b0 and b1.  
+     * The edges cross if the positions are different.
+     * If any edge is collinear they are reported as not crossing
+     */
+    int compBetween0 = compareBetween(nodePt, b0, aLo, aHi);
+    if (compBetween0 == 0) return false;
+    int compBetween1 = compareBetween(nodePt, b1, aLo, aHi);
+    if (compBetween1 == 0) return false;
+    
+    return compBetween0 != compBetween1;
   }
 
   /**
@@ -100,6 +111,28 @@ public class PolygonNodeTopology
   }
 
   /**
+   * Compares whether an edge p is between or outside the edges e0 and e1,
+   * where the edges all originate at a common origin.
+   * The "inside" of e0 and e1 is the arc which does not include 
+   * the positive X-axis at the origin.
+   * If p is collinear with an edge 0 is returned.
+   * 
+   * @param origin the origin
+   * @param p the destination point of edge p
+   * @param e0 the destination point of edge e0
+   * @param e1 the destination point of edge e1
+   * @return a negative integer, zero or positive integer as the vector P lies outside, collinear with, or inside the vectors E0 and E1
+   */
+  private static int compareBetween(Coordinate origin, Coordinate p, Coordinate e0, Coordinate e1) {
+    int comp0 = compareAngle(origin, p, e0);
+    if (comp0 == 0) return 0;
+    int comp1 = compareAngle(origin, p, e1);
+    if (comp1 == 0) return 0;
+    if (comp0 > 0 && comp1 < 0) return 1;
+    return -1;
+  }
+  
+  /**
    * Tests if the angle with the origin of a vector P is greater than that of the
    * vector Q.
    * 
@@ -126,6 +159,37 @@ public class PolygonNodeTopology
     return orient == Orientation.COUNTERCLOCKWISE;
   }
 
+  /**
+   * Compares the angles of two vectors 
+   * relative to the positive X-axis at their origin.
+   * 
+   * @param origin the origin of the vectors
+   * @param p the endpoint of the vector P
+   * @param q the endpoint of the vector Q
+   * @return a negative integer, zero, or a positive integer as this vector P has angle less than, equal to, or greater than vector Q
+   */
+  public static int compareAngle(Coordinate origin, Coordinate p, Coordinate q) {      
+    int quadrantP = quadrant(origin, p);
+    int quadrantQ = quadrant(origin, q);
+
+    /**
+     * If the vectors are in different quadrants, 
+     * that determines the ordering
+     */
+    if (quadrantP > quadrantQ) return 1;
+    if (quadrantP < quadrantQ) return -1;
+    
+    //--- vectors are in the same quadrant
+    // Check relative orientation of vectors
+    // P > Q if it is CCW of Q
+    int orient = Orientation.index(origin, q, p);
+    switch (orient) {
+    case Orientation.COUNTERCLOCKWISE: return 1;
+    case Orientation.CLOCKWISE: return -1;
+    default: return 0;
+    }
+  }
+  
   private static int quadrant(Coordinate origin, Coordinate p) {
     double dx = p.getX() - origin.getX();
     double dy = p.getY() - origin.getY();
