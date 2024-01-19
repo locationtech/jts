@@ -67,11 +67,31 @@ public class PointLocatorTest extends TestCase {
     assertEquals(Location.INTERIOR, pointLocator.locate(new Coordinate(190, 150), polygon));
   }
 
-   private void runPtLocator(int expected, Coordinate pt, String wkt)
+  public void testRingBoundaryNodeRule() throws Exception
+  {
+    String wkt = "LINEARRING(10 10, 10 20, 20 10, 10 10)";
+    Coordinate pt = new Coordinate(10, 10);
+    runPtLocator(Location.INTERIOR, pt, wkt, BoundaryNodeRule.MOD2_BOUNDARY_RULE);
+    runPtLocator(Location.BOUNDARY, pt, wkt, BoundaryNodeRule.ENDPOINT_BOUNDARY_RULE);
+    runPtLocator(Location.INTERIOR, pt, wkt, BoundaryNodeRule.MONOVALENT_ENDPOINT_BOUNDARY_RULE);
+    runPtLocator(Location.BOUNDARY, pt, wkt, BoundaryNodeRule.MULTIVALENT_ENDPOINT_BOUNDARY_RULE);
+  }
+
+  private void runPtLocator(int expected, Coordinate pt, String wkt)
       throws Exception
   {
     Geometry geom = reader.read(wkt);
     PointLocator pointLocator = new PointLocator();
+    int loc = pointLocator.locate(pt, geom);
+    assertEquals(expected, loc);
+  }
+
+  private void runPtLocator(int expected, Coordinate pt, String wkt,
+      BoundaryNodeRule bnr)
+      throws Exception
+  {
+    Geometry geom = reader.read(wkt);
+    PointLocator pointLocator = new PointLocator(bnr);
     int loc = pointLocator.locate(pt, geom);
     assertEquals(expected, loc);
   }
