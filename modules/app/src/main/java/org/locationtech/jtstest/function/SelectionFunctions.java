@@ -16,12 +16,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.prep.PreparedGeometry;
+import org.locationtech.jts.geom.prep.PreparedGeometryFactory;
 import org.locationtech.jts.operation.distance.IndexedFacetDistance;
-
-
 
 public class SelectionFunctions 
 {
+  
+  public static Geometry intersectsPrep(Geometry a, final Geometry mask)
+  {
+    PreparedGeometry prep = PreparedGeometryFactory.prepare(mask);
+    return select(a, new GeometryPredicate() {
+      public boolean isTrue(Geometry g) {
+        return prep.intersects(g);
+      }
+    });
+  }
+  
   public static Geometry intersects(Geometry a, final Geometry mask)
   {
     return select(a, new GeometryPredicate() {
@@ -35,7 +46,17 @@ public class SelectionFunctions
   {
     return select(a, new GeometryPredicate() {
       public boolean isTrue(Geometry g) {
-        return g.covers(mask);
+        return mask.covers(g);
+      }
+    });
+  }
+  
+  public static Geometry coversPrep(Geometry a, final Geometry mask)
+  {
+    PreparedGeometry prep = PreparedGeometryFactory.prepare(mask);
+    return select(a, new GeometryPredicate() {
+      public boolean isTrue(Geometry g) {
+        return prep.covers(g);
       }
     });
   }
@@ -168,7 +189,7 @@ public class SelectionFunctions
     });
   }
 
-  private static Geometry select(Geometry geom, GeometryPredicate pred)
+  public static Geometry select(Geometry geom, GeometryPredicate pred)
   {
     List selected = new ArrayList();
     for (int i = 0; i < geom.getNumGeometries(); i++ ) {
