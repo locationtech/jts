@@ -121,6 +121,10 @@ public interface BoundaryNodeRule
       // the "Mod-2 Rule"
       return boundaryCount % 2 == 1;
     }
+    
+    public String toString() {
+      return "Mod2 Boundary Node Rule";
+    }
   }
 
   /**
@@ -152,6 +156,10 @@ public interface BoundaryNodeRule
     {
       return boundaryCount > 0;
     }
+    
+    public String toString() {
+      return "EndPoint Boundary Node Rule";
+    }  
   }
 
   /**
@@ -171,6 +179,10 @@ public interface BoundaryNodeRule
     {
       return boundaryCount > 1;
     }
+    
+    public String toString() {
+      return "MultiValent EndPoint Boundary Node Rule";
+    }  
   }
 
   /**
@@ -189,6 +201,10 @@ public interface BoundaryNodeRule
     {
       return boundaryCount == 1;
     }
+    
+    public String toString() {
+      return "MonoValent EndPoint Boundary Node Rule";
+    }  
   }
 
 
