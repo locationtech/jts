@@ -78,12 +78,11 @@ class TaggedLineString
    * @param i the segment index to retrieve
    * @return the result segment
    */
-  public LineSegment getResultSegment(int i) { 
-    int index = i;
+  public LineSegment getResultSegment(int i) {
     if (i < 0) {
-      index = resultSegs.size() + i;
+      i = resultSegs.size() + i;
     }
-    return (LineSegment) resultSegs.get(index);
+    return resultSegs.get(i);
   }
 
   private void init()
@@ -125,7 +124,7 @@ class TaggedLineString
     Coordinate[] pts = new Coordinate[segs.size() + 1];
     LineSegment seg = null;
     for (int i = 0; i < segs.size(); i++) {
-      seg = (LineSegment) segs.get(i);
+      seg = segs.get(i);
       pts[i] = seg.p0;
     }
     // add last point
@@ -135,8 +134,8 @@ class TaggedLineString
 
   void removeRingEndpoint()
   {
-    LineSegment firstSeg = (LineSegment) resultSegs.get(0);
-    LineSegment lastSeg = (LineSegment) resultSegs.get(resultSegs.size() - 1);
+    LineSegment firstSeg = resultSegs.get(0);
+    LineSegment lastSeg = resultSegs.get(resultSegs.size() - 1);
 
     firstSeg.p0 = lastSeg.p0;
     resultSegs.remove(resultSegs.size() - 1);
