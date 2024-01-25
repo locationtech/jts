@@ -80,7 +80,7 @@ public class TaggedLineStringSimplifier
 
     boolean isValidToSimplify = true;
 
-    /**
+    /*
      * Following logic ensures that there is enough points in the output line.
      * If there is already more points than the minimum, there's nothing to check.
      * Otherwise, if in the worst case there wouldn't be enough points,
@@ -309,9 +309,8 @@ public class TaggedLineStringSimplifier
   /**
    * Remove the segs in the section of the line
    * @param line
-   * @param pts
-   * @param sectionStartIndex
-   * @param sectionEndIndex
+   * @param start
+   * @param end
    */
   private void remove(TaggedLineString line,
                        int start, int end)
