@@ -156,6 +156,11 @@ public class TopologyPreservingSimplifierTest
         40,
         "LINEARRING (30 220, 380 220, 300 40, 140 30, 30 220)"
         );
+    checkTPS(
+      "LINESTRING (220 180, 261 175, 380 220, 300 40, 140 30, 30 220, 176 176, 220 180)",
+      40,
+      "LINESTRING (30 220, 380 220, 300 40, 140 30, 30 220)"
+    );
   }
   
   public void testPolygonKeepFlatEndpointWithTouch() throws Exception {
