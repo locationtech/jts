@@ -23,6 +23,8 @@ import org.locationtech.jts.noding.SegmentStringUtil;
 import org.locationtech.jts.operation.predicate.RectangleContains;
 import org.locationtech.jts.operation.predicate.RectangleIntersects;
 
+import java.io.Serializable;
+
 /**
  * A prepared version for {@link Polygonal} geometries.
  * This class supports both {@link Polygon}s and {@link MultiPolygon}s.
@@ -36,7 +38,7 @@ import org.locationtech.jts.operation.predicate.RectangleIntersects;
  *
  */
 public class PreparedPolygon
-  extends BasicPreparedGeometry
+  extends BasicPreparedGeometry implements Serializable
 {
 	private final boolean isRectangle;
 	// create these lazily, since they are expensive

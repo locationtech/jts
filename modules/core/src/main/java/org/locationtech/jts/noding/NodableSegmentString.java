@@ -14,6 +14,8 @@ package org.locationtech.jts.noding;
 
 import org.locationtech.jts.geom.Coordinate;
 
+import java.io.Serializable;
+
 /**
  * An interface for classes which support adding nodes to
  * a segment string.
@@ -21,7 +23,7 @@ import org.locationtech.jts.geom.Coordinate;
  * @author Martin Davis
  */
 public interface NodableSegmentString
-	extends SegmentString
+	extends SegmentString, Serializable
 {
   /**
    * Adds an intersection node for a given point and segment to this segment string.

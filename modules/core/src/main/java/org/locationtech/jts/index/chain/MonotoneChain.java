@@ -15,6 +15,8 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.LineSegment;
 
+import java.io.Serializable;
+
 
 /**
  * Monotone Chains are a way of partitioning the segments of a linestring to
@@ -70,7 +72,7 @@ import org.locationtech.jts.geom.LineSegment;
  *
  * @version 1.7
  */
-public class MonotoneChain {
+public class MonotoneChain implements Serializable {
 
   private Coordinate[] pts;
   private int start, end;

@@ -21,6 +21,8 @@ import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.geom.util.AffineTransformation;
 
+import java.io.Serializable;
+
 /**
  * Computes various kinds of common geometric shapes.
  * Provides various ways of specifying the location and extent
@@ -39,7 +41,7 @@ import org.locationtech.jts.geom.util.AffineTransformation;
  *
  * @version 1.7
  */
-public class GeometricShapeFactory
+public class GeometricShapeFactory implements Serializable
 {
   protected GeometryFactory geomFact;
   protected PrecisionModel precModel = null;

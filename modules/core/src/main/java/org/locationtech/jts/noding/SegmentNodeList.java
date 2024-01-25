@@ -12,6 +12,7 @@
 package org.locationtech.jts.noding;
 
 import java.io.PrintStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -29,7 +30,7 @@ import org.locationtech.jts.util.Assert;
  *
  * @version 1.7
  */
-public class SegmentNodeList
+public class SegmentNodeList implements Serializable
 {
   private Map nodeMap = new TreeMap();
   private NodedSegmentString edge;  // the parent edge

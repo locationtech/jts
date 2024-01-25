@@ -11,6 +11,7 @@
  */
 package org.locationtech.jts.operation.distance;
 
+import java.io.Serializable;
 import java.util.List;
 
 import org.locationtech.jts.algorithm.Distance;
@@ -47,7 +48,7 @@ import org.locationtech.jts.geom.util.PolygonExtracter;
  *
  * @version 1.7
  */
-public class DistanceOp
+public class DistanceOp implements Serializable
 {
   /**
    * Compute the distance between the nearest points of two geometries.
