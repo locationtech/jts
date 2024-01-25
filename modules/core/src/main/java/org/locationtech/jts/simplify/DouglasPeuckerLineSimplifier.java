@@ -33,7 +33,7 @@ class DouglasPeuckerLineSimplifier
     return simp.simplify();
   }
 
-  private Coordinate[] pts;
+  private final Coordinate[] pts;
   private boolean[] usePt;
   private double distanceTolerance;
   private boolean isPreserveEndpoint = false;
@@ -93,7 +93,7 @@ class DouglasPeuckerLineSimplifier
     }
   }
 
-  private LineSegment seg = new LineSegment();
+  private final LineSegment seg = new LineSegment();
 
   private void simplifySection(int i, int j)
   {

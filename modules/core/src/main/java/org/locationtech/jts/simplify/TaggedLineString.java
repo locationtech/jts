@@ -30,11 +30,11 @@ import org.locationtech.jts.geom.LinearRing;
 class TaggedLineString
 {
 
-  private LineString parentLine;
+  private final LineString parentLine;
   private TaggedLineSegment[] segs;
-  private List<LineSegment> resultSegs = new ArrayList<LineSegment>();
-  private int minimumSize;
-  private boolean isRing = true;
+  private final List<LineSegment> resultSegs = new ArrayList<LineSegment>();
+  private final int minimumSize;
+  private final boolean isRing;
 
   public TaggedLineString(LineString parentLine, int minimumSize, boolean isRing) {
     this.parentLine = parentLine;

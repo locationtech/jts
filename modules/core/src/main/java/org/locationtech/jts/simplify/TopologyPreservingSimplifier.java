@@ -73,8 +73,8 @@ public class TopologyPreservingSimplifier
     return tss.getResultGeometry();
   }
 
-  private Geometry inputGeom;
-  private TaggedLinesSimplifier lineSimplifier = new TaggedLinesSimplifier();
+  private final Geometry inputGeom;
+  private final TaggedLinesSimplifier lineSimplifier = new TaggedLinesSimplifier();
   private Map<LineString, TaggedLineString> linestringMap;
 
   public TopologyPreservingSimplifier(Geometry inputGeom)
@@ -112,8 +112,8 @@ public class TopologyPreservingSimplifier
   static class LineStringTransformer
       extends GeometryTransformer
   {
-    private Map<LineString, TaggedLineString> linestringMap;
-    
+    private final Map<LineString, TaggedLineString> linestringMap;
+
     public LineStringTransformer(Map<LineString, TaggedLineString> linestringMap) {
       this.linestringMap = linestringMap;
     }

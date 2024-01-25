@@ -61,7 +61,7 @@ public class DouglasPeuckerSimplifier
     return tss.getResultGeometry();
   }
 
-  private Geometry inputGeom;
+  private final Geometry inputGeom;
   private double distanceTolerance;
   private boolean isEnsureValidTopology = true;
   
@@ -124,8 +124,8 @@ public class DouglasPeuckerSimplifier
 static class DPTransformer
     extends GeometryTransformer
 {
-  private boolean isEnsureValidTopology = true;
-  private double distanceTolerance;
+  private final boolean isEnsureValidTopology;
+  private final double distanceTolerance;
 
 	public DPTransformer(boolean isEnsureValidTopology, double distanceTolerance)
 	{

@@ -32,10 +32,10 @@ import org.locationtech.jts.geom.LineSegment;
  */
 public class TaggedLineStringSimplifier
 {
-  private LineIntersector li = new RobustLineIntersector();
-  private LineSegmentIndex inputIndex;
-  private LineSegmentIndex outputIndex;
-  private ComponentJumpChecker jumpChecker;
+  private final LineIntersector li = new RobustLineIntersector();
+  private final LineSegmentIndex inputIndex;
+  private final LineSegmentIndex outputIndex;
+  private final ComponentJumpChecker jumpChecker;
   private TaggedLineString line;
   private Coordinate[] linePts;
 
