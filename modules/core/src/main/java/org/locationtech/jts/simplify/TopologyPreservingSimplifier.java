@@ -36,9 +36,9 @@ import org.locationtech.jts.geom.util.GeometryTransformer;
  * <li>The result has the same number of shells and holes as the input,
  * with the same topological structure
  * <li>The result rings touch at <b>no more</b> than the number of touching points in the input
- * (although they may touch at fewer points).  
- * The key implication of this statement is that if the 
- * input is topologically valid, so is the simplified output. 
+ * (although they may touch at fewer points).
+ * The key implication of this statement is that if the
+ * input is topologically valid, so is the simplified output.
  * </ul>
  * For linear geometries, if the input does not contain
  * any intersecting line segments, this property
@@ -47,19 +47,19 @@ import org.locationtech.jts.geom.util.GeometryTransformer;
  * For polygonal geometries and LinearRings the ring endpoint will be simplified.
  * For LineStrings the endpoints will be unchanged.
  * <p>
- * For all geometry types, the result will contain 
+ * For all geometry types, the result will contain
  * enough vertices to ensure validity.  For polygons
  * and closed linear geometries, the result will have at
  * least 4 vertices; for open linestrings the result
  * will have at least 2 vertices.
  * <p>
- * All geometry types are handled. 
+ * All geometry types are handled.
  * Empty and point geometries are returned unchanged.
  * Empty geometry components are deleted.
  * <p>
  * The simplification uses a maximum-distance difference algorithm
  * similar to the Douglas-Peucker algorithm.
- * 
+ *
  * @author Martin Davis
  * @see DouglasPeuckerSimplifier
  *
@@ -97,11 +97,11 @@ public class TopologyPreservingSimplifier
     lineSimplifier.setDistanceTolerance(distanceTolerance);
   }
 
-  public Geometry getResultGeometry() 
+  public Geometry getResultGeometry()
   {
     // empty input produces an empty result
     if (inputGeom.isEmpty()) return inputGeom.copy();
-    
+
     linestringMap = new HashMap<LineString, TaggedLineString>();
     inputGeom.apply(new LineStringMapBuilderFilter(this));
     lineSimplifier.simplify(linestringMap.values());
@@ -117,7 +117,7 @@ public class TopologyPreservingSimplifier
     public LineStringTransformer(Map<LineString, TaggedLineString> linestringMap) {
       this.linestringMap = linestringMap;
     }
-    
+
     protected CoordinateSequence transformCoordinates(CoordinateSequence coords, Geometry parent)
     {
       if (coords.size() == 0) return null;
@@ -132,13 +132,13 @@ public class TopologyPreservingSimplifier
   }
 
   /**
-   * A filter to add linear geometries to the linestring map 
+   * A filter to add linear geometries to the linestring map
    * with the appropriate minimum size constraint.
    * Closed {@link LineString}s (including {@link LinearRing}s
-   * have a minimum output size constraint of 4, 
+   * have a minimum output size constraint of 4,
    * to ensure the output is valid.
    * For all other linestrings, the minimum size is 2 points.
-   * 
+   *
    * @author Martin Davis
    *
    */
@@ -146,15 +146,15 @@ public class TopologyPreservingSimplifier
       implements GeometryComponentFilter
   {
     TopologyPreservingSimplifier tps;
-    
+
     LineStringMapBuilderFilter(TopologyPreservingSimplifier tps) {
       this.tps = tps;
     }
-    
+
     /**
      * Filters linear geometries.
-     * 
-     * geom a geometry of any type 
+     *
+     * @param geom a geometry of any type
      */
     public void filter(Geometry geom)
     {

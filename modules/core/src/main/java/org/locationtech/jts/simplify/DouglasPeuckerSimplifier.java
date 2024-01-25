@@ -24,7 +24,7 @@ import org.locationtech.jts.geom.util.GeometryTransformer;
  * Simplifies a {@link Geometry} using the Douglas-Peucker algorithm.
  * Ensures that any polygonal geometries returned are valid.
  * Simple lines are not guaranteed to remain simple after simplification.
- * All geometry types are handled. 
+ * All geometry types are handled.
  * Empty and point geometries are returned unchanged.
  * Empty geometry components are deleted.
  * <p>
@@ -49,7 +49,7 @@ public class DouglasPeuckerSimplifier
 
   /**
    * Simplifies a geometry using a given tolerance.
-   * 
+   *
    * @param geom geometry to simplify
    * @param distanceTolerance the tolerance to use
    * @return a simplified version of the geometry
@@ -64,10 +64,10 @@ public class DouglasPeuckerSimplifier
   private final Geometry inputGeom;
   private double distanceTolerance;
   private boolean isEnsureValidTopology = true;
-  
+
   /**
    * Creates a simplifier for a given geometry.
-   * 
+   *
    * @param inputGeom the geometry to simplify
    */
   public DouglasPeuckerSimplifier(Geometry inputGeom)
@@ -79,7 +79,7 @@ public class DouglasPeuckerSimplifier
    * Sets the distance tolerance for the simplification.
    * All vertices in the simplified geometry will be within this
    * distance of the original geometry.
-   * The tolerance value must be non-negative. 
+   * The tolerance value must be non-negative.
    *
    * @param distanceTolerance the approximation tolerance to use
    */
@@ -98,26 +98,26 @@ public class DouglasPeuckerSimplifier
    * <li>fixing topology is a relative expensive operation
    * <li>in some pathological cases the topology fixing operation may either fail or run for too long
    * </ul>
-   * 
+   *
    * The default is to fix polygon topology.
-   * 
+   *
    * @param isEnsureValidTopology
    */
   public void setEnsureValid(boolean isEnsureValidTopology)
   {
   	this.isEnsureValidTopology = isEnsureValidTopology;
   }
-  
+
   /**
    * Gets the simplified geometry.
-   * 
+   *
    * @return the simplified geometry
    */
   public Geometry getResultGeometry()
   {
     // empty input produces an empty result
     if (inputGeom.isEmpty()) return inputGeom.copy();
-    
+
     return (new DPTransformer(isEnsureValidTopology, distanceTolerance)).transform(inputGeom);
   }
 
@@ -132,12 +132,12 @@ static class DPTransformer
 		this.isEnsureValidTopology = isEnsureValidTopology;
 		this.distanceTolerance = distanceTolerance;
 	}
-	
+
   protected CoordinateSequence transformCoordinates(CoordinateSequence coords, Geometry parent)
   {
     boolean isPreserveEndpoint = ! (parent instanceof LinearRing);
     Coordinate[] inputPts = coords.toCoordinateArray();
-    Coordinate[] newPts = null;
+    Coordinate[] newPts;
     if (inputPts.length == 0) {
       newPts = new Coordinate[0];
     }
@@ -163,13 +163,12 @@ static class DPTransformer
   }
 
   /**
-   * Simplifies a LinearRing.  If the simplification results 
+   * Simplifies a LinearRing.  If the simplification results
    * in a degenerate ring, remove the component.
-   * 
+   *
    * @return null if the simplification results in a degenerate ring
    */
-  //*
-  protected Geometry transformLinearRing(LinearRing geom, Geometry parent) 
+  protected Geometry transformLinearRing(LinearRing geom, Geometry parent)
   {
   	boolean removeDegenerateRings = parent instanceof Polygon;
   	Geometry simpResult = super.transformLinearRing(geom, parent);
@@ -177,8 +176,7 @@ static class DPTransformer
   		return null;
   	return simpResult;
   }
-  //*/
-  
+
   /**
    * Simplifies a MultiPolygon, fixing it if required.
    */
@@ -195,8 +193,8 @@ static class DPTransformer
    * topology.
    * Note this only works for area geometries, since buffer always returns
    * areas.  This also may return empty geometries, if the input
-   * has no actual area.  
-   * If the input is empty or is not polygonal, 
+   * has no actual area.
+   * If the input is empty or is not polygonal,
    * this ensures that POLYGON EMPTY is returned.
    *
    * @param rawAreaGeom an area geometry possibly containing self-intersections

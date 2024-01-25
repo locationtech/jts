@@ -21,10 +21,10 @@ import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.LinearRing;
 
 /**
- * Represents a {@link LineString} which can be modified to a simplified shape.  
+ * Represents a {@link LineString} which can be modified to a simplified shape.
  * This class provides an attribute which specifies the minimum allowable length
  * for the modified result.
- * 
+ *
  * @version 1.7
  */
 class TaggedLineString
@@ -46,8 +46,8 @@ class TaggedLineString
   public boolean isRing() {
     return isRing;
   }
-  
-  public int getMinimumSize()  {    return minimumSize;  }
+
+  public int getMinimumSize()  { return minimumSize; }
   public LineString getParent() { return parentLine; }
   public Coordinate[] getParentCoordinates() { return parentLine.getCoordinates(); }
   public Coordinate[] getResultCoordinates() { return extractCoordinates(resultSegs); }
@@ -59,11 +59,11 @@ class TaggedLineString
   public int size() {
     return parentLine.getNumPoints();
   }
-  
+
   public Coordinate getComponentPoint() {
     return getParentCoordinates()[1];
   }
-  
+
   public int getResultSize()
   {
     int resultSegsSize = resultSegs.size();
@@ -102,7 +102,7 @@ class TaggedLineString
    * Add a simplified segment to the result.
    * This assumes simplified segments are computed in the order
    * they occur in the line.
-   * 
+   *
    * @param seg the result segment to add
    */
   public void addToResult(LineSegment seg)

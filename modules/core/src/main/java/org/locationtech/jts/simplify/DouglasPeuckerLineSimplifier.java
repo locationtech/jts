@@ -56,7 +56,7 @@ class DouglasPeuckerLineSimplifier
   private void setPreserveEndpoint(boolean isPreserveEndpoint) {
     this.isPreserveEndpoint  = isPreserveEndpoint;
   }
-  
+
   public Coordinate[] simplify()
   {
     usePt = new boolean[pts.length];
@@ -64,13 +64,13 @@ class DouglasPeuckerLineSimplifier
       usePt[i] = true;
     }
     simplifySection(0, pts.length - 1);
-    
+
     CoordinateList coordList = new CoordinateList();
     for (int i = 0; i < pts.length; i++) {
       if (usePt[i])
         coordList.add(new Coordinate(pts[i]));
     }
-    
+
     if (! isPreserveEndpoint && CoordinateArrays.isRing(pts)) {
       simplifyRingEndpoint(coordList);
     }
@@ -84,7 +84,7 @@ class DouglasPeuckerLineSimplifier
       return;
     //-- base segment for endpoint
     seg.p0 = pts.get(1);
-    seg.p1 = pts.get(pts.size() - 2); 
+    seg.p1 = pts.get(pts.size() - 2);
     double distance = seg.distance(pts.get(0));
     if (distance <= distanceTolerance) {
       pts.remove(0);
