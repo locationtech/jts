@@ -64,11 +64,25 @@ public class CoverageFunctions {
     Geometry[] result =  CoverageSimplifier.simplify(cov, tolerance);
     return FunctionsUtil.buildGeometry(result);
   }
+
+  @Metadata(description="Simplify a coverage by providing one tolerance per geometry")
+  public static Geometry simplifyDynamicTolerance(Geometry coverage, String tolerances) {
+    Geometry[] cov = toGeometryArray(coverage);
+    Geometry[] result =  CoverageSimplifier.simplify(cov, tolerances);
+    return FunctionsUtil.buildGeometry(result);
+  }
   
   @Metadata(description="Simplify inner edges of a coverage")
   public static Geometry simplifyinner(Geometry coverage, double tolerance) {
     Geometry[] cov = toGeometryArray(coverage);
     Geometry[] result =  CoverageSimplifier.simplifyInner(cov, tolerance);
+    return FunctionsUtil.buildGeometry(result);
+  }
+
+  @Metadata(description="Simplify inner edges of a coverage by providing one tolerance per geometry")
+  public static Geometry simplifyinnerDynamicTolerance(Geometry coverage, String tolerances) {
+    Geometry[] cov = toGeometryArray(coverage);
+    Geometry[] result =  CoverageSimplifier.simplifyInner(cov, tolerances);
     return FunctionsUtil.buildGeometry(result);
   }
   

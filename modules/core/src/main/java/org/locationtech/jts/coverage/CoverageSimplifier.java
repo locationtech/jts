@@ -11,8 +11,11 @@
  */
 package org.locationtech.jts.coverage;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.BitSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -64,7 +67,37 @@ public class CoverageSimplifier {
     CoverageSimplifier simplifier = new CoverageSimplifier(coverage);
     return simplifier.simplify(tolerance);
   }
-  
+
+  /**
+   * Simplifies the boundaries of a set of polygonal geometries forming a coverage,
+   * preserving the coverage topology.
+   *
+   * @param coverage a set of polygonal geometries forming a coverage
+   * @param tolerances the simplification tolerances for each coverage
+   * @return the simplified polygons
+   */
+  public static Geometry[] simplify(Geometry[] coverage, List<Double> tolerances) {
+    CoverageSimplifier simplifier = new CoverageSimplifier(coverage);
+    return simplifier.simplify(tolerances);
+  }
+
+  /**
+   * Simplifies the boundaries of a set of polygonal geometries forming a coverage,
+   * preserving the coverage topology.
+   *
+   * @param coverage a set of polygonal geometries forming a coverage
+   * @param tolerances comma-separated string of simplification tolerances for each coverage
+   * @return the simplified polygons
+   */
+  public static Geometry[] simplify(Geometry[] coverage, String tolerances) {
+    List<Double> tolerancesList = Arrays.stream(tolerances.split(","))
+            .map(Double::parseDouble)
+            .collect(Collectors.toList());
+
+    CoverageSimplifier simplifier = new CoverageSimplifier(coverage);
+    return simplifier.simplify(tolerancesList);
+  }
+
   /**
    * Simplifies the inner boundaries of a set of polygonal geometries forming a coverage,
    * preserving the coverage topology.
@@ -77,6 +110,38 @@ public class CoverageSimplifier {
   public static Geometry[] simplifyInner(Geometry[] coverage, double tolerance) {
     CoverageSimplifier simplifier = new CoverageSimplifier(coverage);
     return simplifier.simplifyInner(tolerance);
+  }
+
+  /**
+   * Simplifies the inner boundaries of a set of polygonal geometries forming a coverage,
+   * preserving the coverage topology.
+   * Edges which form the exterior boundary of the coverage are left unchanged.
+   *
+   * @param coverage a set of polygonal geometries forming a coverage
+   * @param tolerances the simplification tolerances for each coverage
+   * @return the simplified polygons
+   */
+  public static Geometry[] simplifyInner(Geometry[] coverage, List<Double> tolerances) {
+    CoverageSimplifier simplifier = new CoverageSimplifier(coverage);
+    return simplifier.simplifyInner(tolerances);
+  }
+
+  /**
+   * Simplifies the inner boundaries of a set of polygonal geometries forming a coverage,
+   * preserving the coverage topology.
+   * Edges which form the exterior boundary of the coverage are left unchanged.
+   *
+   * @param coverage a set of polygonal geometries forming a coverage
+   * @param tolerances comma-separated string of simplification tolerances for each coverage
+   * @return the simplified polygons
+   */
+  public static Geometry[] simplifyInner(Geometry[] coverage, String tolerances) {
+    List<Double> tolerancesList = Arrays.stream(tolerances.split(","))
+            .map(Double::parseDouble)
+            .collect(Collectors.toList());
+
+    CoverageSimplifier simplifier = new CoverageSimplifier(coverage);
+    return simplifier.simplifyInner(tolerancesList);
   }
   
   private Geometry[] input;
@@ -104,7 +169,25 @@ public class CoverageSimplifier {
     Geometry[] result = cov.buildCoverage();
     return result;
   }
-  
+
+  /**
+   * Computes the simplified coverage, preserving the coverage topology.
+   *
+   * @param tolerances the simplification tolerances for each coverage
+   * @return the simplified polygons
+   */
+  public Geometry[] simplify(List<Double> tolerances) {
+    if (input.length != tolerances.size()){
+      throw new IllegalArgumentException(
+              String.format("Mismatch between provided tolerances (%d) and input geometry count (%d)", tolerances.size(), input.length));
+    }
+
+    CoverageRingEdges cov = CoverageRingEdges.create(input, tolerances);
+    simplifyEdges(cov.getEdges(), null);
+    Geometry[] result = cov.buildCoverage();
+    return result;
+  }
+
   /**
    * Computes the inner-boundary simplified coverage,
    * preserving the coverage topology,
@@ -124,12 +207,46 @@ public class CoverageSimplifier {
     return result;
   }
 
+  /**
+   * Computes the inner-boundary simplified coverage,
+   * preserving the coverage topology,
+   * and leaving outer boundary edges unchanged.
+   *
+   * @param tolerances the simplification tolerances for each coverage
+   * @return the simplified polygons
+   */
+  public Geometry[] simplifyInner(List<Double> tolerances) {
+    if (input.length != tolerances.size()){
+      throw new IllegalArgumentException(
+              String.format("Mismatch between provided tolerances (%d) and input geometry count (%d)", tolerances.size(), input.length));
+    }
+
+    CoverageRingEdges cov = CoverageRingEdges.create(input, tolerances);
+    List<CoverageEdge> innerEdges = cov.selectEdges(2);
+    List<CoverageEdge> outerEdges = cov.selectEdges(1);
+    MultiLineString constraintEdges = CoverageEdge.createLines(outerEdges, geomFactory);
+
+    simplifyEdges(innerEdges, constraintEdges);
+    Geometry[] result = cov.buildCoverage();
+    return result;
+  }
+
   private void simplifyEdges(List<CoverageEdge> edges, MultiLineString constraints, double tolerance) {
     MultiLineString lines = CoverageEdge.createLines(edges, geomFactory);
     BitSet freeRings = getFreeRings(edges);
     MultiLineString linesSimp = TPVWSimplifier.simplify(lines, freeRings, constraints, tolerance);
     //Assert: mlsSimp.getNumGeometries = edges.length
     
+    setCoordinates(edges, linesSimp);
+  }
+
+  private void simplifyEdges(List<CoverageEdge> edges, MultiLineString constraints) {
+    MultiLineString lines = CoverageEdge.createLines(edges, geomFactory);
+    BitSet freeRings = getFreeRings(edges);
+    List<Double> tolerances = getTolerances(edges);
+    MultiLineString linesSimp = TPVWSimplifier.simplify(lines, freeRings, constraints, tolerances);
+    //Assert: mlsSimp.getNumGeometries = edges.length
+
     setCoordinates(edges, linesSimp);
   }
 
@@ -146,5 +263,14 @@ public class CoverageSimplifier {
     }
     return freeRings;
   }
-  
+
+  private List<Double> getTolerances(List<CoverageEdge> edges)
+  {
+    List<Double> tolerances = new ArrayList<Double>(edges.size());
+    for (CoverageEdge edge : edges) {
+      tolerances.add(edge.getTolerance());
+    }
+    return tolerances;
+  }
+
 }
