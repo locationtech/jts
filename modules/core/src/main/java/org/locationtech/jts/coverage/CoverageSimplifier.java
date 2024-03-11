@@ -82,23 +82,6 @@ public class CoverageSimplifier {
   }
 
   /**
-   * Simplifies the boundaries of a set of polygonal geometries forming a coverage,
-   * preserving the coverage topology.
-   *
-   * @param coverage a set of polygonal geometries forming a coverage
-   * @param tolerances comma-separated string of simplification tolerances for each coverage
-   * @return the simplified polygons
-   */
-  public static Geometry[] simplify(Geometry[] coverage, String tolerances) {
-    List<Double> tolerancesList = Arrays.stream(tolerances.split(","))
-            .map(Double::parseDouble)
-            .collect(Collectors.toList());
-
-    CoverageSimplifier simplifier = new CoverageSimplifier(coverage);
-    return simplifier.simplify(tolerancesList);
-  }
-
-  /**
    * Simplifies the inner boundaries of a set of polygonal geometries forming a coverage,
    * preserving the coverage topology.
    * Edges which form the exterior boundary of the coverage are left unchanged.
@@ -124,24 +107,6 @@ public class CoverageSimplifier {
   public static Geometry[] simplifyInner(Geometry[] coverage, List<Double> tolerances) {
     CoverageSimplifier simplifier = new CoverageSimplifier(coverage);
     return simplifier.simplifyInner(tolerances);
-  }
-
-  /**
-   * Simplifies the inner boundaries of a set of polygonal geometries forming a coverage,
-   * preserving the coverage topology.
-   * Edges which form the exterior boundary of the coverage are left unchanged.
-   *
-   * @param coverage a set of polygonal geometries forming a coverage
-   * @param tolerances comma-separated string of simplification tolerances for each coverage
-   * @return the simplified polygons
-   */
-  public static Geometry[] simplifyInner(Geometry[] coverage, String tolerances) {
-    List<Double> tolerancesList = Arrays.stream(tolerances.split(","))
-            .map(Double::parseDouble)
-            .collect(Collectors.toList());
-
-    CoverageSimplifier simplifier = new CoverageSimplifier(coverage);
-    return simplifier.simplifyInner(tolerancesList);
   }
   
   private Geometry[] input;
