@@ -34,7 +34,12 @@ import org.locationtech.jts.geom.MultiLineString;
  * which is a non-negative quantity. It equates roughly to the maximum
  * distance by which a simplified line can change from the original.
  * (In fact, it is the square root of the area tolerance used 
- * in the Visvalingam-Whyatt algorithm.)
+ * in the Visvalingam-Whyatt algorithm.).
+ * The simplifier also allows specifying the simplification tolerance separately for each input geometry.
+ * Shared edges are simplified using the lowest of the tolerances for the adjacent geometries
+ * (i.e. the least amount of simplification is performed).
+ * This allows specific geometries in a coverage to be simplified less than other geometries
+ * (or to force their boundary to be preserved without simplification).
  * <p>
  * The simplified result coverage has the following characteristics:
  * <ul>
