@@ -70,6 +70,7 @@ Distributions for older JTS versions can be obtained at the
 * Fix TopologyPreservingSimplifier to prevent incorrect topology from jumping components (#1024)
 * Fix OffsetCurve to ensure end segments are included (#1029)
 * Fix `PointLocator` to respect `BoundaryNodeRule` for single lines (#1031)
+* Fix `BufferOp` Inverted Ring Removal check (#1038)
 
 ### Performance Improvements
 
