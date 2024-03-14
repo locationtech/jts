@@ -30,19 +30,23 @@ public class CommandOptions {
   public static final String EACHA = "eacha";
   public static final String EACHB = "eachb";
   public static final String ARGS = "args";
-  public static final String VALIDATE = "validate";
   public static final String INDEX = "index";
+  public static final String TIME = "time";
+  public static final String LIMIT = "limit";
+  public static final String OFFSET = "offset";
+  public static final String QUIET = "q";
+  public static final String VALIDATE = "validate";
+  public static final String WHERE = "where";  
   
-  public static final String STDIN = "stdin";
+  public static final String SOURCE_STDIN = "stdin";
+  
   public static final String FORMAT_GML = "gml";
   public static final String FORMAT_WKB = "wkb";
   public static final String FORMAT_TXT = "txt";
   public static final String FORMAT_WKT = "wkt";
   public static final String FORMAT_GEOJSON = "geojson";
   public static final String FORMAT_SVG = "svg";
-  public static final String TIME = "time";
-  public static final String LIMIT = "limit";
-  public static final String OFFSET = "offset";
-  public static final String WHERE = "where";
+  
+
 
 }

@@ -95,7 +95,8 @@ public class JTSOpRunner {
     
     public boolean isGeomAB = false;
     public boolean isCollect = false;
-    String format = null;
+    public boolean isQuiet = false;
+    public String format = null;
     public Integer repeat;
     public boolean eachA = false;
     public boolean eachB = false;
@@ -361,7 +362,9 @@ public class JTSOpRunner {
     if (param.validate) {
       validate(result);
     }
-    outputResult(result, param.isExplode, param.format);
+    if (! param.isQuiet) {
+      outputResult(result, param.isExplode, param.format);
+    }
     return result;
   }
 
@@ -430,7 +433,7 @@ public class JTSOpRunner {
     if (filename == null) return null;
     
     // must be a filename
-    if (filename.equalsIgnoreCase(CommandOptions.STDIN)){
+    if (filename.equalsIgnoreCase(CommandOptions.SOURCE_STDIN)){
       return readStdin(limit, offset);     
     }
     

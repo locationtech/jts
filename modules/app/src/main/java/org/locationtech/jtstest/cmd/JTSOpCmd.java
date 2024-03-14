@@ -38,31 +38,35 @@ import org.locationtech.jtstest.util.io.MultiFormatReader;
  * 
  * <pre>
  * --- Compute the area of a WKT geometry, output it
- * jtsop -a some-file-with-geom.wkt -f txt area 
+ * jtsop -a some-file-with-geom.wkt area 
  * 
  * --- Validate geometries from a WKT file using limit and offset
- * jtsop -a some-file-with-geom.wkt -limit 100 -offset 40 -f txt isValid 
+ * jtsop -a some-file-with-geom.wkt -limit 100 -offset 40 isValid 
  * 
  * --- Compute the unary union of a WKT geometry, output as WKB
  * jtsop -a some-file-with-geom.wkt -f wkb Overlay.unaryUnion 
  * 
  * --- Compute the union of two geometries in WKT and WKB, output as WKT
- * jtsop -a some-file-with-geom.wkt -b some-other-geom.wkb -f wkt Overlay.Union
+ * jtsop -a some-file-with-geom.wkt -b some-other-geom.wkb Overlay.Union
  * 
  * --- Compute the buffer of distance 10 of a WKT geometry, output as GeoJSON
  * jtsop -a some-file-with-geom.wkt -f geojson Buffer.buffer 10
  * 
  * --- Compute the buffer of a literal geometry, output as WKT
- * jtsop -a "POINT (10 10)" -f wkt Buffer.buffer 10
+ * jtsop -a "POINT (10 10)" Buffer.buffer 10
  * 
  * --- Compute buffers of multiple sizes
- * jtsop -a "POINT (10 10)" -f wkt Buffer.buffer 1,10,100
+ * jtsop -a "POINT (10 10)" Buffer.buffer 1,10,100
  * 
  * --- Run op for each A 
- * jtsop -a "MULTIPOINT ((10 10), (20 20))" -eacha -f wkt Buffer.buffer
+ * jtsop -a "MULTIPOINT ((10 10), (20 20))" -eacha Buffer.buffer
  * 
  * --- Output a literal geometry as GeoJSON
  * jtsop -a "POINT (10 10)" -f geojson
+ * 
+ * --- Run op but don't output result (quiet mode) 
+ * jtsop -a "MULTIPOINT ((10 10), (20 20))" -q Buffer.buffer
+
  * </pre>
  * 
  * @author Martin Davis
@@ -120,6 +124,7 @@ public class JTSOpCmd {
     .addOptionSpec(new OptionSpec(CommandOptions.LIMIT, 1))
     .addOptionSpec(new OptionSpec(CommandOptions.OFFSET, 1))
     .addOptionSpec(new OptionSpec(CommandOptions.REPEAT, 1))
+    .addOptionSpec(new OptionSpec(CommandOptions.QUIET, 0))
     .addOptionSpec(new OptionSpec(CommandOptions.SRID, 1))
     .addOptionSpec(new OptionSpec(CommandOptions.WHERE, 2))
     .addOptionSpec(new OptionSpec(CommandOptions.VALIDATE, 0))
@@ -145,6 +150,7 @@ public class JTSOpCmd {
   "           [ -explode",
   "           [ -srid SRID ]",
   "           [ -f ( txt | wkt | wkb | geojson | gml | svg ) ]",
+  "           [ -q",
   "           [ -time ]",
   "           [ -v, -verbose ]",
   "           [ -help ]",
@@ -167,14 +173,15 @@ public class JTSOpCmd {
   "  -index          index the B geometries",
   "  -repeat         repeat the operation N times",
   "  -where op v     output geometry where operation result matches predicate op and value.",
-  "                     Predicates ops are: eq,ne,ge,gt,le,lt",
+  "                     Predicates ops are: eq, ne, ge, gt, le, lt",
   "  -validate       validate the result of each operation",
   "  -geomfunc       specifies class providing geometry operations",
   "  -op             separator to delineate operation arguments",
   "===== Output options:",
-  "  -srid           Sets the SRID on output geometries",
+  "  -srid           sets the SRID on output geometries",
   "  -explode        output atomic geometries",
-  "  -f              output format to use.  If omitted output is silent",
+  "  -f              output format to use.  Default is txt/wkt",
+  "  -q              quiet mode - result is not output",
   "===== Logging options:",
   "  -time           display execution time",
   "  -v, -verbose    display information about execution",
@@ -331,7 +338,9 @@ public class JTSOpCmd {
         ? commandLine.getOptionArgAsInt(CommandOptions.OFFSET, 0)
             : 0; 
         
-    cmdArgs.format = commandLine.getOptionArg(CommandOptions.FORMAT, 0);
+    cmdArgs.format = commandLine.hasOption(CommandOptions.FORMAT)
+        ? commandLine.getOptionArg(CommandOptions.FORMAT, 0)
+            : CommandOptions.FORMAT_TXT;
     
     cmdArgs.srid = commandLine.hasOption(CommandOptions.SRID)
         ? commandLine.getOptionArgAsInt(CommandOptions.SRID, 0)
@@ -339,6 +348,8 @@ public class JTSOpCmd {
     
     cmdArgs.isIndexed = commandLine.hasOption(CommandOptions.INDEX);
     
+    cmdArgs.isQuiet = commandLine.hasOption(CommandOptions.QUIET);
+
     cmdArgs.repeat = commandLine.hasOption(CommandOptions.REPEAT)
         ? commandLine.getOptionArgAsInt(CommandOptions.REPEAT, 0)
             : 1;
