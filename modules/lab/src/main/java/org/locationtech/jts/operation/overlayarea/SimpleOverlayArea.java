@@ -116,14 +116,12 @@ public class SimpleOverlayArea {
            * Use full edge to compute direction, for accuracy.
            */
           Coordinate intPt = li.getIntersection(0);
-          
-          boolean isAenteringB = Orientation.COUNTERCLOCKWISE == Orientation.index(a0, a1, b1);
-          
-          if ( isAenteringB ) {
+
+          if ( Orientation.CLOCKWISE == Orientation.index(a0, a1, b0) ) {
             area += EdgeVector.area2Term(intPt, a0, a1, true);
             area += EdgeVector.area2Term(intPt, b1, b0, false);
           }
-          else {
+          else if ( Orientation.CLOCKWISE == Orientation.index(a0, a1, b1) ) {
             area += EdgeVector.area2Term(intPt, a1, a0, false);
             area += EdgeVector.area2Term(intPt, b0, b1, true);
           }

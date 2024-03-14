@@ -32,8 +32,7 @@ public class OverlayAreaTest extends GeometryTestCase {
         "POLYGON ((90 10, 50 10, 50 50, 90 50, 90 10))");
   }
   
-  //TODO: fix this bug
-  public void xtestTouching() {
+  public void testTouching() {
     checkIntersectionArea(
         "POLYGON ((10 90, 50 90, 50 50, 10 50, 10 90))",
         "POLYGON ((90 10, 50 10, 50 50, 90 50, 90 10))");

@@ -268,17 +268,17 @@ public class OverlayArea {
      * For accuracy the full edge is used to provide the direction vector.
      */
     Coordinate intPt = li.getIntersection(0);
-    
-    boolean isAenteringB = Orientation.COUNTERCLOCKWISE == Orientation.index(a0, a1, b1);
-    
-    if ( isAenteringB ) {
+
+    if ( Orientation.CLOCKWISE == Orientation.index(a0, a1, b0) ) {
       return EdgeVector.area2Term(intPt, a0, a1, true)
         + EdgeVector.area2Term(intPt, b1, b0, false);
     }
-    else {
+    else if ( Orientation.CLOCKWISE == Orientation.index(a0, a1, b1) ) {
       return EdgeVector.area2Term(intPt, a1, a0, false)
        + EdgeVector.area2Term(intPt, b0, b1, true);
     }
+
+    return 0.0;
   }
     
   private double areaForInteriorVertices(LinearRing ring) {
