@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
 import java.util.PriorityQueue;
+import java.util.stream.Collectors;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
@@ -58,6 +59,19 @@ class TPVWSimplifier {
     MultiLineString result = (MultiLineString) simp.simplify();
     return result;
   }
+
+  /**
+   * Simplifies a set of lines, preserving the topology of the lines.
+   *
+   * @param lines the lines to simplify
+   * @param distanceTolerances the simplification tolerances for each line string
+   * @return the simplified lines
+   */
+  public static MultiLineString simplify(MultiLineString lines, List<Double> distanceTolerances) {
+    TPVWSimplifier simp = new TPVWSimplifier(lines, distanceTolerances);
+    MultiLineString result = (MultiLineString) simp.simplify();
+    return result;
+  }
   
   /**
    * Simplifies a set of lines, preserving the topology of the lines between
@@ -80,16 +94,45 @@ class TPVWSimplifier {
     MultiLineString result = (MultiLineString) simp.simplify();
     return result;
   }
- 
+
+  /**
+   * Simplifies a set of lines, preserving the topology of the lines between
+   * themselves and a set of linear constraints.
+   * The endpoints of lines are preserved.
+   * The endpoint of rings are preserved as well, unless
+   * the ring is indicated as "free" via a bit flag with the same index.
+   *
+   * @param lines the lines to simplify
+   * @param freeRings flags indicating which ring edges do not have node endpoints
+   * @param constraintLines the linear constraints (may be null)
+   * @param distanceTolerances the simplification tolerances for each line string
+   * @return the simplified lines
+   */
+  public static MultiLineString simplify(MultiLineString lines, BitSet freeRings,
+                                         MultiLineString constraintLines, List<Double> distanceTolerances) {
+    TPVWSimplifier simp = new TPVWSimplifier(lines, distanceTolerances);
+    simp.setFreeRingIndices(freeRings);
+    simp.setConstraints(constraintLines);
+    MultiLineString result = (MultiLineString) simp.simplify();
+    return result;
+  }
+
   private MultiLineString inputLines;
   private BitSet isFreeRing;
-  private double areaTolerance;
+  private List<Double> areaTolerances;
   private GeometryFactory geomFactory;
   private MultiLineString constraintLines = null;
 
   private TPVWSimplifier(MultiLineString lines, double distanceTolerance) {
     this.inputLines = lines;
-    this.areaTolerance = distanceTolerance * distanceTolerance;
+    this.areaTolerances = new ArrayList<Double>(1);
+    this.areaTolerances.add(distanceTolerance * distanceTolerance);
+    geomFactory = inputLines.getFactory();
+  }
+
+  private TPVWSimplifier(MultiLineString lines, List<Double> distanceTolerances) {
+    this.inputLines = lines;
+    this.areaTolerances = distanceTolerances.stream().map(x -> x * x).collect(Collectors.toList());
     geomFactory = inputLines.getFactory();
   }
   
@@ -123,9 +166,11 @@ class TPVWSimplifier {
     List<Edge> edges = new ArrayList<Edge>();
     if (lines == null)
       return edges;
+
     for (int i = 0 ; i < lines.getNumGeometries(); i++) {
       LineString line = (LineString) lines.getGeometryN(i);
       boolean isFree = isFreeRing == null ? false : isFreeRing.get(i);
+      double areaTolerance = (areaTolerances.isEmpty()) ? -1 : ((areaTolerances.size() == 1) ? areaTolerances.get(0) : areaTolerances.get(i));
       edges.add(new Edge(line, isFree, areaTolerance));
     }
     return edges;

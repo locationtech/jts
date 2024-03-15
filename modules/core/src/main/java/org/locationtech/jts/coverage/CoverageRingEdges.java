@@ -51,21 +51,30 @@ class CoverageRingEdges {
    * Create a new instance for a given coverage.
    * 
    * @param coverage the set of polygonal geometries in the coverage
+   * @param tolerances the simplification tolerances for each geometry
    * @return the edges of the coverage
    */
+  public static CoverageRingEdges create(Geometry[] coverage, List<Double> tolerances) {
+    CoverageRingEdges edges = new CoverageRingEdges(coverage, tolerances);
+    return edges;
+  }
+
   public static CoverageRingEdges create(Geometry[] coverage) {
-    CoverageRingEdges edges = new CoverageRingEdges(coverage);
+    CoverageRingEdges edges = new CoverageRingEdges(coverage, new ArrayList<Double>(0));
     return edges;
   }
   
   private Geometry[] coverage;
   private Map<LinearRing, List<CoverageEdge>> ringEdgesMap;
   private List<CoverageEdge> edges;
-  
-  public CoverageRingEdges(Geometry[] coverage) {
+
+  private List<Double> coverageTolerances;
+
+  public CoverageRingEdges(Geometry[] coverage, List<Double> tolerances) {
     this.coverage = coverage;
     ringEdgesMap = new HashMap<LinearRing, List<CoverageEdge>>();
     edges = new ArrayList<CoverageEdge>();
+    coverageTolerances = tolerances;
     build();
   }
 
@@ -94,7 +103,8 @@ class CoverageRingEdges {
     Set<LineSegment> boundarySegs = CoverageBoundarySegmentFinder.findBoundarySegments(coverage);
     nodes.addAll(findBoundaryNodes(boundarySegs));
     HashMap<LineSegment, CoverageEdge> uniqueEdgeMap = new HashMap<LineSegment, CoverageEdge>();
-    for (Geometry geom : coverage) {
+    for (int icoverage = 0; icoverage < coverage.length; icoverage++) {
+      Geometry geom = coverage[icoverage];
       for (int ipoly = 0; ipoly < geom.getNumGeometries(); ipoly++) {
         Polygon poly = (Polygon) geom.getGeometryN(ipoly);
         
@@ -104,23 +114,23 @@ class CoverageRingEdges {
         
         //-- extract shell
         LinearRing shell = poly.getExteriorRing();
-        addRingEdges(shell, nodes, boundarySegs, uniqueEdgeMap);
+        addRingEdges(icoverage, shell, nodes, boundarySegs, uniqueEdgeMap);
         //-- extract holes
         for (int ihole = 0; ihole < poly.getNumInteriorRing(); ihole++) {
           LinearRing hole = poly.getInteriorRingN(ihole);
           //-- skip empty rings. Missing rings are copied in result
           if (hole.isEmpty())
             continue;
-          addRingEdges(hole, nodes, boundarySegs, uniqueEdgeMap);         
+          addRingEdges(icoverage, hole, nodes, boundarySegs, uniqueEdgeMap);
         }
       }
     }
   }
 
-  private void addRingEdges(LinearRing ring, Set<Coordinate> nodes, Set<LineSegment> boundarySegs,
+  private void addRingEdges(int coverageId, LinearRing ring, Set<Coordinate> nodes, Set<LineSegment> boundarySegs,
       HashMap<LineSegment, CoverageEdge> uniqueEdgeMap) {
     addBoundaryInnerNodes(ring, boundarySegs, nodes);
-    List<CoverageEdge> ringEdges = extractRingEdges(ring, uniqueEdgeMap, nodes);
+    List<CoverageEdge> ringEdges = extractRingEdges(coverageId, ring, uniqueEdgeMap, nodes);
     if (ringEdges != null)
       ringEdgesMap.put(ring, ringEdges);
   }
@@ -149,8 +159,8 @@ class CoverageRingEdges {
     }
   }
 
-  private List<CoverageEdge> extractRingEdges(LinearRing ring, 
-      HashMap<LineSegment, CoverageEdge> uniqueEdgeMap, 
+  private List<CoverageEdge> extractRingEdges(int coverageId, LinearRing ring,
+      HashMap<LineSegment, CoverageEdge> uniqueEdgeMap,
       Set<Coordinate> nodes) {
  // System.out.println(ring);
     List<CoverageEdge> ringEdges = new ArrayList<CoverageEdge>();
@@ -164,7 +174,7 @@ class CoverageRingEdges {
     int first = findNextNodeIndex(pts, -1, nodes);
     if (first < 0) {
       //-- ring does not contain a node, so edge is entire ring
-      CoverageEdge edge = createEdge(pts, uniqueEdgeMap);
+      CoverageEdge edge = createEdge(coverageId, pts, uniqueEdgeMap);
       ringEdges.add(edge);
     }
     else {
@@ -172,7 +182,7 @@ class CoverageRingEdges {
       int end = start;
       do {
         end = findNextNodeIndex(pts, start, nodes);
-        CoverageEdge edge = createEdge(pts, start, end, uniqueEdgeMap);
+        CoverageEdge edge = createEdge(coverageId, pts, start, end, uniqueEdgeMap);
 //  System.out.println(ringEdges.size() + " : " + edge);
         ringEdges.add(edge);
         start = end;
@@ -181,14 +191,18 @@ class CoverageRingEdges {
     return ringEdges;
   }
 
-  private CoverageEdge createEdge(Coordinate[] ring, HashMap<LineSegment, CoverageEdge> uniqueEdgeMap) {
+  private CoverageEdge createEdge(int coverageId, Coordinate[] ring, HashMap<LineSegment, CoverageEdge> uniqueEdgeMap) {
     CoverageEdge edge;
     LineSegment edgeKey = CoverageEdge.key(ring);
     if (uniqueEdgeMap.containsKey(edgeKey)) {
       edge = uniqueEdgeMap.get(edgeKey);
+      if (!coverageTolerances.isEmpty()){
+        edge.setTolerance((edge.getTolerance() < coverageTolerances.get(coverageId)) ? edge.getTolerance() : coverageTolerances.get(coverageId));
+      }
     }
     else {
-      edge = CoverageEdge.createEdge(ring);
+      double tolerance = coverageTolerances.isEmpty() ? -1 : coverageTolerances.get(coverageId);
+      edge = CoverageEdge.createEdge(ring, tolerance);
       uniqueEdgeMap.put(edgeKey, edge);
       edges.add(edge);
     }
@@ -196,14 +210,18 @@ class CoverageRingEdges {
     return edge;
   }
   
-  private CoverageEdge createEdge(Coordinate[] ring, int start, int end, HashMap<LineSegment, CoverageEdge> uniqueEdgeMap) {
+  private CoverageEdge createEdge(int coverageId, Coordinate[] ring, int start, int end, HashMap<LineSegment, CoverageEdge> uniqueEdgeMap) {
     CoverageEdge edge;
     LineSegment edgeKey = (end == start) ? CoverageEdge.key(ring) : CoverageEdge.key(ring, start, end);
     if (uniqueEdgeMap.containsKey(edgeKey)) {
       edge = uniqueEdgeMap.get(edgeKey);
+      if (!coverageTolerances.isEmpty()){
+        edge.setTolerance((edge.getTolerance() < coverageTolerances.get(coverageId)) ? edge.getTolerance() : coverageTolerances.get(coverageId));
+      }
     }
     else {
-      edge = CoverageEdge.createEdge(ring, start, end);
+      double tolerance = coverageTolerances.isEmpty() ? -1 : coverageTolerances.get(coverageId);
+      edge = CoverageEdge.createEdge(ring, start, end, tolerance);
       uniqueEdgeMap.put(edgeKey, edge);
       edges.add(edge);
     }
@@ -278,7 +296,7 @@ class CoverageRingEdges {
 
   /**
    * Recreates the polygon coverage from the current edge values.
-   * 
+   *
    * @return an array of polygonal geometries representing the coverage
    */
   public Geometry[] buildCoverage() {

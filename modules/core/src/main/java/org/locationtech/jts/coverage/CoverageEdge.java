@@ -30,15 +30,15 @@ import org.locationtech.jts.io.WKTWriter;
  */
 class CoverageEdge {
 
-  public static CoverageEdge createEdge(Coordinate[] ring) {
+  public static CoverageEdge createEdge(Coordinate[] ring, double tolerance) {
     Coordinate[] pts = extractEdgePoints(ring, 0, ring.length - 1);
-    CoverageEdge edge = new CoverageEdge(pts, true);
+    CoverageEdge edge = new CoverageEdge(pts, true, tolerance);
     return edge;
   }
 
-  public static CoverageEdge createEdge(Coordinate[] ring, int start, int end) {
+  public static CoverageEdge createEdge(Coordinate[] ring, int start, int end, double tolerance) {
     Coordinate[] pts = extractEdgePoints(ring, start, end);
-    CoverageEdge edge = new CoverageEdge(pts, false);
+    CoverageEdge edge = new CoverageEdge(pts, false, tolerance);
     return edge;
   }
 
@@ -137,9 +137,12 @@ class CoverageEdge {
   private int ringCount = 0;
   private boolean isFreeRing = true;
 
-  public CoverageEdge(Coordinate[] pts, boolean isFreeRing) {
+  private double tolerance = -1;
+
+  public CoverageEdge(Coordinate[] pts, boolean isFreeRing, double tolerance) {
     this.pts = pts;
     this.isFreeRing = isFreeRing;
+    this.tolerance = tolerance;
   }
 
   public void incRingCount() {
@@ -159,6 +162,10 @@ class CoverageEdge {
   public boolean isFreeRing() {
     return isFreeRing;
   }
+
+  public double getTolerance() { return tolerance; }
+
+  public void setTolerance(double tolerance) { this.tolerance = tolerance; }
 
   public void setCoordinates(Coordinate[] pts) {
     this.pts = pts;
