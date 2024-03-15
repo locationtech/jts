@@ -173,7 +173,7 @@ public class OverlayArea {
     if (area0 != 0.0) return area0;
     
     // only checking one point, so non-indexed is faster
-    SimplePointInAreaLocator locator = new SimplePointInAreaLocator(geom);
+    SimplePointInAreaLocator locator = new SimplePointInAreaLocator(geom.getFactory().createPolygon(geom));
     double area1 = areaForContainedGeom(geom0, geom.getEnvelopeInternal(), locator);
     // geom0 is either disjoint or contained - either way we are done
     return area1;

@@ -40,15 +40,19 @@ public class SimpleOverlayAreaTest extends GeometryTestCase {
   }
 
   public void testRectangleAContainsB() {
-    checkIntersectionArea(
-        "POLYGON ((100 300, 300 300, 300 100, 100 100, 100 300))",
-        "POLYGON ((150 250, 250 250, 250 150, 150 150, 150 250))");
+    String wktA = "POLYGON ((100 300, 300 300, 300 100, 100 100, 100 300))";
+    String wktB = "POLYGON ((150 250, 250 250, 250 150, 150 150, 150 250))";
+
+    checkIntersectionArea(wktA, wktB);
+    checkIntersectionArea(wktB, wktA);
   }
 
   public void testTriangleAContainsB() {
-    checkIntersectionArea(
-        "POLYGON ((60 170, 270 370, 380 60, 60 170))",
-        "POLYGON ((200 250, 245 155, 291 195, 200 250))");
+    String wktA = "POLYGON ((60 170, 270 370, 380 60, 60 170))";
+    String wktB = "POLYGON ((200 250, 245 155, 291 195, 200 250))";
+
+    checkIntersectionArea(wktA, wktB);
+    checkIntersectionArea(wktB, wktA);
   }
 
   public void testRectangleOverlap() {
