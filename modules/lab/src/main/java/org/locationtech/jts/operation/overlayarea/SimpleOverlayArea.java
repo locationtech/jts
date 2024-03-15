@@ -118,10 +118,20 @@ public class SimpleOverlayArea {
           Coordinate intPt = li.getIntersection(0);
 
           if ( Orientation.CLOCKWISE == Orientation.index(a0, a1, b0) ) {
+            if (intPt.equals2D(a1)) {
+              // Intersection at vertex and A0 -> A1 is outside of the intersection area
+              // Area will be computed by the segment A1 -> A2
+              continue;
+            }
             area += EdgeVector.area2Term(intPt, a0, a1, true);
             area += EdgeVector.area2Term(intPt, b1, b0, false);
           }
           else if ( Orientation.CLOCKWISE == Orientation.index(a0, a1, b1) ) {
+            if (intPt.equals2D(a0)) {
+              // Intersection at vertex and A0 -> A1 is outside of the intersection area
+              // Area will be computed by the segment A(-1) -> A0
+              continue;
+            }
             area += EdgeVector.area2Term(intPt, a1, a0, false);
             area += EdgeVector.area2Term(intPt, b0, b1, true);
           }

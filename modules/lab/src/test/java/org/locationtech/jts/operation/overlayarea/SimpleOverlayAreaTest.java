@@ -32,10 +32,22 @@ public class SimpleOverlayAreaTest extends GeometryTestCase {
         "POLYGON ((90 10, 50 10, 50 50, 90 50, 90 10))");
   }
 
-  public void testTouching() {
+  public void testTouchingTwoCollinear() {
     checkIntersectionArea(
         "POLYGON ((10 90, 50 90, 50 50, 10 50, 10 90))",
         "POLYGON ((90 10, 50 10, 50 50, 90 50, 90 10))");
+  }
+
+  public void testTouchingOneCollinear() {
+    checkIntersectionArea(
+        "POLYGON ((10 90, 50 90, 50 50, 10 50, 10 90))",
+        "POLYGON ((90 10, 49 10, 50 50, 90 50, 90 10))");
+  }
+
+  public void testTouchingNoneCollinear() {
+    checkIntersectionArea(
+        "POLYGON ((10 90, 50 90, 50 50, 10 52, 10 90))",
+        "POLYGON ((90 10, 49 10, 50 50, 90 50, 90 10))");
   }
 
   public void testRectangleAContainsB() {
