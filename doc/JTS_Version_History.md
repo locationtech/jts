@@ -71,6 +71,7 @@ Distributions for older JTS versions can be obtained at the
 * Fix OffsetCurve to ensure end segments are included (#1029)
 * Fix `PointLocator` to respect `BoundaryNodeRule` for single lines (#1031)
 * Fix `BufferOp` Inverted Ring Removal check (#1038)
+* Improve `VariableBuffer` segment buffer cap generation (#1041)
 
 ### Performance Improvements
 
