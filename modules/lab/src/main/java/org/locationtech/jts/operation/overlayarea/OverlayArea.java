@@ -275,11 +275,14 @@ public class OverlayArea {
         }
 
       } else {
-        // vertex-vertex intersection
+        // vertex-vertex inteqrsection
         // This intersection is visited 4 times - include only once
-        if (!intPt.equals2D(a1) || !intPt.equals2D(b1)) {
+        if (!a1.equals2D(b1)) {
           return;
         }
+
+        // If A0->A1 is collinear with B0->B1, then the intersection point might not be equal to A1 and B1
+        intPt = a1;
 
         Coordinate a2 = a.nextInRing(aIndex + 1);
         Coordinate b2 = b.nextInRing(bIndex + 1);

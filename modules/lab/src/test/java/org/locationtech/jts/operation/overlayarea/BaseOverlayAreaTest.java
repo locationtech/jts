@@ -80,6 +80,24 @@ public abstract class BaseOverlayAreaTest extends GeometryTestCase {
             "POLYGON ((30 20, 40 50, 60 20, 30 20))");
   }
 
+  public void testVertexIntersectionContained2() {
+    checkIntersectionAreaSymmetric(
+            "POLYGON ((10 10, 40 50, 90 10, 10 10))",
+            "POLYGON ((30 10, 40 50, 60 10, 30 10))");
+  }
+
+  public void testVertexIntersectionContained3() {
+    checkIntersectionAreaSymmetric(
+            "POLYGON ((10 10, 40 50, 90 10, 10 10))",
+            "POLYGON ((10 10, 40 50, 60 20, 10 10))");
+  }
+
+  public void testVertexIntersectionContained4() {
+    checkIntersectionAreaSymmetric(
+            "POLYGON ((10 10, 10 50, 50 50, 50 10, 10 10))",
+            "POLYGON ((10 10, 30 30, 50 10, 10 10))");
+  }
+
   public void testVertexIntersectionOverlapping() {
     checkIntersectionAreaSymmetric(
             "POLYGON ((10 10, 40 50, 90 10, 10 10))",
@@ -102,12 +120,12 @@ public abstract class BaseOverlayAreaTest extends GeometryTestCase {
     Geometry a = read(wktA);
     Geometry b = read(wktB);
     
-    double ovIntArea = computeOverlayArea(a, b);
-    
     double intAreaFull = a.intersection(b).getArea();
     
-    //System.out.printf("OverlayArea: %f   Full overlay: %f\n", ovIntArea, intAreaFull);
-    assertEquals(intAreaFull, ovIntArea, 0.0001);
+    assertEquals(intAreaFull, computeOverlayArea(a, b), 0.0001);
+    assertEquals(intAreaFull, computeOverlayArea(a.reverse(), b), 0.0001);
+    assertEquals(intAreaFull, computeOverlayArea(a, b.reverse()), 0.0001);
+    assertEquals(intAreaFull, computeOverlayArea(a.reverse(), b.reverse()), 0.0001);
   }
 
   protected final void checkIntersectionAreaSymmetric(String wktA, String wktB) {
