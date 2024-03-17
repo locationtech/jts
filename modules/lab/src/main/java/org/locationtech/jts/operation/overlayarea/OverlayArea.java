@@ -23,11 +23,9 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateSequence;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.GeometryFilter;
 import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.Location;
-import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.index.kdtree.KdNode;
 import org.locationtech.jts.index.kdtree.KdTree;
@@ -179,7 +177,7 @@ public class OverlayArea {
     if (area0 != 0.0) return area0;
     
     // only checking one point, so non-indexed is faster
-    SimplePointInAreaLocator locator = new SimplePointInAreaLocator(geom);
+    SimplePointInAreaLocator locator = new SimplePointInAreaLocator(geom.getFactory().createPolygon(geom));
     double area1 = areaForContainedGeom(geom0, geom.getEnvelopeInternal(), locator);
     // geom0 is either disjoint or contained - either way we are done
     return area1;
