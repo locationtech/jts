@@ -38,6 +38,12 @@ public abstract class BaseOverlayAreaTest extends GeometryTestCase {
         "POLYGON ((90 10, 50 10, 50 50, 90 50, 90 10))");
   }
 
+  public void testTouchingNonPerpendicular() {
+    checkIntersectionAreaSymmetric(
+            "POLYGON ((10 90, 49 90, 50 50, 10 53, 10 90))",
+            "POLYGON ((90 10, 47 10, 50 50, 90 54, 90 10))");
+  }
+
   public void testRectangleAContainsB() {
     checkIntersectionAreaSymmetric(
         "POLYGON ((100 300, 300 300, 300 100, 100 100, 100 300))",
@@ -66,6 +72,30 @@ public abstract class BaseOverlayAreaTest extends GeometryTestCase {
     checkIntersectionAreaSymmetric(
         "POLYGON ((100 300, 305 299, 150 200, 300 150, 150 100, 300 50, 100 50, 100 300))",
         "POLYGON ((400 350, 150 250, 350 200, 200 150, 350 100, 180 50, 400 50, 400 350))");
+  }
+
+  public void testVertexIntersectionContained() {
+    checkIntersectionAreaSymmetric(
+        "POLYGON ((10 10, 40 50, 90 10, 10 10))",
+            "POLYGON ((30 20, 40 50, 60 20, 30 20))");
+  }
+
+  public void testVertexIntersectionOverlapping() {
+    checkIntersectionAreaSymmetric(
+            "POLYGON ((10 10, 40 50, 90 10, 10 10))",
+            "POLYGON ((30 -20, 40 50, 60 -20, 30 -20))");
+  }
+
+  public void testVertexIntersectionOverlapping2() {
+    checkIntersectionAreaSymmetric(
+            "POLYGON ((10 10, 40 50, 90 10, 10 10))",
+            "POLYGON ((30 20, 40 50, 90 20, 30 20))");
+  }
+
+  public void testVertexIntersectionTwoAreas() {
+    checkIntersectionAreaSymmetric(
+            "POLYGON ((10 10, 30 50, 60 10, 10 10))",
+            "POLYGON ((20 60, 40 60, 40 20, 30 50, 20 20, 20 60))");
   }
 
   protected final void checkIntersectionArea(String wktA, String wktB) {
