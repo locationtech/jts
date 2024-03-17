@@ -275,7 +275,7 @@ public class OverlayArea {
         }
 
       } else {
-        // vertex-vertex inteqrsection
+        // vertex-vertex intersection
         // This intersection is visited 4 times - include only once
         if (!a1.equals2D(b1)) {
           return;
@@ -296,8 +296,8 @@ public class OverlayArea {
         double aAngle = Angle.interiorAngle(a0, intPt, a2);
         double bAngle = Angle.interiorAngle(b0, intPt, b2);
 
-        // The LTE ja LT are chosen such that when A0->A1 is collinear with B0->B1, then A is chosen
-        // and when A1->A2 is collinear with B1->B2, then A is chosen.
+        // The LTE ja LT are chosen such that when A0->A1 is collinear with B0->B1,
+        // or when A1->A2 is collinear with B1->B2, then A is chosen.
         // This avoids double counting in the case of collinear segments.
         if (Angle.interiorAngle(a0, intPt, b2) <= bAngle) {
           area += EdgeVector.area2Term(intPt, a1, a0, false);
