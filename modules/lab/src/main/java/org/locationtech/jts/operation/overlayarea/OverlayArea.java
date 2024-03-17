@@ -11,8 +11,7 @@
  */
 package org.locationtech.jts.operation.overlayarea;
 
-import java.util.List;
-
+import org.locationtech.jts.algorithm.Angle;
 import org.locationtech.jts.algorithm.Area;
 import org.locationtech.jts.algorithm.LineIntersector;
 import org.locationtech.jts.algorithm.Orientation;
@@ -24,16 +23,23 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateSequence;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.GeometryFilter;
-import org.locationtech.jts.geom.LineSegment;
 import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.Location;
+import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
-import org.locationtech.jts.index.ItemVisitor;
 import org.locationtech.jts.index.kdtree.KdNode;
 import org.locationtech.jts.index.kdtree.KdTree;
-import org.locationtech.jts.index.strtree.STRtree;
 import org.locationtech.jts.math.MathUtil;
+import org.locationtech.jts.noding.BasicSegmentString;
+import org.locationtech.jts.noding.MCIndexSegmentSetMutualIntersector;
+import org.locationtech.jts.noding.SegmentIntersector;
+import org.locationtech.jts.noding.SegmentSetMutualIntersector;
+import org.locationtech.jts.noding.SegmentString;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Computes the area of the overlay of two polygons without forming
@@ -79,7 +85,7 @@ public class OverlayArea {
   private Geometry geom0;
   private Envelope geomEnv0;
   private IndexedPointInAreaLocator locator0;
-  private STRtree indexSegs;
+  private SegmentSetMutualIntersector segSetMutInt;
   private KdTree vertexIndex;
 
   public OverlayArea(Geometry geom) {
@@ -92,7 +98,7 @@ public class OverlayArea {
     
     geomEnv0 = geom.getEnvelopeInternal();
     locator0 = new IndexedPointInAreaLocator(geom);
-    indexSegs = buildSegmentIndex(geom);
+    segSetMutInt = buildSegmentIndex(geom);
     vertexIndex = buildVertexIndex(geom);
   }
   
@@ -207,80 +213,114 @@ public class OverlayArea {
   }
 
   private double areaForIntersections(LinearRing geom) {
-    double area = 0.0;
-    CoordinateSequence seq = geom.getCoordinateSequence();
-    
-    boolean isCCW = Orientation.isCCW(seq);
-    
-    // Compute rays for all intersections   
-    for (int j = 0; j < seq.size() - 1; j++) {
-      Coordinate b0 = seq.getCoordinate(j);
-      Coordinate b1 = seq.getCoordinate(j+1);
-      if (isCCW) {
-        // flip segment orientation
-        Coordinate temp = b0; b0 = b1; b1 = temp;
-      }
-      
-      Envelope env = new Envelope(b0, b1);
-      IntersectionVisitor intVisitor = new IntersectionVisitor(b0, b1);
-      indexSegs.query(env, intVisitor);
-      area += intVisitor.getArea();
-    }
-    return area;
+    Coordinate[] coords = geom.getCoordinates();
+    SegmentString segStr = new BasicSegmentString(coords, Orientation.isCCW(coords));
+
+    IntersectionVisitor intVisitor = new IntersectionVisitor();
+    segSetMutInt.process(Collections.singletonList(segStr), intVisitor);
+
+    return intVisitor.getArea();
   }
 
-  class IntersectionVisitor implements ItemVisitor {
-    double area = 0.0;
-    private Coordinate b0;
-    private Coordinate b1;
-    
-    IntersectionVisitor(Coordinate b0, Coordinate b1) {
-      this.b0 = b0;
-      this.b1 = b1;
-    }
-    
+  class IntersectionVisitor implements SegmentIntersector {
+    private double area = 0.0;
+
     double getArea() {
       return area;
     }
-    
-    public void visitItem(Object item) {
-      LineSegment seg = (LineSegment) item;
-      area += areaForIntersection(seg.p0, seg.p1, b0, b1);
+
+    @Override
+    public void processIntersections(SegmentString a, int aIndex, SegmentString b, int bIndex) {
+      boolean isCCWA = (boolean) a.getData();
+      boolean isCCWB = (boolean) b.getData();
+
+      Coordinate a0 = a.getCoordinate(aIndex);
+      Coordinate a1 = a.getCoordinate(aIndex + 1);
+      Coordinate b0 = b.getCoordinate(bIndex);
+      Coordinate b1 = b.getCoordinate(bIndex + 1);
+
+      if (isCCWA) {
+        Coordinate tmp = a0; a0 = a1; a1 = tmp;
+      }
+      if (isCCWB) {
+          Coordinate tmp = b0; b0 = b1; b1 = tmp;
+      }
+
+      li.computeIntersection(a0, a1, b0, b1);
+      if (! li.hasIntersection()) return;
+
+      Coordinate intPt = li.getIntersection(0);
+
+      if (li.isProper() || li.isInteriorIntersection()) {
+        // Edge-edge intersection OR vertex-edge intersection
+
+        /**
+         * An intersection creates two edge vectors which contribute to the area.
+         *
+         * With both rings oriented CW (effectively)
+         * There are two situations for segment intersection:
+         *
+         * 1) A entering B, B exiting A => rays are IP->A1:R, IP->B0:L
+         * 2) A exiting B, B entering A => rays are IP->A0:L, IP->B1:R
+         * (where IP is the intersection point,
+         * and  :L/R indicates result polygon interior is to the Left or Right).
+         *
+         * For accuracy the full edge is used to provide the direction vector.
+         */
+
+        if (Orientation.CLOCKWISE == Orientation.index(a0, a1, b0)) {
+          area += EdgeVector.area2Term(intPt, a0, a1, true);
+          area += EdgeVector.area2Term(intPt, b1, b0, false);
+        } else if (Orientation.CLOCKWISE == Orientation.index(a0, a1, b1)) {
+          area += EdgeVector.area2Term(intPt, a1, a0, false);
+          area += EdgeVector.area2Term(intPt, b0, b1, true);
+        }
+
+      } else {
+        // vertex-vertex intersection
+        // This intersection is visited 4 times - include only once
+        if (!intPt.equals2D(a1) || !intPt.equals2D(b1)) {
+          return;
+        }
+
+        Coordinate a2 = a.nextInRing(aIndex + 1);
+        Coordinate b2 = b.nextInRing(bIndex + 1);
+        if (isCCWA) {
+          a2 = a.prevInRing(aIndex);
+        }
+        if (isCCWB) {
+          b2 = b.prevInRing(bIndex);
+        }
+
+        double aAngle = Angle.interiorAngle(a0, intPt, a2);
+        double bAngle = Angle.interiorAngle(b0, intPt, b2);
+
+        // The LTE ja LT are chosen such that when A0->A1 is collinear with B0->B1, then A is chosen
+        // and when A1->A2 is collinear with B1->B2, then A is chosen.
+        // This avoids double counting in the case of collinear segments.
+        if (Angle.interiorAngle(a0, intPt, b2) <= bAngle) {
+          area += EdgeVector.area2Term(intPt, a1, a0, false);
+        }
+        if (Angle.interiorAngle(b0, intPt, a2) <= bAngle) {
+          area += EdgeVector.area2Term(intPt, a1, a2, true);
+        }
+        if (Angle.interiorAngle(b0, intPt, a2) < aAngle) {
+          area += EdgeVector.area2Term(intPt, b1, b0, false);
+        }
+        if (Angle.interiorAngle(a0, intPt, b2) < aAngle) {
+          area += EdgeVector.area2Term(intPt, b1, b2, true);
+        }
+      }
+    }
+
+    @Override
+    public boolean isDone() {
+      // Process all intersections
+      return false;
     }
   }
   
-  private static double areaForIntersection(Coordinate a0, Coordinate a1, Coordinate b0, Coordinate b1 ) {
-    // TODO: can the intersection computation be optimized?
-    li.computeIntersection(a0, a1, b0, b1);
-    if (! li.hasIntersection()) return 0.0;
-    
-    /**
-     * An intersection creates two edge vectors which contribute to the area.
-     * 
-     * With both rings oriented CW (effectively)
-     * There are two situations for segment intersection:
-     * 
-     * 1) A entering B, B exiting A => rays are IP->A1:R, IP->B0:L
-     * 2) A exiting B, B entering A => rays are IP->A0:L, IP->B1:R
-     * (where IP is the intersection point, 
-     * and  :L/R indicates result polygon interior is to the Left or Right).
-     * 
-     * For accuracy the full edge is used to provide the direction vector.
-     */
-    Coordinate intPt = li.getIntersection(0);
-    
-    boolean isAenteringB = Orientation.COUNTERCLOCKWISE == Orientation.index(a0, a1, b1);
-    
-    if ( isAenteringB ) {
-      return EdgeVector.area2Term(intPt, a0, a1, true)
-        + EdgeVector.area2Term(intPt, b1, b0, false);
-    }
-    else {
-      return EdgeVector.area2Term(intPt, a1, a0, false)
-       + EdgeVector.area2Term(intPt, b0, b1, true);
-    }
-  }
-    
+
   private double areaForInteriorVertices(LinearRing ring) {
     /**
      * Compute rays originating at vertices inside the intersection result
@@ -335,22 +375,10 @@ public class OverlayArea {
     return seq;
   }
   
-  private static STRtree buildSegmentIndex(Geometry geom) {
+  private static SegmentSetMutualIntersector buildSegmentIndex(Geometry geom) {
     Coordinate[] coords = geom.getCoordinates();
-    
-    boolean isCCW = Orientation.isCCW(coords);
-    STRtree index = new STRtree();
-    for (int i = 0; i < coords.length - 1; i++) {
-      Coordinate a0 = coords[i];
-      Coordinate a1 = coords[i+1];
-      LineSegment seg = new LineSegment(a0, a1);
-      if (isCCW) {
-        seg = new LineSegment(a1, a0);
-      }
-      Envelope env = new Envelope(a0, a1);
-      index.insert(env, seg);
-    }
-    return index;
+    SegmentString segStr = new BasicSegmentString(coords, Orientation.isCCW(coords));
+    return new MCIndexSegmentSetMutualIntersector(Collections.singletonList(segStr));
   }
 
   private static KdTree buildVertexIndex(Geometry geom) {
