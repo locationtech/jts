@@ -291,9 +291,14 @@ public class OverlayArea {
           return;
         }
 
-        // If A0->A1 is collinear with B0->B1, then the intersection point might not be equal to A1 and B1
+        // If A0->A1 is collinear with B0->B1,
+        // then the intersection point from LineIntersector might not be equal to A1 and B1
         intPt = a1;
 
+        /* Get the next vertices in the CW direction.
+        Now we have four segments: A0->A1, A1->A2, B0->B1, B1->B2
+        and the intersection point is A1 == B1.
+         */
         Coordinate a2 = a.nextInRing(aIndex + 1);
         Coordinate b2 = b.nextInRing(bIndex + 1);
         if (isCCWA) {
@@ -303,12 +308,21 @@ public class OverlayArea {
           b2 = b.prevInRing(bIndex);
         }
 
+        /* The angles A0->A1->A2 and B0->B1->B2 determine
+         the maximum intersection area interior angle.
+         Edges from the other polygon that lie within this angle
+         are on the boundary of the intersection area.
+
+         Depending on the relative orientation of the polygons,
+         we could pick 0, 2 or 4 segments to contribute to the area.
+
+        The LTE ja LT are chosen such that when A0->A1 is collinear with B0->B1,
+        or when A1->A2 is collinear with B1->B2, then only the segment from polygon A
+        is chosen to avoid double counting.
+         */
         double aAngle = Angle.interiorAngle(a0, intPt, a2);
         double bAngle = Angle.interiorAngle(b0, intPt, b2);
 
-        // The LTE ja LT are chosen such that when A0->A1 is collinear with B0->B1,
-        // or when A1->A2 is collinear with B1->B2, then A is chosen.
-        // This avoids double counting in the case of collinear segments.
         if (Angle.interiorAngle(a0, intPt, b2) <= bAngle) {
           area += EdgeVector.area2Term(intPt, a1, a0, false);
         }
