@@ -320,22 +320,22 @@ public class OverlayArea {
         or when A1->A2 is collinear with B1->B2, then only the segment from polygon A
         is chosen to avoid double counting.
          */
-        double aaAngle = Angle.interiorAngle(a0, intPt, a2);
-        double bbAngle = Angle.interiorAngle(b0, intPt, b2);
+        double angleA0A2 = Angle.interiorAngle(a0, intPt, a2);
+        double angleB0B2 = Angle.interiorAngle(b0, intPt, b2);
 
-        double abAngle = Angle.interiorAngle(a0, intPt, b2);
-        double baAngle = Angle.interiorAngle(b0, intPt, a2);
+        double angleA0B2 = Angle.interiorAngle(a0, intPt, b2);
+        double angleB0A2 = Angle.interiorAngle(b0, intPt, a2);
 
-        if (abAngle <= bbAngle) {
+        if (angleA0B2 <= angleB0B2) {
           area += EdgeVector.area2Term(intPt, a1, a0, false);
         }
-        if (baAngle <= bbAngle) {
+        if (angleB0A2 <= angleB0B2) {
           area += EdgeVector.area2Term(intPt, a1, a2, true);
         }
-        if (baAngle < aaAngle) {
+        if (angleB0A2 < angleA0A2) {
           area += EdgeVector.area2Term(intPt, b1, b0, false);
         }
-        if (abAngle < aaAngle) {
+        if (angleA0B2 < angleA0A2) {
           area += EdgeVector.area2Term(intPt, b1, b2, true);
         }
       }
