@@ -36,6 +36,7 @@ class PointwisePrecisionReducerTransformer extends GeometryTransformer {
     this.targetPM = targetPM;
   }
   
+  @Override
   protected CoordinateSequence transformCoordinates(
       CoordinateSequence coordinates, Geometry parent) {
     if (coordinates.size() == 0)

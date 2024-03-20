@@ -145,6 +145,7 @@ class EnvelopeIntersectsVisitor extends ShortCircuitedGeometryVisitor
     return intersects;
   }
 
+  @Override
   protected void visit(Geometry element)
   {
     Envelope elementEnv = element.getEnvelopeInternal();
@@ -179,6 +180,7 @@ class EnvelopeIntersectsVisitor extends ShortCircuitedGeometryVisitor
     }
   }
 
+  @Override
   protected boolean isDone()
   {
     return intersects;
@@ -219,6 +221,7 @@ class GeometryContainsPointVisitor extends ShortCircuitedGeometryVisitor
     return containsPoint;
   }
 
+  @Override
   protected void visit(Geometry geom)
   {
     // if test geometry is not polygonal this check is not needed
@@ -246,6 +249,7 @@ class GeometryContainsPointVisitor extends ShortCircuitedGeometryVisitor
     }
   }
 
+  @Override
   protected boolean isDone()
   {
     return containsPoint;
@@ -290,6 +294,7 @@ class RectangleIntersectsSegmentVisitor extends ShortCircuitedGeometryVisitor
     return hasIntersection;
   }
 
+  @Override
   protected void visit(Geometry geom)
   {
     /**
@@ -334,6 +339,7 @@ class RectangleIntersectsSegmentVisitor extends ShortCircuitedGeometryVisitor
     }
   }
 
+  @Override
   protected boolean isDone()
   {
     return hasIntersection;

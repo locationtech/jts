@@ -71,6 +71,7 @@ public class GeometryCollectionIterator implements Iterator {
    * 
    * @return true if more geometry elements remain
    */
+  @Override
   public boolean hasNext() {
     if (atStart) {
       return true;
@@ -92,6 +93,7 @@ public class GeometryCollectionIterator implements Iterator {
    * 
    * @return the next geometry in the iteration
    */
+  @Override
   public Object next() {
     // the parent GeometryCollection is the first object returned
     if (atStart) {
@@ -130,6 +132,7 @@ public class GeometryCollectionIterator implements Iterator {
    *
    * @throws  UnsupportedOperationException  This method is not implemented.
    */
+  @Override
   public void remove() {
     throw new UnsupportedOperationException(getClass().getName());
   }

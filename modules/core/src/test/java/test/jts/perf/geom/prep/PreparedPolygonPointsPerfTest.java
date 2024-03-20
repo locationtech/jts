@@ -63,6 +63,7 @@ public class PreparedPolygonPointsPerfTest extends PerformanceTestCase
     setRunIterations(NUM_ITER);
   }
 
+  @Override
   public void startRun(int nPts)
   {
 //  	Geometry poly = createCircle(new Coordinate(0, 0), 100, nPts);

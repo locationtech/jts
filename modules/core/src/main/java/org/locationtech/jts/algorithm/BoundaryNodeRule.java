@@ -116,6 +116,7 @@ public interface BoundaryNodeRule
   public static class Mod2BoundaryNodeRule
       implements BoundaryNodeRule
   {
+    @Override
     public boolean isInBoundary(int boundaryCount)
     {
       // the "Mod-2 Rule"
@@ -152,6 +153,7 @@ public interface BoundaryNodeRule
   public static class EndPointBoundaryNodeRule
       implements BoundaryNodeRule
   {
+    @Override
     public boolean isInBoundary(int boundaryCount)
     {
       return boundaryCount > 0;
@@ -175,6 +177,7 @@ public interface BoundaryNodeRule
   public static class MultiValentEndPointBoundaryNodeRule
       implements BoundaryNodeRule
   {
+    @Override
     public boolean isInBoundary(int boundaryCount)
     {
       return boundaryCount > 1;
@@ -197,6 +200,7 @@ public interface BoundaryNodeRule
   public static class MonoValentEndPointBoundaryNodeRule
       implements BoundaryNodeRule
   {
+    @Override
     public boolean isInBoundary(int boundaryCount)
     {
       return boundaryCount == 1;

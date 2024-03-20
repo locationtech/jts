@@ -500,6 +500,7 @@ public class PrecisionModel implements Serializable, Comparable
    *@return    a negative integer, zero, or a positive integer as this <code>PrecisionModel</code>
    *      is less than, equal to, or greater than the specified <code>PrecisionModel</code>
    */
+  @Override
   public int compareTo(Object o) {
     PrecisionModel other = (PrecisionModel) o;
 

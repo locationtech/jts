@@ -121,6 +121,7 @@ class PolygonalLineworkExtracter
 	/**
 	 * Filters out all linework for polygonal elements
 	 */
+	@Override
 	public void filter(Geometry g)
 	{
 		if (g instanceof Polygon) {

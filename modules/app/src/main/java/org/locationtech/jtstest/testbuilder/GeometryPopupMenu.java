@@ -34,6 +34,7 @@ public class GeometryPopupMenu extends JPopupMenu
     JMenuItem extractComponentItem = new JMenuItem("Extract Component");
     extractComponentItem.addActionListener(
           new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
               JTSTestBuilder.controller().extractComponentsToTestCase(clickCoord);
             }
@@ -43,6 +44,7 @@ public class GeometryPopupMenu extends JPopupMenu
     JMenuItem copyComponentItem = new JMenuItem("Copy Component");
     copyComponentItem.addActionListener(
           new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
               JTSTestBuilder.controller().copyComponentToClipboard(clickCoord);
             }
@@ -52,6 +54,7 @@ public class GeometryPopupMenu extends JPopupMenu
     JMenuItem infoItem = new JMenuItem("Info");
     infoItem.addActionListener(
           new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
               JTSTestBuilder.controller().displayInfo(clickCoord);
             }
@@ -63,6 +66,7 @@ public class GeometryPopupMenu extends JPopupMenu
   /**
    * Record model coordinate of click point for use in menu operations
    */
+  @Override
   public void show(Component invoker, int x, int y)
   {
     GeometryEditPanel editPanel = (GeometryEditPanel) invoker;

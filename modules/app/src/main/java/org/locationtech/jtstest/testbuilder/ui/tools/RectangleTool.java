@@ -32,7 +32,8 @@ extends BoxBandTool
     super(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
   }
 
-  protected void gestureFinished() 
+  @Override
+  protected void gestureFinished()
   {      
     geomModel().setGeometryType(GeometryType.POLYGON);
     geomModel().addComponent(getCoordinates());

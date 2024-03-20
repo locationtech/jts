@@ -46,10 +46,12 @@ public class MaximalEdgeRing
     super(start, geometryFactory);
   }
 
+  @Override
   public DirectedEdge getNext(DirectedEdge de)
   {
     return de.getNext();
   }
+  @Override
   public void setEdgeRing(DirectedEdge de, EdgeRing er)
   {
     de.setEdgeRing(er);

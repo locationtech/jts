@@ -45,6 +45,7 @@ public class GeometryFunctionOperation
   	this.registry = registry;
   }
 
+  @Override
   public Class getReturnType(String opName)
   {
   	GeometryFunction func = registry.find(opName);
@@ -53,6 +54,7 @@ public class GeometryFunctionOperation
   	return func.getReturnType();
   }
   
+  @Override
   public Result invoke(String opName, Geometry geometry, Object[] args)
       throws Exception
   {

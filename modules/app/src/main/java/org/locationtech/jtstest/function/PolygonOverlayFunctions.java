@@ -39,6 +39,7 @@ public class PolygonOverlayFunctions
   {
     PrecisionModel pm = new PrecisionModel(scale);
     return computeOverlay(g1, g2, new Noder() {
+      @Override
       public Geometry node(Geometry inputLines) {
        return OverlayNG.overlay(inputLines, null, OverlayNG.UNION, pm);
       }
@@ -48,6 +49,7 @@ public class PolygonOverlayFunctions
   public static Geometry overlay(Geometry g1, Geometry g2)
   {
     return computeOverlay(g1, g2, new Noder( ) {
+      @Override
       public Geometry node(Geometry inputLines) {
         return OverlayNGRobust.overlay(inputLines, null, OverlayNG.UNION);
       }

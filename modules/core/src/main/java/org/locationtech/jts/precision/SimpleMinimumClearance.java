@@ -109,6 +109,7 @@ public class SimpleMinimumClearance
       this.smc = smc;
     }
     
+    @Override
     public void filter(Coordinate coord) {
       smc.inputGeom.apply(new ComputeMCCoordinateSequenceFilter(smc, coord));
     }
@@ -125,6 +126,7 @@ public class SimpleMinimumClearance
       this.smc = smc;
       this.queryPt = queryPt;
     }
+    @Override
     public void filter(CoordinateSequence seq, int i) {
       // compare to vertex
       checkVertexDistance(seq.getCoordinate(i));
@@ -152,10 +154,12 @@ public class SimpleMinimumClearance
           smc.updateClearance(segDist, queryPt, seg1, seg0);
     }
     
+    @Override
     public boolean isDone() {
       return false;
     }
     
+    @Override
     public boolean isGeometryChanged() {
       return false;
     }

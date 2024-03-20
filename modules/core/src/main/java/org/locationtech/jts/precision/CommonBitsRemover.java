@@ -113,6 +113,7 @@ public class CommonBitsRemover
     private CommonBits commonBitsX = new CommonBits();
     private CommonBits commonBitsY = new CommonBits();
 
+    @Override
     public void filter(Coordinate coord)
     {
       commonBitsX.add(coord.x);
@@ -137,6 +138,7 @@ public class CommonBitsRemover
       this.trans = trans;
     }
 
+    @Override
     public void filter(CoordinateSequence seq, int i) {
       double xp = seq.getOrdinate(i, 0) + trans.x;
       double yp = seq.getOrdinate(i, 1) + trans.y;
@@ -144,10 +146,12 @@ public class CommonBitsRemover
       seq.setOrdinate(i, 1, yp);  
     }
 
+    @Override
     public boolean isDone() {
      return false;
     }
 
+    @Override
     public boolean isGeometryChanged() {
       return true;
     }

@@ -38,6 +38,7 @@ public class BoundablePairDistanceComparator implements Comparator<BoundablePair
 	/* (non-Javadoc)
 	 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
 	 */
+	@Override
 	public int compare(BoundablePair p1, BoundablePair p2) {
 		double distance1 = p1.getDistance();
 		double distance2 = p2.getDistance();
