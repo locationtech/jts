@@ -16,6 +16,7 @@ package org.locationtech.jts.algorithm;
  */
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.ZInterpolating;
 
 /**
  * A robust version of {@link LineIntersector}.
@@ -25,7 +26,6 @@ import org.locationtech.jts.geom.Envelope;
 public class RobustLineIntersector
     extends LineIntersector
 {
-
   public RobustLineIntersector() {
   }
 
@@ -387,6 +387,8 @@ public class RobustLineIntersector
    * @return the interpolated Z value (may be NaN)
    */
   private static double zInterpolate(Coordinate p, Coordinate p1, Coordinate p2) {
+    if (!ZInterpolating.getZInterpolating())
+      return Double.NaN;
     double p1z = p1.getZ();
     double p2z = p2.getZ();
     if (Double.isNaN(p1z)) {
