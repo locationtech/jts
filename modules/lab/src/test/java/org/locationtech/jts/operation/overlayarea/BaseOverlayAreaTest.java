@@ -128,6 +128,20 @@ public abstract class BaseOverlayAreaTest extends GeometryTestCase {
             "POLYGON ((40 10, 20 30, 40 50, 50 30, 40 10))");
   }
 
+  public void testCollinearOverlappingEdgesPartial() {
+    checkIntersectionAreaSymmetric(
+        "POLYGON ((10 30, 30 30, 30 10, 10 10, 10 30))",
+        "POLYGON ((20 30, 40 30, 40 10, 20 10, 20 30))"
+    );
+  }
+
+  public void testCollinearOverlappingEdgesFull() {
+    checkIntersectionAreaSymmetric(
+        "POLYGON ((10 30, 50 30, 50 10, 10 10, 10 30))",
+        "POLYGON ((20 30, 40 30, 40 10, 20 10, 20 30))"
+    );
+  }
+
   protected final void checkIntersectionArea(String wktA, String wktB) {
     Geometry a = read(wktA);
     Geometry b = read(wktB);
