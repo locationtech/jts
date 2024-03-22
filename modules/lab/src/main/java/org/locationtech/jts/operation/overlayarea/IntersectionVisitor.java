@@ -101,9 +101,14 @@ class IntersectionVisitor implements SegmentIntersector {
                 return;
             }
 
-            // If A0->A1 is collinear with B0->B1, then the intersection point from LineIntersector might not be equal to A1 and B1
+            // If A0->A1 is collinear with B0->B1,
+            // then the intersection point from LineIntersector might not be equal to A1 and B1
             Coordinate intPt = a1;
 
+            /* Get the next vertices in the CW direction.
+            Now we have four segments: A0->A1, A1->A2, B0->B1, B1->B2
+            and the intersection point is A1 == B1.
+             */
             Coordinate a2 = a.nextInRing(aIndex + 1);
             Coordinate b2 = b.nextInRing(bIndex + 1);
             if (isCCWA) {
@@ -113,22 +118,34 @@ class IntersectionVisitor implements SegmentIntersector {
                 b2 = b.prevInRing(bIndex);
             }
 
-            double aAngle = Angle.interiorAngle(a0, intPt, a2);
-            double bAngle = Angle.interiorAngle(b0, intPt, b2);
+            /* The angles A0->A1->A2 and B0->B1->B2 determine
+             the maximum intersection area interior angle.
+             Edges from the other polygon that lie within this angle
+             are on the boundary of the intersection area.
 
-            // The LTE ja LT are chosen such that when A0->A1 is collinear with B0->B1,
-            // or when A1->A2 is collinear with B1->B2, then A is chosen.
-            // This avoids double counting in the case of collinear segments.
-            if (Angle.interiorAngle(a0, intPt, b2) <= bAngle) {
+             Depending on the relative orientation of the polygons,
+             we could pick 0, 2 or 4 segments to contribute to the area.
+
+            The LTE ja LT are chosen such that when A0->A1 is collinear with B0->B1,
+            or when A1->A2 is collinear with B1->B2, then only the segment from polygon A
+            is chosen to avoid double counting.
+             */
+            double angleA0A2 = Angle.interiorAngle(a0, intPt, a2);
+            double angleB0B2 = Angle.interiorAngle(b0, intPt, b2);
+
+            double angleA0B2 = Angle.interiorAngle(a0, intPt, b2);
+            double angleB0A2 = Angle.interiorAngle(b0, intPt, a2);
+
+            if (angleA0B2 <= angleB0B2) {
                 area += EdgeVector.area2Term(intPt, a1, a0, false);
             }
-            if (Angle.interiorAngle(b0, intPt, a2) <= bAngle) {
+            if (angleB0A2 <= angleB0B2) {
                 area += EdgeVector.area2Term(intPt, a1, a2, true);
             }
-            if (Angle.interiorAngle(b0, intPt, a2) < aAngle) {
+            if (angleB0A2 < angleA0A2) {
                 area += EdgeVector.area2Term(intPt, b1, b0, false);
             }
-            if (Angle.interiorAngle(a0, intPt, b2) < aAngle) {
+            if (angleA0B2 < angleA0A2) {
                 area += EdgeVector.area2Term(intPt, b1, b2, true);
             }
         }
