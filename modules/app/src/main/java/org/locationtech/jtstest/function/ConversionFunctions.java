@@ -73,12 +73,12 @@ public class ConversionFunctions
         .createMultiPolygon( GeometryFactory.toPolygonArray(polys));
   }
 
-  public static Geometry toGeometryCollection(Geometry g, Geometry g2)
+  public static Geometry toGeometryCollection(Geometry g1, Geometry g2)
   {
     List atomicGeoms = new ArrayList();
-    if (g != null) addComponents(g, atomicGeoms);
+    if (g1 != null) addComponents(g1, atomicGeoms);
     if (g2 != null) addComponents(g2, atomicGeoms);
-    return g.getFactory().createGeometryCollection(
+    return FunctionsUtil.getFactoryOrDefault(g1, g2).createGeometryCollection(
         GeometryFactory.toGeometryArray(atomicGeoms));
   }
 
