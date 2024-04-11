@@ -30,6 +30,7 @@ Distributions for older JTS versions can be obtained at the
 * Add `Geometry.hasDimension(int dim)` method {#944}
 * Add `ConcaveHull.alphaShape` function (#952)
 * Add `OffsetCurve` Joined mode (#956)
+* Add `PointLocation.isOnSegment` function (#1048)
 
 ### Functionality Improvements
 * Improve `TopologyPreservingSimplifier` to prevent edge-disjoint line collapse (#925)
