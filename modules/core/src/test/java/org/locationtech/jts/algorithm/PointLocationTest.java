@@ -23,6 +23,7 @@ import test.jts.GeometryTestCase;
  * @version 1.15
  */
 public class PointLocationTest extends GeometryTestCase {
+  
   public static void main(String args[]) {
     TestRunner.run(PointLocationTest.class);
   }
@@ -54,6 +55,11 @@ public class PointLocationTest extends GeometryTestCase {
     checkOnSegment(5, 6, "LINESTRING(0 0, 9 9)", false);
     checkOnSegment(10, 10, "LINESTRING(0 0, 9 9)", false);
     checkOnSegment(9, 9.00001, "LINESTRING(0 0, 9 9)", false);
+  }
+  
+  public void testOnZeroLengthSegment() {
+    checkOnSegment(1, 1, "LINESTRING(1 1, 1 1)", true);
+    checkOnSegment(1, 2, "LINESTRING(1 1, 1 1)", false);
   }
   
   private void checkOnSegment(double x, double y, String wktLine, boolean expected) {
