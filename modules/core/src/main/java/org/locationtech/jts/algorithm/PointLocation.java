@@ -13,6 +13,7 @@ package org.locationtech.jts.algorithm;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateSequence;
+import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Location;
 
 /**
@@ -24,6 +25,25 @@ import org.locationtech.jts.geom.Location;
  */
 public class PointLocation {
 
+  /**
+   * Tests whether a point lies on a line segment.
+   * 
+   * @param p the point to test
+   * @param p0 a point of the line segment
+   * @param p1 a point of the line segment
+   * @return true if the point lies on the line segment
+   */
+  public static boolean isOnSegment(Coordinate p, Coordinate p0, Coordinate p1) {
+    //-- test envelope first since it's faster
+    if (! Envelope.intersects(p0, p1, p))
+      return false;
+    //-- handle zero-length segments
+    if (p.equals2D(p0))
+      return true;
+    boolean isOnLine = Orientation.COLLINEAR == Orientation.index(p0, p1, p);
+    return isOnLine;
+  }
+  
   /**
    * Tests whether a point lies on the line defined by a list of
    * coordinates.
