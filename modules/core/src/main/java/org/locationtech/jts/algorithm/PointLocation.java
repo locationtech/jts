@@ -18,7 +18,7 @@ import org.locationtech.jts.geom.Location;
 
 /**
  * Functions for locating points within basic geometric
- * structures such as lines and rings.
+ * structures such as line segments, lines and rings.
  * 
  * @author Martin Davis
  *
@@ -55,12 +55,10 @@ public class PointLocation {
    */
   public static boolean isOnLine(Coordinate p, Coordinate[] line)
   {
-    LineIntersector lineIntersector = new RobustLineIntersector();
     for (int i = 1; i < line.length; i++) {
       Coordinate p0 = line[i - 1];
       Coordinate p1 = line[i];
-      lineIntersector.computeIntersection(p, p0, p1);
-      if (lineIntersector.hasIntersection()) {
+      if (isOnSegment(p, p0, p1)) {
         return true;
       }
     }
@@ -78,15 +76,13 @@ public class PointLocation {
    */
   public static boolean isOnLine(Coordinate p, CoordinateSequence line)
   {
-    LineIntersector lineIntersector = new RobustLineIntersector();
     Coordinate p0 = new Coordinate();
     Coordinate p1 = new Coordinate();
     int n = line.size();
     for (int i = 1; i < n; i++) {
       line.getCoordinate(i-1, p0);
       line.getCoordinate(i, p1);
-      lineIntersector.computeIntersection(p, p0, p1);
-      if (lineIntersector.hasIntersection()) {
+      if (isOnSegment(p, p0, p1)) {
         return true;
       }
     }
