@@ -14,16 +14,15 @@ package org.locationtech.jts.operation.valid;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.locationtech.jts.algorithm.LineIntersector;
 import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.algorithm.PointLocation;
 import org.locationtech.jts.algorithm.PolygonNodeTopology;
-import org.locationtech.jts.algorithm.RobustLineIntersector;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateArrays;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.Location;
+import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.noding.BasicSegmentString;
 import org.locationtech.jts.noding.MCIndexNoder;
@@ -185,10 +184,8 @@ class PolygonTopologyAnalyzer {
    * @return the intersection segment index, or -1 if no intersection is found
    */
   private static int intersectingSegIndex(Coordinate[] ringPts, Coordinate pt) {
-    LineIntersector li = new RobustLineIntersector();
     for (int i = 0; i < ringPts.length - 1; i++) {
-      li.computeIntersection(pt, ringPts[i], ringPts[i + 1]);
-      if (li.hasIntersection()) {
+      if (PointLocation.isOnSegment(pt, ringPts[i], ringPts[i + 1])) {
         //-- check if pt is the start point of the next segment
         if (pt.equals2D(ringPts[i + 1])) {
           return i + 1;
