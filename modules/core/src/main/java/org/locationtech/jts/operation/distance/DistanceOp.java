@@ -158,6 +158,11 @@ public class DistanceOp
   	if (geom[0].isEmpty() || geom[1].isEmpty()) 
   		return 0.0;
   	
+  	//-- optimization for Point/Point case
+  	if (geom[0] instanceof Point && geom[1] instanceof Point) {
+  	  return geom[0].getCoordinate().distance(geom[1].getCoordinate());
+  	}
+  	
     computeMinDistance();
     return minDistance;
   }
