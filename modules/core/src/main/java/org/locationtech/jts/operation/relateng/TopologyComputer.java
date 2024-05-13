@@ -1,0 +1,502 @@
+/*
+ * Copyright (c) 2022 Martin Davis.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
+ * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
+ * and the Eclipse Distribution License is available at
+ *
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ */
+package org.locationtech.jts.operation.relateng;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.locationtech.jts.algorithm.PolygonNodeTopology;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Dimension;
+import org.locationtech.jts.geom.Location;
+import org.locationtech.jts.geom.Position;
+import org.locationtech.jts.util.Assert;
+
+class TopologyComputer {
+
+  private static final String MSG_GEOMETRY_DIMENSION_UNEXPECTED = "Unexpected combination of geometry dimensions";
+
+  private TopologyPredicate predicate;
+  private RelateGeometry geomA;
+  private RelateGeometry geomB;
+  private Map<Coordinate, NodeSections> nodeMap = new HashMap<Coordinate, NodeSections>();
+
+  public TopologyComputer(TopologyPredicate predicate, RelateGeometry geomA, RelateGeometry geomB) {
+    this.predicate = predicate;
+    this.geomA = geomA;
+    this.geomB = geomB;
+    
+    initExteriorDims();
+  }
+
+  /**
+   * Determine partial topology in the EXTERIORs a priori.
+   */
+  private void initExteriorDims() {
+    int dimAEff = geomA.getDimensionEffective();
+    int dimBEff = geomB.getDimensionEffective();
+    
+    /**
+     * For P/L case, P exterior intersects L interior
+     */
+    if (dimAEff == Dimension.P && dimBEff == Dimension.L) {
+      updateDim(Location.EXTERIOR, Location.INTERIOR, Dimension.L);
+    }
+    else if (dimAEff == Dimension.L && dimBEff == Dimension.P) {
+      updateDim(Location.INTERIOR, Location.EXTERIOR, Dimension.L);
+    }
+    /**
+     * For P/A case, the Area Int and Bdy intersect the Point exterior.
+     */
+    else if (dimAEff == Dimension.P && dimBEff == Dimension.A) {
+      updateDim(Location.EXTERIOR, Location.INTERIOR, Dimension.A);
+      updateDim(Location.EXTERIOR, Location.BOUNDARY, Dimension.L);
+    }
+    else if (dimAEff == Dimension.A && dimBEff == Dimension.P) {
+      updateDim(Location.INTERIOR, Location.EXTERIOR, Dimension.A);
+      updateDim(Location.BOUNDARY, Location.EXTERIOR, Dimension.L);
+    }
+    else if (dimAEff == Dimension.L && dimBEff == Dimension.A) {
+      updateDim(Location.EXTERIOR, Location.INTERIOR, Dimension.A);
+     }
+    else if (dimAEff == Dimension.A && dimBEff == Dimension.L) {
+      updateDim(Location.INTERIOR, Location.EXTERIOR, Dimension.A);
+    }
+    //-- cases where one geom is EMPTY
+    else if (dimAEff == Dimension.FALSE || dimBEff == Dimension.FALSE) {
+      if (dimAEff != Dimension.FALSE) {
+        initExteriorEmpty(RelateGeometry.GEOM_A);
+      }
+      if (dimBEff != Dimension.FALSE) {
+        initExteriorEmpty(RelateGeometry.GEOM_B);
+      }
+    }
+  }
+
+  private void initExteriorEmpty(boolean geomNonEmpty) {
+    int dimNonEmpty = getDimension(geomNonEmpty);
+    switch (dimNonEmpty) {
+    case Dimension.P:
+      updateDim(geomNonEmpty, Location.INTERIOR, Location.EXTERIOR, Dimension.P);
+      break;
+    case Dimension.L:
+      if (getGeometry(geomNonEmpty).hasBoundary()) {
+        updateDim(geomNonEmpty, Location.BOUNDARY, Location.EXTERIOR, Dimension.P);
+      }
+      updateDim(geomNonEmpty, Location.INTERIOR, Location.EXTERIOR, Dimension.L);
+      break;
+    case Dimension.A:
+      updateDim(geomNonEmpty, Location.BOUNDARY, Location.EXTERIOR, Dimension.L);
+      updateDim(geomNonEmpty, Location.INTERIOR, Location.EXTERIOR, Dimension.A);
+      break;
+    }
+  }
+  
+  private RelateGeometry getGeometry(boolean isA) {
+    return isA ? geomA : geomB;
+  }
+
+  public int getDimension(boolean isA) {
+    return getGeometry(isA).getDimension();
+  }
+  
+  public boolean isAreaArea() {
+    return getDimension(RelateGeometry.GEOM_A) == Dimension.A 
+        && getDimension(RelateGeometry.GEOM_B) == Dimension.A;
+  }
+  
+  /**
+   * Indicates whether the input geometries require self-noding 
+   * for correct evaluation of specific spatial predicates. 
+   * Self-noding is required for geometries which may self-cross
+   * - i.e. lines, and overlapping polygons in GeometryCollections.
+   * Self-noding is not required for polygonal geometries.
+   * This ensures that the locations of nodes created by 
+   * crossing segments are computed explicitly.
+   * This ensures that node locations match in situations
+   * where a self-crossing and mutual crossing occur at the same logical location.
+   * E.g. a self-crossing line tested against a single segment 
+   * identical to one of the crossed segments.
+   * 
+   * @return true if self-noding is required
+   */
+  public boolean isSelfNodingRequired() {
+    //TODO: change to testing for lines or GC with > 1 polygon
+    if (geomA.isPointsOrPolygons()) return false;
+    if (geomB.isPointsOrPolygons()) return false;
+    return predicate.isSelfNodingRequired();
+  }
+  
+  private void updateDim(int locA, int locB, int dimension) {
+    predicate.updateDimension(locA, locB, dimension);
+  }
+  
+  private void updateDim(boolean isAB, int loc1, int loc2, int dimension) {
+    if (isAB) {
+      updateDim(loc1, loc2, dimension);
+    }
+    else {
+      // is ordered BA
+      updateDim(loc2, loc1, dimension);
+    }
+  }
+  
+  public boolean isResultKnown() {
+    return predicate.isKnown();
+  }
+  
+  public boolean getResult() {
+    return predicate.value();
+  }
+  
+  /**
+   * Finalize the evaluation.
+   */
+  public void finish() {
+    predicate.finish();
+   }
+
+  private NodeSections getNodeSections(Coordinate nodePt) {
+    NodeSections node = nodeMap.get(nodePt);
+    if (node == null) {
+      node = new NodeSections(nodePt);
+      nodeMap.put(nodePt, node);
+    }
+    return node;
+  }
+  
+  public void addIntersection(NodeSection a, NodeSection b) {
+    if (! a.isSameGeometry(b)) {
+      updateABIntersection(a, b);
+    }
+    //TODO: for self-intersections add virtual nodes to geometry components 
+
+    //-- add edges to node to allow full topology update later
+    addNodeSections(a, b);
+  }
+
+  private void addNodeSections(NodeSection ns0, NodeSection ns1) {
+    NodeSections sections = getNodeSections(ns0.nodePt());
+    sections.addNodeSection(ns0);
+    sections.addNodeSection(ns1);
+  }
+  
+  private void updateABIntersection(NodeSection a, NodeSection b) {
+    if (NodeSection.isProper(a, b)) {
+      updateABIntersectionProper(a, b);
+    }
+    else if (NodeSection.isAreaArea(a, b)) {
+      updateAreaAreaCross(a, b);
+    }
+    updateNodeLocation(a.nodePt(), a, b);
+  }
+  
+  private void updateABIntersectionProper(NodeSection a, NodeSection b) {
+    int dimA = a.dimension();
+    int dimB = b.dimension();
+    if (dimA == 2 && dimB == 2) {
+      //- a proper edge intersection is an edge cross. 
+      updateAreaAreaCross(a, b);
+    }
+    else if (dimA == 2 && dimB == 1) {
+      updateAreaLineCross(a, b);
+    }
+    else if (dimA == 1 && dimB == 2) {
+      updateAreaLineCross(b, a);
+    }
+    else if (dimA == 1 && dimB == 1) {
+      //-- nothing to do here - node topology is updated by caller
+    }
+    else {
+      Assert.shouldNeverReachHere(MSG_GEOMETRY_DIMENSION_UNEXPECTED);
+    }
+  }
+
+  private void updateAreaLineCross(NodeSection eArea, NodeSection eLine) {
+    //TODO: does this give any info apart from node? which is checked by caller
+    /**
+     * A proper crossing of a line and and area
+     * provides limited topological information,
+     * since the area edge intersection point
+     * may also be a node of a hole, or of another shell, or both.
+     * Full topology is determined when the node topology is evaluated.
+     */
+    boolean geomLine = eLine.isA();
+    Coordinate nodePt = eArea.nodePt();
+    int locLine = getGeometry(geomLine).locateNode(nodePt, eLine.getPolygonal());
+    int locArea = getGeometry(eArea.isA()).locateNode(nodePt, eArea.getPolygonal());
+    updateDim(eArea.isA(), locArea, locLine, Dimension.P);
+  }
+
+  private void updateAreaAreaCross(NodeSection a, NodeSection b) {
+    boolean isProper = NodeSection.isProper(a, b);
+    /**
+     * A crossing of area edges determines that the interiors intersect.
+     */
+    if (isProper || PolygonNodeTopology.isCrossing(a.nodePt(), 
+        a.getVertex(0), a.getVertex(1), 
+        b.getVertex(0), b.getVertex(1))) {
+      updateDim(Location.INTERIOR, Location.INTERIOR, Dimension.A);
+    }
+  }
+  /**
+   * Adds a basic edge intersection point.
+   * @param pt
+   * @param b 
+   * @param a 
+   */
+  private void updateNodeLocation(Coordinate pt, NodeSection a, NodeSection b) {
+    int locA = geomA.locateNode(pt, a.getPolygonal()); 
+    int locB = geomB.locateNode(pt, b.getPolygonal()); 
+    updateDim(locA, locB, Dimension.P);
+  }
+
+  public void addPointOnPointInterior(Coordinate pt) {
+    updateDim(Location.INTERIOR, Location.INTERIOR, Dimension.P); 
+  }
+  
+  public void addPointOnPointExterior(boolean isGeomA, Coordinate pt) {
+    updateDim(isGeomA, Location.INTERIOR, Location.EXTERIOR, Dimension.P); 
+  }
+  
+  public void addPointOnGeometry(boolean isA, int locTarget, int dimTarget, Coordinate pt) {
+    updateDim(isA, Location.INTERIOR, locTarget, Dimension.P); 
+    switch (dimTarget) {
+    case Dimension.P:
+      return;
+    case Dimension.L:
+      /**
+       * Because zero-length lines are handled, 
+       * a point lying in the exterior of the line target 
+       * may imply either P or L for the Exterior interaction
+       */
+      //TODO: determine if effective dimension of linear target is L?
+      //updateDim(isGeomA, Location.EXTERIOR, locTarget, Dimension.P); 
+      return;
+    case Dimension.A:
+      /**
+       * If a point intersects an area target, then the area interior and boundary
+       * must extend beyond the point and thus interact with its exterior.
+       */
+      updateDim(isA, Location.EXTERIOR, Location.INTERIOR, Dimension.A);      
+      updateDim(isA, Location.EXTERIOR, Location.BOUNDARY, Dimension.L);      
+      return;
+    }
+    throw new IllegalStateException("Unknown target dimension: " + dimTarget);
+  }
+  
+  public void addLineEndOnGeometry(boolean isLineA, int locLineEnd, int locTarget, int dimTarget, Coordinate pt) {
+    switch (dimTarget) {
+    case Dimension.P:
+      addLineEndOnPoint(isLineA, locLineEnd, locTarget, pt);
+      return;
+    case Dimension.L:
+      addLineEndOnLine(isLineA, locLineEnd, locTarget, pt);
+      return;
+    case Dimension.A:
+      addLineEndOnArea(isLineA, locLineEnd, locTarget, pt);      
+      return;
+    }
+    throw new IllegalStateException("Unknown target dimension: " + dimTarget);
+  }
+  
+  private void addLineEndOnPoint(boolean isLineA, int locLineEnd, int locPoint, Coordinate pt) {
+    updateDim(isLineA, locLineEnd, locPoint, Dimension.P);
+  }
+
+  private void addLineEndOnLine(boolean isLineA, int locLineEnd, int locLine, Coordinate pt) {
+    updateDim(isLineA, locLineEnd, locLine, Dimension.P);
+    /**
+     * When a line end is in the exterior, some length of the line interior
+     * must also be in the exterior. 
+     * This works for zero-length lines as well. 
+     */
+    
+    if (locLine == Location.EXTERIOR) {
+      updateDim(isLineA, Location.INTERIOR, Location.EXTERIOR, Dimension.L);      
+    }
+  }
+  
+  private void addLineEndOnArea(boolean isLineA, int locLineEnd, int locArea, Coordinate pt) {
+    if (locArea == Location.BOUNDARY) {
+      updateDim(isLineA, locLineEnd, locArea, Dimension.P);
+    }
+    else {
+      //TODO: handle zero-length lines?
+      updateDim(isLineA, Location.INTERIOR, locArea, Dimension.L);
+      updateDim(isLineA, locLineEnd, locArea, Dimension.P);
+      updateDim(isLineA, Location.EXTERIOR, locArea, Dimension.A);     
+    }
+  }
+
+  /**
+   * Adds topology for an area vertex interaction with a target geometry element.
+   * Assumes the target geometry element has highest dimension
+   * (i.e. if the point lies on two elements of different dimension, 
+   * the location on the higher dimension element is provided.
+   * This is the semantic provided by {@link RelatePointLocator}.
+   * <p>
+   * Note that in a GeometryCollection containing overlapping or adjacent polygons,
+   * the area vertex location may be INTERIOR instead of BOUNDARY.
+   * 
+   * @param isAreaA the input that is the area
+   * @param locArea the location on the area
+   * @param locTarget the location on the target geometry element
+   * @param dimTarget the dimension of the target geometry element
+   * @param pt the point of interaction
+   */
+  public void addAreaVertex(boolean isAreaA, int locArea, int locTarget, int dimTarget, Coordinate pt) {
+    if (locTarget == Location.EXTERIOR) {
+      updateDim(isAreaA, Location.INTERIOR, Location.EXTERIOR, Dimension.A);
+      /**
+       * If area vertex is on Boundary further topology can be deduced
+       * from the neighbourhood around the boundary vertex.
+       * This is always the case for polygonal geometries.
+       * For GCs, the vertex may be either on boundary or in interior
+       * (i.e. of overlapping or adjacent polygons) 
+       */
+      if (locArea == Location.BOUNDARY) {
+        updateDim(isAreaA, Location.BOUNDARY, Location.EXTERIOR, Dimension.L);
+        updateDim(isAreaA, Location.EXTERIOR, Location.EXTERIOR, Dimension.A);
+      }
+      return;
+    }
+    switch (dimTarget) {
+    case Dimension.P:
+      addAreaVertexOnPoint(isAreaA, locArea, pt);
+      return;
+    case Dimension.L:
+      addAreaVertexOnLine(isAreaA, locArea, locTarget, pt);
+      return;
+    case Dimension.A:
+      addAreaVertexOnArea(isAreaA, locArea, locTarget, pt);
+      return;
+    }
+    throw new IllegalStateException("Unknown target dimension: " + dimTarget);
+  }
+  
+  /**
+   * Updates topology for an area vertex (in Interior or on Boundary)
+   * intersecting a point.
+   * Note that because the largest dimension of intersecting target is determined,
+   * the intersecting point is not part of any other target geometry, 
+   * and hence its neighbourhood is in the Exterior of the target.
+   * 
+   * @param isAreaA whether the area is the A input
+   * @param locArea the location of the vertex in the area
+   * @param pt the point at which topology is being updated
+   */
+  private void addAreaVertexOnPoint(boolean isAreaA, int locArea, Coordinate pt) {
+    //-- Assert: locArea != EXTERIOR
+    //-- Assert: locTarget == INTERIOR
+    /**
+     * The vertex location intersects the Point.
+     */
+    updateDim(isAreaA, locArea, Location.INTERIOR, Dimension.P);
+    /**
+     * The area interior intersects the point's exterior neighbourhood.
+     */
+    updateDim(isAreaA, Location.INTERIOR, Location.EXTERIOR, Dimension.A);
+    /**
+     * If the area vertex is on the boundary, 
+     * the area boundary and exterior intersect the point's exterior neighbourhood
+     */
+    if (locArea == Location.BOUNDARY) {
+      updateDim(isAreaA, Location.BOUNDARY, Location.EXTERIOR, Dimension.L);
+      updateDim(isAreaA, Location.EXTERIOR, Location.EXTERIOR, Dimension.A);
+    }
+  }
+
+  private void addAreaVertexOnLine(boolean isAreaA, int locArea, int locTarget, Coordinate pt) {
+    //-- Assert: locArea != EXTERIOR
+    /**
+     * If an area vertex intersects a line, all we know is the 
+     * intersection at that point.  
+     * e.g. the line may or may not be collinear with the area boundary,
+     * and the line may or may not intersect the area interior.
+     * Full topology is determined later by node analysis
+     */
+    updateDim(isAreaA, locArea, locTarget, Dimension.P);
+    if (locArea == Location.INTERIOR) {
+      /**
+       * The area interior intersects the line's exterior neighbourhood.
+       */
+      updateDim(isAreaA, Location.INTERIOR, Location.EXTERIOR, Dimension.A);      
+    }
+  }
+
+  public void addAreaVertexOnArea(boolean isAreaA, int locArea, int locTarget, Coordinate pt) {
+    if (locTarget == Location.BOUNDARY) {
+      if (locArea == Location.BOUNDARY) {
+        //-- B/B topology is fully computed later by node analysis
+        updateDim(isAreaA, Location.BOUNDARY, Location.BOUNDARY, Dimension.P);
+      }
+      else {
+        // locArea == INTERIOR
+        updateDim(isAreaA, Location.INTERIOR, Location.INTERIOR, Dimension.A);
+        updateDim(isAreaA, Location.INTERIOR, Location.BOUNDARY, Dimension.L);
+        updateDim(isAreaA, Location.INTERIOR, Location.EXTERIOR, Dimension.A);
+      }
+    }
+    else {  
+      //-- locTarget is INTERIOR or EXTERIOR` 
+      updateDim(isAreaA, Location.INTERIOR, locTarget, Dimension.A);
+      /**
+       * If area vertex is on Boundary further topology can be deduced
+       * from the neighbourhood around the boundary vertex.
+       * This is always the case for polygonal geometries.
+       * For GCs, the vertex may be either on boundary or in interior
+       * (i.e. of overlapping or adjacent polygons) 
+       */
+      if (locArea == Location.BOUNDARY) {
+        updateDim(isAreaA, Location.BOUNDARY, locTarget, Dimension.L);
+        updateDim(isAreaA, Location.EXTERIOR, locTarget, Dimension.A);
+      }
+    }
+  }
+  
+  public void evaluateNodes() {
+    for (NodeSections nodeSections : nodeMap.values()) {
+      if (nodeSections.hasInteractionAB()) {
+        evaluateNode(nodeSections);
+        if (isResultKnown())
+          return;
+      }
+    }
+  }
+
+  private void evaluateNode(NodeSections nodeSections) {
+    Coordinate p = nodeSections.getCoordinate();
+    RelateNode node = nodeSections.createNode();
+    //-- Node must have edges for geom, but may also be in interior of a overlapping GC
+    boolean isAreaInteriorA = geomA.isNodeInArea(p, nodeSections.getPolygonal(RelateGeometry.GEOM_A));
+    boolean isAreaInteriorB = geomB.isNodeInArea(p, nodeSections.getPolygonal(RelateGeometry.GEOM_B));
+    node.finish(isAreaInteriorA, isAreaInteriorB);
+    evaluateNodeEdges(node);
+  }
+
+  private void evaluateNodeEdges(RelateNode node) {
+    //TODO: collect distinct dim settings by using temporary matrix?
+    for (RelateEdge e : node.getEdges()) {
+      //-- An optimization to avoid updates for cases with a linear geometry
+      if (isAreaArea()) {
+        updateDim(e.location(RelateGeometry.GEOM_A, Position.LEFT), 
+                  e.location(RelateGeometry.GEOM_B, Position.LEFT), Dimension.A);
+        updateDim(e.location(RelateGeometry.GEOM_A, Position.RIGHT), 
+                  e.location(RelateGeometry.GEOM_B, Position.RIGHT), Dimension.A);
+      }
+      updateDim(e.location(RelateGeometry.GEOM_A, Position.ON), 
+                e.location(RelateGeometry.GEOM_B, Position.ON), Dimension.L);
+    }
+  }
+
+}
