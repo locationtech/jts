@@ -68,29 +68,31 @@ class NodeSections {
     RelateNode node = new RelateNode(nodePt);
     int i = 0;
     while (i < sections.size()) {
-      int blockSize = 1;
       NodeSection ns = sections.get(i);
       //-- if there multiple polygon sections incident at node convert them to maximal-ring structure 
       if (ns.isArea() && hasMultiplePolygonSections(sections, i)) {
         List<NodeSection> polySections = collectPolygonSections(sections, i);
         List<NodeSection> nsConvert = PolygonNodeConverter.convert(polySections);
         node.addEdges(nsConvert);
-        blockSize = polySections.size();
+        i += polySections.size();
       }
       else {
         //-- the most common case is a line or a single polygon ring section
         node.addEdges(ns);
+        i += 1;
       }
-      i += blockSize;
     }
     return node;
   }
 
+  /**
+   * Sorts the sections so that:
+   * <ul>
+   * <li>lines are before areas
+   * <li>edges from the same polygon are contiguous
+   * </ul>
+   */
   private void prepareSections() {
-    /**
-     * Sort sections with lines before areas,
-     * and edges for polygons are together.
-     */
     sections.sort(null);
     //TODO: remove duplicate sections
   }
