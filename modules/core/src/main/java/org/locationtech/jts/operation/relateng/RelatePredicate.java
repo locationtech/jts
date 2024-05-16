@@ -248,7 +248,7 @@ public interface RelatePredicate {
    * but is more inclusive (i.e. returns <code>true</code> for more cases).
    * In particular, unlike <code>contains</code> it does not distinguish between
    * points in the boundary and in the interior of geometries.
-   * For most situations, <code>covers</code> should be used in preference to <code>contains</code>.
+   * For most cases, <code>covers</code> should be used in preference to <code>contains</code>.
    * As an added benefit, <code>covers</code> is more amenable to optimization,
    * and hence should be more performant.
    *
@@ -346,16 +346,16 @@ public interface RelatePredicate {
    * <li>The DE-9IM Intersection Matrix for the two geometries matches
    * one of the following patterns:
    *   <ul>
-   *    <li><code>[T*T******]</code> (for P/L, P/A, and L/A situations)
-   *    <li><code>[T*****T**]</code> (for L/P, A/P, and A/L situations)
-   *    <li><code>[0********]</code> (for L/L situations)
+   *    <li><code>[T*T******]</code> (for P/L, P/A, and L/A cases)
+   *    <li><code>[T*****T**]</code> (for L/P, A/P, and A/L cases)
+   *    <li><code>[0********]</code> (for L/L cases)
    *   </ul>
    * </ul>
-   * For the A/A and P/P situations this predicate returns <code>false</code>.
+   * For the A/A and P/P cases this predicate returns <code>false</code>.
    * <p>
-   * The SFS defined this predicate only for P/L, P/A, L/L, and L/A situations.
+   * The SFS defined this predicate only for P/L, P/A, L/L, and L/A cases.
    * To make the relation symmetric
-   * JTS extends the definition to apply to L/P, A/P and A/L situations as well.
+   * JTS extends the definition to apply to L/P, A/P and A/L cases as well.
    *
    * @return the predicate instance
    */
@@ -451,20 +451,17 @@ public interface RelatePredicate {
    * <p>
    * The <code>overlaps</code> predicate has the following equivalent definitions:
    * <ul>
-   * <li>The geometries have some but not all interior points in common.
+   * <li>The geometries have at least one point each not shared by the other
+   *     (or equivalently neither covers the other),
+   *     they have the same dimension,
+   *     and the intersection of the interiors of the two geometries has
+   *     the same dimension as the geometries themselves.
    * <li>The DE-9IM Intersection Matrix for the two geometries matches
-   * one of the following patterns:
-   *   <ul>
-   *    <li><code>[T*T******]</code> (for P/L, P/A, and L/A situations)
-   *    <li><code>[T*****T**]</code> (for L/P, A/P, and A/L situations)
-   *    <li><code>[0********]</code> (for L/L situations)
-   *   </ul>
+   *     <code>[T*T***T**]</code> (for P/P and A/A cases)
+   *     or <code>[1*T***T**]</code> (for L/L cases)
    * </ul>
-   * For the A/A and P/P situations this predicate returns <code>false</code>.
-   * <p>
-   * The SFS defined this predicate only for P/L, P/A, L/L, and L/A situations.
-   * To make the relation symmetric
-   * JTS extends the definition to apply to L/P, A/P and A/L situations as well.
+   * If the geometries are of different dimension this predicate returns <code>false</code>.
+   * This predicate is symmetric.
    *
    * @return the predicate instance
    */
