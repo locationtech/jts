@@ -48,7 +48,7 @@ class RelateGeometry {
   private Geometry geom;
   private boolean isPrepared = false;
   
-  private int dim = Dimension.FALSE;
+  private int geomDim = Dimension.FALSE;
   private List<Coordinate> pts;
   private Set<Coordinate> uniquePoints;
   private BoundaryNodeRule boundaryNodeRule;
@@ -57,6 +57,8 @@ class RelateGeometry {
   private boolean hasPoints;
   private boolean hasLines;
   private boolean hasAreas;
+  private boolean isLineZeroLen;
+  private boolean isGeomEmpty;
 
   public RelateGeometry(Geometry input) {
     this(input, false, BoundaryNodeRule.OGC_SFS_BOUNDARY_RULE);
@@ -70,27 +72,30 @@ class RelateGeometry {
     this.geom = input;
     this.isPrepared = isPrepared;
     this.boundaryNodeRule = bnRule;
-    dim = input.getDimension();
+    //-- cache geometry metadata
+    isGeomEmpty = geom.isEmpty();
+    isLineZeroLen = isZeroLength(geom);
+    geomDim = input.getDimension();
     analyzeDimensions();
   }
   
   private void analyzeDimensions() {
-    if (geom.isEmpty()) {
+    if (isGeomEmpty) {
       return;
     }
     if (geom instanceof Point || geom instanceof MultiPoint) {
       hasPoints = true;
-      dim = Dimension.P;
+      geomDim = Dimension.P;
       return;
     }
     if (geom instanceof LineString || geom instanceof MultiLineString) {
       hasLines = true;
-      dim = Dimension.L;
+      geomDim = Dimension.L;
       return;
     }
     if (geom instanceof Polygon || geom instanceof MultiPolygon) {
       hasAreas = true;
-      dim = Dimension.A;
+      geomDim = Dimension.A;
       return;
     }
     //-- analyze a (possibly mixed type) collection
@@ -101,18 +106,47 @@ class RelateGeometry {
         continue;
       if (elem instanceof Point) {
         hasPoints = true;
-        if (dim < Dimension.P) dim = Dimension.P;
+        if (geomDim < Dimension.P) geomDim = Dimension.P;
       }
       if (elem instanceof LineString) {
         hasLines = true;
-        if (dim < Dimension.L) dim = Dimension.L;
+        if (geomDim < Dimension.L) geomDim = Dimension.L;
       }
       if (elem instanceof Polygon) {
         hasAreas = true;
-        if (dim < Dimension.A) dim = Dimension.A;
-     }
+        if (geomDim < Dimension.A) geomDim = Dimension.A;
+      }
     }
   }
+  
+  /**
+   * Tests if geometry linear elements are zero-length.
+   * The test is optimized to 
+   * avoid computing length in the common case, since that is expensive.
+   * 
+   * @param geom
+   * @return
+   */
+  private boolean isZeroLength(Geometry geom) {
+    Iterator geomi = new GeometryCollectionIterator(geom);
+    while (geomi.hasNext()) {
+      Geometry elem = (Geometry) geomi.next();
+      if (elem instanceof LineString) {
+        LineString line = (LineString) elem;
+        if (line.getNumPoints() >= 2) {
+          Coordinate p0 = line.getCoordinateN(0);
+          Coordinate p1 = line.getCoordinateN(1);
+          //-- the usual non-zero-length case will have first two points non-equal
+          if (! p0.equals2D(p1) 
+              || line.getLength() > 0) {
+            return false;
+          }
+        }
+      }
+    }
+    return true;
+  }
+
   
   public Geometry getGeometry() {
     return geom;
@@ -127,7 +161,7 @@ class RelateGeometry {
   }
   
   public int getDimension() {
-    return dim;
+    return geomDim;
   }
 
   public boolean hasDimension(int dim) {
@@ -140,8 +174,8 @@ class RelateGeometry {
   }
   
   public int getDimensionEffective() {
-    if (geom.isEmpty()) return Dimension.FALSE;
-    if (getDimension() == 1 && geom.getLength() == 0)
+    if (isGeomEmpty) return Dimension.FALSE;
+    if (getDimension() == 1 && isLineZeroLen)
       return Dimension.P;
     if (hasAreas) return Dimension.A;
     if (hasLines) return Dimension.L;
@@ -150,11 +184,6 @@ class RelateGeometry {
 
   public boolean hasEdges() {
     return hasLines || hasAreas;
-  }
-  
-  public boolean isZeroLength() {
-    //TODO: evaluate component-wise and short-circuit
-    return geom.getLength() <= 0;
   }
   
   private RelatePointLocator getLocator() {
@@ -219,7 +248,7 @@ class RelateGeometry {
   }
   
   public boolean isEmpty() {
-    return geom.isEmpty();
+    return isGeomEmpty;
   }
 
   public boolean hasBoundary() {
@@ -235,18 +264,11 @@ class RelateGeometry {
   } 
   
   private Set<Coordinate> createUniquePoints() {
-    //TODO: make more efficient (ie by scanning geometry?)
-    List<Coordinate> pts = getCoordinates();
+    //-- only called on P geometries
+    List<Coordinate> pts = ComponentCoordinateExtracter.getCoordinates(geom);
     Set<Coordinate> set = new HashSet<Coordinate>();
     set.addAll(pts);
     return set;
-  }
-
-  public List<Coordinate> getCoordinates() {
-    if (pts == null) {
-      pts = ComponentCoordinateExtracter.getCoordinates(geom);
-    }
-    return pts;
   }
   
   public List<Point> getEffectivePoints() {
