@@ -49,7 +49,6 @@ class RelateGeometry {
   private boolean isPrepared = false;
   
   private int geomDim = Dimension.FALSE;
-  private List<Coordinate> pts;
   private Set<Coordinate> uniquePoints;
   private BoundaryNodeRule boundaryNodeRule;
   private RelatePointLocator locator;
@@ -120,28 +119,32 @@ class RelateGeometry {
   }
   
   /**
-   * Tests if geometry linear elements are zero-length.
-   * The test is optimized to 
-   * avoid computing length in the common case, since that is expensive.
+   * Tests if all geometry linear elements are zero-length.
+   * For efficiency the test avoids computing actual length.
    * 
    * @param geom
    * @return
    */
-  private boolean isZeroLength(Geometry geom) {
+  private static boolean isZeroLength(Geometry geom) {
     Iterator geomi = new GeometryCollectionIterator(geom);
     while (geomi.hasNext()) {
       Geometry elem = (Geometry) geomi.next();
       if (elem instanceof LineString) {
-        LineString line = (LineString) elem;
-        if (line.getNumPoints() >= 2) {
-          Coordinate p0 = line.getCoordinateN(0);
-          Coordinate p1 = line.getCoordinateN(1);
-          //-- the usual non-zero-length case will have first two points non-equal
-          if (! p0.equals2D(p1) 
-              || line.getLength() > 0) {
-            return false;
-          }
-        }
+        if (! isZeroLength((LineString) elem))
+          return false;
+      }
+    }
+    return true;
+  }
+
+  private static boolean isZeroLength(LineString line) {
+    if (line.getNumPoints() >= 2) {
+      Coordinate p0 = line.getCoordinateN(0);
+      for (int i = 0 ; i < line.getNumPoints(); i++) {
+        Coordinate pi = line.getCoordinateN(1);
+        //-- most non-zero-len lines will trigger this right away 
+        if (! p0.equals2D(pi)) 
+          return false;
       }
     }
     return true;
@@ -173,7 +176,7 @@ class RelateGeometry {
     return false;
   }
   
-  public int getDimensionEffective() {
+  public int getDimensionReal() {
     if (isGeomEmpty) return Dimension.FALSE;
     if (getDimension() == 1 && isLineZeroLen)
       return Dimension.P;
@@ -274,7 +277,7 @@ class RelateGeometry {
   public List<Point> getEffectivePoints() {
     List<Point> ptListAll = PointExtracter.getPoints(geom);
     
-    if (getDimensionEffective() <= Dimension.P)
+    if (getDimensionReal() <= Dimension.P)
       return ptListAll;
     
     //-- only return Points not covered by another element

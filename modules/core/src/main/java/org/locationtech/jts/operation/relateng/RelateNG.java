@@ -227,8 +227,8 @@ public class RelateNG
       //TODO: what if predicate is disjoint?  Perhaps use result on disjoint envs?
       return finishValue(predicate);
     }
-    int dimA = geomA.getDimensionEffective();
-    int dimB = geomB.getDimensionEffective();
+    int dimA = geomA.getDimensionReal();
+    int dimB = geomB.getDimensionReal();
     
     //-- check if predicate is determined by dimension or envelope
     predicate.init(dimA, dimB);
@@ -307,19 +307,19 @@ public class RelateNG
     }
   }  
 
-  private void computeAtPoints(RelateGeometry geomSrc, boolean isA, 
+  private void computeAtPoints(RelateGeometry geom, boolean isA, 
       RelateGeometry geomTarget, TopologyComputer topoComputer) {
     
     boolean isResultKnown = false;
-    isResultKnown = computePoints(geomSrc, isA, geomTarget, topoComputer);
+    isResultKnown = computePoints(geom, isA, geomTarget, topoComputer);
     if (isResultKnown) 
       return;
     
-    isResultKnown = computeLineEnds(geomSrc, isA, geomTarget, topoComputer);
+    isResultKnown = computeLineEnds(geom, isA, geomTarget, topoComputer);
     if (isResultKnown) 
       return;
     
-    computeAreaVertices(geomSrc, isA, geomTarget, topoComputer);
+    computeAreaVertex(geom, isA, geomTarget, topoComputer);
   }
   
   private boolean computePoints(RelateGeometry geom, boolean isA, RelateGeometry geomTarget,
@@ -364,7 +364,7 @@ public class RelateNG
         continue;
       
       if (elem instanceof LineString) {
-        //-- once an intersection with target exterior is recorded, skip further known exterior points
+        //-- once an intersection with target exterior is recorded, skip further known-exterior points
         if (hasExteriorIntersection 
             && elem.getEnvelopeInternal().disjoint(geomTarget.getEnvelope()))
           continue;
@@ -400,7 +400,7 @@ public class RelateNG
     return locTarget == Location.EXTERIOR;
   }
 
-  private boolean computeAreaVertices(RelateGeometry geom, boolean isA, RelateGeometry geomTarget, TopologyComputer topoComputer) {
+  private boolean computeAreaVertex(RelateGeometry geom, boolean isA, RelateGeometry geomTarget, TopologyComputer topoComputer) {
     if (! geom.hasDimension(Dimension.A)) {
       return false;
     }
@@ -416,7 +416,7 @@ public class RelateNG
         continue;
       
       if (elem instanceof Polygon) {
-        //-- once an intersection with target exterior is recorded, skip further known exterior points
+        //-- once an intersection with target exterior is recorded, skip further known-exterior points
         if (hasExteriorIntersection 
             && elem.getEnvelopeInternal().disjoint(geomTarget.getEnvelope()))
           continue;

@@ -39,44 +39,44 @@ class TopologyComputer {
   }
 
   /**
-   * Determine partial topology in the EXTERIORs a priori.
+   * Determine a priori partial EXTERIOR topology based on dimensions.
    */
   private void initExteriorDims() {
-    int dimAEff = geomA.getDimensionEffective();
-    int dimBEff = geomB.getDimensionEffective();
+    int dimRealA = geomA.getDimensionReal();
+    int dimRealB = geomB.getDimensionReal();
     
     /**
      * For P/L case, P exterior intersects L interior
      */
-    if (dimAEff == Dimension.P && dimBEff == Dimension.L) {
+    if (dimRealA == Dimension.P && dimRealB == Dimension.L) {
       updateDim(Location.EXTERIOR, Location.INTERIOR, Dimension.L);
     }
-    else if (dimAEff == Dimension.L && dimBEff == Dimension.P) {
+    else if (dimRealA == Dimension.L && dimRealB == Dimension.P) {
       updateDim(Location.INTERIOR, Location.EXTERIOR, Dimension.L);
     }
     /**
      * For P/A case, the Area Int and Bdy intersect the Point exterior.
      */
-    else if (dimAEff == Dimension.P && dimBEff == Dimension.A) {
+    else if (dimRealA == Dimension.P && dimRealB == Dimension.A) {
       updateDim(Location.EXTERIOR, Location.INTERIOR, Dimension.A);
       updateDim(Location.EXTERIOR, Location.BOUNDARY, Dimension.L);
     }
-    else if (dimAEff == Dimension.A && dimBEff == Dimension.P) {
+    else if (dimRealA == Dimension.A && dimRealB == Dimension.P) {
       updateDim(Location.INTERIOR, Location.EXTERIOR, Dimension.A);
       updateDim(Location.BOUNDARY, Location.EXTERIOR, Dimension.L);
     }
-    else if (dimAEff == Dimension.L && dimBEff == Dimension.A) {
+    else if (dimRealA == Dimension.L && dimRealB == Dimension.A) {
       updateDim(Location.EXTERIOR, Location.INTERIOR, Dimension.A);
      }
-    else if (dimAEff == Dimension.A && dimBEff == Dimension.L) {
+    else if (dimRealA == Dimension.A && dimRealB == Dimension.L) {
       updateDim(Location.INTERIOR, Location.EXTERIOR, Dimension.A);
     }
     //-- cases where one geom is EMPTY
-    else if (dimAEff == Dimension.FALSE || dimBEff == Dimension.FALSE) {
-      if (dimAEff != Dimension.FALSE) {
+    else if (dimRealA == Dimension.FALSE || dimRealB == Dimension.FALSE) {
+      if (dimRealA != Dimension.FALSE) {
         initExteriorEmpty(RelateGeometry.GEOM_A);
       }
-      if (dimBEff != Dimension.FALSE) {
+      if (dimRealB != Dimension.FALSE) {
         initExteriorEmpty(RelateGeometry.GEOM_B);
       }
     }
