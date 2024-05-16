@@ -38,6 +38,15 @@ public class SelectionNGFunctions
     });
   }
   
+  public static Geometry contains(Geometry a, final Geometry mask)
+  {
+    return SelectionFunctions.select(a, new GeometryPredicate() {
+      public boolean isTrue(Geometry g) {
+        return RelateNG.relate(mask, g, RelatePredicate.contains());
+      }
+    });
+  }
+  
   public static Geometry covers(Geometry a, final Geometry mask)
   {
     return SelectionFunctions.select(a, new GeometryPredicate() {
