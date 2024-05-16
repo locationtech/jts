@@ -14,6 +14,8 @@ package org.locationtech.jtstest.function;
 import org.locationtech.jts.algorithm.BoundaryNodeRule;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.operation.relate.RelateOp;
+import org.locationtech.jts.operation.relateng.IntersectionMatrixPattern;
+import org.locationtech.jts.operation.relateng.RelateNG;
 
 /**
  * Implementations for spatial predicate functions.
@@ -34,11 +36,23 @@ public class SpatialPredicateFunctions {
   public static boolean overlaps(Geometry a, Geometry b) {    return a.overlaps(b);    }
   public static boolean touches(Geometry a, Geometry b) {    return a.touches(b);    }
   
-  public static boolean interiorIntersects(Geometry a, Geometry b) { return a.relate(b, "T********");    }
-  public static boolean adjacentTo(Geometry a, Geometry b) { return a.relate(b, "F***T****");    }
-
-  public static String relate(Geometry a, Geometry b) {
+  public static boolean interiorIntersects(Geometry a, Geometry b) { 
+    return a.relate(b, IntersectionMatrixPattern.INTERIOR_INTERSECTS);
+  }
+  
+  public static boolean adjacent(Geometry a, Geometry b) { 
+    return a.relate(b, IntersectionMatrixPattern.ADJACENT);
+  }
+  
+  public static boolean containsProperly(Geometry a, Geometry b) {    
+    return a.relate(b, IntersectionMatrixPattern.CONTAINS_PROPERLY);
+  }
+  
+  public static String relateMatrix(Geometry a, Geometry b) {
     return a.relate(b).toString();
+  }
+  public static boolean relate(Geometry a, Geometry b, String mask) {
+    return a.relate(b, mask);
   }
   public static String relateEndpoint(Geometry a, Geometry b) {
     return RelateOp.relate(a, b, BoundaryNodeRule.ENDPOINT_BOUNDARY_RULE).toString();

@@ -162,6 +162,7 @@ public class PolygonNodeTopology
   /**
    * Compares the angles of two vectors 
    * relative to the positive X-axis at their origin.
+   * Angles increase CCW from the X-axis.
    * 
    * @param origin the origin of the vectors
    * @param p the endpoint of the vector P

@@ -1,0 +1,537 @@
+<run>
+
+<case>
+  <desc>GC:L/GC:PL - a line with the same line in a collection with an empty polygon</desc>
+  <a>
+    LINESTRING(0 0, 1 1)
+  </a>
+  <b>
+    GEOMETRYCOLLECTION(POLYGON EMPTY, LINESTRING(0 0, 1 1))
+  </b>
+  <test><op name="relate" arg3="1FFF0FFF2" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> true </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> true </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> true </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> true </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> true </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> true </op></test>
+</case>
+
+<case>
+  <desc>A/GC:mP</desc>
+  <a>
+    POLYGON((-60 -50,-70 -50,-60 -40,-60 -50))
+  </a>
+  <b>
+    GEOMETRYCOLLECTION(MULTIPOINT((-60 -50),(-63 -49)))
+  </b>
+  <test><op name="relate" arg3="0F20F1FF2" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> true </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> false </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> true </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> false </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> true </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> false </op></test>
+</case>
+
+<case>
+  <desc>mA/GC:PL</desc>
+  <a>
+    MULTIPOLYGON (((0 0, 3 0, 3 3, 0 3, 0 0)))
+  </a>
+  <b>
+    GEOMETRYCOLLECTION ( LINESTRING (1 2, 1 1), POINT (0 0))
+  </b>
+  <test><op name="relate" arg3="1020F1FF2" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> true </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> false </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> true </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> false </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> true </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> false </op></test>
+</case>
+
+<case>
+  <desc>GC:PL/mA</desc>
+  <a>
+    GEOMETRYCOLLECTION (POINT (7 1), LINESTRING (6 5, 6 4))
+  </a>
+  <b>
+    POLYGON ((7 1, 1 3, 3 9, 7 1))
+  </b>
+  <test><op name="relate" arg3="F01FF0212" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> false </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> false </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> false </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> true </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> true </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> false </op></test>
+</case>
+
+<case>
+  <desc>P/GC:PL - point on boundary of GC with line and point</desc>
+  <a>
+    POINT(0 0)
+  </a>
+  <b>
+    GEOMETRYCOLLECTION(POINT(0 0), LINESTRING(0 0, 1 0))
+  </b>
+  <test><op name="relate" arg3="F0FFFF102" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> true </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> false </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> false </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> true </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> true </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> false </op></test>
+</case>
+
+
+<case>
+  <desc>L/GC:A - line in interior of GC of overlapping polygons</desc>
+  <a>
+    LINESTRING (3 7, 7 3)
+  </a>
+  <b>
+    GEOMETRYCOLLECTION (POLYGON ((1 9, 7 9, 7 3, 1 3, 1 9)), POLYGON ((9 1, 3 1, 3 7, 9 7, 9 1)))
+  </b>
+  <test><op name="relate" arg3="1FF0FF212" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> true </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> false </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> false </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> true </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> true </op></test>
+</case>
+
+<case>
+  <desc>P/GC:A - point on common boundaries of 2 adjacent polygons</desc>
+  <a>
+    POINT (4 3)
+  </a>
+  <b>
+    GEOMETRYCOLLECTION (POLYGON ((1 1, 1 6, 4 6, 4 1, 1 1)), POLYGON ((9 1, 4 1, 4 6, 9 6, 9 1)))
+  </b>
+  <test><op name="relate" arg3="0FFFFF212" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> true </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> false </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> false </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> true </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> true </op></test>
+</case>
+
+<case>
+  <desc>P/GC:A - point on common node of 3 adjacent polygons</desc>
+  <a>
+    POINT (5 4)
+  </a>
+  <b>
+    GEOMETRYCOLLECTION (POLYGON ((1 6, 5 4, 4 1, 1 6)), POLYGON ((4 1, 5 4, 9 6, 4 1)), POLYGON ((1 6, 9 6, 5 4, 1 6)))
+  </b>
+  <test><op name="relate" arg3="0FFFFF212" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> true </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> false </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> false </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> true </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> true </op></test>
+</case>
+
+<case>
+  <desc>P/GC:A - point on common node of 6 adjacent polygons, with holes at node</desc>
+  <a>
+    POINT (6 6)
+  </a>
+  <b>
+GEOMETRYCOLLECTION (POLYGON ((1 9, 5 9, 6 6, 1 5, 1 9), (2 6, 4 8, 6 6, 2 6)), POLYGON ((2 6, 4 8, 6 6, 2 6)), POLYGON ((9 9, 9 5, 6 6, 5 9, 9 9)), POLYGON ((9 1, 5 1, 6 6, 9 5, 9 1), (7 2, 6 6, 8 3, 7 2)), POLYGON ((7 2, 6 6, 8 3, 7 2)), POLYGON ((1 1, 1 5, 6 6, 5 1, 1 1)))
+  </b>
+  <test><op name="relate" arg3="0FFFFF212" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> true </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> false </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> false </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> true </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> true </op></test>
+</case>
+
+<case>
+  <desc>P/GC:A - point on common node of 5 adjacent polygons, with holes at node and one not filled</desc>
+  <a>
+    POINT (6 6)
+  </a>
+  <b>
+GEOMETRYCOLLECTION (POLYGON ((1 9, 5 9, 6 6, 1 5, 1 9), (2 6, 4 8, 6 6, 2 6)), POLYGON ((2 6, 4 8, 6 6, 2 6)), POLYGON ((9 9, 9 5, 6 6, 5 9, 9 9)), POLYGON ((9 1, 5 1, 6 6, 9 5, 9 1), (7 2, 6 6, 8 3, 7 2)), POLYGON ((1 1, 1 5, 6 6, 5 1, 1 1)))
+  </b>
+  <test><op name="relate" arg3="F0FFFF212" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> true </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> false </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> false </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> true </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> true </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> false </op></test>
+</case>
+
+<case>
+  <desc>L/GC:A - line on common boundaries of adjacent polygons</desc>
+  <a>
+    LINESTRING (4 5, 4 2)
+  </a>
+  <b>
+    GEOMETRYCOLLECTION (POLYGON ((1 1, 1 6, 4 6, 4 1, 1 1)), POLYGON ((9 1, 4 1, 4 6, 9 6, 9 1)))
+  </b>
+  <test><op name="relate" arg3="1FF0FF212" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> true </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> false </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> false </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> true </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> true </op></test>
+</case>
+
+<case>
+  <desc>L/GC:A - line on exterior boundaries of GC of overlapping polygons</desc>
+  <a>
+    LINESTRING (2 6, 8 6)
+  </a>
+  <b>
+    GEOMETRYCOLLECTION (POLYGON ((1 1, 1 6, 6 6, 6 1, 1 1)), POLYGON ((9 1, 4 1, 4 6, 9 6, 9 1)))
+  </b>
+  <test><op name="relate" arg3="F1FF0F212" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> true </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> false </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> false </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> true </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> true </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> false </op></test>
+</case>
+
+<case>
+  <desc>GC:L/GC:A - lines covers boundaries of overlapping polygons</desc>
+  <a>
+    GEOMETRYCOLLECTION (LINESTRING (2 6, 9 6, 9 1, 7 1), LINESTRING (8 1, 1 1, 1 6, 7 6))
+  </a>
+  <b>
+    GEOMETRYCOLLECTION (POLYGON ((1 1, 1 6, 6 6, 6 1, 1 1)), POLYGON ((9 1, 4 1, 4 6, 9 6, 9 1)))
+  </b>
+  <test><op name="relate" arg3="F1FF0F2F2" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> true </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> false </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> false </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> true </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> true </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> false </op></test>
+</case>
+
+<case>
+  <desc>GC:A/GC:A - adjacent polygons contained by adjacent polygons</desc>
+  <a>
+    GEOMETRYCOLLECTION (POLYGON ((2 2, 2 5, 4 5, 4 2, 2 2)), POLYGON ((8 2, 4 3, 4 4, 8 5, 8 2)))
+  </a>
+  <b>
+    GEOMETRYCOLLECTION (POLYGON ((1 1, 1 6, 4 6, 4 1, 1 1)), POLYGON ((9 1, 4 1, 4 6, 9 6, 9 1)))
+  </b>
+  <test><op name="relate" arg3="2FF1FF212" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> true </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> false </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> false </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> true </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> true </op></test>
+</case>
+
+<case>
+  <desc>GC:A/P - adjacent polygons contain point at interior node</desc>
+  <a>
+    GEOMETRYCOLLECTION (POLYGON ((5 5, 2 9, 9 9, 9 5, 5 5)), POLYGON ((3 1, 5 5, 9 5, 9 1, 3 1)), POLYGON ((1 9, 2 9, 5 5, 3 1, 1 1, 1 9)))
+  </a>
+  <b>
+    POINT (5 5)
+  </b>
+  <test><op name="relate" arg3="0F2FF1FF2" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> true </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> false </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> true </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> false </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> true </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> false </op></test>
+</case>
+
+<case>
+  <desc>GC:A/P - adjacent polygons contain point on interior edge</desc>
+  <a>
+    GEOMETRYCOLLECTION (POLYGON ((5 5, 2 9, 9 9, 9 5, 5 5)), POLYGON ((3 1, 5 5, 9 5, 9 1, 3 1)), POLYGON ((1 9, 2 9, 5 5, 3 1, 1 1, 1 9)))
+  </a>
+  <b>
+    POINT (7 5)
+  </b>
+  <test><op name="relate" arg3="0F2FF1FF2" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> true </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> false </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> true </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> false </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> true </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> false </op></test>
+</case>
+
+<case>
+  <desc>GC:A/P - adjacent polygons cover point on exterior node</desc>
+  <a>
+    GEOMETRYCOLLECTION (POLYGON ((5 5, 2 9, 9 9, 9 5, 5 5)), POLYGON ((3 1, 5 5, 9 5, 9 1, 3 1)), POLYGON ((1 9, 2 9, 5 5, 3 1, 1 1, 1 9)))
+  </a>
+  <b>
+    POINT (9 5)
+  </b>
+  <test><op name="relate" arg3="FF20F1FF2" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> false </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> true </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> false </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> true </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> true </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> false </op></test>
+</case>
+
+<case>
+  <desc>GC:A/L - adjacent polygons contain line touching interior node</desc>
+  <a>
+    GEOMETRYCOLLECTION (POLYGON ((5 5, 2 9, 9 9, 9 5, 5 5)), POLYGON ((3 1, 5 5, 9 5, 9 1, 3 1)), POLYGON ((1 9, 2 9, 5 5, 3 1, 1 1, 1 9)))
+  </a>
+  <b>
+    LINESTRING (5 5, 7 7)
+  </b>
+  <test><op name="relate" arg3="102FF1FF2" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> true </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> false </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> true </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> false </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> true </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> false </op></test>
+</case>
+
+<case>
+  <desc>GC:A/L - adjacent polygons contain line along interior edge to boundary</desc>
+  <a>
+    GEOMETRYCOLLECTION (POLYGON ((5 5, 2 9, 9 9, 9 5, 5 5)), POLYGON ((3 1, 5 5, 9 5, 9 1, 3 1)), POLYGON ((1 9, 2 9, 5 5, 3 1, 1 1, 1 9)))
+  </a>
+  <b>
+    LINESTRING (5 5, 9 5)
+  </b>
+  <test><op name="relate" arg3="102F01FF2" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> true </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> false </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> true </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> false </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> true </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> false </op></test>
+</case>
+
+<case>
+  <desc>GC:A/GC:PL - adjacent polygons contain line and point</desc>
+  <a>
+    GEOMETRYCOLLECTION (POLYGON ((5 5, 2 9, 9 9, 9 5, 5 5)), POLYGON ((3 1, 5 5, 9 5, 9 1, 3 1)), POLYGON ((1 9, 2 9, 5 5, 3 1, 1 1, 1 9)))
+  </a>
+  <b>
+    GEOMETRYCOLLECTION (POINT (5 5), LINESTRING (5 7, 7 7))
+  </b>
+  <test><op name="relate" arg3="102FF1FF2" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> true </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> false </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> true </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> false </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> true </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> false </op></test>
+</case>
+
+<case>
+  <desc>GC:A/A - adjacent polygons containing polygon with endpoint inside</desc>
+  <a>
+    GEOMETRYCOLLECTION (POLYGON ((5 5, 2 9, 9 9, 9 5, 5 5)), POLYGON ((3 1, 5 5, 9 5, 9 1, 3 1)), POLYGON ((1 9, 2 9, 5 5, 3 1, 1 1, 1 9)))
+  </a>
+  <b>
+    POLYGON ((3 7, 7 7, 7 3, 3 3, 3 7))
+  </b>
+  <test><op name="relate" arg3="212FF1FF2" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> true </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> false </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> true </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> false </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> true </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> false </op></test>
+</case>
+
+<case>
+  <desc>GC:A/A - adjacent polygons overlapping polygon with shell outside and hole inside</desc>
+  <a>
+    GEOMETRYCOLLECTION (POLYGON ((5 5, 2 9, 9 9, 9 5, 5 5)), POLYGON ((3 1, 5 5, 9 5, 9 1, 3 1)), POLYGON ((1 9, 2 9, 5 5, 3 1, 1 1, 1 9)))
+  </a>
+  <b>
+    POLYGON ((0 10, 10 10, 10 0, 0 0, 0 10), (2 8, 8 8, 8 2, 2 2, 2 8))
+  </b>
+  <test><op name="relate" arg3="2121FF212" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> false </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> false </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> false </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> true </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> true </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> false </op></test>
+</case>
+
+<case>
+  <desc>GC:A/GC:A - overlapping polygons equal to overlapping polygons</desc>
+  <a>
+    GEOMETRYCOLLECTION (POLYGON ((1 6, 9 6, 9 2, 1 2, 1 6)), POLYGON ((9 1, 1 1, 1 5, 9 5, 9 1)))
+  </a>
+  <b>
+    GEOMETRYCOLLECTION (POLYGON ((1 1, 1 6, 6 6, 6 1, 1 1)), POLYGON ((9 1, 4 1, 4 6, 9 6, 9 1)))
+  </b>
+  <test><op name="relate" arg3="2FFF1FFF2" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> true </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> true </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> true </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> true </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> true </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> true </op></test>
+</case>
+
+<case>
+  <desc>GC:A/GC:A - overlapping polygons contained by overlapping polygons</desc>
+  <a>
+    GEOMETRYCOLLECTION (POLYGON ((4 4, 6 4, 6 3, 4 3, 4 4)), POLYGON ((2 5, 8 5, 8 2, 2 2, 2 5)))
+  </a>
+  <b>
+    GEOMETRYCOLLECTION (POLYGON ((1 1, 1 6, 6 6, 6 1, 1 1)), POLYGON ((9 1, 4 1, 4 6, 9 6, 9 1)))
+  </b>
+  <test><op name="relate" arg3="2FF1FF212" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> true </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> false </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> false </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> true </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> true </op></test>
+</case>
+
+
+<case>
+  <desc>A/GC:A - polygon equal to nested overlapping polygons</desc>
+  <a>
+    POLYGON ((1 9, 9 9, 9 1, 1 1, 1 9))
+  </a>
+  <b>
+    GEOMETRYCOLLECTION (
+      POLYGON ((1 1, 1 5, 5 5, 5 1, 1 1)), 
+      GEOMETRYCOLLECTION( 
+          POLYGON ((1 5, 5 9, 9 9, 9 5, 5 1, 1 5)),
+          MULTIPOLYGON (((1 9, 5 9, 5 5, 1 5, 1 9)), ((9 1, 5 1, 5 5, 9 5, 9 1)))
+      )
+    )
+  </b>
+  <test><op name="relate" arg3="2FFF1FFF2" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> true </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> true </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> true </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> true </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> true </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> true </op></test>
+</case>
+
+
+</run>
