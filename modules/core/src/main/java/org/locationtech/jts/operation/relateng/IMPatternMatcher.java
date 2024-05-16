@@ -43,6 +43,8 @@ class IMPatternMatcher extends IMPredicate
   
   public String name() { return "IMPattern"; }
   
+  //TODO: implement requiresExteriorCheck by inspecting matrix entries for E
+  
   public void init(Envelope envA, Envelope envB) {
     super.init(dimA, dimB);
     //-- if pattern specifies any non-E/non-E interaction, envelopes must not be disjoint

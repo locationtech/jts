@@ -133,7 +133,11 @@ class TopologyComputer {
     //TODO: change to testing for lines or GC with > 1 polygon
     if (geomA.isPointsOrPolygons()) return false;
     if (geomB.isPointsOrPolygons()) return false;
-    return predicate.isSelfNodingRequired();
+    return predicate.requiresSelfNoding();
+  }
+  
+  public boolean isExteriorCheckRequired(boolean isA) {
+    return predicate.requiresExteriorCheck(isA);
   }
   
   private void updateDim(int locA, int locB, int dimension) {

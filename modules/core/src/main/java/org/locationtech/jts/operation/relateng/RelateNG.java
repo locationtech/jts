@@ -315,6 +315,18 @@ public class RelateNG
     if (isResultKnown) 
       return;
     
+    /**
+     * Performance optimization: only check points against target
+     * if it has areas OR if the predicate requires checking for 
+     * exterior interaction.
+     * In particular, this avoids testing line ends against lines 
+     * for the intersects predicate. 
+     */
+    boolean checkDisjointPoints = geomTarget.hasDimension(Dimension.A) 
+        || topoComputer.isExteriorCheckRequired(isA);
+    if (! checkDisjointPoints)
+      return;
+    
     isResultKnown = computeLineEnds(geom, isA, geomTarget, topoComputer);
     if (isResultKnown) 
       return;

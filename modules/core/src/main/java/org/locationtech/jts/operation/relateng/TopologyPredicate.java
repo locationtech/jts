@@ -30,7 +30,7 @@ public interface TopologyPredicate {
   String name();
   
   /**
-   * Tests whether this predicate requires self-noding for
+   * Reports whether this predicate requires self-noding for
    * geometries which contain crossing edges
    * (for example, {@link LineString}s, or {@line GeometryCollection}s
    * containing lines or polygons which may self-intersect).
@@ -45,10 +45,22 @@ public interface TopologyPredicate {
    * 
    * @return true if self-noding is required.
    */
-  default boolean isSelfNodingRequired() {
+  default boolean requiresSelfNoding() {
     return true;
   }
 
+  /**
+   * Reports whether this predicate requires checking if the source input intersects
+   * the Exterior of the target input.
+   * This allows some performance optimizations if not required.
+   *  
+   * @param isSourceA
+   * @return true if the predicate requires checking whether the source intersects the target exterior
+   */
+  default boolean requiresExteriorCheck(boolean isSourceA) {
+    return true;
+  }
+  
   /**
    * Initializes the predicate for a specific geometric case.
    * This may allow the predicate result to become known

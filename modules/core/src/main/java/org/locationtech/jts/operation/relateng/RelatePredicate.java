@@ -52,8 +52,14 @@ public interface RelatePredicate {
       public String name() { return "intersects"; }
   
       @Override
-      public boolean isSelfNodingRequired() {
+      public boolean requiresSelfNoding() {
         //-- self-noding is not required to check for a simple interaction
+        return false;
+      }
+      
+      @Override
+      public boolean requiresExteriorCheck(boolean isSourceA) {
+        //-- intersects only requires testing interaction
         return false;
       }
       
@@ -98,8 +104,14 @@ public interface RelatePredicate {
       public String name() { return "disjoint"; }
       
       @Override
-      public boolean isSelfNodingRequired() {
+      public boolean requiresSelfNoding() {
         //-- self-noding is not required to check for a simple interaction
+        return false;
+      }
+
+      @Override
+      public boolean requiresExteriorCheck(boolean isSourceA) {
+        //-- disjoint only requires testing interaction
         return false;
       }
 
@@ -152,6 +164,12 @@ public interface RelatePredicate {
     public String name() { return "contains"; }
       
     @Override
+    public boolean requiresExteriorCheck(boolean isSourceA) {
+      //-- only need to check B against Exterior of A
+      return isSourceA == RelateGeometry.GEOM_B;
+    }
+    
+    @Override
     public void init(int dimA, int dimB) {
       super.init(dimA, dimB);
       require( isDimsCompatibleWithCovers(dimA, dimB) );
@@ -202,7 +220,13 @@ public interface RelatePredicate {
     return new IMPredicate() {
   
       public String name() { return "within"; }
-        
+      
+      @Override
+      public boolean requiresExteriorCheck(boolean isSourceA) {
+        //-- only need to check A against Exterior of B
+        return isSourceA == RelateGeometry.GEOM_A;
+      }
+       
       @Override
       public void init(int dimA, int dimB) {
         super.init(dimA, dimB);
@@ -262,6 +286,12 @@ public interface RelatePredicate {
       public String name() { return "covers"; }
       
       @Override
+      public boolean requiresExteriorCheck(boolean isSourceA) {
+        //-- only need to check B against Exterior of A
+        return isSourceA == RelateGeometry.GEOM_B;
+      }
+      
+      @Override
       public void init(int dimA, int dimB) {
         super.init(dimA, dimB);
         require( isDimsCompatibleWithCovers(dimA, dimB) );
@@ -313,6 +343,12 @@ public interface RelatePredicate {
   public static TopologyPredicate coveredBy() {
     return new IMPredicate() {
       public String name() { return "coveredBy"; }
+      
+      @Override
+      public boolean requiresExteriorCheck(boolean isSourceA) {
+        //-- only need to check A against Exterior of B
+        return isSourceA == RelateGeometry.GEOM_A;
+      }
       
       @Override
       public void init(int dimA, int dimB) {

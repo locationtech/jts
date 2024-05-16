@@ -184,6 +184,15 @@ public class RelateNGTest extends RelateNGTestCase {
     checkTouches(a, b, true);
   }
   
+  public void testLinesOverlapWithDisjointLine() {
+    String a = "LINESTRING (1 1, 9 9)";
+    String b = "MULTILINESTRING ((2 2, 8 8), (6 2, 8 4))";
+    checkRelate(a, b, "101FF0102");
+    checkIntersectsDisjoint(a, b, true);
+    checkContainsWithin(a, b, false);
+    checkOverlaps(a, b, true);
+  }
+  
   public void testLinesDisjointOverlappingEnvelopes() {
     String a = "LINESTRING (60 0, 20 80, 100 80, 80 120, 40 140)";
     String b = "LINESTRING (60 40, 140 40, 140 160, 0 160)";
