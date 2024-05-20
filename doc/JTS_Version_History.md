@@ -31,6 +31,7 @@ Distributions for older JTS versions can be obtained at the
 * Add `ConcaveHull.alphaShape` function (#952)
 * Add `OffsetCurve` Joined mode (#956)
 * Add `PointLocation.isOnSegment` function (#1048)
+* Addd `RelateNG` API for improved topological relationship functionality and performance (#1052)
 
 ### Functionality Improvements
 * Improve `TopologyPreservingSimplifier` to prevent edge-disjoint line collapse (#925)
@@ -38,7 +39,7 @@ Distributions for older JTS versions can be obtained at the
 * Reduce buffer curve short fillet segments (#960)
 * Added ability to specify boundary for `LargestEmptyCircle` (#973)
 * Improve `DouglaPeuckerSimplifier` and `TopologyPreservingSimplifier` to handle ring endpoints (#1013)
-* Add Angle.sinSnap and .cosSnap to avoid small errors, e.g. with buffer operations (#1016)
+* Add `Angle` functions `sinSnap` and `cosSnap` to avoid small errors, e.g. with buffer operations (#1016)
 * Improve Buffer input simplification for rings (#1022)
 
 ### Bug Fixes
