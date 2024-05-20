@@ -320,7 +320,11 @@ public class RelateNG
      * if it has areas OR if the predicate requires checking for 
      * exterior interaction.
      * In particular, this avoids testing line ends against lines 
-     * for the intersects predicate. 
+     * for the intersects predicate (since these are checked
+     * during segment/segment intersection checking anyway). 
+     * Checking points against areas is necessary, since the input
+     * linework may be entirely disjoint if one input lies wholly 
+     * inside an area.
      */
     boolean checkDisjointPoints = geomTarget.hasDimension(Dimension.A) 
         || topoComputer.isExteriorCheckRequired(isA);

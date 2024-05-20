@@ -52,9 +52,13 @@ public interface TopologyPredicate {
   /**
    * Reports whether this predicate requires checking if the source input intersects
    * the Exterior of the target input.
-   * This allows some performance optimizations if not required.
+   * This is the case if:
+   * <pre>
+   * IM[Int(Src), Ext(Tgt)] >= 0 or IM[Bdy(Src), Ext(Tgt)] >= 0
+   * </pre> 
+   * When not required to evaluate a predicate this permits performance optimization.
    *  
-   * @param isSourceA
+   * @param isSourceA flag indicating which input geometry is the source
    * @return true if the predicate requires checking whether the source intersects the target exterior
    */
   default boolean requiresExteriorCheck(boolean isSourceA) {
