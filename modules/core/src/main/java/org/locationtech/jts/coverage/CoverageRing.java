@@ -17,6 +17,7 @@ import java.util.List;
 import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateArrays;
+import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
@@ -90,6 +91,14 @@ class CoverageRing extends BasicSegmentString {
     this.isInteriorOnRight = isInteriorOnRight;
     isInvalid = new boolean[size() - 1];
     isMatched = new boolean[size() - 1];
+  }
+  
+  public Envelope getEnvelope(int start, int end) {
+    Envelope env = new Envelope();
+    for (int i = start; i < end; i++) {
+      env.expandToInclude(getCoordinate(i));
+    }
+    return env;
   }
   
   /**
