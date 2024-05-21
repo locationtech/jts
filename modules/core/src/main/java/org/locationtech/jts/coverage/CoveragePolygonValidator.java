@@ -85,7 +85,7 @@ import org.locationtech.jts.noding.MCIndexSegmentSetMutualIntersector;
  *
  */
 public class CoveragePolygonValidator {
-  
+
   /**
    * Validates that a polygon is coverage-valid  against the
    * surrounding polygons in a polygonal coverage.
@@ -122,8 +122,7 @@ public class CoveragePolygonValidator {
   private double gapWidth = 0.0;
   private GeometryFactory geomFactory;
   private Geometry[] adjGeoms;
-  private List<Polygon> adjPolygons;
-  private IndexedPointInAreaLocator[] adjPolygonLocators;
+  private List<CoveragePolygon> adjCovPolygons;
 
   /**
    * Create a new validator.
@@ -158,8 +157,8 @@ public class CoveragePolygonValidator {
    * @return a linear geometry containing the segments causing invalidity (if any)
    */
   public Geometry validate() {
-    adjPolygons = extractPolygons(adjGeoms);
-    adjPolygonLocators = new IndexedPointInAreaLocator[adjPolygons.size()];
+    List<Polygon> adjPolygons = extractPolygons(adjGeoms);
+    adjCovPolygons = toCoveragePolygons(adjPolygons);
     
     List<CoverageRing> targetRings = CoverageRing.createRings(targetGeom);
     List<CoverageRing> adjRings = CoverageRing.createRings(adjPolygons);
@@ -175,6 +174,14 @@ public class CoveragePolygonValidator {
     checkTargetRings(targetRings, adjRings, targetEnv);
     
     return createInvalidLines(targetRings);
+  }
+
+  private List<CoveragePolygon> toCoveragePolygons(List<Polygon> polygons) {
+    List<CoveragePolygon> covPolys = new ArrayList<CoveragePolygon>();
+    for (Polygon poly : polygons) {
+      covPolys.add(new CoveragePolygon(poly));
+    }
+    return covPolys;
   }
 
   private void checkTargetRings(List<CoverageRing> targetRings, List<CoverageRing> adjRings, Envelope targetEnv) {
@@ -197,7 +204,8 @@ public class CoveragePolygonValidator {
      * Do further checks to see if any of them are are invalid.
      */
     markInvalidInteractingSegments(targetRings, adjRings, gapWidth);
-    markInvalidInteriorSegments(targetRings, adjPolygons);
+    markInvalidInteriorSegments(targetRings, adjCovPolygons);
+    //OLDmarkInvalidInteriorSegments(targetRings, adjPolygons);
   }
 
   private static List<Polygon> extractPolygons(Geometry[] geoms) {
@@ -369,76 +377,78 @@ public class CoveragePolygonValidator {
   }
   
   /**
+   * Stride is chosen experimentally to provide good performance
+   */
+  private static final int RING_SECTION_STRIDE = 1000;
+  
+  /**
    * Marks invalid target segments which are fully interior
    * to an adjacent polygon.
    * 
    * @param targetRings the rings with segments to test
-   * @param adjPolygons the adjacent polygons
+   * @param adjCovPolygons the adjacent polygons
    */
-  private void markInvalidInteriorSegments(List<CoverageRing> targetRings, List<Polygon> adjPolygons) {
+  private void markInvalidInteriorSegments(List<CoverageRing> targetRings, List<CoveragePolygon> adjCovPolygons) {
     for (CoverageRing ring : targetRings) {
-      for (int i = 0; i < ring.size() - 1; i++) {
-        //-- skip check for segments with known state. 
-        if (ring.isKnown(i))
-          continue;
+      int stride = RING_SECTION_STRIDE;
+      for (int i = 0; i < ring.size() - 1; i += stride) {
+        int iEnd = i + stride;
+        if (iEnd >= ring.size())
+          iEnd = ring.size() - 1;
         
-        /**
-         * Check if vertex is in interior of an adjacent polygon.
-         * If so, the segments on either side are in the interior.
-         * Mark them invalid, unless they are already matched.
-         */
-        Coordinate p = ring.getCoordinate(i);
-        if (isInteriorVertex(p, adjPolygons)) {
-          ring.markInvalid(i);
-          //-- previous segment may be interior (but may also be matched)
-          int iPrev = i == 0 ? ring.size() - 2 : i-1;
-          if (! ring.isKnown(iPrev))
-            ring.markInvalid(iPrev);
+        markInvalidInteriorSection(ring, i, iEnd, adjCovPolygons);
+      }
+    }
+  }
+
+  /**
+   * Marks invalid target segments in a section which are interior
+   * to an adjacent polygon.
+   * Processing a section at a time dramatically improves efficiency.
+   * Due to the coherent organization of polygon rings,
+   * sections usually have a high spatial locality.
+   * This means that sections typically intersect only a few or often no adjacent polygons.
+   * The section envelope can be computed and tested against adjacent polygon envelopes quickly.
+   * The section can be skipped entirely if it does not interact with any polygons. 
+   * 
+   * @param ring
+   * @param iStart
+   * @param iEnd 
+   * @param adjPolygons
+   */
+  private void markInvalidInteriorSection(CoverageRing ring, int iStart, int iEnd, List<CoveragePolygon> adjPolygons) {
+    Envelope sectionEnv = ring.getEnvelope(iStart, iEnd);
+    //TODO: is it worth indexing polygons?
+    for (CoveragePolygon adjPoly : adjPolygons) {
+      if (adjPoly.intersects(sectionEnv)) {
+        //-- test vertices in section
+        for (int i = iStart; i < iEnd; i++) {
+          markInvalidInteriorSegment(ring, i, adjPoly);
         }
       }
     }
   }
-  
-  /**
-   * Tests if a coordinate is in the interior of some adjacent polygon.
-   * Uses the cached Point-In-Polygon indexed locators, for performance.
-   * 
-   * @param p the coordinate to test
-   * @param adjPolygons the list of polygons
-   * @return true if the point is in the interior
-   */
-  private boolean isInteriorVertex(Coordinate p, List<Polygon> adjPolygons) {
+
+  private void markInvalidInteriorSegment(CoverageRing ring, int i, CoveragePolygon adjPoly) {
+    //-- skip check for segments with known state. 
+    if (ring.isKnown(i))
+      return;
+    
     /**
-     * There should not be too many adjacent polygons, 
-     * and hopefully not too many segments with unknown status
-     * so a linear scan should not be too inefficient
+     * Check if vertex is in interior of an adjacent polygon.
+     * If so, the segments on either side are in the interior.
+     * Mark them invalid, unless they are already matched.
      */
-    //TODO: try a spatial index?
-    for (int i = 0; i < adjPolygons.size(); i++) {
-      Polygon adjPoly = adjPolygons.get(i);
-     
-      if (polygonContainsPoint(i, adjPoly, p))
-        return true;
+    Coordinate p = ring.getCoordinate(i);
+    if (adjPoly.contains(p)) {
+      ring.markInvalid(i);
+      //-- previous segment may be interior (but may also be matched)
+      int iPrev = i == 0 ? ring.size() - 2 : i-1;
+      if (! ring.isKnown(iPrev))
+        ring.markInvalid(iPrev);
     }
-    return false;
   }
-
-  private boolean polygonContainsPoint(int index, Polygon poly, Coordinate pt) {
-    if (! poly.getEnvelopeInternal().intersects(pt))
-      return false;
-    PointOnGeometryLocator pia = getLocator(index, poly);
-    return Location.INTERIOR == pia.locate(pt);
-  }
-
-  private PointOnGeometryLocator getLocator(int index, Polygon poly) {
-    IndexedPointInAreaLocator loc = adjPolygonLocators[index];
-    if (loc == null) {
-      loc = new IndexedPointInAreaLocator(poly);
-      adjPolygonLocators[index] = loc;
-    }
-    return loc;
-  }
-
+  
   private Geometry createInvalidLines(List<CoverageRing> rings) {
     List<LineString> lines = new ArrayList<LineString>();
     for (CoverageRing ring : rings) {
