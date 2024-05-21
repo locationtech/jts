@@ -82,6 +82,7 @@ Distributions for older JTS versions can be obtained at the
 * Improve `HPRtree` performance (#1012)
 * Improve performance of noding and overlay via `HPRtree` (#1012) 
 * Improve `DistanceOp` performance for Point-Point (#1049)
+* Improve `CoveragePolygonValidator` via section performance optimization (#1053)
 
 # Version 1.19
 
