@@ -404,9 +404,12 @@ public class CoveragePolygonValidator {
   /**
    * Marks invalid target segments in a section which are interior
    * to an adjacent polygon.
-   * Processing a section at a time dramatically improves efficiency,
-   * since the section envelope can be computed quickly
-   * and sections typically intersect only a few or often no adjacent polygons. 
+   * Processing a section at a time dramatically improves efficiency.
+   * Due to the coherent organization of polygon rings,
+   * sections usually have a high spatial locality.
+   * This means that sections typically intersect only a few or often no adjacent polygons.
+   * The section envelope can be computed and tested against adjacent polygon envelopes quickly.
+   * The section can be skipped entirely if it does not interact with any polygons. 
    * 
    * @param ring
    * @param iStart
