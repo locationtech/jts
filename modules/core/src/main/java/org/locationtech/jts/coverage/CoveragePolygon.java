@@ -29,30 +29,29 @@ class CoveragePolygon {
     polyEnv = polygon.getEnvelopeInternal();
   }
 
-  public boolean intersects(Envelope env) {
+  public boolean intersectsEnv(Envelope env) {
     //-- test intersection explicitly to avoid expensive null check
-    //return polyEnv.intersects(env);
     return ! (env.getMinX() > polyEnv.getMaxX()
         || env.getMaxX() < polyEnv.getMinX()
         || env.getMinY() > polyEnv.getMaxY()
         || env.getMaxY() < polyEnv.getMinY());
   }
 
-  public boolean contains(Coordinate p) {
+  private boolean intersectsEnv(Coordinate p) {
     //-- test intersection explicitly to avoid expensive null check
-    if (! intersects(p))
-      return false;
-    PointOnGeometryLocator pia = getLocator();
-    return Location.INTERIOR == pia.locate(p);    
-  }
-
-  private boolean intersects(Coordinate p) {
     return ! (p.x > polyEnv.getMaxX() ||
         p.x < polyEnv.getMinX() ||
         p.y > polyEnv.getMaxY() ||
         p.y < polyEnv.getMinY());
   }
 
+  public boolean contains(Coordinate p) {
+    if (! intersectsEnv(p))
+      return false;
+    PointOnGeometryLocator pia = getLocator();
+    return Location.INTERIOR == pia.locate(p);    
+  }
+  
   private PointOnGeometryLocator getLocator() {
     if (locator == null) {
       locator = new IndexedPointInAreaLocator(polygon);

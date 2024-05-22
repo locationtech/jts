@@ -420,7 +420,7 @@ public class CoveragePolygonValidator {
     Envelope sectionEnv = ring.getEnvelope(iStart, iEnd);
     //TODO: is it worth indexing polygons?
     for (CoveragePolygon adjPoly : adjPolygons) {
-      if (adjPoly.intersects(sectionEnv)) {
+      if (adjPoly.intersectsEnv(sectionEnv)) {
         //-- test vertices in section
         for (int i = iStart; i < iEnd; i++) {
           markInvalidInteriorSegment(ring, i, adjPoly);
