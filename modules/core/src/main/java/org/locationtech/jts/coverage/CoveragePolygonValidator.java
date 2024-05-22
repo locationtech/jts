@@ -16,15 +16,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.locationtech.jts.algorithm.locate.IndexedPointInAreaLocator;
-import org.locationtech.jts.algorithm.locate.PointOnGeometryLocator;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineSegment;
 import org.locationtech.jts.geom.LineString;
-import org.locationtech.jts.geom.Location;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.util.PolygonExtracter;
 import org.locationtech.jts.noding.MCIndexSegmentSetMutualIntersector;
@@ -176,7 +173,7 @@ public class CoveragePolygonValidator {
     return createInvalidLines(targetRings);
   }
 
-  private List<CoveragePolygon> toCoveragePolygons(List<Polygon> polygons) {
+  private static List<CoveragePolygon> toCoveragePolygons(List<Polygon> polygons) {
     List<CoveragePolygon> covPolys = new ArrayList<CoveragePolygon>();
     for (Polygon poly : polygons) {
       covPolys.add(new CoveragePolygon(poly));
