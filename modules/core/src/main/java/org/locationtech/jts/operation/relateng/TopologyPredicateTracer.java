@@ -47,13 +47,13 @@ public class TopologyPredicateTracer {
     public String name() { return pred.name(); }
     
     @Override
-    public boolean requiresSelfNoding() {
-      return pred.requiresSelfNoding();
+    public boolean requireSelfNoding() {
+      return pred.requireSelfNoding();
     }
     
     @Override
-    public boolean requiresExteriorCheck(boolean isSourceA) {
-      return pred.requiresExteriorCheck(isSourceA);
+    public boolean requireExteriorCheck(boolean isSourceA) {
+      return pred.requireExteriorCheck(isSourceA);
     }
     
     @Override

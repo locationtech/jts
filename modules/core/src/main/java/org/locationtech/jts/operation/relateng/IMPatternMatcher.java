@@ -53,6 +53,11 @@ class IMPatternMatcher extends IMPredicate
     setValueIf(false, requiresInteraction && isDisjoint);
   }
 
+  @Override
+  public boolean requireInteraction() {
+    return requiresInteraction(patternMatrix);
+  }
+  
   private static boolean requiresInteraction(IntersectionMatrix im) {
     boolean requiresInteraction = 
         requiresInteraction(im.get(Location.INTERIOR, Location.INTERIOR))

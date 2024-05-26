@@ -26,6 +26,12 @@ class RelateMatrixPredicate extends IMPredicate
   public String name() { return "relateMatrix"; }
   
   @Override
+  public boolean requireInteraction() {
+    //-- ensure entire matrix is computed
+    return false;
+  }
+  
+  @Override
   public boolean isDetermined() {
     //-- ensure entire matrix is computed
     return false;

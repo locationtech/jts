@@ -23,7 +23,7 @@ public class RelateNGTest extends RelateNGTestCase {
     super(name);
   }
 
-  public void testDisjoint() {
+  public void testPointsDisjoint() {
     String a = "POINT (0 0)";
     String b = "POINT (1 1)";
     checkIntersectsDisjoint(a, b, false);

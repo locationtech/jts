@@ -220,7 +220,11 @@ public class RelateNG
    * @return true if the predicate is satisfied
    */
   public boolean evaluate(Geometry b, TopologyPredicate predicate) {
-
+    //-- fast envelope checks
+    if (! hasRequiredEnvelopeInteraction(b, predicate)) {
+      return false;
+    }
+        
     RelateGeometry geomB = new RelateGeometry(b, boundaryNodeRule);
     
     if (geomA.isEmpty() && geomB.isEmpty()) {
@@ -265,6 +269,29 @@ public class RelateNG
     //-- after all processing, set remaining unknown values in IM
     topoComputer.finish();
     return topoComputer.getResult();
+  }
+
+  private boolean hasRequiredEnvelopeInteraction(Geometry b, TopologyPredicate predicate) {
+    Envelope envB = b.getEnvelopeInternal();
+    boolean isInteracts = false;
+    if (predicate.requireCovers(GEOM_A)) {
+      if (! geomA.getEnvelope().covers(envB)) {
+        return false;
+      }
+      isInteracts = true;
+    }
+    else if (predicate.requireCovers(GEOM_B)) {
+      if (! envB.covers(geomA.getEnvelope())) {
+        return false;
+      }
+      isInteracts = true;
+    }
+    if (! isInteracts 
+        && predicate.requireInteraction()
+        && ! geomA.getEnvelope().intersects(envB)) {
+      return false;
+    }
+    return true;
   }
 
   private boolean finishValue(TopologyPredicate predicate) {

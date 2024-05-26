@@ -52,13 +52,13 @@ public interface RelatePredicate {
       public String name() { return "intersects"; }
   
       @Override
-      public boolean requiresSelfNoding() {
+      public boolean requireSelfNoding() {
         //-- self-noding is not required to check for a simple interaction
         return false;
       }
       
       @Override
-      public boolean requiresExteriorCheck(boolean isSourceA) {
+      public boolean requireExteriorCheck(boolean isSourceA) {
         //-- intersects only requires testing interaction
         return false;
       }
@@ -104,13 +104,19 @@ public interface RelatePredicate {
       public String name() { return "disjoint"; }
       
       @Override
-      public boolean requiresSelfNoding() {
+      public boolean requireSelfNoding() {
         //-- self-noding is not required to check for a simple interaction
         return false;
       }
-
+      
       @Override
-      public boolean requiresExteriorCheck(boolean isSourceA) {
+      public boolean requireInteraction() {
+        //-- ensure entire matrix is computed
+        return false;
+      }
+      
+      @Override
+      public boolean requireExteriorCheck(boolean isSourceA) {
         //-- disjoint only requires testing interaction
         return false;
       }
@@ -164,7 +170,12 @@ public interface RelatePredicate {
     public String name() { return "contains"; }
       
     @Override
-    public boolean requiresExteriorCheck(boolean isSourceA) {
+    public boolean requireCovers(boolean isSourceA) {
+      return isSourceA == RelateGeometry.GEOM_A;
+    }
+    
+    @Override
+    public boolean requireExteriorCheck(boolean isSourceA) {
       //-- only need to check B against Exterior of A
       return isSourceA == RelateGeometry.GEOM_B;
     }
@@ -222,7 +233,12 @@ public interface RelatePredicate {
       public String name() { return "within"; }
       
       @Override
-      public boolean requiresExteriorCheck(boolean isSourceA) {
+      public boolean requireCovers(boolean isSourceA) {
+        return isSourceA == RelateGeometry.GEOM_B;
+      }
+      
+      @Override
+      public boolean requireExteriorCheck(boolean isSourceA) {
         //-- only need to check A against Exterior of B
         return isSourceA == RelateGeometry.GEOM_A;
       }
@@ -286,7 +302,12 @@ public interface RelatePredicate {
       public String name() { return "covers"; }
       
       @Override
-      public boolean requiresExteriorCheck(boolean isSourceA) {
+      public boolean requireCovers(boolean isSourceA) {
+        return isSourceA == RelateGeometry.GEOM_A;
+      }
+      
+      @Override
+      public boolean requireExteriorCheck(boolean isSourceA) {
         //-- only need to check B against Exterior of A
         return isSourceA == RelateGeometry.GEOM_B;
       }
@@ -345,7 +366,12 @@ public interface RelatePredicate {
       public String name() { return "coveredBy"; }
       
       @Override
-      public boolean requiresExteriorCheck(boolean isSourceA) {
+      public boolean requireCovers(boolean isSourceA) {
+        return isSourceA == RelateGeometry.GEOM_B;
+      }
+      
+      @Override
+      public boolean requireExteriorCheck(boolean isSourceA) {
         //-- only need to check A against Exterior of B
         return isSourceA == RelateGeometry.GEOM_A;
       }
