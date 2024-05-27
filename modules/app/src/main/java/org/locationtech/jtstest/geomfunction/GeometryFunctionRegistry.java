@@ -45,6 +45,7 @@ import org.locationtech.jtstest.function.LineSegmentFunctions;
 import org.locationtech.jtstest.function.LinearReferencingFunctions;
 import org.locationtech.jtstest.function.NodingFunctions;
 import org.locationtech.jtstest.function.OffsetCurveFunctions;
+import org.locationtech.jtstest.function.OrientationFPFunctions;
 import org.locationtech.jtstest.function.OrientationFunctions;
 import org.locationtech.jtstest.function.OverlayFunctions;
 import org.locationtech.jtstest.function.OverlayNGFunctions;
@@ -120,6 +121,7 @@ public class GeometryFunctionRegistry
     //funcRegistry.add(MemoryFunctions.class);
     funcRegistry.add(OffsetCurveFunctions.class);
     funcRegistry.add(OrientationFunctions.class);
+    funcRegistry.add(OrientationFPFunctions.class);
     funcRegistry.add(LineSegmentFunctions.class);
     funcRegistry.add(OverlayFunctions.class);
     
