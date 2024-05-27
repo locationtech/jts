@@ -70,6 +70,15 @@ public class SelectionFunctions
     });
   }
   
+  public static Geometry touches(Geometry a, final Geometry mask)
+  {
+    return select(a, new GeometryPredicate() {
+      public boolean isTrue(Geometry g) {
+        return mask.touches(g);
+      }
+    });
+  }
+  
   public static Geometry disjoint(Geometry a, Geometry mask)
   {
     List selected = new ArrayList();
@@ -81,6 +90,16 @@ public class SelectionFunctions
     }
     return a.getFactory().buildGeometry(selected);
   }
+  
+  public static Geometry relatePattern(Geometry a, final Geometry mask, String pattern)
+  {
+    return select(a, new GeometryPredicate() {
+      public boolean isTrue(Geometry g) {
+        return mask.relate(g, pattern);
+      }
+    });
+  }
+  
   public static Geometry valid(Geometry a)
   {
     List selected = new ArrayList();
