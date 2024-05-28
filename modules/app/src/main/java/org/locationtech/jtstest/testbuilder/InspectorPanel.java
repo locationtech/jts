@@ -47,8 +47,8 @@ public class InspectorPanel extends TestBuilderPanel  {
   private Geometry geometry;
 
   private Comparator<GeometricObjectNode> sorterArea;
-
   private Comparator<GeometricObjectNode> sorterLen;
+  private Comparator<GeometricObjectNode> sorterNumPoints;
 
   public InspectorPanel() {
     this(true);
@@ -128,6 +128,11 @@ public class InspectorPanel extends TestBuilderPanel  {
         sortByLen();
       }
     });
+    JButton btnSortByNumPts = SwingUtil.createButton(AppIcons.ICON_POINT, "Sort by Num Points (Asc/Desc)", new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        sortByNumPoints();
+      }
+    });
     
     JPanel btn2Panel = new JPanel();
     btn2Panel.setLayout(new BoxLayout(btn2Panel, BoxLayout.PAGE_AXIS));
@@ -148,6 +153,7 @@ public class InspectorPanel extends TestBuilderPanel  {
     
     btn2Panel.add(Box.createRigidArea(new Dimension(0, 10)));
     btn2Panel.add(new JLabel("Sort"));
+    btn2Panel.add(btnSortByNumPts);
     btn2Panel.add(btnSortByLen);
     btn2Panel.add(btnSortByArea);
     btn2Panel.add(btnSortNone);
@@ -214,12 +220,14 @@ public class InspectorPanel extends TestBuilderPanel  {
   {
     sorterLen = null;
     sorterArea = null;
+    sorterNumPoints = null;
     geomTreePanel.populate(geometry, source);
   }
   
   public void sortByArea()
   {
     sorterLen = null;
+    sorterNumPoints = null;
     
     if (sorterArea == GeometryTreeModel.SORT_AREA_ASC) {
       sorterArea = GeometryTreeModel.SORT_AREA_DESC;
@@ -233,6 +241,8 @@ public class InspectorPanel extends TestBuilderPanel  {
   public void sortByLen()
   {
     sorterArea = null;
+    sorterNumPoints = null;
+    
     if (sorterLen == GeometryTreeModel.SORT_LEN_ASC) {
       sorterLen = GeometryTreeModel.SORT_LEN_DESC;
     }
@@ -242,6 +252,18 @@ public class InspectorPanel extends TestBuilderPanel  {
     geomTreePanel.populate(geometry, source, sorterLen);
   }
 
-
+  public void sortByNumPoints()
+  {
+    sorterArea = null;
+    sorterLen = null;
+    
+    if (sorterNumPoints == GeometryTreeModel.SORT_NUMPTS_ASC) {
+      sorterNumPoints = GeometryTreeModel.SORT_NUMPTS_DESC;
+    }
+    else {
+      sorterNumPoints = GeometryTreeModel.SORT_NUMPTS_ASC;
+    }
+    geomTreePanel.populate(geometry, source, sorterNumPoints);
+  }
   
 }

@@ -41,6 +41,8 @@ public class GeometryTreeModel implements TreeModel
   public static Comparator<GeometricObjectNode> SORT_AREA_DESC = new AreaComparator(true);
   public static Comparator<GeometricObjectNode> SORT_LEN_ASC = new LengthComparator(false);
   public static Comparator<GeometricObjectNode> SORT_LEN_DESC = new LengthComparator(true);
+  public static Comparator<GeometricObjectNode> SORT_NUMPTS_ASC = new NumPointsComparator(false);
+  public static Comparator<GeometricObjectNode> SORT_NUMPTS_DESC = new NumPointsComparator(true);
   
   private Vector<TreeModelListener> treeModelListeners = new Vector<TreeModelListener>();
 
@@ -151,6 +153,21 @@ public class GeometryTreeModel implements TreeModel
       double area1 = o1.getGeometry().getLength();
       double area2 = o2.getGeometry().getLength();
       return dirFactor * Double.compare(area1, area2);
+    }
+  }
+  public static class NumPointsComparator implements Comparator<GeometricObjectNode> {
+
+    private int dirFactor;
+
+    public NumPointsComparator(boolean direction) {
+      this.dirFactor = direction ? 1 : -1;
+    }
+    
+    @Override
+    public int compare(GeometricObjectNode o1, GeometricObjectNode o2) {
+      int num1 = o1.getGeometry().getNumPoints();
+      int num2 = o2.getGeometry().getNumPoints();
+      return dirFactor * Integer.compare(num1, num2);
     }
   }
 }
