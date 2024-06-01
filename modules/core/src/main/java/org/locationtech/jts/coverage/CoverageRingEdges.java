@@ -212,23 +212,26 @@ class CoverageRingEdges {
   }
   
   private CoverageEdge createEdge(int coverageId, Coordinate[] ring, int start, int end, HashMap<LineSegment, CoverageEdge> uniqueEdgeMap) {
-    boolean hasTolerance = coverageTolerances != null;
     CoverageEdge edge;
     LineSegment edgeKey = (end == start) ? CoverageEdge.key(ring) : CoverageEdge.key(ring, start, end);
     if (uniqueEdgeMap.containsKey(edgeKey)) {
       edge = uniqueEdgeMap.get(edgeKey);
-      if (hasTolerance){
-        edge.setTolerance((edge.getTolerance() < coverageTolerances[coverageId]) ? edge.getTolerance() : coverageTolerances[coverageId]);
-      }
+      assignEdgeTolerance(coverageId, edge);
     }
     else {
-      double tolerance = hasTolerance ? coverageTolerances[coverageId] : -1;
+      double tolerance = coverageTolerances == null ? -1 : coverageTolerances[coverageId];
       edge = CoverageEdge.createEdge(ring, start, end, tolerance);
       uniqueEdgeMap.put(edgeKey, edge);
       edges.add(edge);
     }
     edge.incRingCount();
     return edge;
+  }
+
+  private void assignEdgeTolerance(int coverageId, CoverageEdge edge){
+      if (coverageTolerances != null){
+        edge.setTolerance((edge.getTolerance() < coverageTolerances[coverageId]) ? edge.getTolerance() : coverageTolerances[coverageId]);
+      }
   }
 
   private int findNextNodeIndex(Coordinate[] ring, int start, Set<Coordinate> nodes) {
