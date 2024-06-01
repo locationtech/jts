@@ -170,10 +170,14 @@ class TPVWSimplifier {
     for (int i = 0 ; i < lines.getNumGeometries(); i++) {
       LineString line = (LineString) lines.getGeometryN(i);
       boolean isFree = isFreeRing == null ? false : isFreeRing.get(i);
-      double areaTolerance = (areaTolerances.isEmpty()) ? -1 : ((areaTolerances.size() == 1) ? areaTolerances.get(0) : areaTolerances.get(i));
+      double areaTolerance = getAreaTolerance(i);
       edges.add(new Edge(line, isFree, areaTolerance));
     }
     return edges;
+  }
+
+  private double getAreaTolerance(int index) {
+    return (areaTolerances.isEmpty()) ? -1 : ((areaTolerances.size() == 1) ? areaTolerances.get(0) : areaTolerances.get(index));
   }
   
   private static class Edge {
