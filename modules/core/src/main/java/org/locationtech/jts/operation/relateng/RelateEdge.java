@@ -59,10 +59,6 @@ class RelateEdge {
    */
   private static int LOC_UNKNOWN = Location.NONE;
   
-  private static boolean isKnown(int loc) {
-    return loc != LOC_UNKNOWN;
-  }
-  
   private RelateNode node;
   private Coordinate dirPt;
   

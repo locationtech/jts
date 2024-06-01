@@ -19,8 +19,6 @@ import org.locationtech.jts.geom.Dimension;
 import org.locationtech.jts.geom.Location;
 import org.locationtech.jts.geom.Position;
 import org.locationtech.jts.io.WKTWriter;
-import org.locationtech.jts.util.Assert;
-import org.locationtech.jts.util.Debug;
 
 class RelateNode {
 

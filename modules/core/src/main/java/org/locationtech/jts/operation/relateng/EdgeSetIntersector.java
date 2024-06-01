@@ -47,9 +47,8 @@ class EdgeSetIntersector {
 
   private void addToIndex(SegmentString segStr)
   {
-    List segChains = MonotoneChainBuilder.getChains(segStr.getCoordinates(), segStr);
-    for (Iterator i = segChains.iterator(); i.hasNext(); ) {
-      MonotoneChain mc = (MonotoneChain) i.next();
+    List<MonotoneChain> segChains = MonotoneChainBuilder.getChains(segStr.getCoordinates(), segStr);
+    for (MonotoneChain mc : segChains ) {
       if (envelope == null || envelope.intersects(mc.getEnvelope())) {
         mc.setId(idCounter ++);
         index.insert(mc.getEnvelope(), mc);
@@ -62,10 +61,9 @@ class EdgeSetIntersector {
     MonotoneChainOverlapAction overlapAction = new EdgeSegmentOverlapAction(intersector);
 
     for (MonotoneChain queryChain : monoChains) {
-      List overlapChains = index.query(queryChain.getEnvelope());
-      for (Iterator j = overlapChains.iterator(); j.hasNext(); ) {
-        MonotoneChain testChain = (MonotoneChain) j.next();
-        /**
+      List<MonotoneChain> overlapChains = index.query(queryChain.getEnvelope());
+      for (MonotoneChain testChain : overlapChains) {
+         /**
          * following test makes sure we only compare each pair of chains once
          * and that we don't compare a chain to itself
          */
