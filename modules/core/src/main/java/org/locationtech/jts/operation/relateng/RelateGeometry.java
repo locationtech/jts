@@ -48,6 +48,7 @@ class RelateGeometry {
   private Geometry geom;
   private boolean isPrepared = false;
   
+  private Envelope geomEnv;
   private int geomDim = Dimension.FALSE;
   private Set<Coordinate> uniquePoints;
   private BoundaryNodeRule boundaryNodeRule;
@@ -69,6 +70,7 @@ class RelateGeometry {
   
   public RelateGeometry(Geometry input, boolean isPrepared, BoundaryNodeRule bnRule) {
     this.geom = input;
+    this.geomEnv = input.getEnvelopeInternal();
     this.isPrepared = isPrepared;
     this.boundaryNodeRule = bnRule;
     //-- cache geometry metadata
@@ -160,7 +162,7 @@ class RelateGeometry {
   }
 
   public Envelope getEnvelope() {
-    return geom.getEnvelopeInternal();
+    return geomEnv;
   }
   
   public int getDimension() {

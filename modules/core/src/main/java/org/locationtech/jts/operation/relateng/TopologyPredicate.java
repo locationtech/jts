@@ -45,10 +45,43 @@ public interface TopologyPredicate {
    * 
    * @return true if self-noding is required.
    */
-  default boolean requiresSelfNoding() {
+  default boolean requireSelfNoding() {
     return true;
   }
 
+  /**
+   * Reports whether this predicate requires interaction between
+   * the input geometries.
+   * This is the case if 
+   * <pre>
+   * IM[I, I] >= 0 or IM[I, B] >= 0 or IM[B, I] >= 0 or IM[B, B] >= 0
+   * </pre>  
+   * This allows a fast result if 
+   * the envelopes of the geometries are disjoint.
+   * 
+   * @return true if the geometries must interact
+   */
+  default boolean requireInteraction() {
+    return true;
+  }
+  
+  /**
+   * Reports whether this predicate requires that the source
+   * cover the target.
+   * This is the case if 
+   * <pre>
+   * IM[Ext(Src), Int(Tgt)] = F and IM[Ext(Src), Bdy(Tgt)] = F
+   * </pre>
+   * If true, this allows a fast result if 
+   * the source envelope does not cover the target envelope.
+   * 
+   * @param isSourceA indicates the source input geometry
+   * @return true if the predicate requires checking whether the source covers the target
+   */
+  default boolean requireCovers(boolean isSourceA) {
+    return false;
+  }
+  
   /**
    * Reports whether this predicate requires checking if the source input intersects
    * the Exterior of the target input.
@@ -56,12 +89,12 @@ public interface TopologyPredicate {
    * <pre>
    * IM[Int(Src), Ext(Tgt)] >= 0 or IM[Bdy(Src), Ext(Tgt)] >= 0
    * </pre> 
-   * When not required to evaluate a predicate this permits performance optimization.
+   * If false, this may permit a faster result in some geometric situations.
    *  
-   * @param isSourceA flag indicating which input geometry is the source
+   * @param isSourceA indicates the source input geometry
    * @return true if the predicate requires checking whether the source intersects the target exterior
    */
-  default boolean requiresExteriorCheck(boolean isSourceA) {
+  default boolean requireExteriorCheck(boolean isSourceA) {
     return true;
   }
   

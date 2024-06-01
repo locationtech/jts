@@ -12,6 +12,7 @@
 
 package org.locationtech.jtstest.function;
 
+import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.operation.relateng.IntersectionMatrixPattern;
 import org.locationtech.jts.operation.relateng.RelateNG;
@@ -31,9 +32,12 @@ public class SelectionNGFunctions
   public static Geometry intersectsPrep(Geometry a, final Geometry mask)
   {
     RelateNG relateNG = RelateNG.prepare(mask);
+    Envelope maskEnv = mask.getEnvelopeInternal();
     return SelectionFunctions.select(a, new GeometryPredicate() {
       public boolean isTrue(Geometry g) {
-        return relateNG.evaluate(g, RelatePredicate.intersects());
+        if (maskEnv.disjoint(g.getEnvelopeInternal()))
+          return false;
+       return relateNG.evaluate(g, RelatePredicate.intersects());
       }
     });
   }
@@ -59,9 +63,34 @@ public class SelectionNGFunctions
   public static Geometry coversPrep(Geometry a, final Geometry mask)
   {
     RelateNG relateNG = RelateNG.prepare(mask);
+    Envelope maskEnv = mask.getEnvelopeInternal();
     return SelectionFunctions.select(a, new GeometryPredicate() {
       public boolean isTrue(Geometry g) {
+        if (maskEnv.disjoint(g.getEnvelopeInternal()))
+          return false;
         return relateNG.evaluate(g, RelatePredicate.covers());
+      }
+    });
+  }
+  
+  public static Geometry touches(Geometry a, final Geometry mask)
+  {
+    return SelectionFunctions.select(a, new GeometryPredicate() {
+      public boolean isTrue(Geometry g) {
+        return RelateNG.relate(mask, g, RelatePredicate.touches());
+      }
+    });
+  }
+  
+  public static Geometry touchesPrep(Geometry a, final Geometry mask)
+  {
+    RelateNG relateNG = RelateNG.prepare(mask);
+    Envelope maskEnv = mask.getEnvelopeInternal();
+    return SelectionFunctions.select(a, new GeometryPredicate() {
+      public boolean isTrue(Geometry g) {
+        if (maskEnv.disjoint(g.getEnvelopeInternal()))
+          return false;
+        return relateNG.evaluate(g, RelatePredicate.touches());
       }
     });
   }
@@ -84,6 +113,26 @@ public class SelectionNGFunctions
       }
     });
   }
+  
+  public static Geometry relatePattern(Geometry a, final Geometry mask, String pattern)
+  {
+    return SelectionFunctions.select(a, new GeometryPredicate() {
+      public boolean isTrue(Geometry g) {
+        return RelateNG.relate(mask, g, RelatePredicate.matches(pattern));
+      }
+    });
+  }
+  
+  public static Geometry relatePatternPrep(Geometry a, final Geometry mask, String pattern)
+  {
+    RelateNG relateNG = RelateNG.prepare(mask);
+    return SelectionFunctions.select(a, new GeometryPredicate() {
+      public boolean isTrue(Geometry g) {
+        return relateNG.evaluate(g, RelatePredicate.matches(pattern));
+      }
+    });
+  }
+  
 }
   
 
