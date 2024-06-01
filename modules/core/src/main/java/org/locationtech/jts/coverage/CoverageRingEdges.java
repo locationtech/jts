@@ -54,13 +54,13 @@ class CoverageRingEdges {
    * @param tolerances the simplification tolerances for each geometry
    * @return the edges of the coverage
    */
-  public static CoverageRingEdges create(Geometry[] coverage, List<Double> tolerances) {
+  public static CoverageRingEdges create(Geometry[] coverage, Double[] tolerances) {
     CoverageRingEdges edges = new CoverageRingEdges(coverage, tolerances);
     return edges;
   }
 
   public static CoverageRingEdges create(Geometry[] coverage) {
-    CoverageRingEdges edges = new CoverageRingEdges(coverage, new ArrayList<Double>(0));
+    CoverageRingEdges edges = new CoverageRingEdges(coverage, null);
     return edges;
   }
   
@@ -68,9 +68,9 @@ class CoverageRingEdges {
   private Map<LinearRing, List<CoverageEdge>> ringEdgesMap;
   private List<CoverageEdge> edges;
 
-  private List<Double> coverageTolerances;
+  private Double[] coverageTolerances;
 
-  public CoverageRingEdges(Geometry[] coverage, List<Double> tolerances) {
+  public CoverageRingEdges(Geometry[] coverage, Double[] tolerances) {
     this.coverage = coverage;
     ringEdgesMap = new HashMap<LinearRing, List<CoverageEdge>>();
     edges = new ArrayList<CoverageEdge>();
@@ -192,16 +192,17 @@ class CoverageRingEdges {
   }
 
   private CoverageEdge createEdge(int coverageId, Coordinate[] ring, HashMap<LineSegment, CoverageEdge> uniqueEdgeMap) {
+    boolean hasTolerance = coverageTolerances != null;
     CoverageEdge edge;
     LineSegment edgeKey = CoverageEdge.key(ring);
     if (uniqueEdgeMap.containsKey(edgeKey)) {
       edge = uniqueEdgeMap.get(edgeKey);
-      if (!coverageTolerances.isEmpty()){
-        edge.setTolerance((edge.getTolerance() < coverageTolerances.get(coverageId)) ? edge.getTolerance() : coverageTolerances.get(coverageId));
+      if (hasTolerance){
+        edge.setTolerance((edge.getTolerance() < coverageTolerances[coverageId]) ? edge.getTolerance() : coverageTolerances[coverageId]);
       }
     }
     else {
-      double tolerance = coverageTolerances.isEmpty() ? -1 : coverageTolerances.get(coverageId);
+      double tolerance = hasTolerance ? coverageTolerances[coverageId] : -1;
       edge = CoverageEdge.createEdge(ring, tolerance);
       uniqueEdgeMap.put(edgeKey, edge);
       edges.add(edge);
@@ -211,16 +212,17 @@ class CoverageRingEdges {
   }
   
   private CoverageEdge createEdge(int coverageId, Coordinate[] ring, int start, int end, HashMap<LineSegment, CoverageEdge> uniqueEdgeMap) {
+    boolean hasTolerance = coverageTolerances != null;
     CoverageEdge edge;
     LineSegment edgeKey = (end == start) ? CoverageEdge.key(ring) : CoverageEdge.key(ring, start, end);
     if (uniqueEdgeMap.containsKey(edgeKey)) {
       edge = uniqueEdgeMap.get(edgeKey);
-      if (!coverageTolerances.isEmpty()){
-        edge.setTolerance((edge.getTolerance() < coverageTolerances.get(coverageId)) ? edge.getTolerance() : coverageTolerances.get(coverageId));
+      if (hasTolerance){
+        edge.setTolerance((edge.getTolerance() < coverageTolerances[coverageId]) ? edge.getTolerance() : coverageTolerances[coverageId]);
       }
     }
     else {
-      double tolerance = coverageTolerances.isEmpty() ? -1 : coverageTolerances.get(coverageId);
+      double tolerance = hasTolerance ? coverageTolerances[coverageId] : -1;
       edge = CoverageEdge.createEdge(ring, start, end, tolerance);
       uniqueEdgeMap.put(edgeKey, edge);
       edges.add(edge);

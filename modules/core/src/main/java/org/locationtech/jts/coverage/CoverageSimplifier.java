@@ -81,7 +81,7 @@ public class CoverageSimplifier {
    * @param tolerances the simplification tolerances for each coverage
    * @return the simplified polygons
    */
-  public static Geometry[] simplify(Geometry[] coverage, List<Double> tolerances) {
+  public static Geometry[] simplify(Geometry[] coverage, Double[] tolerances) {
     CoverageSimplifier simplifier = new CoverageSimplifier(coverage);
     return simplifier.simplify(tolerances);
   }
@@ -109,7 +109,7 @@ public class CoverageSimplifier {
    * @param tolerances the simplification tolerances for each coverage
    * @return the simplified polygons
    */
-  public static Geometry[] simplifyInner(Geometry[] coverage, List<Double> tolerances) {
+  public static Geometry[] simplifyInner(Geometry[] coverage, Double[] tolerances) {
     CoverageSimplifier simplifier = new CoverageSimplifier(coverage);
     return simplifier.simplifyInner(tolerances);
   }
@@ -146,10 +146,10 @@ public class CoverageSimplifier {
    * @param tolerances the simplification tolerances for each coverage
    * @return the simplified polygons
    */
-  public Geometry[] simplify(List<Double> tolerances) {
-    if (input.length != tolerances.size()){
+  public Geometry[] simplify(Double[] tolerances) {
+    if (input.length != tolerances.length){
       throw new IllegalArgumentException(
-              String.format("Mismatch between provided tolerances (%d) and input geometry count (%d)", tolerances.size(), input.length));
+              String.format("Mismatch between provided tolerances (%d) and input geometry count (%d)", tolerances.length, input.length));
     }
 
     CoverageRingEdges cov = CoverageRingEdges.create(input, tolerances);
@@ -185,10 +185,10 @@ public class CoverageSimplifier {
    * @param tolerances the simplification tolerances for each coverage
    * @return the simplified polygons
    */
-  public Geometry[] simplifyInner(List<Double> tolerances) {
-    if (input.length != tolerances.size()){
+  public Geometry[] simplifyInner(Double[] tolerances) {
+    if (input.length != tolerances.length){
       throw new IllegalArgumentException(
-              String.format("Mismatch between provided tolerances (%d) and input geometry count (%d)", tolerances.size(), input.length));
+              String.format("Mismatch between provided tolerances (%d) and input geometry count (%d)", tolerances.length, input.length));
     }
 
     CoverageRingEdges cov = CoverageRingEdges.create(input, tolerances);
