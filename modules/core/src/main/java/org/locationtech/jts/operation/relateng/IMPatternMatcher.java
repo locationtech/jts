@@ -48,26 +48,26 @@ class IMPatternMatcher extends IMPredicate
   public void init(Envelope envA, Envelope envB) {
     super.init(dimA, dimB);
     //-- if pattern specifies any non-E/non-E interaction, envelopes must not be disjoint
-    boolean requiresInteraction = requiresInteraction(patternMatrix);
+    boolean requiresInteraction = requireInteraction(patternMatrix);
     boolean isDisjoint = envA.disjoint(envB);
     setValueIf(false, requiresInteraction && isDisjoint);
   }
 
   @Override
   public boolean requireInteraction() {
-    return requiresInteraction(patternMatrix);
+    return requireInteraction(patternMatrix);
   }
   
-  private static boolean requiresInteraction(IntersectionMatrix im) {
+  private static boolean requireInteraction(IntersectionMatrix im) {
     boolean requiresInteraction = 
-        requiresInteraction(im.get(Location.INTERIOR, Location.INTERIOR))
-        || requiresInteraction(im.get(Location.INTERIOR, Location.BOUNDARY))
-        || requiresInteraction(im.get(Location.BOUNDARY, Location.INTERIOR))
-        || requiresInteraction(im.get(Location.BOUNDARY, Location.BOUNDARY));
+        isInteraction(im.get(Location.INTERIOR, Location.INTERIOR))
+        || isInteraction(im.get(Location.INTERIOR, Location.BOUNDARY))
+        || isInteraction(im.get(Location.BOUNDARY, Location.INTERIOR))
+        || isInteraction(im.get(Location.BOUNDARY, Location.BOUNDARY));
     return requiresInteraction;
   }
   
-  private static boolean requiresInteraction(int imDim) {
+  private static boolean isInteraction(int imDim) {
     return imDim == Dimension.TRUE || imDim >= Dimension.P;
   }
 

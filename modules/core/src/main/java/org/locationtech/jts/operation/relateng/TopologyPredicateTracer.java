@@ -52,6 +52,11 @@ public class TopologyPredicateTracer {
     }
     
     @Override
+    public boolean requireCovers(boolean isSourceA) {
+      return pred.requireCovers(isSourceA);
+    }
+    
+    @Override
     public boolean requireExteriorCheck(boolean isSourceA) {
       return pred.requireExteriorCheck(isSourceA);
     }

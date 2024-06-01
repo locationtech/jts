@@ -72,7 +72,7 @@ public interface TopologyPredicate {
    * <pre>
    * IM[Ext(Src), Int(Tgt)] = F and IM[Ext(Src), Bdy(Tgt)] = F
    * </pre>
-   * This allows a fast result if 
+   * If true, this allows a fast result if 
    * the source envelope does not cover the target envelope.
    * 
    * @param isSourceA indicates the source input geometry
@@ -89,7 +89,7 @@ public interface TopologyPredicate {
    * <pre>
    * IM[Int(Src), Ext(Tgt)] >= 0 or IM[Bdy(Src), Ext(Tgt)] >= 0
    * </pre> 
-   * When not required to evaluate a predicate this permits performance optimization.
+   * If false, this may permit a faster result in some geometric situations.
    *  
    * @param isSourceA indicates the source input geometry
    * @return true if the predicate requires checking whether the source intersects the target exterior

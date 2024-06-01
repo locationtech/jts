@@ -350,8 +350,8 @@ public class RelateNG
      * for the intersects predicate (since these are checked
      * during segment/segment intersection checking anyway). 
      * Checking points against areas is necessary, since the input
-     * linework may be entirely disjoint if one input lies wholly 
-     * inside an area.
+     * linework is disjoint if one input lies wholly inside an area,
+     * so segment intersection checking is not sufficient.
      */
     boolean checkDisjointPoints = geomTarget.hasDimension(Dimension.A) 
         || topoComputer.isExteriorCheckRequired(isA);

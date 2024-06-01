@@ -77,6 +77,13 @@ abstract class IMPredicate extends BasicPredicate {
    */
   protected abstract boolean isDetermined();
   
+  /**
+   * Tests whether the exterior of the specified input geometry
+   * is intersected by any part of the other input.
+   * 
+   * @param isA the input geometry
+   * @return true if the input geometry exterior is intersected
+   */
   protected boolean intersectsExteriorOf(boolean isA) {
     if (isA) {
       return isIntersects(Location.EXTERIOR, Location.INTERIOR)
@@ -112,6 +119,12 @@ abstract class IMPredicate extends BasicPredicate {
     setValue(valueIM());
   }
   
+  /**
+   * Gets the value of the predicate according to the current
+   * intersection matrix state.
+   * 
+   * @return the current predicate value
+   */
   protected abstract boolean valueIM();
 
   public String toString() {
