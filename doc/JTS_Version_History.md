@@ -31,7 +31,7 @@ Distributions for older JTS versions can be obtained at the
 * Add `ConcaveHull.alphaShape` function (#952)
 * Add `OffsetCurve` Joined mode (#956)
 * Add `PointLocation.isOnSegment` function (#1048)
-* Addd `RelateNG` API for improved topological relationship functionality and performance (#1052)
+* Addd `RelateNG` API for improved topological relationship functionality and performance (#1052, #1055)
 
 ### Functionality Improvements
 * Improve `TopologyPreservingSimplifier` to prevent edge-disjoint line collapse (#925)
