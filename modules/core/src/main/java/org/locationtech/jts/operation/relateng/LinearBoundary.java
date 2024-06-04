@@ -49,6 +49,10 @@ class LinearBoundary {
     return false;
   }
 
+  public boolean hasBoundary() {
+    return hasBoundary;
+  }
+  
   public boolean isBoundary(Coordinate pt) {
     if (! vertexDegree.containsKey(pt))
       return false;
@@ -74,14 +78,6 @@ class LinearBoundary {
     }
     dim++;
     degree.put(p, dim);
-  }
-  
-  public Set<Coordinate> getEndPoints() {
-    return vertexDegree.keySet();
-  }
-
-  public boolean hasBoundary() {
-    return hasBoundary;
   }
 
 }
