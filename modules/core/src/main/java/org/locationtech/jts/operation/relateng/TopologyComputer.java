@@ -180,12 +180,55 @@ class TopologyComputer {
   
   public void addIntersection(NodeSection a, NodeSection b) {
     if (! a.isSameGeometry(b)) {
-      updateABIntersection(a, b);
+      updateIntersectionAB(a, b);
     }
-    //TODO: for self-intersections add virtual nodes to geometry components 
-
-    //-- add edges to node to allow full topology update later
+    //-- add edges to node to allow full topology evaluation later
     addNodeSections(a, b);
+  }
+  
+  /**
+   * Update topology for an intersection between A and B.
+   * 
+   * @param a the section for geometry A 
+   * @param b the section for geometry B
+   */
+  private void updateIntersectionAB(NodeSection a, NodeSection b) {
+    if (NodeSection.isAreaArea(a, b)) {
+      updateAreaAreaCross(a, b);
+    }
+    updateNodeLocation(a, b);
+  }
+
+  /**
+   * Updates topology for an AB Area-Area crossing node.
+   * Sections cross at a node if (a) the intersection is proper 
+   * (i.e. in the interior of two segments)
+   * or (b) if non-proper then whether the linework crosses
+   * is determined by the geometry of the segments on either side of the node.
+   * In these situations the area geometry interiors intersect (in dimension 2).
+   * 
+   * @param a the section for geometry A 
+   * @param b the section for geometry B
+   */
+  private void updateAreaAreaCross(NodeSection a, NodeSection b) {
+    boolean isProper = NodeSection.isProper(a, b);
+    if (isProper || PolygonNodeTopology.isCrossing(a.nodePt(), 
+        a.getVertex(0), a.getVertex(1), 
+        b.getVertex(0), b.getVertex(1))) {
+      updateDim(Location.INTERIOR, Location.INTERIOR, Dimension.A);
+    }
+  }
+  /**
+   * Updates topology for a node at an AB edge intersection.
+   * 
+   * @param a the section for geometry A 
+   * @param b the section for geometry B
+   */
+  private void updateNodeLocation(NodeSection a, NodeSection b) {
+    Coordinate pt = a.nodePt();
+    int locA = geomA.locateNode(pt, a.getPolygonal()); 
+    int locB = geomB.locateNode(pt, b.getPolygonal()); 
+    updateDim(locA, locB, Dimension.P);
   }
 
   private void addNodeSections(NodeSection ns0, NodeSection ns1) {
@@ -194,76 +237,6 @@ class TopologyComputer {
     sections.addNodeSection(ns1);
   }
   
-  private void updateABIntersection(NodeSection a, NodeSection b) {
-    if (NodeSection.isProper(a, b)) {
-      updateABIntersectionProper(a, b);
-    }
-    else if (NodeSection.isAreaArea(a, b)) {
-      updateAreaAreaCross(a, b);
-    }
-    updateNodeLocation(a.nodePt(), a, b);
-  }
-  
-  private void updateABIntersectionProper(NodeSection a, NodeSection b) {
-    int dimA = a.dimension();
-    int dimB = b.dimension();
-    if (dimA == 2 && dimB == 2) {
-      //- a proper edge intersection is an edge cross. 
-      updateAreaAreaCross(a, b);
-    }
-    else if (dimA == 2 && dimB == 1) {
-      updateAreaLineCross(a, b);
-    }
-    else if (dimA == 1 && dimB == 2) {
-      updateAreaLineCross(b, a);
-    }
-    else if (dimA == 1 && dimB == 1) {
-      //-- nothing to do here - node topology is updated by caller
-    }
-    else {
-      Assert.shouldNeverReachHere(MSG_GEOMETRY_DIMENSION_UNEXPECTED);
-    }
-  }
-
-  private void updateAreaLineCross(NodeSection eArea, NodeSection eLine) {
-    //TODO: does this give any info apart from node? which is checked by caller
-    /**
-     * A proper crossing of a line and and area
-     * provides limited topological information,
-     * since the area edge intersection point
-     * may also be a node of a hole, or of another shell, or both.
-     * Full topology is determined when the node topology is evaluated.
-     */
-    boolean geomLine = eLine.isA();
-    Coordinate nodePt = eArea.nodePt();
-    int locLine = getGeometry(geomLine).locateNode(nodePt, eLine.getPolygonal());
-    int locArea = getGeometry(eArea.isA()).locateNode(nodePt, eArea.getPolygonal());
-    updateDim(eArea.isA(), locArea, locLine, Dimension.P);
-  }
-
-  private void updateAreaAreaCross(NodeSection a, NodeSection b) {
-    boolean isProper = NodeSection.isProper(a, b);
-    /**
-     * A crossing of area edges determines that the interiors intersect.
-     */
-    if (isProper || PolygonNodeTopology.isCrossing(a.nodePt(), 
-        a.getVertex(0), a.getVertex(1), 
-        b.getVertex(0), b.getVertex(1))) {
-      updateDim(Location.INTERIOR, Location.INTERIOR, Dimension.A);
-    }
-  }
-  /**
-   * Adds a basic edge intersection point.
-   * @param pt
-   * @param b 
-   * @param a 
-   */
-  private void updateNodeLocation(Coordinate pt, NodeSection a, NodeSection b) {
-    int locA = geomA.locateNode(pt, a.getPolygonal()); 
-    int locB = geomB.locateNode(pt, b.getPolygonal()); 
-    updateDim(locA, locB, Dimension.P);
-  }
-
   public void addPointOnPointInterior(Coordinate pt) {
     updateDim(Location.INTERIOR, Location.INTERIOR, Dimension.P); 
   }
