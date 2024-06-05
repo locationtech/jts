@@ -95,6 +95,12 @@ class NodeSection implements Comparable<NodeSection>
     return ringId;
   }
   
+  /**
+   * Gets the polygon this section is part of.
+   * Will be null if section is not on a polygon boundary.
+   * 
+   * @return the associated polygon, or null
+   */
   public Geometry getPolygonal() {
     return poly;
   }

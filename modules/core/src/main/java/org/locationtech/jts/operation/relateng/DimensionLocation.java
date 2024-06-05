@@ -14,6 +14,13 @@ package org.locationtech.jts.operation.relateng;
 import org.locationtech.jts.geom.Dimension;
 import org.locationtech.jts.geom.Location;
 
+/**
+ * Codes which combine a geometry dimension and a location
+ * on the geometry.
+ * 
+ * @author mdavis
+ *
+ */
 class DimensionLocation {
 
   public static final int EXTERIOR = Location.EXTERIOR;

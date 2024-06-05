@@ -152,13 +152,21 @@ class RelatePointLocator {
    * (i.e. a point or on an edge).
    * 
    * @param p the node point to locate
-   * @param polygonal 
+   * @param parentPolygonal the polygon the point is a node of
    * @return the location of the node point
    */
   public int locateNode(Coordinate p, Geometry parentPolygonal) {
     return DimensionLocation.location(locateNodeWithDim(p, parentPolygonal));
   }
   
+  /**
+   * Locates a point which is known to be a node of the geometry,
+   * as a {@link DimensionLocation}.
+   * 
+   * @param p the point to locate
+   * @param parentPolygonal the polygon the point is a node of
+   * @return the dimension and location of the point
+   */
   public int locateNodeWithDim(Coordinate p, Geometry parentPolygonal) {
     return locateWithDim(p, true, parentPolygonal);
   }

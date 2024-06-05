@@ -178,6 +178,12 @@ class RelateGeometry {
     return false;
   }
   
+  /**
+   * Gets the actual non-empty dimension of the geometry.
+   * Zero-length LineStrings are treated as Points.
+   * 
+   * @return the real (non-empty) dimension
+   */
   public int getDimensionReal() {
     if (isGeomEmpty) return Dimension.FALSE;
     if (getDimension() == 1 && isLineZeroLen)
@@ -208,6 +214,10 @@ class RelateGeometry {
 
   /**
    * Locates a vertex of a polygon.
+   * A vertex of a Polygon or MultiPolygon is on
+   * the {@link Location#BOUNDARY}.
+   * But a vertex of an overlapped polygon in a GeometryCollection
+   * may be in the {@link Location#INTERIOR}.
    * 
    * @param pt the polygon vertex
    * @return the location of the vertex
