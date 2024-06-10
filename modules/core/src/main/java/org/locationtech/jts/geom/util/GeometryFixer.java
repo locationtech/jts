@@ -50,7 +50,7 @@ import org.locationtech.jts.operation.overlayng.OverlayNGRobust;
  * <li><code>Point</code>: keep valid coordinate, or EMPTY</li>
  * <li><code>LineString</code>: coordinates are fixed</li>
  * <li><code>LinearRing</code>: coordinates are fixed.  Keep valid ring, or else convert into <code>LineString</code></li>
- * <li><code>Polygon</code>: transform into a valid polygon,
+ * <li><code>Polygon</code>: transform into a valid polygon or multipolygon,
  * preserving as much of the extent and vertices as possible.
  * <ul>
  *   <li>Rings are fixed to ensure they are valid</li>
