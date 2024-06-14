@@ -74,6 +74,7 @@ Distributions for older JTS versions can be obtained at the
 * Fix `PointLocator` to respect `BoundaryNodeRule` for single lines (#1031)
 * Fix `BufferOp` Inverted Ring Removal check (#1038)
 * Improve `VariableBuffer` segment buffer cap generation (#1041)
+* Fix `TopologyPreservingSimplifier` ring endpoint removal indexing (#1059)
 
 ### Performance Improvements
 
