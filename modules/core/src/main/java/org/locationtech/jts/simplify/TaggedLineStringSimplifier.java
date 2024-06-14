@@ -133,7 +133,14 @@ public class TaggedLineStringSimplifier
       Coordinate endPt = firstSeg.p0;
       if (simpSeg.distance(endPt) <= distanceTolerance
           && isTopologyValid(line, firstSeg, lastSeg, simpSeg)) {
-        line.removeRingEndpoint();
+        //-- don't know if segments are original or new, so remove from all indexes
+        inputIndex.remove(firstSeg);
+        inputIndex.remove(lastSeg);
+        outputIndex.remove(firstSeg);
+        outputIndex.remove(lastSeg);
+
+        LineSegment flatSeg = line.removeRingEndpoint();
+        outputIndex.add(flatSeg);
       }
     }
   }

@@ -133,13 +133,14 @@ class TaggedLineString
     return pts;
   }
 
-  void removeRingEndpoint()
+  LineSegment removeRingEndpoint()
   {
     LineSegment firstSeg = (LineSegment) resultSegs.get(0);
     LineSegment lastSeg = (LineSegment) resultSegs.get(resultSegs.size() - 1);
 
     firstSeg.p0 = lastSeg.p0;
     resultSegs.remove(resultSegs.size() - 1);
+    return firstSeg;
   }
 
 
