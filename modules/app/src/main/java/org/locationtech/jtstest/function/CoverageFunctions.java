@@ -11,7 +11,9 @@
  */
 package org.locationtech.jtstest.function;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.locationtech.jts.coverage.CoverageGapFinder;
 import org.locationtech.jts.coverage.CoveragePolygonValidator;
@@ -64,11 +66,27 @@ public class CoverageFunctions {
     Geometry[] result =  CoverageSimplifier.simplify(cov, tolerance);
     return FunctionsUtil.buildGeometry(result);
   }
+
+  @Metadata(description="Simplify a coverage by providing one tolerance per geometry")
+  public static Geometry simplifyDynamicTolerance(Geometry coverage, String tolerances) {
+    Geometry[] cov = toGeometryArray(coverage);
+    Double[] toleranceList = toDoubleArray(tolerances);
+    Geometry[] result =  CoverageSimplifier.simplify(cov, toleranceList);
+    return FunctionsUtil.buildGeometry(result);
+  }
   
   @Metadata(description="Simplify inner edges of a coverage")
   public static Geometry simplifyinner(Geometry coverage, double tolerance) {
     Geometry[] cov = toGeometryArray(coverage);
     Geometry[] result =  CoverageSimplifier.simplifyInner(cov, tolerance);
+    return FunctionsUtil.buildGeometry(result);
+  }
+
+  @Metadata(description="Simplify inner edges of a coverage by providing one tolerance per geometry")
+  public static Geometry simplifyinnerDynamicTolerance(Geometry coverage, String tolerances) {
+    Geometry[] cov = toGeometryArray(coverage);
+    Double[] toleranceList = toDoubleArray(tolerances);
+    Geometry[] result =  CoverageSimplifier.simplifyInner(cov, toleranceList);
     return FunctionsUtil.buildGeometry(result);
   }
   
@@ -85,5 +103,8 @@ public class CoverageFunctions {
     }
     return geoms;
   }
-  
+
+  private static Double[] toDoubleArray(String csvList) {
+    return Arrays.stream(csvList.split(",")).map(Double::parseDouble).toArray(Double[]::new);
+  }
 }
