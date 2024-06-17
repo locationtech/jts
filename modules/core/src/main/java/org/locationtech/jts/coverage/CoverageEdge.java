@@ -14,6 +14,7 @@ package org.locationtech.jts.coverage;
 import java.util.List;
 
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateArrays;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineSegment;
 import org.locationtech.jts.geom.LineString;
@@ -22,23 +23,26 @@ import org.locationtech.jts.io.WKTWriter;
 
 /**
  * An edge of a polygonal coverage formed from all or a section of a polygon ring.
- * An edge may be a free ring, which is a ring which has not node points
- * (i.e. does not touch any other rings in the parent coverage).
+ * An edge may be a free ring, which is a ring which has no node points
+ * (i.e. does not share a vertex with any other rings in the parent coverage).
  * 
  * @author mdavis
  *
  */
 class CoverageEdge {
 
-  public static CoverageEdge createEdge(Coordinate[] ring) {
+  public static final int RING_COUNT_INNER = 2;
+  public static final int RING_COUNT_OUTER = 1;
+
+  public static CoverageEdge createEdge(Coordinate[] ring, boolean isPrimary) {
     Coordinate[] pts = extractEdgePoints(ring, 0, ring.length - 1);
-    CoverageEdge edge = new CoverageEdge(pts, true);
+    CoverageEdge edge = new CoverageEdge(pts, isPrimary, true);
     return edge;
   }
 
-  public static CoverageEdge createEdge(Coordinate[] ring, int start, int end) {
+  public static CoverageEdge createEdge(Coordinate[] ring, int start, int end, boolean isPrimary) {
     Coordinate[] pts = extractEdgePoints(ring, start, end);
-    CoverageEdge edge = new CoverageEdge(pts, false);
+    CoverageEdge edge = new CoverageEdge(pts, isPrimary, false);
     return edge;
   }
 
@@ -136,12 +140,14 @@ class CoverageEdge {
   private Coordinate[] pts;
   private int ringCount = 0;
   private boolean isFreeRing = true;
+  private boolean isPrimary = true;
 
-  public CoverageEdge(Coordinate[] pts, boolean isFreeRing) {
+  public CoverageEdge(Coordinate[] pts, boolean isPrimary, boolean isFreeRing) {
     this.pts = pts;
+    this.isPrimary = isPrimary;
     this.isFreeRing = isFreeRing;
   }
-
+  
   public void incRingCount() {
     ringCount++;
   }
@@ -150,9 +156,19 @@ class CoverageEdge {
     return ringCount;
   }
 
+  public void setPrimary(boolean isPrimary) {
+    this.isPrimary = isPrimary;
+  }
+  
+  public boolean isRemovableRing() {
+    boolean isRing = CoordinateArrays.isRing(pts);
+    return isRing && ! isPrimary;
+  }
+
   /**
    * Returns whether this edge is a free ring;
-   * i.e. one with no constrained nodes.
+   * i.e. one that does not have nodes
+   * which are anchored because they occur in another ring.
    * 
    * @return true if this is a free ring
    */
@@ -183,6 +199,9 @@ class CoverageEdge {
   public String toString() {
     return WKTWriter.toLineString(pts);
   }
+
+
+
 
 
 }

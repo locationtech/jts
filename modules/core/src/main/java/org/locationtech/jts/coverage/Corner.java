@@ -25,12 +25,12 @@ class Corner implements Comparable<Corner> {
   private int next;
   private double area;
 
-  public Corner(LinkedLine edge, int i) {
+  public Corner(LinkedLine edge, int i, double area) {
     this.edge = edge;
     this.index = i; 
     this.prev = edge.prev(i);
     this.next = edge.next(i);
-    this.area = area(edge, i);
+    this.area = area;
   }
 
   public boolean isVertex(int index) {
@@ -57,13 +57,6 @@ class Corner implements Comparable<Corner> {
   
   public Coordinate next() {
     return edge.getCoordinate(next);  
-  }
-  
-  private static double area(LinkedLine edge, int index) {
-    Coordinate pp = edge.prevCoordinate(index);
-    Coordinate p = edge.getCoordinate(index);
-    Coordinate pn = edge.nextCoordinate(index);
-    return Triangle.area(pp, p, pn);
   }
 
   /**

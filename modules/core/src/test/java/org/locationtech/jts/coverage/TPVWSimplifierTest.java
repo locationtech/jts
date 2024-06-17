@@ -89,7 +89,8 @@ public class TPVWSimplifierTest extends GeometryTestCase {
     }
     MultiLineString constraints = wktConstraints == null ? null
       : (MultiLineString) read(wktConstraints);
-    Geometry actual = TPVWSimplifier.simplify(lines, freeRings, constraints, tolerance);
+    CornerArea cornerArea = new CornerArea();
+    Geometry actual = TPVWSimplifier.simplify(lines, null, freeRings, constraints, tolerance, cornerArea, 1.0);
     Geometry expected = read(wktExpected);
     checkEqual(expected, actual);
   }

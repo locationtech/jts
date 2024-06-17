@@ -24,6 +24,7 @@ import org.locationtech.jts.geom.CoordinateArrays;
 import org.locationtech.jts.geom.CoordinateList;
 import org.locationtech.jts.geom.CoordinateSequence;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineSegment;
 import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.MultiPolygon;
@@ -74,9 +75,11 @@ class CoverageRingEdges {
   }
   
   /**
-   * Selects the edges with a given ring count (which can be 1 or 2).
+   * Selects the edges with a given ring count (1 or 2).
+   * Outer edges have ring count 1. 
+   * Inner edges have ring count 2. 
    * 
-   * @param ringCount the edge ring count to select (1 or 2)
+   * @param ringCount the edge ring count to select (1 for outer or 2 for inner)
    * @return the selected edges
    */
   public List<CoverageEdge> selectEdges(int ringCount) {
@@ -95,6 +98,8 @@ class CoverageRingEdges {
     nodes.addAll(findBoundaryNodes(boundarySegs));
     HashMap<LineSegment, CoverageEdge> uniqueEdgeMap = new HashMap<LineSegment, CoverageEdge>();
     for (Geometry geom : coverage) {
+      //-- geom is a Polygon or MultiPolygon
+      int indexLargest = findLargestPolygonIndex(geom);
       for (int ipoly = 0; ipoly < geom.getNumGeometries(); ipoly++) {
         Polygon poly = (Polygon) geom.getGeometryN(ipoly);
         
@@ -102,25 +107,45 @@ class CoverageRingEdges {
         if (poly.isEmpty())
           continue;
         
+        //-- largest polygon is the primary one, which is never removed
+        boolean isPrimary = ipoly == indexLargest;
+        
         //-- extract shell
         LinearRing shell = poly.getExteriorRing();
-        addRingEdges(shell, nodes, boundarySegs, uniqueEdgeMap);
+        addRingEdges(shell, isPrimary, nodes, boundarySegs, uniqueEdgeMap);
         //-- extract holes
         for (int ihole = 0; ihole < poly.getNumInteriorRing(); ihole++) {
           LinearRing hole = poly.getInteriorRingN(ihole);
-          //-- skip empty rings. Missing rings are copied in result
+          //-- skip empty holes. Missing rings are copied in result
           if (hole.isEmpty())
             continue;
-          addRingEdges(hole, nodes, boundarySegs, uniqueEdgeMap);         
+          //-- holes are never primary
+          addRingEdges(hole, false, nodes, boundarySegs, uniqueEdgeMap);         
         }
       }
     }
   }
 
-  private void addRingEdges(LinearRing ring, Set<Coordinate> nodes, Set<LineSegment> boundarySegs,
+  private int findLargestPolygonIndex(Geometry geom) {
+    if (geom instanceof Polygon)
+      return 0;
+    int indexLargest = -1;
+    double areaLargest = -1;
+    for (int ipoly = 0; ipoly < geom.getNumGeometries(); ipoly++) {
+      Polygon poly = (Polygon) geom.getGeometryN(ipoly);
+      double area = poly.getArea();
+      if (area > areaLargest) {
+        areaLargest = area;
+        indexLargest = ipoly;
+      }
+    }
+    return indexLargest;
+  }
+
+  private void addRingEdges(LinearRing ring, boolean isPrimary, Set<Coordinate> nodes, Set<LineSegment> boundarySegs,
       HashMap<LineSegment, CoverageEdge> uniqueEdgeMap) {
     addBoundaryInnerNodes(ring, boundarySegs, nodes);
-    List<CoverageEdge> ringEdges = extractRingEdges(ring, uniqueEdgeMap, nodes);
+    List<CoverageEdge> ringEdges = extractRingEdges(ring, isPrimary, uniqueEdgeMap, nodes);
     if (ringEdges != null)
       ringEdgesMap.put(ring, ringEdges);
   }
@@ -149,8 +174,17 @@ class CoverageRingEdges {
     }
   }
 
+  /**
+   * Extracts the {@link CoverageEdge}s for a ring.
+   * 
+   * @param ring
+   * @param isRetained true if the ring is retained (must not be removed)
+   * @param uniqueEdgeMap
+   * @param nodes
+   * @return null if the ring has too few distinct vertices
+   */
   private List<CoverageEdge> extractRingEdges(LinearRing ring, 
-      HashMap<LineSegment, CoverageEdge> uniqueEdgeMap, 
+      boolean isPrimary, HashMap<LineSegment, CoverageEdge> uniqueEdgeMap, 
       Set<Coordinate> nodes) {
  // System.out.println(ring);
     List<CoverageEdge> ringEdges = new ArrayList<CoverageEdge>();
@@ -164,15 +198,20 @@ class CoverageRingEdges {
     int first = findNextNodeIndex(pts, -1, nodes);
     if (first < 0) {
       //-- ring does not contain a node, so edge is entire ring
-      CoverageEdge edge = createEdge(pts, uniqueEdgeMap);
+      CoverageEdge edge = createEdge(pts, -1, -1, isPrimary, uniqueEdgeMap);
       ringEdges.add(edge);
     }
     else {
       int start = first;
       int end = start;
+      boolean isEdgePrimary = true;
       do {
         end = findNextNodeIndex(pts, start, nodes);
-        CoverageEdge edge = createEdge(pts, start, end, uniqueEdgeMap);
+        //-- a single-node ring is only retained if specified
+        if (end == start) {
+          isEdgePrimary = isPrimary;
+        }
+        CoverageEdge edge = createEdge(pts, start, end, isEdgePrimary, uniqueEdgeMap);
 //  System.out.println(ringEdges.size() + " : " + edge);
         ringEdges.add(edge);
         start = end;
@@ -180,30 +219,34 @@ class CoverageRingEdges {
     }
     return ringEdges;
   }
-
-  private CoverageEdge createEdge(Coordinate[] ring, HashMap<LineSegment, CoverageEdge> uniqueEdgeMap) {
-    CoverageEdge edge;
-    LineSegment edgeKey = CoverageEdge.key(ring);
-    if (uniqueEdgeMap.containsKey(edgeKey)) {
-      edge = uniqueEdgeMap.get(edgeKey);
-    }
-    else {
-      edge = CoverageEdge.createEdge(ring);
-      uniqueEdgeMap.put(edgeKey, edge);
-      edges.add(edge);
-    }
-    edge.incRingCount();
-    return edge;
-  }
   
-  private CoverageEdge createEdge(Coordinate[] ring, int start, int end, HashMap<LineSegment, CoverageEdge> uniqueEdgeMap) {
+  /**
+   * Creates or updates an edge for the given ring or ring section.
+   * 
+   * @param ring ring to create edge for
+   * @param start start index of ring section; -1 indicates edge is entire ring
+   * @param end end index of ring section
+   * @param isPrimary whether this ring is a primary ring
+   * @param uniqueEdgeMap map of edges
+   * @return the CoverageEdge for the ring or portion of ring
+   */
+  private CoverageEdge createEdge(Coordinate[] ring, int start, int end, boolean isPrimary, HashMap<LineSegment, CoverageEdge> uniqueEdgeMap) {
     CoverageEdge edge;
     LineSegment edgeKey = (end == start) ? CoverageEdge.key(ring) : CoverageEdge.key(ring, start, end);
     if (uniqueEdgeMap.containsKey(edgeKey)) {
       edge = uniqueEdgeMap.get(edgeKey);
+      //-- ensure existing edge is retained if this ring is retained
+      if (isPrimary) {
+        edge.setPrimary(true);
+      }
     }
     else {
-      edge = CoverageEdge.createEdge(ring, start, end);
+      if (start < 0) {
+        edge = CoverageEdge.createEdge(ring, isPrimary);
+      }
+      else {
+        edge = CoverageEdge.createEdge(ring, start, end, isPrimary);
+      }
       uniqueEdgeMap.put(edgeKey, edge);
       edges.add(edge);
     }
@@ -299,24 +342,43 @@ class CoverageRingEdges {
   }
 
   private Geometry buildMultiPolygon(MultiPolygon geom) {
-    Polygon[] polys = new Polygon[geom.getNumGeometries()];
-    for (int i = 0; i < polys.length; i++) {
-      polys[i] = buildPolygon((Polygon) geom.getGeometryN(i));
+    List<Polygon> polyList = new ArrayList<Polygon>();
+    for (int i = 0; i < geom.getNumGeometries(); i++) {
+       Polygon poly = buildPolygon((Polygon) geom.getGeometryN(i));
+       if (poly != null) {
+         polyList.add(poly);
+       }
     }
+    if (polyList.size() == 1) {
+      return polyList.get(0);
+    }
+    Polygon[] polys = GeometryFactory.toPolygonArray(polyList);
     return geom.getFactory().createMultiPolygon(polys);
   }
 
+  /**
+   * 
+   * @param polygon
+   * @return null if the polygon has been removed
+   */
   private Polygon buildPolygon(Polygon polygon) {
     LinearRing shell = buildRing(polygon.getExteriorRing());
-
+    if (shell == null) {
+      return null;
+    }
     if (polygon.getNumInteriorRing() == 0) {
       return polygon.getFactory().createPolygon(shell);
     }
-    LinearRing holes[] = new LinearRing[polygon.getNumInteriorRing()];
-    for (int i = 0; i < holes.length; i++) {
+    List<LinearRing> holeList = new ArrayList<LinearRing>();
+    for (int i = 0; i < polygon.getNumInteriorRing(); i++) {
       LinearRing hole = polygon.getInteriorRingN(i);
-      holes[i] = buildRing(hole);
+      LinearRing newHole = buildRing(hole);
+      if (newHole != null) {
+        holeList.add(newHole);
+      }
     }
+    //LinearRing holes[] = new LinearRing[polygon.getNumInteriorRing()];
+    LinearRing holes[] = GeometryFactory.toLinearRingArray(holeList);
     return polygon.getFactory().createPolygon(shell, holes);
   }
 
@@ -325,6 +387,11 @@ class CoverageRingEdges {
     //-- if ring is not in map, must have been invalid.  Just copy original
     if (ringEdges == null)
       return (LinearRing) ring.copy();
+    
+    boolean isRemoved = ringEdges.size() == 1
+        && ringEdges.get(0).getCoordinates().length == 0;
+    if (isRemoved)
+      return null;
     
     CoordinateList ptsList = new CoordinateList();
     for (int i = 0; i < ringEdges.size(); i++) {

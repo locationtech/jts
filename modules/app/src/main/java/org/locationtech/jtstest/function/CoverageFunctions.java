@@ -62,14 +62,36 @@ public class CoverageFunctions {
   public static Geometry simplify(Geometry coverage, double tolerance) {
     Geometry[] cov = toGeometryArray(coverage);
     Geometry[] result =  CoverageSimplifier.simplify(cov, tolerance);
-    return FunctionsUtil.buildGeometry(result);
+    return coverage.getFactory().createGeometryCollection(result);
+  }
+  
+  @Metadata(description="Simplify a coverage with a smoothness weight")
+  public static Geometry simplifySharp(Geometry coverage, 
+      @Metadata(title="Distance tol")
+      double tolerance, 
+      @Metadata(title="Weight")
+      double weight) {
+    Geometry[] cov = toGeometryArray(coverage);
+    Geometry[] result =  CoverageSimplifier.simplify(cov, tolerance, weight);
+    return coverage.getFactory().createGeometryCollection(result);
+  }
+  
+  @Metadata(description="Simplify a coverage with a ring removal size factor")
+  public static Geometry simplifyRemoveRings(Geometry coverage, 
+      @Metadata(title="Distance tol")
+      double tolerance, 
+      @Metadata(title="Removal Size Factor")
+      double factor) {
+    Geometry[] cov = toGeometryArray(coverage);
+    Geometry[] result =  CoverageSimplifier.simplifyRemovalSize(cov, tolerance, factor);
+    return coverage.getFactory().createGeometryCollection(result);
   }
   
   @Metadata(description="Simplify inner edges of a coverage")
   public static Geometry simplifyinner(Geometry coverage, double tolerance) {
     Geometry[] cov = toGeometryArray(coverage);
     Geometry[] result =  CoverageSimplifier.simplifyInner(cov, tolerance);
-    return FunctionsUtil.buildGeometry(result);
+    return coverage.getFactory().createGeometryCollection(result);
   }
   
   static Geometry extractPolygons(Geometry geom) {

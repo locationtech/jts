@@ -17,6 +17,7 @@ import java.util.List;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.MultiLineString;
+import org.locationtech.jts.math.MathUtil;
 
 /**
  * Simplifies the boundaries of the polygons in a polygonal coverage
@@ -35,10 +36,17 @@ import org.locationtech.jts.geom.MultiLineString;
  * <p>
  * The simplified result coverage has the following characteristics:
  * <ul>
- * <li>It has the same number and types of polygonal geometries as the input
+ * <li>It has the same number of polygonal geometries as the input
+ * <li>If the input is a valid coverage, then so is the result
  * <li>Node points (inner vertices shared by three or more polygons, 
  *     or boundary vertices shared by two or more) are not changed
- * <li>If the input is a valid coverage, then so is the result
+ * <li>Polygons maintain their line-adjacency (edges are never removed)
+ * <li>Rings are simplified to a minimum of 4 vertices, to better preserve their shape
+ * <lI>Rings smaller than the area tolerance are removed where possible.
+ *  This applies to both holes and "islands" (multipolygon elements
+ *  which are disjoint or touch another polygon at a single vertex).
+ *  At least one polygon is retained for each input geometry
+ *  (the one with largest area).
  * </ul>
  * This class also supports inner simplification, which simplifies
  * only edges of the coverage which are adjacent to two polygons.
@@ -46,7 +54,7 @@ import org.locationtech.jts.geom.MultiLineString;
  * subset of a coverage still matches the remainder of the coverage.
  * <p>
  * The input coverage should be valid according to {@link CoverageValidator}.
- * Invalid coverages may still be simplified, but the result will still be invalid.
+ * Invalid coverages may be simplified, but the result will likely still be invalid.
  * 
  * @author Martin Davis
  */
@@ -62,6 +70,18 @@ public class CoverageSimplifier {
    */
   public static Geometry[] simplify(Geometry[] coverage, double tolerance) {
     CoverageSimplifier simplifier = new CoverageSimplifier(coverage);
+    return simplifier.simplify(tolerance);
+  }
+  
+  public static Geometry[] simplify(Geometry[] coverage, double tolerance, double weight) {
+    CoverageSimplifier simplifier = new CoverageSimplifier(coverage);
+    simplifier.setSmoothWeight(weight);
+    return simplifier.simplify(tolerance);
+  }
+  
+  public static Geometry[] simplifyRemovalSize(Geometry[] coverage, double tolerance, double factor) {
+    CoverageSimplifier simplifier = new CoverageSimplifier(coverage);
+    simplifier.setRemovableRingSizeFactor(factor);
     return simplifier.simplify(tolerance);
   }
   
@@ -81,6 +101,8 @@ public class CoverageSimplifier {
   
   private Geometry[] input;
   private GeometryFactory geomFactory;
+  private double smoothWeight = CornerArea.DEFAULT_SMOOTH_WEIGHT;
+  private double removableSizeFactor = 1.0;
   
   /**
    * Create a new coverage simplifier instance.
@@ -90,6 +112,25 @@ public class CoverageSimplifier {
   public CoverageSimplifier(Geometry[] coverage) {
     input = coverage;
     geomFactory = coverage[0].getFactory();
+  }
+  
+  /**
+   * Sets the factor applied to the area tolerance to determine
+   * if small rings should be removed.
+   * Larger values cause more rings to be removed.
+   * A value of 0 prevents rings from being removed.
+   * 
+   * @param removableSizeFactor the factor to determine ring size to remove
+   */
+  public void setRemovableRingSizeFactor(double removableSizeFactor) {
+    double factor = removableSizeFactor;
+    if (factor < 0.0)
+      factor = 0.0;
+    this.removableSizeFactor = factor;
+  }
+  
+  public void setSmoothWeight(double smoothWeight) {
+    this.smoothWeight  = smoothWeight;
   }
   
   /**
@@ -115,8 +156,8 @@ public class CoverageSimplifier {
    */
   public Geometry[] simplifyInner(double tolerance) {
     CoverageRingEdges cov = CoverageRingEdges.create(input);
-    List<CoverageEdge> innerEdges = cov.selectEdges(2);
-    List<CoverageEdge> outerEdges = cov.selectEdges(1);
+    List<CoverageEdge> innerEdges = cov.selectEdges(CoverageEdge.RING_COUNT_INNER);
+    List<CoverageEdge> outerEdges = cov.selectEdges(CoverageEdge.RING_COUNT_OUTER);
     MultiLineString constraintEdges = CoverageEdge.createLines(outerEdges, geomFactory);
 
     simplifyEdges(innerEdges, constraintEdges, tolerance);
@@ -126,8 +167,10 @@ public class CoverageSimplifier {
 
   private void simplifyEdges(List<CoverageEdge> edges, MultiLineString constraints, double tolerance) {
     MultiLineString lines = CoverageEdge.createLines(edges, geomFactory);
-    BitSet freeRings = getFreeRings(edges);
-    MultiLineString linesSimp = TPVWSimplifier.simplify(lines, freeRings, constraints, tolerance);
+    BitSet removableRings = getRemovableRingFlags(edges);
+    BitSet freeRings = getFreeRingFlags(edges);
+    CornerArea cornerArea = new CornerArea(smoothWeight);
+    MultiLineString linesSimp = TPVWSimplifier.simplify(lines, removableRings, freeRings, constraints, tolerance, cornerArea, removableSizeFactor);
     //Assert: mlsSimp.getNumGeometries = edges.length
     
     setCoordinates(edges, linesSimp);
@@ -139,7 +182,16 @@ public class CoverageSimplifier {
     }
   }
 
-  private BitSet getFreeRings(List<CoverageEdge> edges) {
+  private static BitSet getRemovableRingFlags(List<CoverageEdge> edges) {
+    BitSet removableRings = new BitSet(edges.size());
+    for (int i = 0 ; i < edges.size() ; i++) {
+      CoverageEdge edge = edges.get(i);
+      removableRings.set(i, edge.isRemovableRing());
+    }
+    return removableRings;
+  }
+  
+  private static BitSet getFreeRingFlags(List<CoverageEdge> edges) {
     BitSet freeRings = new BitSet(edges.size());
     for (int i = 0 ; i < edges.size() ; i++) {
       freeRings.set(i, edges.get(i).isFreeRing());
