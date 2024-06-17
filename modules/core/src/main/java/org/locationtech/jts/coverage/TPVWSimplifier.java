@@ -164,7 +164,7 @@ class TPVWSimplifier {
       LineString line = (LineString) lines.getGeometryN(i);
       boolean isFree = getValue(freeRings, i);
       boolean isRemovable = getValue(removableRings, i);
-      Edge edge = new Edge(line, distanceTolerance, isFree, isRemovable);
+      Edge edge = new Edge(line.getCoordinates(), distanceTolerance, isFree, isRemovable);
       edge.updateRemoved(removableSizeFactor);
       edges.add(edge);
     }
@@ -196,15 +196,15 @@ class TPVWSimplifier {
      * The endpoints of the edge are preserved during simplification,
      * unless it is a ring and the {@Link #isFreeRing} flag is set.
      * 
-     * @param inputLine the line or ring
+     * @param pts the line or ring
      * @param distanceTolerance 
      * @param isFreeRing whether a ring endpoint can be removed
      * @param isFreeRing 
      * @param isRemovable 
      */
-    Edge(LineString inputLine, double distanceTolerance, boolean isFreeRing, boolean isRemovable) {
-      this.envelope = inputLine.getEnvelopeInternal();
-      pts = inputLine.getCoordinates();
+    Edge(Coordinate[] pts, double distanceTolerance, boolean isFreeRing, boolean isRemovable) {
+      this.envelope = CoordinateArrays.envelope(pts);
+      this.pts = pts;
       this.nPts = pts.length;
       this.isFreeRing = isFreeRing;
       this.isRemovable = isRemovable;
