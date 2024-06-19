@@ -11,8 +11,10 @@
  */
 package org.locationtech.jts.coverage;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.locationtech.jts.coverage.TPVWSimplifier.Edge;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateArrays;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -46,16 +48,6 @@ class CoverageEdge {
     return edge;
   }
 
-  static MultiLineString createLines(List<CoverageEdge> edges, GeometryFactory geomFactory) {
-    LineString lines[] = new LineString[edges.size()];
-    for (int i = 0; i < edges.size(); i++) {
-      CoverageEdge edge = edges.get(i);
-      lines[i] = edge.toLineString(geomFactory);
-    }
-    MultiLineString mls = geomFactory.createMultiLineString(lines);
-    return mls;
-  }
-  
   private static Coordinate[] extractEdgePoints(Coordinate[] ring, int start, int end) {
     int size = start < end 
                   ? end - start + 1 
@@ -156,6 +148,14 @@ class CoverageEdge {
     return ringCount;
   }
 
+  public boolean isInner() {
+    return ringCount == RING_COUNT_INNER;
+  }
+  
+  public boolean isOuter() {
+    return ringCount == RING_COUNT_OUTER;
+  }
+  
   public void setPrimary(boolean isPrimary) {
     this.isPrimary = isPrimary;
   }

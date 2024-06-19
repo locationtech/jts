@@ -11,8 +11,6 @@
  */
 package org.locationtech.jts.coverage;
 
-import java.util.ArrayList;
-import java.util.BitSet;
 import java.util.List;
 import java.util.PriorityQueue;
 
@@ -20,10 +18,6 @@ import org.locationtech.jts.algorithm.Area;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateArrays;
 import org.locationtech.jts.geom.Envelope;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.LineString;
-import org.locationtech.jts.geom.MultiLineString;
 import org.locationtech.jts.index.VertexSequencePackedRtree;
 import org.locationtech.jts.index.strtree.STRtree;
 import org.locationtech.jts.simplify.LinkedLine;
@@ -49,19 +43,6 @@ import org.locationtech.jts.simplify.LinkedLine;
  *
  */
 class TPVWSimplifier {
-
-  /**
-   * Simplifies a set of lines, preserving the topology of the lines.
-   * 
-   * @param lines the lines to simplify
-   * @param distanceTolerance the simplification tolerance
-   * @return the simplified lines
-   */
-  public static MultiLineString simplify(MultiLineString lines, double distanceTolerance) {
-    TPVWSimplifier simp = new TPVWSimplifier(lines);
-    MultiLineString result = (MultiLineString) simp.simplify(distanceTolerance);
-    return result;
-  }
   
   /**
    * Simplifies a set of lines, preserving the topology of the lines between
@@ -76,46 +57,21 @@ class TPVWSimplifier {
    * @param distanceTolerance the simplification tolerance
    * @return the simplified lines
    */
-  public static MultiLineString simplify(MultiLineString lines, 
-      BitSet removableRings, BitSet freeRings,
-      MultiLineString constraintLines, 
-      double distanceTolerance, CornerArea cornerArea,
+  public static void simplify(Edge[] edges, 
+      CornerArea cornerArea,
       double removableSizeFactor) {
-    TPVWSimplifier simp = new TPVWSimplifier(lines);
-    simp.setRemovableRings(removableRings);
-    simp.setFreeRings(freeRings);
-    simp.setConstraints(constraintLines);
+    TPVWSimplifier simp = new TPVWSimplifier(edges);
     simp.setCornerArea(cornerArea);
     simp.setRemovableRingSizeFactor(removableSizeFactor);
-    MultiLineString result = (MultiLineString) simp.simplify(distanceTolerance);
-    return result;
+    simp.simplify();
   }
  
-  private MultiLineString inputLines;
-  private BitSet freeRings = null;
-  private BitSet removableRings = null;
-  private MultiLineString constraintLines = null;
   private CornerArea cornerArea;
-  private GeometryFactory geomFactory;
   private double removableSizeFactor = 1.0;
-
-  private TPVWSimplifier(MultiLineString lines) {
-    this.inputLines = lines;
-    geomFactory = inputLines.getFactory();
-  }
+  private Edge[] edges;
   
-  private void setConstraints(MultiLineString constraints) {
-    this.constraintLines = constraints;
-  }
-
-  public void setFreeRings(BitSet freeRings) {
-    //Assert: bit set has same size as number of lines.
-    this.freeRings = freeRings;
-  }
-
-  public void setRemovableRings(BitSet removableRings) {
-    //Assert: bit set has same size as number of lines.
-    this.removableRings = removableRings;
+  public TPVWSimplifier(Edge[] edges) {
+    this.edges = edges;
   }
   
   public void setRemovableRingSizeFactor(double removableSizeFactor) {
@@ -126,26 +82,20 @@ class TPVWSimplifier {
     this.cornerArea = cornerArea;
   }
  
-  private Geometry simplify(double distanceTolerance) {
-    List<Edge> edges = createEdges(inputLines, removableRings, freeRings, distanceTolerance);
-    List<Edge> constraintEdges = createEdges(constraintLines, null, null, 0);
-
+  private void simplify() {
     EdgeIndex edgeIndex = new EdgeIndex();
     add(edges, edgeIndex);
-    add(constraintEdges, edgeIndex);
 
-    LineString[] result = new LineString[edges.size()];
-    for (int i = 0 ; i < edges.size(); i++) {
-      Edge edge = edges.get(i);
-      Coordinate[] ptsSimp = edge.simplify(cornerArea, edgeIndex);
-      result[i] = geomFactory.createLineString(ptsSimp);
+    for (int i = 0 ; i < edges.length; i++) {
+      Edge edge = edges[i];
+      edge.simplify(cornerArea, edgeIndex);
     }
-    return geomFactory.createMultiLineString(result);
   }
 
-  private void add(List<Edge> edges, EdgeIndex edgeIndex) {
+  private void add(Edge[] edges, EdgeIndex edgeIndex) {
     for (Edge edge : edges) {
       //-- don't include removed edges in index
+      edge.updateRemoved(removableSizeFactor);
       if (! edge.isRemoved()) {
         //-- avoid fluffing up removed edges
         edge.init();
@@ -153,31 +103,8 @@ class TPVWSimplifier {
       }
     }
   }
-
-  private List<Edge> createEdges(MultiLineString lines, 
-      BitSet removableRings, BitSet freeRings, 
-      double distanceTolerance) {
-    List<Edge> edges = new ArrayList<Edge>();
-    if (lines == null)
-      return edges;
-    for (int i = 0 ; i < lines.getNumGeometries(); i++) {
-      LineString line = (LineString) lines.getGeometryN(i);
-      boolean isFree = getValue(freeRings, i);
-      boolean isRemovable = getValue(removableRings, i);
-      Edge edge = new Edge(line.getCoordinates(), distanceTolerance, isFree, isRemovable);
-      edge.updateRemoved(removableSizeFactor);
-      edges.add(edge);
-    }
-    return edges;
-  }
-
-  private static boolean getValue(BitSet bits, int i) {
-    if (bits == null)
-      return false;
-    return bits.get(i);
-  }
   
-  private static class Edge {
+  public static class Edge {
     private static final int MIN_EDGE_SIZE = 2;
     private static final int MIN_RING_SIZE = 4;
     
@@ -223,6 +150,10 @@ class TPVWSimplifier {
       linkedLine = new LinkedLine(pts);      
     }
     
+    public double getTolerance() {
+      return distanceTolerance;
+    }
+    
     public boolean isRemoved() {
       return isRemoved;
     }
@@ -231,6 +162,13 @@ class TPVWSimplifier {
       return pts[index];
     }
   
+    public Coordinate[] getCoordinates() {
+      if (isRemoved) {
+        return new Coordinate[0];
+      }
+      return linkedLine.getCoordinates();
+    }
+    
     public Envelope getEnvelope() {
       return envelope;
     }
@@ -239,10 +177,14 @@ class TPVWSimplifier {
       return linkedLine.size();
     }
     
-    public Coordinate[] simplify(CornerArea cornerArea, EdgeIndex edgeIndex) {     
+    public void simplify(CornerArea cornerArea, EdgeIndex edgeIndex) {     
       if (isRemoved) {
-        return new Coordinate[0];
+        return;
       }
+      //-- don't simplify
+      if (distanceTolerance <= 0.0)
+        return;
+      
       double areaTolerance = distanceTolerance * distanceTolerance;
       int minEdgeSize = linkedLine.isRing() ? MIN_RING_SIZE : MIN_EDGE_SIZE;
 
@@ -261,7 +203,6 @@ class TPVWSimplifier {
           removeCorner(corner, areaTolerance, cornerArea, cornerQueue);
         }
       }
-      return linkedLine.getCoordinates();
     }
 
     private PriorityQueue<Corner> createQueue(double areaTolerance, CornerArea cornerArea) {

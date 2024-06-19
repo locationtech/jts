@@ -11,13 +11,10 @@
  */
 package org.locationtech.jts.coverage;
 
-import java.util.BitSet;
 import java.util.List;
 
+import org.locationtech.jts.coverage.TPVWSimplifier.Edge;
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.MultiLineString;
-import org.locationtech.jts.math.MathUtil;
 
 /**
  * Simplifies the boundaries of the polygons in a polygonal coverage
@@ -73,18 +70,6 @@ public class CoverageSimplifier {
     return simplifier.simplify(tolerance);
   }
   
-  public static Geometry[] simplify(Geometry[] coverage, double tolerance, double weight) {
-    CoverageSimplifier simplifier = new CoverageSimplifier(coverage);
-    simplifier.setSmoothWeight(weight);
-    return simplifier.simplify(tolerance);
-  }
-  
-  public static Geometry[] simplifyRemovalSize(Geometry[] coverage, double tolerance, double factor) {
-    CoverageSimplifier simplifier = new CoverageSimplifier(coverage);
-    simplifier.setRemovableRingSizeFactor(factor);
-    return simplifier.simplify(tolerance);
-  }
-  
   /**
    * Simplifies the inner boundaries of a set of polygonal geometries forming a coverage,
    * preserving the coverage topology.
@@ -96,11 +81,15 @@ public class CoverageSimplifier {
    */
   public static Geometry[] simplifyInner(Geometry[] coverage, double tolerance) {
     CoverageSimplifier simplifier = new CoverageSimplifier(coverage);
-    return simplifier.simplifyInner(tolerance);
+    return simplifier.simplify(tolerance, 0);
   }
   
-  private Geometry[] input;
-  private GeometryFactory geomFactory;
+  public static Geometry[] simplifyOuter(Geometry[] coverage, double tolerance) {
+    CoverageSimplifier simplifier = new CoverageSimplifier(coverage);
+    return simplifier.simplify(0, tolerance);
+  }
+  
+  private Geometry[] coverage;
   private double smoothWeight = CornerArea.DEFAULT_SMOOTH_WEIGHT;
   private double removableSizeFactor = 1.0;
   
@@ -110,8 +99,7 @@ public class CoverageSimplifier {
    * @param coverage a set of polygonal geometries forming a coverage
    */
   public CoverageSimplifier(Geometry[] coverage) {
-    input = coverage;
-    geomFactory = coverage[0].getFactory();
+    this.coverage = coverage;
   }
   
   /**
@@ -140,63 +128,50 @@ public class CoverageSimplifier {
    * @return the simplified polygons
    */
   public Geometry[] simplify(double tolerance) {
-    CoverageRingEdges cov = CoverageRingEdges.create(input);
-    simplifyEdges(cov.getEdges(), null, tolerance);
-    Geometry[] result = cov.buildCoverage();
-    return result;
-  }
-  
-  /**
-   * Computes the inner-boundary simplified coverage,
-   * preserving the coverage topology,
-   * and leaving outer boundary edges unchanged.
-   * 
-   * @param tolerance the simplification tolerance
-   * @return the simplified polygons
-   */
-  public Geometry[] simplifyInner(double tolerance) {
-    CoverageRingEdges cov = CoverageRingEdges.create(input);
-    List<CoverageEdge> innerEdges = cov.selectEdges(CoverageEdge.RING_COUNT_INNER);
-    List<CoverageEdge> outerEdges = cov.selectEdges(CoverageEdge.RING_COUNT_OUTER);
-    MultiLineString constraintEdges = CoverageEdge.createLines(outerEdges, geomFactory);
-
-    simplifyEdges(innerEdges, constraintEdges, tolerance);
-    Geometry[] result = cov.buildCoverage();
-    return result;
+    return simplifyEdges(tolerance, tolerance);
   }
 
-  private void simplifyEdges(List<CoverageEdge> edges, MultiLineString constraints, double tolerance) {
-    MultiLineString lines = CoverageEdge.createLines(edges, geomFactory);
-    BitSet removableRings = getRemovableRingFlags(edges);
-    BitSet freeRings = getFreeRingFlags(edges);
+  public Geometry[] simplify(double toleranceInner, double toleranceOuter) {
+    return simplifyEdges(toleranceInner, toleranceOuter);
+  }
+
+  private Geometry[] simplifyEdges(double toleranceInner, double toleranceOuter) {
+    CoverageRingEdges covRings = CoverageRingEdges.create(coverage);
+    List<CoverageEdge> covEdges = covRings.getEdges();
+    TPVWSimplifier.Edge[] edges = createEdges(covEdges, toleranceInner, toleranceOuter);
     CornerArea cornerArea = new CornerArea(smoothWeight);
-    MultiLineString linesSimp = TPVWSimplifier.simplify(lines, removableRings, freeRings, constraints, tolerance, cornerArea, removableSizeFactor);
-    //Assert: mlsSimp.getNumGeometries = edges.length
-    
-    setCoordinates(edges, linesSimp);
+    TPVWSimplifier.simplify(edges, cornerArea, removableSizeFactor);
+    setCoordinates(covEdges, edges);
+    Geometry[] result = covRings.buildCoverage();
+    return result;
   }
 
-  private void setCoordinates(List<CoverageEdge> edges, MultiLineString lines) {
-    for (int i = 0; i < edges.size(); i++) {
-      edges.get(i).setCoordinates(lines.getGeometryN(i).getCoordinates());
+  private static TPVWSimplifier.Edge[] createEdges(List<CoverageEdge> covEdges, double toleranceInner, double toleranceOuter) {
+    TPVWSimplifier.Edge[] edges = new TPVWSimplifier.Edge[covEdges.size()];
+    for (int i = 0; i < covEdges.size(); i++) {
+      CoverageEdge covEdge = covEdges.get(i);
+      double tol = computeTolerance(covEdge, toleranceInner, toleranceOuter);
+      edges[i] = createEdge(covEdge, tol);
     }
+    return edges;
   }
 
-  private static BitSet getRemovableRingFlags(List<CoverageEdge> edges) {
-    BitSet removableRings = new BitSet(edges.size());
-    for (int i = 0 ; i < edges.size() ; i++) {
-      CoverageEdge edge = edges.get(i);
-      removableRings.set(i, edge.isRemovableRing());
-    }
-    return removableRings;
+  private static Edge createEdge(CoverageEdge covEdge, double tol) {
+    return new TPVWSimplifier.Edge(covEdge.getCoordinates(), tol, 
+        covEdge.isFreeRing(), covEdge.isRemovableRing());
   }
   
-  private static BitSet getFreeRingFlags(List<CoverageEdge> edges) {
-    BitSet freeRings = new BitSet(edges.size());
-    for (int i = 0 ; i < edges.size() ; i++) {
-      freeRings.set(i, edges.get(i).isFreeRing());
+  private static double computeTolerance(CoverageEdge covEdge, double toleranceInner, double toleranceOuter) {
+    return covEdge.isInner() ? toleranceInner : toleranceOuter;
+  }
+  
+  private void setCoordinates(List<CoverageEdge> covEdges, Edge[] edges) {
+    for (int i = 0; i < covEdges.size(); i++) {
+      Edge edge = edges[i];
+      if (edge.getTolerance() > 0) {
+        covEdges.get(i).setCoordinates(edges[i].getCoordinates());
+      }
     }
-    return freeRings;
   }
   
 }

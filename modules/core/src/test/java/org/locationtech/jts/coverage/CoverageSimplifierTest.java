@@ -381,7 +381,9 @@ public class CoverageSimplifierTest extends GeometryTestCase {
   }
   
   private void checkResultRemovalSize(Geometry[] input, double tolerance, double removalFactor, Geometry[] expected) {
-    Geometry[] actual = CoverageSimplifier.simplifyRemovalSize(input, tolerance, removalFactor);
+    CoverageSimplifier simplifier = new CoverageSimplifier(input);
+    simplifier.setRemovableRingSizeFactor(removalFactor);
+    Geometry[] actual = simplifier.simplify(tolerance);
     checkEqual(expected, actual);
   }
   
