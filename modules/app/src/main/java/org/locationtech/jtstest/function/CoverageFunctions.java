@@ -11,6 +11,7 @@
  */
 package org.locationtech.jtstest.function;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.locationtech.jts.coverage.CoverageGapFinder;
@@ -115,6 +116,28 @@ public class CoverageFunctions {
     CoverageSimplifier simplifier = new CoverageSimplifier(cov);
     Geometry[] result = simplifier.simplify(toleranceInner, toleranceOuter);
     return coverage.getFactory().createGeometryCollection(result);
+  }
+  
+  @Metadata(description="Simplify a coverage with per-geometry tolerances")
+  public static Geometry simplifyTolerances(Geometry coverage, String tolerances) {
+    Geometry[] cov = toGeometryArray(coverage);
+    double[] toleranceList = tolerances(tolerances, cov.length);
+    CoverageSimplifier simplifier = new CoverageSimplifier(cov);
+    Geometry[] result = simplifier.simplify(toleranceList);
+    return FunctionsUtil.buildGeometry(result);
+  }
+  
+  private static double[] tolerances(String csvList, int len) {
+    Double[] tolsDouble = toDoubleArray(csvList);
+    double[] tols = new double[len];
+    for (int i = 0; i < tolsDouble.length; i++) {
+      tols[i] = tolsDouble[i];
+    }
+    return tols;
+  }  
+  
+  private static Double[] toDoubleArray(String csvList) {
+    return Arrays.stream(csvList.split(",")).map(Double::parseDouble).toArray(Double[]::new);
   }
   
   static Geometry extractPolygons(Geometry geom) {

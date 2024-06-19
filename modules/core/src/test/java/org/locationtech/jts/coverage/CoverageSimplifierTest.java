@@ -367,12 +367,31 @@ public class CoverageSimplifierTest extends GeometryTestCase {
     );
   }
   
+  public void testTolerances() {
+    checkResult(readArray(
+        "POLYGON ((1 19, 6 19, 7 11, 6 1, 1 1, 1 19))",
+        "POLYGON ((6 19, 12 19, 11 15, 12 1, 6 1, 7 11, 6 19))",
+        "POLYGON ((12 19, 19 19, 22 10, 19 1, 12 1, 11 15, 12 19))"
+          ),
+        new double[] { 0, 3, 6 },
+        readArray(
+            "POLYGON ((6 19, 7 11, 6 1, 1 1, 1 19, 6 19))",
+            "POLYGON  ((6 19, 12 19, 12 1, 6 1, 7 11, 6 19))",
+            "POLYGON  ((12 19, 19 19, 19 1, 12 1, 12 19))" )
+    );
+  }
+  
   //=================================
 
 
   private void checkNoop(Geometry[] input) {
     Geometry[] actual = CoverageSimplifier.simplify(input, 0);
     checkEqual(input, actual);
+  }
+  
+  private void checkResult(Geometry[] input, double[] tolerances, Geometry[] expected) {
+    Geometry[] actual = CoverageSimplifier.simplify(input, tolerances);
+    checkEqual(expected, actual);
   }
   
   private void checkResult(Geometry[] input, double tolerance, Geometry[] expected) {

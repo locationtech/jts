@@ -133,6 +133,8 @@ class CoverageEdge {
   private int ringCount = 0;
   private boolean isFreeRing = true;
   private boolean isPrimary = true;
+  private int adjacentIndex0 = -1;
+  private int adjacentIndex1 = -1;
 
   public CoverageEdge(Coordinate[] pts, boolean isPrimary, boolean isFreeRing) {
     this.pts = pts;
@@ -157,6 +159,9 @@ class CoverageEdge {
   }
   
   public void setPrimary(boolean isPrimary) {
+    //-- preserve primary status if set
+    if (this.isPrimary)
+      return;
     this.isPrimary = isPrimary;
   }
   
@@ -200,8 +205,22 @@ class CoverageEdge {
     return WKTWriter.toLineString(pts);
   }
 
+  public void addIndex(int index) {
+    //TODO: keep information about which element is L and R?
+    
+    // assert: at least one elementIndex is unset (< 0)
+    if (adjacentIndex0 < 0) {
+      adjacentIndex0 = index;
+    }
+    else {
+      adjacentIndex1 = index;
+    }
+  }
 
-
-
+  public int getAdjacentIndex(int index) {
+    if (index == 0)
+      return adjacentIndex0;
+    return adjacentIndex1;
+  }
 
 }

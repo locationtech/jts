@@ -45,22 +45,6 @@ public class CoverageRingEdgesTest  extends GeometryTestCase {
         "MULTILINESTRING ((0 10, 0 0, 10 0, 10 10, 0 10), (1 1, 1 9, 4 8, 9 9), (1 1, 9 1, 9 9), (1 1, 9 9))");
   }
 
-  public void testTouchingSquares() {
-    String wkt = "MULTIPOLYGON (((2 7, 2 8, 3 8, 3 7, 2 7)), ((1 6, 1 7, 2 7, 2 6, 1 6)), ((0 7, 0 8, 1 8, 1 7, 0 7)), ((0 5, 0 6, 1 6, 1 5, 0 5)), ((2 5, 2 6, 3 6, 3 5, 2 5)))";
-    checkEdgesSelected(wkt, 1,
-        "MULTILINESTRING ((1 6, 0 6, 0 5, 1 5, 1 6), (1 6, 1 7), (1 6, 2 6), (1 7, 0 7, 0 8, 1 8, 1 7), (1 7, 2 7), (2 6, 2 5, 3 5, 3 6, 2 6), (2 6, 2 7), (2 7, 2 8, 3 8, 3 7, 2 7))");
-    checkEdgesSelected(wkt, 2,
-        "MULTILINESTRING EMPTY");
-  }
-
-  public void testAdjacentSquares() {
-    String wkt = "GEOMETRYCOLLECTION (POLYGON ((1 3, 2 3, 2 2, 1 2, 1 3)), POLYGON ((3 3, 3 2, 2 2, 2 3, 3 3)), POLYGON ((3 1, 2 1, 2 2, 3 2, 3 1)), POLYGON ((1 1, 1 2, 2 2, 2 1, 1 1)))";
-    checkEdgesSelected(wkt, 1,
-        "MULTILINESTRING ((1 2, 1 1, 2 1), (1 2, 1 3, 2 3), (2 1, 3 1, 3 2), (2 3, 3 3, 3 2))");
-    checkEdgesSelected(wkt, 2,
-        "MULTILINESTRING ((1 2, 2 2), (2 1, 2 2), (2 2, 2 3), (2 2, 3 2))");
-  }
-
   public void testMultiPolygons() {
     checkEdges("GEOMETRYCOLLECTION (MULTIPOLYGON (((5 9, 2.5 7.5, 1 5, 5 5, 5 9)), ((5 5, 9 5, 7.5 2.5, 5 1, 5 5))), MULTIPOLYGON (((5 9, 6.5 6.5, 9 5, 5 5, 5 9)), ((1 5, 5 5, 5 1, 3.5 3.5, 1 5))))",
             "MULTILINESTRING ((1 5, 2.5 7.5, 5 9), (1 5, 3.5 3.5, 5 1), (1 5, 5 5), (5 1, 5 5), (5 1, 7.5 2.5, 9 5), (5 5, 5 9), (5 5, 9 5), (5 9, 6.5 6.5, 9 5))" 
@@ -71,16 +55,6 @@ public class CoverageRingEdgesTest  extends GeometryTestCase {
     Geometry geom = read(wkt);
     Geometry[] polygons = toArray(geom);
     List<CoverageEdge> edges = CoverageRingEdges.create(polygons).getEdges();
-    MultiLineString edgeLines = toArray(edges, geom.getFactory());
-    Geometry expected = read(wktExpected);
-    checkEqual(expected, edgeLines);
-  }
-
-  private void checkEdgesSelected(String wkt, int ringCount, String wktExpected) {
-    Geometry geom = read(wkt);
-    Geometry[] polygons = toArray(geom);
-    CoverageRingEdges covEdges = CoverageRingEdges.create(polygons);
-    List<CoverageEdge> edges = covEdges.selectEdges(ringCount);
     MultiLineString edgeLines = toArray(edges, geom.getFactory());
     Geometry expected = read(wktExpected);
     checkEqual(expected, edgeLines);

@@ -70,6 +70,11 @@ public class CoverageSimplifier {
     return simplifier.simplify(tolerance);
   }
   
+  public static Geometry[] simplify(Geometry[] coverage, double[] tolerances) {
+    CoverageSimplifier simplifier = new CoverageSimplifier(coverage);
+    return simplifier.simplify(tolerances);
+  }
+  
   /**
    * Simplifies the inner boundaries of a set of polygonal geometries forming a coverage,
    * preserving the coverage topology.
@@ -135,10 +140,52 @@ public class CoverageSimplifier {
     return simplifyEdges(toleranceInner, toleranceOuter);
   }
 
+  public Geometry[] simplify(double[] tolerances) {
+    if (tolerances.length != coverage.length)
+      throw new IllegalArgumentException("must have same number of tolerances as coverage elements");
+    return simplifyEdges(tolerances);
+  }
+
+  private Geometry[] simplifyEdges(double[] tolerances) {
+    CoverageRingEdges covRings = CoverageRingEdges.create(coverage);
+    List<CoverageEdge> covEdges = covRings.getEdges();
+    TPVWSimplifier.Edge[] edges = createEdges(covEdges, tolerances);
+    return simplify(covRings, covEdges, edges);
+  }
+
+  private Edge[] createEdges(List<CoverageEdge> covEdges, double[] tolerances) {
+    TPVWSimplifier.Edge[] edges = new TPVWSimplifier.Edge[covEdges.size()];
+    for (int i = 0; i < covEdges.size(); i++) {
+      CoverageEdge covEdge = covEdges.get(i);
+      double tol = computeTolerance(covEdge, tolerances);
+      edges[i] = createEdge(covEdge, tol);
+    }
+    return edges;
+  }
+
+  private double computeTolerance(CoverageEdge covEdge, double[] tolerances) {
+    int index0 = covEdge.getAdjacentIndex(0);
+    // assert: index0 >= 0
+    double tolerance = tolerances[index0];
+    
+    int index1 = covEdge.getAdjacentIndex(0);
+    if (index1 >= 0) {
+      double tol1 = tolerances[index1];
+      //-- minimum tolerance is used
+      if (tol1 < tolerance)
+        tolerance = tol1;
+    }
+    return tolerance;
+  }
+
   private Geometry[] simplifyEdges(double toleranceInner, double toleranceOuter) {
     CoverageRingEdges covRings = CoverageRingEdges.create(coverage);
     List<CoverageEdge> covEdges = covRings.getEdges();
     TPVWSimplifier.Edge[] edges = createEdges(covEdges, toleranceInner, toleranceOuter);
+    return simplify(covRings, covEdges, edges);
+  }
+
+  private Geometry[] simplify(CoverageRingEdges covRings, List<CoverageEdge> covEdges, TPVWSimplifier.Edge[] edges) {
     CornerArea cornerArea = new CornerArea(smoothWeight);
     TPVWSimplifier.simplify(edges, cornerArea, removableSizeFactor);
     setCoordinates(covEdges, edges);
