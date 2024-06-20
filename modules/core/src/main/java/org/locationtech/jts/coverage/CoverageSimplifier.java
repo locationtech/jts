@@ -58,6 +58,10 @@ import org.locationtech.jts.geom.Geometry;
  * The input coverage should be valid according to {@link CoverageValidator}.
  * Invalid coverages may be simplified, but the result will likely still be invalid.
  * 
+ * <h3>FUTURE WORK</h3>
+ * 
+ * Support geodetic data by computing true geodetic area, and accepting tolerances in metres.
+ * 
  * @author Martin Davis
  */
 public class CoverageSimplifier {
