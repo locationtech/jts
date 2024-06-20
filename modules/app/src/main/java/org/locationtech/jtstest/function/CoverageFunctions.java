@@ -119,11 +119,12 @@ public class CoverageFunctions {
   }
   
   @Metadata(description="Simplify a coverage with per-geometry tolerances")
-  public static Geometry simplifyTolerances(Geometry coverage, String tolerances) {
+  public static Geometry simplifyTolerances(Geometry coverage, 
+      @Metadata(title="Tolerances (comma-sep)")
+      String tolerancesCSV) {
     Geometry[] cov = toGeometryArray(coverage);
-    double[] toleranceList = tolerances(tolerances, cov.length);
-    CoverageSimplifier simplifier = new CoverageSimplifier(cov);
-    Geometry[] result = simplifier.simplify(toleranceList);
+    double[] tolerances = tolerances(tolerancesCSV, cov.length);
+    Geometry[] result =  CoverageSimplifier.simplify(cov, tolerances);
     return FunctionsUtil.buildGeometry(result);
   }
   
@@ -138,12 +139,6 @@ public class CoverageFunctions {
   
   private static Double[] toDoubleArray(String csvList) {
     return Arrays.stream(csvList.split(",")).map(Double::parseDouble).toArray(Double[]::new);
-  }
-  
-  static Geometry extractPolygons(Geometry geom) {
-    List components = PolygonExtracter.getPolygons(geom);
-    Geometry result = geom.getFactory().buildGeometry(components);
-    return result;
   }
   
   private static Geometry[] toGeometryArray(Geometry geom) {

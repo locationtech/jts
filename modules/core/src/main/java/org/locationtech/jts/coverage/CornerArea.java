@@ -16,16 +16,32 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Triangle;
 import org.locationtech.jts.math.MathUtil;
 
+/**
+ * Computes the effective area of corners, 
+ * taking into account the smoothing weight.
+ * 
+ * <h3>FUTURE WORK</h3>
+ * 
+ * Support computing geodetic area
+ * 
+ * @author Martin Davis
+ *
+ */
 class CornerArea {
   public static final double DEFAULT_SMOOTH_WEIGHT = 0.0;
   
-  private double weightSmooth = DEFAULT_SMOOTH_WEIGHT;
+  private double smoothWeight = DEFAULT_SMOOTH_WEIGHT;
   
   public CornerArea() {
   }
 
-  public CornerArea(double weightSmooth) {
-    this.weightSmooth = weightSmooth;
+  /**
+   * Creates a new corner area computer.
+   * 
+   * @param smoothWeight the weight for smoothing corners.  In range [0..1].
+   */
+  public CornerArea(double smoothWeight) {
+    this.smoothWeight = smoothWeight;
   }
 
   public double area(Coordinate pp, Coordinate p, Coordinate pn) {
@@ -35,7 +51,7 @@ class CornerArea {
     //-- rescale to [-1 .. 1], with 1 being narrow and -1 being flat
     double angBias = 1.0 - 2.0 * ang;
     //-- reduce area for narrower corners, to make them more likely to be removed
-    double areaWeighted = (1 - weightSmooth * angBias) * area;
+    double areaWeighted = (1 - smoothWeight * angBias) * area;
     return areaWeighted;
   }
   

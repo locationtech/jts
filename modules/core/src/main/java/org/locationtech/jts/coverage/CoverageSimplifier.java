@@ -45,10 +45,15 @@ import org.locationtech.jts.geom.Geometry;
  *  At least one polygon is retained for each input geometry
  *  (the one with largest area).
  * </ul>
- * This class also supports inner simplification, which simplifies
+ * This class supports simplification using different distance tolerances 
+ * for inner and outer edges of the coverage (including no simplfication
+ * using a tolerance of 0.0).  
+ * This allows, for example, inner simplification, which simplifies
  * only edges of the coverage which are adjacent to two polygons.
  * This allows partial simplification of a coverage, since a simplified
  * subset of a coverage still matches the remainder of the coverage.
+ * <p>
+ * The class allows specifying a separate tolerance for each element of the input coverage.
  * <p>
  * The input coverage should be valid according to {@link CoverageValidator}.
  * Invalid coverages may be simplified, but the result will likely still be invalid.
@@ -63,13 +68,24 @@ public class CoverageSimplifier {
    * 
    * @param coverage a set of polygonal geometries forming a coverage
    * @param tolerance the simplification tolerance
-   * @return the simplified polygons
+   * @return the simplified coverage polygons
    */
   public static Geometry[] simplify(Geometry[] coverage, double tolerance) {
     CoverageSimplifier simplifier = new CoverageSimplifier(coverage);
     return simplifier.simplify(tolerance);
   }
   
+  /**
+   * Simplifies the boundaries of a set of polygonal geometries forming a coverage,
+   * preserving the coverage topology, using a separate tolerance
+   * for each element of the coverage.
+   * Coverage edges are simplified using the lowest tolerance of each adjacent
+   * element.
+   * 
+   * @param coverage a set of polygonal geometries forming a coverage
+   * @param tolerance the simplification tolerances (one per input element)
+   * @return the simplified coverage polygons
+   */
   public static Geometry[] simplify(Geometry[] coverage, double[] tolerances) {
     CoverageSimplifier simplifier = new CoverageSimplifier(coverage);
     return simplifier.simplify(tolerances);
@@ -82,13 +98,22 @@ public class CoverageSimplifier {
    * 
    * @param coverage a set of polygonal geometries forming a coverage
    * @param tolerance the simplification tolerance
-   * @return the simplified polygons
+   * @return the simplified coverage polygons
    */
   public static Geometry[] simplifyInner(Geometry[] coverage, double tolerance) {
     CoverageSimplifier simplifier = new CoverageSimplifier(coverage);
     return simplifier.simplify(tolerance, 0);
   }
   
+  /**
+   * Simplifies the outer boundaries of a set of polygonal geometries forming a coverage,
+   * preserving the coverage topology.
+   * Edges in the interior of the coverage are left unchanged.
+   * 
+   * @param coverage a set of polygonal geometries forming a coverage
+   * @param tolerance the simplification tolerance
+   * @return the simplified polygons
+   */
   public static Geometry[] simplifyOuter(Geometry[] coverage, double tolerance) {
     CoverageSimplifier simplifier = new CoverageSimplifier(coverage);
     return simplifier.simplify(0, tolerance);
@@ -122,27 +147,54 @@ public class CoverageSimplifier {
     this.removableSizeFactor = factor;
   }
   
+  /**
+   * Sets the weight influencing how smooth the simplification should be.
+   * The weight must be between 0 and 1.  
+   * Larger values increase the smoothness of the simplified edges.
+   * 
+   * @param smoothWeight a value between 0 and 1
+   */
   public void setSmoothWeight(double smoothWeight) {
+    if (smoothWeight < 0.0 || smoothWeight > 1.0)
+      throw new IllegalArgumentException("smoothWeight must be in range [0 - 1]");
     this.smoothWeight  = smoothWeight;
   }
   
   /**
-   * Computes the simplified coverage, preserving the coverage topology.
+   * Computes the simplified coverage using a single distance tolerance, 
+   * preserving the coverage topology.
    * 
-   * @param tolerance the simplification tolerance
-   * @return the simplified polygons
+   * @param tolerance the simplification distance tolerance
+   * @return the simplified coverage polygons
    */
   public Geometry[] simplify(double tolerance) {
     return simplifyEdges(tolerance, tolerance);
   }
 
+  /**
+   * Computes the simplified coverage using separate distance tolerances
+   * for inner and outer edges, 
+   * preserving the coverage topology.
+   * 
+   * @param toleranceInner the distance tolerance for inner edges
+   * @param toleranceOuter the distance tolerance for outer edges
+   * @return the simplified coverage polygons
+   */
   public Geometry[] simplify(double toleranceInner, double toleranceOuter) {
     return simplifyEdges(toleranceInner, toleranceOuter);
   }
 
+  /**
+   * Computes the simplified coverage using separate distance tolerances
+   * for each coverage element, 
+   * preserving the coverage topology.
+   * 
+   * @param tolerances the distance tolerances for the coverage elements
+   * @return the simplified coverage polygons
+   */
   public Geometry[] simplify(double[] tolerances) {
     if (tolerances.length != coverage.length)
-      throw new IllegalArgumentException("must have same number of tolerances as coverage elements");
+      throw new IllegalArgumentException("number of tolerances does not match number of coverage elements");
     return simplifyEdges(tolerances);
   }
 
