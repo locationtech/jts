@@ -11,47 +11,38 @@
  */
 package org.locationtech.jts.coverage;
 
-import java.util.List;
-
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateArrays;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineSegment;
 import org.locationtech.jts.geom.LineString;
-import org.locationtech.jts.geom.MultiLineString;
 import org.locationtech.jts.io.WKTWriter;
 
 /**
  * An edge of a polygonal coverage formed from all or a section of a polygon ring.
- * An edge may be a free ring, which is a ring which has not node points
- * (i.e. does not touch any other rings in the parent coverage).
+ * An edge may be a free ring, which is a ring which has no node points
+ * (i.e. does not share a vertex with any other rings in the parent coverage).
  * 
  * @author mdavis
  *
  */
 class CoverageEdge {
 
-  public static CoverageEdge createEdge(Coordinate[] ring) {
+  public static final int RING_COUNT_INNER = 2;
+  public static final int RING_COUNT_OUTER = 1;
+
+  public static CoverageEdge createEdge(Coordinate[] ring, boolean isPrimary) {
     Coordinate[] pts = extractEdgePoints(ring, 0, ring.length - 1);
-    CoverageEdge edge = new CoverageEdge(pts, true);
+    CoverageEdge edge = new CoverageEdge(pts, isPrimary, true);
     return edge;
   }
 
-  public static CoverageEdge createEdge(Coordinate[] ring, int start, int end) {
+  public static CoverageEdge createEdge(Coordinate[] ring, int start, int end, boolean isPrimary) {
     Coordinate[] pts = extractEdgePoints(ring, start, end);
-    CoverageEdge edge = new CoverageEdge(pts, false);
+    CoverageEdge edge = new CoverageEdge(pts, isPrimary, false);
     return edge;
   }
 
-  static MultiLineString createLines(List<CoverageEdge> edges, GeometryFactory geomFactory) {
-    LineString lines[] = new LineString[edges.size()];
-    for (int i = 0; i < edges.size(); i++) {
-      CoverageEdge edge = edges.get(i);
-      lines[i] = edge.toLineString(geomFactory);
-    }
-    MultiLineString mls = geomFactory.createMultiLineString(lines);
-    return mls;
-  }
-  
   private static Coordinate[] extractEdgePoints(Coordinate[] ring, int start, int end) {
     int size = start < end 
                   ? end - start + 1 
@@ -136,12 +127,16 @@ class CoverageEdge {
   private Coordinate[] pts;
   private int ringCount = 0;
   private boolean isFreeRing = true;
+  private boolean isPrimary = true;
+  private int adjacentIndex0 = -1;
+  private int adjacentIndex1 = -1;
 
-  public CoverageEdge(Coordinate[] pts, boolean isFreeRing) {
+  public CoverageEdge(Coordinate[] pts, boolean isPrimary, boolean isFreeRing) {
     this.pts = pts;
+    this.isPrimary = isPrimary;
     this.isFreeRing = isFreeRing;
   }
-
+  
   public void incRingCount() {
     ringCount++;
   }
@@ -150,9 +145,30 @@ class CoverageEdge {
     return ringCount;
   }
 
+  public boolean isInner() {
+    return ringCount == RING_COUNT_INNER;
+  }
+  
+  public boolean isOuter() {
+    return ringCount == RING_COUNT_OUTER;
+  }
+  
+  public void setPrimary(boolean isPrimary) {
+    //-- preserve primary status if set
+    if (this.isPrimary)
+      return;
+    this.isPrimary = isPrimary;
+  }
+  
+  public boolean isRemovableRing() {
+    boolean isRing = CoordinateArrays.isRing(pts);
+    return isRing && ! isPrimary;
+  }
+
   /**
    * Returns whether this edge is a free ring;
-   * i.e. one with no constrained nodes.
+   * i.e. one that does not have nodes
+   * which are anchored because they occur in another ring.
    * 
    * @return true if this is a free ring
    */
@@ -184,5 +200,28 @@ class CoverageEdge {
     return WKTWriter.toLineString(pts);
   }
 
+  public void addIndex(int index) {
+    //TODO: keep information about which element is L and R?
+    
+    // assert: at least one elementIndex is unset (< 0)
+    if (adjacentIndex0 < 0) {
+      adjacentIndex0 = index;
+    }
+    else {
+      adjacentIndex1 = index;
+    }
+  }
+
+  public int getAdjacentIndex(int index) {
+    if (index == 0)
+      return adjacentIndex0;
+    return adjacentIndex1;
+  }
+
+  public boolean hasAdjacentIndex(int index) {
+    if (index == 0)
+      return adjacentIndex0 >= 0;
+    return adjacentIndex1 >= 0;
+  }
 
 }

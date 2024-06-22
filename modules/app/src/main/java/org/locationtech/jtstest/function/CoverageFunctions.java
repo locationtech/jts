@@ -11,6 +11,7 @@
  */
 package org.locationtech.jtstest.function;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.locationtech.jts.coverage.CoverageGapFinder;
@@ -62,20 +63,82 @@ public class CoverageFunctions {
   public static Geometry simplify(Geometry coverage, double tolerance) {
     Geometry[] cov = toGeometryArray(coverage);
     Geometry[] result =  CoverageSimplifier.simplify(cov, tolerance);
-    return FunctionsUtil.buildGeometry(result);
+    return coverage.getFactory().createGeometryCollection(result);
+  }
+  
+  @Metadata(description="Simplify a coverage with a smoothness weight")
+  public static Geometry simplifySharp(Geometry coverage, 
+      @Metadata(title="Distance tol")
+      double tolerance, 
+      @Metadata(title="Weight")
+      double weight) {
+    Geometry[] cov = toGeometryArray(coverage);
+    CoverageSimplifier simplifier = new CoverageSimplifier(cov);
+    simplifier.setSmoothWeight(weight);
+    Geometry[] result = simplifier.simplify(tolerance);
+    return coverage.getFactory().createGeometryCollection(result);
+  }
+  
+  @Metadata(description="Simplify a coverage with a ring removal size factor")
+  public static Geometry simplifyRemoveRings(Geometry coverage, 
+      @Metadata(title="Distance tol")
+      double tolerance, 
+      @Metadata(title="Removal Size Factor")
+      double factor) {
+    Geometry[] cov = toGeometryArray(coverage);
+    CoverageSimplifier simplifier = new CoverageSimplifier(cov);
+    simplifier.setRemovableRingSizeFactor(factor);
+    Geometry[] result = simplifier.simplify(tolerance);
+    return coverage.getFactory().createGeometryCollection(result);
   }
   
   @Metadata(description="Simplify inner edges of a coverage")
-  public static Geometry simplifyinner(Geometry coverage, double tolerance) {
+  public static Geometry simplifyInner(Geometry coverage, double tolerance) {
     Geometry[] cov = toGeometryArray(coverage);
     Geometry[] result =  CoverageSimplifier.simplifyInner(cov, tolerance);
+    return coverage.getFactory().createGeometryCollection(result);
+  }
+  
+  @Metadata(description="Simplify outer edges of a coverage")
+  public static Geometry simplifyOuter(Geometry coverage, double tolerance) {
+    Geometry[] cov = toGeometryArray(coverage);
+    Geometry[] result =  CoverageSimplifier.simplifyOuter(cov, tolerance);
+    return coverage.getFactory().createGeometryCollection(result);
+  }
+  
+  @Metadata(description="Simplify inner and outer edges of a coverage differently")
+  public static Geometry simplifyInOut(Geometry coverage, 
+      @Metadata(title="Inner Distance tol")
+      double toleranceInner, 
+      @Metadata(title="Outer Distance tol")
+      double toleranceOuter) {
+    Geometry[] cov = toGeometryArray(coverage);
+    CoverageSimplifier simplifier = new CoverageSimplifier(cov);
+    Geometry[] result = simplifier.simplify(toleranceInner, toleranceOuter);
+    return coverage.getFactory().createGeometryCollection(result);
+  }
+  
+  @Metadata(description="Simplify a coverage with per-geometry tolerances")
+  public static Geometry simplifyTolerances(Geometry coverage, 
+      @Metadata(title="Tolerances (comma-sep)")
+      String tolerancesCSV) {
+    Geometry[] cov = toGeometryArray(coverage);
+    double[] tolerances = tolerances(tolerancesCSV, cov.length);
+    Geometry[] result =  CoverageSimplifier.simplify(cov, tolerances);
     return FunctionsUtil.buildGeometry(result);
   }
   
-  static Geometry extractPolygons(Geometry geom) {
-    List components = PolygonExtracter.getPolygons(geom);
-    Geometry result = geom.getFactory().buildGeometry(components);
-    return result;
+  private static double[] tolerances(String csvList, int len) {
+    Double[] tolsDouble = toDoubleArray(csvList);
+    double[] tols = new double[len];
+    for (int i = 0; i < tolsDouble.length; i++) {
+      tols[i] = tolsDouble[i];
+    }
+    return tols;
+  }  
+  
+  private static Double[] toDoubleArray(String csvList) {
+    return Arrays.stream(csvList.split(",")).map(Double::parseDouble).toArray(Double[]::new);
   }
   
   private static Geometry[] toGeometryArray(Geometry geom) {
