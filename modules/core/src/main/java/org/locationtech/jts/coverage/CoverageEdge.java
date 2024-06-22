@@ -11,16 +11,11 @@
  */
 package org.locationtech.jts.coverage;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.locationtech.jts.coverage.TPVWSimplifier.Edge;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateArrays;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineSegment;
 import org.locationtech.jts.geom.LineString;
-import org.locationtech.jts.geom.MultiLineString;
 import org.locationtech.jts.io.WKTWriter;
 
 /**
@@ -221,6 +216,12 @@ class CoverageEdge {
     if (index == 0)
       return adjacentIndex0;
     return adjacentIndex1;
+  }
+
+  public boolean hasAdjacentIndex(int index) {
+    if (index == 0)
+      return adjacentIndex0 >= 0;
+    return adjacentIndex1 >= 0;
   }
 
 }

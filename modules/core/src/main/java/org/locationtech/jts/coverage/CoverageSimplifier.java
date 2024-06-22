@@ -224,10 +224,10 @@ public class CoverageSimplifier {
     // assert: index0 >= 0
     double tolerance = tolerances[index0];
     
-    int index1 = covEdge.getAdjacentIndex(0);
-    if (index1 >= 0) {
+    if (covEdge.hasAdjacentIndex(1)) {
+      int index1 = covEdge.getAdjacentIndex(1);
       double tol1 = tolerances[index1];
-      //-- minimum tolerance is used
+      //-- use lowest tolerance for edge
       if (tol1 < tolerance)
         tolerance = tol1;
     }
