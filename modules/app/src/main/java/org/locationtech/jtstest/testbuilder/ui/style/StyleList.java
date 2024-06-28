@@ -32,6 +32,7 @@ public class StyleList implements Style
 {
 	private List styleList = new ArrayList();
 	
+  @Override
   public void paint(Geometry geom, Viewport viewport, Graphics2D g)
   	throws Exception
   {

@@ -29,6 +29,7 @@ public class SmallHoleRemover {
       this.area = area;
     }
 
+    @Override
     public boolean value(Geometry geom) {
       double holeArea = Area.ofRing(geom.getCoordinates());
       return holeArea <= area;

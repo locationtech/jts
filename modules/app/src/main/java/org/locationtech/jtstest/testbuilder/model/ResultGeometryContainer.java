@@ -24,6 +24,7 @@ implements GeometryContainer
     this.geomModel = geomModel;
    }
 
+  @Override
   public Geometry getGeometry()
   {
     return geomModel.getResult();

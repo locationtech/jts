@@ -102,6 +102,7 @@ public class LinearRing extends LineString
    *
    * @return Dimension.FALSE
    */
+  @Override
   public int getBoundaryDimension() {
     return Dimension.FALSE;
   }
@@ -112,6 +113,7 @@ public class LinearRing extends LineString
    *
    * @return true if this ring is closed
    */
+  @Override
   public boolean isClosed() {
     if (isEmpty()) {
     	// empty LinearRings are closed by definition
@@ -121,23 +123,28 @@ public class LinearRing extends LineString
   }
 
 
+  @Override
   public String getGeometryType() {
     return Geometry.TYPENAME_LINEARRING;
   }
   
+  @Override
   protected int getTypeCode() {
     return Geometry.TYPECODE_LINEARRING;
   }
 
+  @Override
   protected LinearRing copyInternal() {
     return new LinearRing(points.copy(), factory);
   }
 
+  @Override
   public LinearRing reverse()
   {
     return (LinearRing) super.reverse();
   }
 
+  @Override
   public LinearRing reverseInternal() {
     CoordinateSequence seq = points.copy();
     CoordinateSequences.reverse(seq);

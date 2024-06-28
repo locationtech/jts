@@ -243,6 +243,7 @@ public class OverlayArea {
       return area;
     }
     
+    @Override
     public void visitItem(Object item) {
       LineSegment seg = (LineSegment) item;
       area += areaForIntersection(seg.p0, seg.p1, b0, b1);

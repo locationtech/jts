@@ -43,6 +43,7 @@ public class GeometryVertexInserter
       this.newVertex = newVertex;
     }
     
+    @Override
     public Coordinate[] edit(Coordinate[] coords,
         Geometry geometry)
     {

@@ -185,6 +185,7 @@ class SubgraphDepthLocater
      * @param obj a DepthSegment
      * @return the comparison value
      */
+    @Override
     public int compareTo(Object obj)
     {
       DepthSegment other = (DepthSegment) obj;

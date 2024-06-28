@@ -31,6 +31,7 @@ public class PrecisionReducerCoordinateOperation extends
 		this.removeCollapsed = removeCollapsed;
 	}
 	
+	@Override
 	public Coordinate[] edit(Coordinate[] coordinates, Geometry geom) {
 		if (coordinates.length == 0)
 			return null;

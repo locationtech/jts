@@ -61,9 +61,11 @@ public class SwingUtil {
     {
       final String dotExt = extension.startsWith(".") ? extension : "." + extension;
       FileFilter ff =  new FileFilter() {
+        @Override
         public String getDescription() {
           return description;
         }
+        @Override
         public boolean accept(File f) {
           return f.isDirectory() || f.toString().toLowerCase().endsWith(dotExt);
         }

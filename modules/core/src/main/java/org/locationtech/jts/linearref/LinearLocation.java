@@ -319,6 +319,7 @@ public class LinearLocation
    *@return    a negative integer, zero, or a positive integer as this <code>LineStringLocation</code>
    *      is less than, equal to, or greater than the specified <code>LineStringLocation</code>
    */
+  @Override
   public int compareTo(Object o) {
     LinearLocation other = (LinearLocation) o;
     // compare component indices
@@ -453,6 +454,7 @@ public class LinearLocation
    * @return a copy of this location
    * @deprecated
    */
+  @Override
   public Object clone()
   {
     return copy();

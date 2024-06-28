@@ -87,6 +87,7 @@ public class TestCase implements Testable {
         tc.getExpectedBoundary());
   }
 
+  @Override
   public void setGeometry(int index, Geometry g) {
     geom[index] = g;
   }
@@ -96,6 +97,7 @@ public class TestCase implements Testable {
     this.pm = pm;
     return this;
   }
+  @Override
   public void setIntersectionMatrix(IntersectionMatrix im) {
     this.im = im;
   }
@@ -114,6 +116,7 @@ public class TestCase implements Testable {
     return this;
   }
 
+  @Override
   public void setName(String name) {
     this.name = name;
   }
@@ -176,10 +179,12 @@ public class TestCase implements Testable {
     return this;
   }
 
+  @Override
   public Geometry getGeometry(int index) {
     return geom[index];
   }
 
+  @Override
   public IntersectionMatrix getIntersectionMatrix() {
     return im;
   }
@@ -188,10 +193,12 @@ public class TestCase implements Testable {
     return expectedIM;
   }
 
+  @Override
   public String getName() {
     return name;
   }
 
+  @Override
   public String getDescription() {
     return description;
   }
@@ -212,6 +219,7 @@ public class TestCase implements Testable {
     return isRun;
   }
 
+  @Override
   public String getWellKnownText(int i) {
     if (geom[i] == null) {
       return null;
@@ -293,6 +301,7 @@ public class TestCase implements Testable {
     }
   }
 
+  @Override
   public void initGeometry() throws ParseException {
     GeometryFactory fact = new GeometryFactory(pm, 0);
     WKTReader wktRdr = new WKTReader(fact);

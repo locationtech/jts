@@ -55,6 +55,7 @@ public class RelateMonotoneLinesPerfTest  extends PerformanceTestCase
   LineString line1;
   LineString line2;
   
+  @Override
   public void startRun(int runSize) {
     int nVertices = runSize * DENSIFY_FACTOR;
     line1 = createLine("LINESTRING (0 0, 100 100)", nVertices);
@@ -78,6 +79,7 @@ public class RelateMonotoneLinesPerfTest  extends PerformanceTestCase
     boolean isIntersects = line1.intersects(line2);
   }
 
+  @Override
   public void tearDown() {
     double[] timeFactor = computeTimeFactors();
     System.out.print("Time factors: ");

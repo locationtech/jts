@@ -86,6 +86,7 @@ public class ExtendedCoordinateSequence
   /**
    * @see org.locationtech.jts.geom.CoordinateSequence#getDimension()
    */
+  @Override
   public int getDimension() { return 4; }
   
   @Override
@@ -100,6 +101,7 @@ public class ExtendedCoordinateSequence
     return new ExtendedCoordinate();
   }
   
+  @Override
   public Coordinate getCoordinate(int i) {
     return coordinates[i];
   }
@@ -107,12 +109,14 @@ public class ExtendedCoordinateSequence
   /**
    * @see org.locationtech.jts.geom.CoordinateSequence#getX(int)
    */
+  @Override
   public Coordinate getCoordinateCopy(int index) {
     return new Coordinate(coordinates[index]);
   }
   /**
    * @see org.locationtech.jts.geom.CoordinateSequence#getX(int)
    */
+  @Override
   public void getCoordinate(int index, Coordinate coord) {
     coord.x = coordinates[index].x;
     coord.y = coordinates[index].y;
@@ -124,6 +128,7 @@ public class ExtendedCoordinateSequence
   /**
    * @see org.locationtech.jts.geom.CoordinateSequence#getX(int)
    */
+  @Override
   public double getX(int index) {
       return coordinates[index].x;
   }
@@ -131,6 +136,7 @@ public class ExtendedCoordinateSequence
   /**
    * @see org.locationtech.jts.geom.CoordinateSequence#getY(int)
    */
+  @Override
   public double getY(int index) {
       return coordinates[index].y;
   }
@@ -138,6 +144,7 @@ public class ExtendedCoordinateSequence
   /**
    * @see org.locationtech.jts.geom.CoordinateSequence#getOrdinate(int, int)
    */
+  @Override
   public double getOrdinate(int index, int ordinateIndex)
   {
     switch (ordinateIndex) {
@@ -152,6 +159,7 @@ public class ExtendedCoordinateSequence
   /**
    * @see org.locationtech.jts.geom.CoordinateSequence#setOrdinate(int, int, double)
    */
+  @Override
   public void setOrdinate(int index, int ordinateIndex, double value)
   {
     switch (ordinateIndex) {
@@ -173,10 +181,12 @@ public class ExtendedCoordinateSequence
   /**
    * @deprecated
    */
+  @Override
   public Object clone() {
     return copy();
   }
   
+  @Override
   public ExtendedCoordinateSequence copy() {
 	  ExtendedCoordinate[] cloneCoordinates = new ExtendedCoordinate[size()];
     for (int i = 0; i < coordinates.length; i++) {
@@ -186,14 +196,17 @@ public class ExtendedCoordinateSequence
     return new ExtendedCoordinateSequence(cloneCoordinates);
   }
 
+  @Override
   public int size() {
     return coordinates.length;
   }
 
+  @Override
   public Coordinate[] toCoordinateArray() {
     return coordinates;
   }
 
+  @Override
   public Envelope expandEnvelope(Envelope env)
   {
     for (int i = 0; i < coordinates.length; i++ ) {

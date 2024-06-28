@@ -49,6 +49,7 @@ public class PreparedPolygonPredicateStressTest extends TestCase
   class PredicateStressTester 
   extends StressTestHarness
   {
+  	@Override
   	public boolean checkResult(Geometry target, Geometry test) {
   		if (! checkIntersects(target, test)) return false;
   		if (! checkContains(target, test)) return false;

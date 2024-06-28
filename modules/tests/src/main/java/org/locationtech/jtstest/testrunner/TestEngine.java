@@ -131,6 +131,7 @@ public class TestEngine
     testReader.clearParsingProblems();
   }
 
+  @Override
   public void run() {
     running = true;
     start = new Date();

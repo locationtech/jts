@@ -220,6 +220,7 @@ public class KdTree {
       return matchNode;
     }
 
+    @Override
     public void visit(KdNode node) {
       double dist = p.distance(node.getCoordinate());
       boolean isInTolerance =  dist <= tolerance; 
@@ -394,6 +395,7 @@ public class KdTree {
   public void query(Envelope queryEnv, final List result) {
     query(queryEnv, new KdNodeVisitor() {
 
+      @Override
       public void visit(KdNode node) {
         result.add(node);
       }

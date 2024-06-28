@@ -30,6 +30,7 @@ public abstract class AbstractStreamDrawTool extends LineBandTool {
 
 	protected abstract int getGeometryType();
 
+  @Override
   protected void mouseLocationChanged(MouseEvent e) {
     try {
       if ((e.getModifiersEx() & InputEvent.BUTTON1_DOWN_MASK) 
@@ -47,17 +48,20 @@ public abstract class AbstractStreamDrawTool extends LineBandTool {
     }
   }
 
+  @Override
   public void mousePressed(MouseEvent e) {
     setBandType();
     super.mousePressed(e);
   }
 
 
+	@Override
 	public void mouseClicked(MouseEvent e) {
 		setBandType();
 		super.mouseClicked(e);
 	}
 
+	@Override
 	protected void bandFinished() throws Exception {
 		setType();
 		geomModel().addComponent(getCoordinates());

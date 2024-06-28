@@ -46,6 +46,7 @@ class SegmentMCIndex {
 
   public void query(Envelope env, MonotoneChainSelectAction action) {
     index.query(env, new ItemVisitor() {
+      @Override
       public void visitItem(Object item) {
         MonotoneChain testChain = (MonotoneChain) item;
         testChain.select(env, action);

@@ -39,6 +39,7 @@ extends GeometricShapeBuilder
 		return (int) exp;
 	}
 	
+	@Override
 	public Geometry getGeometry()
 	{
 		int level = recursionLevelForSize(numPts);

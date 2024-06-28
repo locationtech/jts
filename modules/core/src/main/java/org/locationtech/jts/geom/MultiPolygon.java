@@ -64,18 +64,22 @@ public class MultiPolygon
     super(polygons, factory);
   }
 
+  @Override
   public int getDimension() {
     return 2;
   }
 
+  @Override
   public boolean hasDimension(int dim) {
     return dim == 2;
   }
   
+  @Override
   public int getBoundaryDimension() {
     return 1;
   }
 
+  @Override
   public String getGeometryType() {
     return Geometry.TYPENAME_MULTIPOLYGON;
   }
@@ -92,6 +96,7 @@ public class MultiPolygon
    * @return a lineal geometry (which may be empty)
    * @see Geometry#getBoundary
    */
+  @Override
   public Geometry getBoundary() {
     if (isEmpty()) {
       return getFactory().createMultiLineString();
@@ -108,6 +113,7 @@ public class MultiPolygon
     return getFactory().createMultiLineString((LineString[]) allRings.toArray(allRingsArray));
   }
 
+  @Override
   public boolean equalsExact(Geometry other, double tolerance) {
     if (!isEquivalentClass(other)) {
       return false;
@@ -122,10 +128,12 @@ public class MultiPolygon
    *
    * @return a MultiPolygon in the reverse order
    */
+  @Override
   public MultiPolygon reverse() {
     return (MultiPolygon) super.reverse();
   }
 
+  @Override
   protected MultiPolygon reverseInternal() {
     Polygon[] polygons = new Polygon[this.geometries.length];
     for (int i = 0; i < polygons.length; i++) {
@@ -134,6 +142,7 @@ public class MultiPolygon
     return new MultiPolygon(polygons, factory);
   }
   
+  @Override
   protected MultiPolygon copyInternal() {
     Polygon[] polygons = new Polygon[this.geometries.length];
     for (int i = 0; i < polygons.length; i++) {
@@ -142,6 +151,7 @@ public class MultiPolygon
     return new MultiPolygon(polygons, factory);
   }
 
+  @Override
   protected int getTypeCode() {
     return Geometry.TYPECODE_MULTIPOLYGON;
   }

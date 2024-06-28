@@ -172,6 +172,7 @@ public abstract class Geometry
   public static final String TYPENAME_GEOMETRYCOLLECTION = "GeometryCollection";
   
   private final static GeometryComponentFilter geometryChangedFilter = new GeometryComponentFilter() {
+    @Override
     public void filter(Geometry geom) {
       geom.geometryChangedAction();
     }
@@ -1596,6 +1597,7 @@ public abstract class Geometry
    * @return a clone of this instance
    * @deprecated
    */
+  @Override
   public Object clone() {
     try {
       Geometry clone = (Geometry) super.clone();
@@ -1692,6 +1694,7 @@ public abstract class Geometry
    *      defined in "Normal Form For Geometry" in the JTS Technical
    *      Specifications
    */
+  @Override
   public int compareTo(Object o) {
     Geometry other = (Geometry) o;
     if (getTypeCode() != other.getTypeCode()) {
