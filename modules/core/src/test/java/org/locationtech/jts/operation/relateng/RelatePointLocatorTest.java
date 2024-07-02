@@ -32,38 +32,38 @@ public class RelatePointLocatorTest extends GeometryTestCase {
   
   public void testPoint() {
     //String wkt = "GEOMETRYCOLLECTION (POINT(0 0), POINT(1 1))";
-    checkLocation(gcPLA, 1, 1, DimensionLocation.POINT_INTERIOR);
-    checkLocation(gcPLA, 0, 1, Location.EXTERIOR);
+    checkDimLocation(gcPLA, 1, 1, DimensionLocation.POINT_INTERIOR);
+    checkDimLocation(gcPLA, 0, 1, DimensionLocation.EXTERIOR);
   }
 
   public void testPointInLine() {
-    checkLocation(gcPLA, 3, 8, DimensionLocation.LINE_INTERIOR);
+    checkDimLocation(gcPLA, 3, 8, DimensionLocation.LINE_INTERIOR);
   }
   
   public void testPointInArea() {
-    checkLocation(gcPLA, 8, 8, DimensionLocation.AREA_INTERIOR);
+    checkDimLocation(gcPLA, 8, 8, DimensionLocation.AREA_INTERIOR);
   }
 
   public void testLine() {
-    checkLocation(gcPLA, 3, 3, DimensionLocation.LINE_INTERIOR);
-    checkLocation(gcPLA, 3, 1, DimensionLocation.LINE_BOUNDARY);
+    checkDimLocation(gcPLA, 3, 3, DimensionLocation.LINE_INTERIOR);
+    checkDimLocation(gcPLA, 3, 1, DimensionLocation.LINE_BOUNDARY);
   }
 
   public void testLineInArea() {
-    checkLocation(gcPLA, 11, 11, DimensionLocation.AREA_INTERIOR);
-    checkLocation(gcPLA, 14, 14, DimensionLocation.AREA_INTERIOR);
+    checkDimLocation(gcPLA, 11, 11, DimensionLocation.AREA_INTERIOR);
+    checkDimLocation(gcPLA, 14, 14, DimensionLocation.AREA_INTERIOR);
   }
 
   public void testArea() {
-    checkLocation(gcPLA, 8, 8, DimensionLocation.AREA_INTERIOR);
-    checkLocation(gcPLA, 9, 9, DimensionLocation.AREA_BOUNDARY);
+    checkDimLocation(gcPLA, 8, 8, DimensionLocation.AREA_INTERIOR);
+    checkDimLocation(gcPLA, 9, 9, DimensionLocation.AREA_BOUNDARY);
   }
 
   public void testAreaInArea() {
-    checkLocation(gcPLA, 11, 11, DimensionLocation.AREA_INTERIOR);
-    checkLocation(gcPLA, 12, 12, DimensionLocation.AREA_INTERIOR);
-    checkLocation(gcPLA, 10, 10, DimensionLocation.AREA_BOUNDARY);
-    checkLocation(gcPLA, 16, 16, DimensionLocation.AREA_INTERIOR);
+    checkDimLocation(gcPLA, 11, 11, DimensionLocation.AREA_INTERIOR);
+    checkDimLocation(gcPLA, 12, 12, DimensionLocation.AREA_INTERIOR);
+    checkDimLocation(gcPLA, 10, 10, DimensionLocation.AREA_BOUNDARY);
+    checkDimLocation(gcPLA, 16, 16, DimensionLocation.AREA_INTERIOR);
   }
 
   public void testLineNode() {
@@ -71,17 +71,17 @@ public class RelatePointLocatorTest extends GeometryTestCase {
     checkNodeLocation(gcPLA, 3, 1, Location.BOUNDARY);
   }
   
-  private void checkLocation(String wkt, double i, double j, int expected) {
+  private void checkDimLocation(String wkt, double x, double y, int expectedDimLoc) {
     Geometry geom = read(wkt);
     RelatePointLocator locator = new RelatePointLocator(geom);
-    int actual = locator.locateWithDim(new Coordinate(i, j));
-    assertEquals(expected, actual);
+    int actual = locator.locateWithDim(new Coordinate(x, y));
+    assertEquals(expectedDimLoc, actual);
   }
   
-  private void checkNodeLocation(String wkt, double i, double j, int expected) {
+  private void checkNodeLocation(String wkt, double x, double y, int expectedLoc) {
     Geometry geom = read(wkt);
     RelatePointLocator locator = new RelatePointLocator(geom);
-    int actual = locator.locateNode(new Coordinate(i, j), null);
-    assertEquals(expected, actual);
+    int actual = locator.locateNode(new Coordinate(x, y), null);
+    assertEquals(expectedLoc, actual);
   }
 }
