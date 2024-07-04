@@ -34,6 +34,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Constructs a {@link Geometry} object from the OGC KML representation.
@@ -43,6 +45,8 @@ public class KMLReader {
     private final XMLInputFactory inputFactory = XMLInputFactory.newInstance();
     private final GeometryFactory geometryFactory;
     private final Set<String> attributeNames;
+
+    private final Pattern whitespaceRegex = Pattern.compile("\\s+");
 
     private static final String POINT = "Point";
     private static final String LINESTRING = "LineString";
@@ -119,6 +123,8 @@ public class KMLReader {
         if (coordinates.isEmpty()) {
             raiseParseError("Empty coordinates");
         }
+        Matcher matcher= whitespaceRegex.matcher(coordinates.trim());
+        coordinates = matcher.replaceAll(" ");
 
         double[] parsedOrdinates = {Double.NaN, Double.NaN, Double.NaN};
         List<Coordinate> coordinateList = new ArrayList();
