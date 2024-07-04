@@ -20,9 +20,7 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.io.ParseException;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Map;
+import java.util.*;
 
 public class KMLReaderTest extends TestCase {
     public static void main(String args[]) {
@@ -131,6 +129,17 @@ public class KMLReaderTest extends TestCase {
         );
     }
 
+    public void testCoordinatesWithWhitespace()
+    {
+        checkParsingResult(
+                "<LineString>" +
+                        "   <coordinates> 1.0,2.0" +
+                        "   -1.0,-2.0 </coordinates>" +
+                        "</LineString>",
+                "LINESTRING (1 2, -1 -2)",
+                new Map[]{null, null}
+        );
+    }
     public void testZ() {
         String kml = "<Point><coordinates>1.0,1.0,50.0</coordinates></Point>";
         KMLReader kmlReader = new KMLReader();
@@ -154,6 +163,7 @@ public class KMLReaderTest extends TestCase {
             throw new RuntimeException("ParseException: " + e.getMessage());
         }
     }
+
 
     public void testCoordinatesErrors() {
         checkExceptionThrown("<Point></Point>", "No element coordinates found in Point");
