@@ -54,16 +54,19 @@ public class RelateGeometryTest extends GeometryTestCase {
     checkDimension("POINT (0 0)", 0, 0);
     checkDimension("LINESTRING (0 0, 0 0)", 1, 0);
     checkDimension("LINESTRING (0 0, 9 9)", 1, 1);
+    checkDimension("LINESTRING (0 0, 0 0, 9 9)", 1, 1);
     checkDimension("POLYGON ((1 9, 5 9, 5 5, 1 5, 1 9))", 2, 2);
     checkDimension("GEOMETRYCOLLECTION (POLYGON ((1 9, 5 9, 5 5, 1 5, 1 9)), LINESTRING (1 1, 5 4), POINT (6 5))", 2, 2);
     checkDimension("GEOMETRYCOLLECTION (POLYGON EMPTY, LINESTRING (1 1, 5 4), POINT (6 5))", 2, 1);
   }
-
+  
   private void checkDimension(String wkt, int expectedDim, int expectedDimReal) {
     Geometry geom = read(wkt);
     RelateGeometry rgeom = new RelateGeometry(geom);
     assertEquals(expectedDim, rgeom.getDimension());
     assertEquals(expectedDimReal, rgeom.getDimensionReal());
   }
+
+
 
 }

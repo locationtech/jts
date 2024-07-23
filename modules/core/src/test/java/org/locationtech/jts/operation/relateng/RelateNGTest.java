@@ -109,6 +109,19 @@ public class RelateNGTest extends RelateNGTestCase {
     checkEquals(a, b, true);
   }
   
+  // tests bug involving checking for non-zero-length lines
+  public void testNonZeroLengthLinePoint() {
+    String a = "LINESTRING (0 0, 0 0, 9 9)";
+    String b = "POINT (1 1)";
+    checkRelate(a, b, "0F1FF0FF2");
+    checkIntersectsDisjoint(a, b, true);
+    checkContainsWithin(a, b, true);
+    checkContainsWithin(b, a, false);
+    checkCoversCoveredBy(a, b, true);
+    checkCoversCoveredBy(b, a, false);
+    checkEquals(a, b, false);
+  }
+  
   public void testLinePointIntAndExt() {
     String a = "MULTIPOINT((60 60), (100 100))";
     String b = "LINESTRING(40 40, 80 80)";

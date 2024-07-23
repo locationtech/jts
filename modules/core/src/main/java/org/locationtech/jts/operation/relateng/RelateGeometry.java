@@ -143,7 +143,7 @@ class RelateGeometry {
     if (line.getNumPoints() >= 2) {
       Coordinate p0 = line.getCoordinateN(0);
       for (int i = 0 ; i < line.getNumPoints(); i++) {
-        Coordinate pi = line.getCoordinateN(1);
+        Coordinate pi = line.getCoordinateN(i);
         //-- most non-zero-len lines will trigger this right away 
         if (! p0.equals2D(pi)) 
           return false;
