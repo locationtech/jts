@@ -126,7 +126,7 @@ public abstract class GeometryTestCase extends TestCase{
   protected void checkEqualXYZ(Geometry expected, Geometry actual) {
     Geometry actualNorm = actual.norm();
     Geometry expectedNorm = expected.norm();
-    boolean equal = equalsExactXYZ(actualNorm, expectedNorm);
+    boolean equal = equalsExactMultipleDimension(actualNorm, expectedNorm, 3);
     if (! equal) {
       System.out.format(CHECK_EQUAL_FAIL, 
           writerZ.write(expectedNorm), 
@@ -134,22 +134,34 @@ public abstract class GeometryTestCase extends TestCase{
     }
     assertTrue(equal);
   }
+
+  protected void checkEqualXYZM(Geometry expected, Geometry actual) {
+    Geometry actualNorm = actual.norm();
+    Geometry expectedNorm = expected.norm();
+    boolean equal = equalsExactMultipleDimension(actualNorm, expectedNorm, 4);
+    if (! equal) {
+      System.out.format(CHECK_EQUAL_FAIL,
+          writerZ.write(expectedNorm),
+          writerZ.write(actualNorm) );
+    }
+    assertTrue(equal);
+  }
   
-  private boolean equalsExactXYZ(Geometry a, Geometry b) {
+  private boolean equalsExactMultipleDimension(Geometry a, Geometry b, int dimension) {
     if (a.getClass() != b.getClass()) return false;
     if (a.getNumGeometries() != b.getNumGeometries()) return false;
     if (a instanceof Point) {
-      return isEqualDim(((Point) a).getCoordinateSequence(), ((Point) b).getCoordinateSequence(), 3);
+      return isEqualDim(((Point) a).getCoordinateSequence(), ((Point) b).getCoordinateSequence(), dimension);
     }
     else if (a instanceof LineString) {
-      return isEqualDim(((LineString) a).getCoordinateSequence(), ((LineString) b).getCoordinateSequence(), 3);
+      return isEqualDim(((LineString) a).getCoordinateSequence(), ((LineString) b).getCoordinateSequence(), dimension);
     }
     else if (a instanceof Polygon) {
-      return equalsExactXYZPolygon( (Polygon) a, (Polygon) b);
+      return equalsExactMultipleDimensionPolygon( (Polygon) a, (Polygon) b, dimension);
     }
     else if (a instanceof GeometryCollection) {
       for (int i = 0; i < a.getNumGeometries(); i++) {
-        if (! equalsExactXYZ(a.getGeometryN(i), b.getGeometryN(i)))
+        if (! equalsExactMultipleDimension(a.getGeometryN(i), b.getGeometryN(i), dimension))
           return false;
       }
       return true;
@@ -157,17 +169,17 @@ public abstract class GeometryTestCase extends TestCase{
     return false;
   }
 
-  private boolean equalsExactXYZPolygon(Polygon a, Polygon b) {
+  private boolean equalsExactMultipleDimensionPolygon(Polygon a, Polygon b, int dimension) {
     LinearRing aShell = a.getExteriorRing();
     LinearRing bShell = b.getExteriorRing();
-    if (! isEqualDim(aShell.getCoordinateSequence(), bShell.getCoordinateSequence(), 3))
+    if (! isEqualDim(aShell.getCoordinateSequence(), bShell.getCoordinateSequence(), dimension))
       return false;
     if (a.getNumInteriorRing() != b.getNumInteriorRing())
       return false;
     for (int i = 0; i < a.getNumInteriorRing(); i++) {
       LinearRing aHole = a.getInteriorRingN(i);
       LinearRing bHole = b.getInteriorRingN(i);
-      if (! isEqualDim(aHole.getCoordinateSequence(), bHole.getCoordinateSequence(), 3))
+      if (! isEqualDim(aHole.getCoordinateSequence(), bHole.getCoordinateSequence(), dimension))
         return false;        
     }
     return true;
@@ -198,7 +210,6 @@ public abstract class GeometryTestCase extends TestCase{
     assertEquals("Coordinate Y", expected.getY(), actual.getY() );
     assertEquals("Coordinate Z", expected.getZ(), actual.getZ() );
   }
-  
   protected void checkEqualXY(String message, Coordinate expected, Coordinate actual) {
     assertEquals(message + " X", expected.getX(), actual.getX() );
     assertEquals(message + " Y", expected.getY(), actual.getY() );
