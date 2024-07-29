@@ -43,6 +43,27 @@
 </case>
 
 <case>
+  <desc>A/GC:mP with empty MultiPoint elements</desc>
+  <a>
+    POLYGON ((3 7, 7 7, 7 3, 3 3, 3 7))
+  </a>
+  <b>
+    GEOMETRYCOLLECTION (MULTIPOINT (EMPTY, (5 5)), LINESTRING (1 9, 4 9))
+  </b>
+  <test><op name="relate" arg3="0F2FF1102" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> false </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> false </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> true </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> false </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> true </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> false </op></test>
+</case>
+
+<case>
   <desc>mA/GC:PL</desc>
   <a>
     MULTIPOLYGON (((0 0, 3 0, 3 3, 0 3, 0 0)))

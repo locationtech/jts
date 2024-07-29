@@ -208,5 +208,11 @@ public class RelateNGGCTest extends RelateNGTestCase {
     checkCoversCoveredBy(a, b, true);
   }
   
+  public void testEmptyMultiPointElements() {
+    String a = "POLYGON ((3 7, 7 7, 7 3, 3 3, 3 7))";
+    String b = "GEOMETRYCOLLECTION (MULTIPOINT (EMPTY, (5 5)), LINESTRING (1 9, 4 9))";
+    checkIntersectsDisjoint(a, b, true);
+  }
+  
 
 }

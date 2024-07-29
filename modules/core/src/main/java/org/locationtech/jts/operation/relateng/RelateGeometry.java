@@ -295,6 +295,8 @@ class RelateGeometry {
     //-- only return Points not covered by another element
     List<Point> ptList = new ArrayList<Point>();
     for (Point p : ptListAll) {
+      if (p.isEmpty())
+        continue;
       int locDim = locateWithDim(p.getCoordinate());
       if (DimensionLocation.dimension(locDim) == Dimension.P) {
         ptList.add(p);
