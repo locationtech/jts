@@ -75,11 +75,18 @@ class RelateGeometry {
     this.boundaryNodeRule = bnRule;
     //-- cache geometry metadata
     isGeomEmpty = geom.isEmpty();
-    isLineZeroLen = isZeroLength(geom);
     geomDim = input.getDimension();
     analyzeDimensions();
+    isLineZeroLen = isZeroLengthLine(geom);
   }
   
+  private boolean isZeroLengthLine(Geometry geom) {
+    // avoid expensive zero-length calculation if not linear
+    if (getDimension() != Dimension.L)
+      return false;
+    return isZeroLength(geom);
+  }
+
   private void analyzeDimensions() {
     if (isGeomEmpty) {
       return;
@@ -152,7 +159,6 @@ class RelateGeometry {
     return true;
   }
 
-  
   public Geometry getGeometry() {
     return geom;
   }
