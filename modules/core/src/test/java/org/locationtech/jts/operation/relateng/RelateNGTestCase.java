@@ -83,6 +83,36 @@ public abstract class RelateNGTestCase extends GeometryTestCase {
     assertEquals(expectedValue, actualVal);
   }
   
+  void checkPrepared(String wkta, String wktb)
+  {
+    Geometry a = read(wkta);
+    Geometry b = read(wktb);
+    RelateNG prep_a = RelateNG.prepare(a);
+   
+    assertEquals("equalsTopo", prep_a.evaluate(b, RelatePredicate.equalsTopo()), 
+                            RelateNG.relate(a, b, RelatePredicate.equalsTopo()));
+  
+    assertEquals("intersects", prep_a.evaluate(b, RelatePredicate.intersects()), 
+        RelateNG.relate(a, b, RelatePredicate.intersects()));
+    assertEquals("disjoint",   prep_a.evaluate(b, RelatePredicate.disjoint()), 
+        RelateNG.relate(a, b, RelatePredicate.disjoint()));
+    assertEquals("covers",     prep_a.evaluate(b, RelatePredicate.covers()), 
+        RelateNG.relate(a, b, RelatePredicate.covers()));
+    assertEquals("coveredBy",  prep_a.evaluate(b, RelatePredicate.coveredBy()), 
+        RelateNG.relate(a, b, RelatePredicate.coveredBy()));
+    assertEquals("within",     prep_a.evaluate(b, RelatePredicate.within()), 
+        RelateNG.relate(a, b, RelatePredicate.within()));
+    assertEquals("contains",   prep_a.evaluate(b, RelatePredicate.contains()), 
+        RelateNG.relate(a, b, RelatePredicate.contains()));
+    assertEquals("crosses",    prep_a.evaluate(b, RelatePredicate.crosses()), 
+        RelateNG.relate(a, b, RelatePredicate.crosses()));
+    assertEquals("touches",    prep_a.evaluate(b, RelatePredicate.touches()), 
+        RelateNG.relate(a, b, RelatePredicate.touches()));
+    
+    assertEquals("relate",     prep_a.evaluate(b).toString(), 
+                            RelateNG.relate(a, b).toString());
+  }
+  
   TopologyPredicate trace(TopologyPredicate pred) {
     if (! isTrace)
       return pred;

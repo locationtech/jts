@@ -118,6 +118,18 @@ public class RelateNGBoundaryNodeRuleTest
     runRelate(a, b,  BoundaryNodeRule.ENDPOINT_BOUNDARY_RULE,  "FFFFFF102"    );
   }
 
+  public void testLineStringInteriorTouchMultivalent()
+  {
+    String a = "POLYGON EMPTY";
+    String b = "MULTILINESTRING ((0 0, 0 1), (0 1, 1 1, 1 0, 0 0))";
+
+    // closed line has no boundary under SFS rule
+    runRelate(a, b,  BoundaryNodeRule.OGC_SFS_BOUNDARY_RULE,   "FFFFFF1F2"    );
+    
+    // closed line has boundary under ENDPOINT rule
+    runRelate(a, b,  BoundaryNodeRule.ENDPOINT_BOUNDARY_RULE,  "FFFFFF102"    );
+  }
+
   void runRelate(String wkt1, String wkt2, BoundaryNodeRule bnRule, String expectedIM)
   {
     Geometry g1 = read(wkt1);
