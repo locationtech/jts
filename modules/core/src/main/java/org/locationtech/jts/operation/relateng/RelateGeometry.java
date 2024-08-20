@@ -249,15 +249,9 @@ class RelateGeometry {
    * Indicates whether the geometry requires self-noding 
    * for correct evaluation of specific spatial predicates. 
    * Self-noding is required for geometries which may self-cross
-   * - i.e. lines, and overlapping polygons in GeometryCollections.
+   * - i.e. lines, and overlapping elements in GeometryCollections.
    * Self-noding is not required for polygonal geometries,
    * since they can only touch at vertices.
-   * This ensures that the coordinates of nodes created by 
-   * crossing segments are computed explicitly.
-   * This ensures that node locations match in situations
-   * where a self-crossing and mutual crossing occur at the same logical location.
-   * E.g. a self-crossing line tested against a single segment 
-   * identical to one of the crossed segments.
    * 
    * @return true if self-noding is required for this geometry
    */
@@ -267,7 +261,7 @@ class RelateGeometry {
         || geom instanceof Polygon
         || geom instanceof MultiPolygon)
         return false;
-    //-- GC with a single polygon does not need noding
+    //-- a GC with a single polygon does not need noding
     if (hasAreas && geom.getNumGeometries() == 1) 
       return false;
     return true;
