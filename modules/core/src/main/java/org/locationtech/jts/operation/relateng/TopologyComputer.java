@@ -119,8 +119,9 @@ class TopologyComputer {
    * for correct evaluation of specific spatial predicates. 
    * Self-noding is required for geometries which may self-cross
    * - i.e. lines, and overlapping polygons in GeometryCollections.
-   * Self-noding is not required for polygonal geometries.
-   * This ensures that the locations of nodes created by 
+   * Self-noding is not required for polygonal geometries,
+   * since they can only touch at vertices.
+   * This ensures that the coordinates of nodes created by 
    * crossing segments are computed explicitly.
    * This ensures that node locations match in situations
    * where a self-crossing and mutual crossing occur at the same logical location.
@@ -130,9 +131,8 @@ class TopologyComputer {
    * @return true if self-noding is required
    */
   public boolean isSelfNodingRequired() {
-    //TODO: change to testing for lines or GC with > 1 polygon
-    if (geomA.isPointsOrPolygons()) return false;
-    if (geomB.isPointsOrPolygons()) return false;
+    if (geomA.isSelfNodingRequired()) return true;
+    if (geomB.isSelfNodingRequired()) return true;
     return predicate.requireSelfNoding();
   }
   
@@ -141,6 +141,7 @@ class TopologyComputer {
   }
   
   private void updateDim(int locA, int locB, int dimension) {
+    //System.out.println(Location.toLocationSymbol(locA) + "/" + Location.toLocationSymbol(locB) + ": " + dimension);
     predicate.updateDimension(locA, locB, dimension);
   }
   

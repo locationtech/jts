@@ -51,6 +51,10 @@ public class TopologyPredicateTracer {
       return pred.requireSelfNoding();
     }
     
+    public boolean requireInteraction() {
+      return pred.requireInteraction();
+    }
+    
     @Override
     public boolean requireCovers(boolean isSourceA) {
       return pred.requireCovers(isSourceA);

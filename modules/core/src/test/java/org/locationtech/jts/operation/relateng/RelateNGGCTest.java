@@ -214,5 +214,17 @@ public class RelateNGGCTest extends RelateNGTestCase {
     checkIntersectsDisjoint(a, b, true);
   }
   
+  public void testPolygonContainingPointsInBoundary() {
+    String a = "POLYGON ((0 0, 0 10, 10 10, 10 0, 0 0))";
+    String b = "GEOMETRYCOLLECTION (POLYGON ((0 0, 10 0, 10 10, 0 10, 0 0)), MULTIPOINT ((0 2), (0 5)))";
+    checkEquals(a, b, true);
+  }
+  
+  public void testPolygonContainingLineInBoundary() {
+    String a = "POLYGON ((0 0, 0 10, 10 10, 10 0, 0 0))";
+    String b = "GEOMETRYCOLLECTION (POLYGON ((0 0, 10 0, 10 10, 0 10, 0 0)), LINESTRING (0 2, 0 5))";
+    checkEquals(a, b, true);
+  }
+
 
 }
