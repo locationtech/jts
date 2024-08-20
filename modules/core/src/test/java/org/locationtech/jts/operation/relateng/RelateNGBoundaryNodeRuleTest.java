@@ -66,8 +66,25 @@ public class RelateNGBoundaryNodeRuleTest
     runRelate(a, b,  BoundaryNodeRule.OGC_SFS_BOUNDARY_RULE,   "F01FF0102"    );
     // under EndPoint, A has a boundary node - A.bdy / B.bdy = 0
     runRelate(a, b,  BoundaryNodeRule.ENDPOINT_BOUNDARY_RULE,  "FF1F00102"    );
+    // under MonoValent, A touch point is not boundary - A.bdy / B.bdy = F and A.int / B.bdy = 0
+    runRelate(a, b,  BoundaryNodeRule.MONOVALENT_ENDPOINT_BOUNDARY_RULE,  "F01FF0102"    );
     // under MultiValent, A has a boundary node but B does not - A.bdy / B.bdy = F and A.bdy / B.int = 0
     runRelate(a, b,  BoundaryNodeRule.MULTIVALENT_ENDPOINT_BOUNDARY_RULE,  "FF10FF1F2"    );
+  }
+
+  public void testMultiLineStringClosedTouchAtEndpoint()
+  {
+    String a = "MULTILINESTRING ((0 0, 10 10), (10 10, 0 20, 0 0))";
+    String b = "LINESTRING (10 10, 20 0)";
+
+    // under Mod2, A has no boundary - A.int / B.bdy = 0
+    runRelate(a, b,  BoundaryNodeRule.OGC_SFS_BOUNDARY_RULE,   "F01FFF102"    );
+    // under EndPoint, A endpoints are in boundary - A.bdy / B.bdy = 0
+    runRelate(a, b,  BoundaryNodeRule.ENDPOINT_BOUNDARY_RULE,  "FF1F00102"    );
+    // under MonoValent, A touch point is not boundary - A.bdy / B.bdy = F and A.int / B.bdy = 0
+    runRelate(a, b,  BoundaryNodeRule.MONOVALENT_ENDPOINT_BOUNDARY_RULE,  "F01FFF102"    );
+    // under MultiValent, A has a boundary node but B does not - A.bdy / B.bdy = F and A.bdy / B.int = 0
+    runRelate(a, b,  BoundaryNodeRule.MULTIVALENT_ENDPOINT_BOUNDARY_RULE,  "FF10F01F2"    );
   }
 
   public void testLineRingTouchAtEndpoints()
