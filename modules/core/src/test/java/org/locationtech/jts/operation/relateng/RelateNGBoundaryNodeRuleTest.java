@@ -79,6 +79,8 @@ public class RelateNGBoundaryNodeRuleTest
     runRelate(a, b,  BoundaryNodeRule.OGC_SFS_BOUNDARY_RULE,   "F01FFF102"    );
     // under EndPoint, A has a boundary node - A.bdy / B.bdy = 0
     runRelate(a, b,  BoundaryNodeRule.ENDPOINT_BOUNDARY_RULE,  "FF1F0F102"    );
+    // under MonoValent, A has no boundary node but B does - A.bdy / B.bdy = F and A.int / B.bdy = 0
+    runRelate(a, b,  BoundaryNodeRule.MONOVALENT_ENDPOINT_BOUNDARY_RULE,  "F01FFF102"    );
     // under MultiValent, A has a boundary node but B does not - A.bdy / B.bdy = F and A.bdy / B.int = 0
     runRelate(a, b,  BoundaryNodeRule.MULTIVALENT_ENDPOINT_BOUNDARY_RULE,  "FF10FF1F2"    );
   }
