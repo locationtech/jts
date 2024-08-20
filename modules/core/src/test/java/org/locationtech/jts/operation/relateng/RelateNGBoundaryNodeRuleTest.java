@@ -118,6 +118,18 @@ public class RelateNGBoundaryNodeRuleTest
     runRelate(a, b,  BoundaryNodeRule.ENDPOINT_BOUNDARY_RULE,  "FFFFFF102"    );
   }
 
+  public void testPolygonEqualRotated()
+  {
+    String a = "POLYGON ((0 0, 140 0, 140 140, 0 140, 0 0))";
+    String b = "POLYGON ((140 0, 0 0, 0 140, 140 140, 140 0))";
+
+    // BNR only considers linear endpoints, so results are equal for all rules
+    runRelate(a, b,  BoundaryNodeRule.OGC_SFS_BOUNDARY_RULE,   "2FFF1FFF2"    );
+    runRelate(a, b,  BoundaryNodeRule.ENDPOINT_BOUNDARY_RULE,  "2FFF1FFF2"    );
+    runRelate(a, b,  BoundaryNodeRule.MONOVALENT_ENDPOINT_BOUNDARY_RULE,  "2FFF1FFF2"    );
+    runRelate(a, b,  BoundaryNodeRule.MULTIVALENT_ENDPOINT_BOUNDARY_RULE,  "2FFF1FFF2"    );  
+  }
+  
   public void testLineStringInteriorTouchMultivalent()
   {
     String a = "POLYGON EMPTY";
