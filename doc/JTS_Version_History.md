@@ -17,9 +17,23 @@ Distributions for older JTS versions can be obtained at the
 
 <!-- ================================================================ -->
 
+Version 1.x
+
+Release Date: TBD
+
 # Version 1.x
 
-*Release Date: TBD*
+### New Features
+
+### Functionality Improvements
+
+### Bug Fixes
+
+### Performance Improvements
+
+# Version 1.20.0
+
+*Release Date: 09/18/2024*
 
 ### New Features
 * Add `CoverageValidator` `CoveragePolygonValidator` (#900)
@@ -44,6 +58,7 @@ Distributions for older JTS versions can be obtained at the
 * Improve CoverageSimplifier with ring removal, smoothing, inner/outer and per-feature tolerances (#1060)
 
 ### Bug Fixes
+* Fix `WKBReader` and `WKBWriter` handling of M measures when writing to WKB and reading from WKB (#734)
 * Fix `PreparedGeometry` handling of EMPTY elements (#904)
 * Fix `WKBReader` parsing of WKB containing multiple empty elements (#905)
 * Fix `LineSegment.orientationIndex(LineSegment)` to correct orientation for non-collinear segments on right (#914)
