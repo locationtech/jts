@@ -226,5 +226,11 @@ public class RelateNGGCTest extends RelateNGTestCase {
     checkEquals(a, b, true);
   }
 
+  public void testPolygonContainingLineInBoundaryAndInterior() {
+    String a = "POLYGON ((0 0, 0 10, 10 10, 10 0, 0 0))";
+    String b = "GEOMETRYCOLLECTION (POLYGON ((0 0, 10 0, 10 10, 0 10, 0 0)), LINESTRING (0 2, 0 5, 5 5))";
+    checkEquals(a, b, true);
+  }
+
 
 }

@@ -213,11 +213,11 @@ class RelateGeometry {
     int loc = getLocator().locateNodeWithDim(nodePt, parentPolygonal);
     return loc == DimensionLocation.AREA_INTERIOR;  
   }
-  
-  public int locateLineEnd(Coordinate p) {
-    return getLocator().locateLineEnd(p);
-  }
 
+  public int locateLineEndWithDim(Coordinate p) {
+    return getLocator().locateLineEndWithDim(p);
+  }
+  
   /**
    * Locates a vertex of a polygon.
    * A vertex of a Polygon or MultiPolygon is on
