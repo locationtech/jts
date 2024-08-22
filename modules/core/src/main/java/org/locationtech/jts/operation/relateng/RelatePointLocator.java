@@ -142,14 +142,33 @@ class RelatePointLocator {
   public int locate(Coordinate p) {
     return DimensionLocation.location(locateWithDim(p));
   }
-
-  public int locateLineEnd(Coordinate p) {
-    return lineBoundary.isBoundary(p) ? Location.BOUNDARY : Location.INTERIOR;
+  
+  /**
+   * Locates a point which is a line endpoint,
+   * as a {@link DimensionLocation}.
+   * For a mixed-dim GC, the line end point may also lie in an area,
+   * in which case this location is reported.
+   * Otherwise, the dimLoc will be either LINE_BOUNDARY 
+   * or LINE_INTERIOR, depending on the endpoint valence
+   * and the BoundaryNodeRule in place.
+   * 
+   * @param p the line end point to locate
+   * @return the dimension and location of the point
+   */
+  public int locateLineEndWithDim(Coordinate p) {
+    if (polygons != null) {
+      int locPoly = locateOnPolygons(p, false, null);
+      if (locPoly != Location.EXTERIOR)
+        return DimensionLocation.locationArea(locPoly);
+    }
+    return lineBoundary.isBoundary(p) 
+        ? DimensionLocation.LINE_BOUNDARY 
+        : DimensionLocation.LINE_INTERIOR;
   }
   
   /**
    * Locates a point which is known to be a node of the geometry
-   * (i.e. a point or on an edge).
+   * (i.e. a vertex or on an edge).
    * 
    * @param p the node point to locate
    * @param parentPolygonal the polygon the point is a node of

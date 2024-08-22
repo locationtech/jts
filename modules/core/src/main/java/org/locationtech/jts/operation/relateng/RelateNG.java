@@ -413,7 +413,6 @@ public class RelateNG
           continue;
        
         LineString line = (LineString) elem;
-        //TODO: add optimzation to skip disjoint elements once exterior point found
         Coordinate e0 = line.getCoordinateN(0);
         hasExteriorIntersection |= computeLineEnd(geom, isA, e0, geomTarget, topoComputer);
         if (topoComputer.isResultKnown()) {
@@ -433,9 +432,27 @@ public class RelateNG
     return false;
   }
 
+  /**
+   * Compute the topology of a line endpoint.
+   * Also reports if the line end is in the exterior of the target geometry,
+   * to optimize testing multiple exterior endpoints.
+   * 
+   * @param geom
+   * @param isA
+   * @param pt
+   * @param geomTarget
+   * @param topoComputer
+   * @return true if the line endpoint is in the exterior of the target
+   */
   private boolean computeLineEnd(RelateGeometry geom, boolean isA, Coordinate pt,
       RelateGeometry geomTarget, TopologyComputer topoComputer) {
-    int locLineEnd = geom.locateLineEnd(pt);
+    int locDimLineEnd = geom.locateLineEndWithDim(pt);
+    int dimLineEnd = DimensionLocation.dimension(locDimLineEnd, topoComputer.getDimension(isA));
+    //-- skip line ends which are in a GC area
+    if (dimLineEnd != Dimension.L)
+      return false;
+    int locLineEnd = DimensionLocation.location(locDimLineEnd);
+    
     int locDimTarget = geomTarget.locateWithDim(pt);
     int locTarget = DimensionLocation.location(locDimTarget);
     int dimTarget = DimensionLocation.dimension(locDimTarget, topoComputer.getDimension(! isA));
