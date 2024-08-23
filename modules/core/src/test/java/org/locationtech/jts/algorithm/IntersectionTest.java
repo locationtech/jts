@@ -4,6 +4,14 @@ import org.locationtech.jts.geom.Coordinate;
 
 import junit.framework.TestCase;
 import junit.textui.TestRunner;
+import org.locationtech.jts.geom.CoordinateSequence;
+import org.locationtech.jts.geom.CoordinateSequenceFactory;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LinearRing;
+import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.geom.impl.CoordinateArraySequenceFactory;
+import org.locationtech.jts.io.WKTReader;
 
 public class IntersectionTest extends TestCase {
   private static final double MAX_ABS_ERROR = 1e-5;
@@ -69,6 +77,41 @@ public class IntersectionTest extends TestCase {
     checkIntersectionLineSegmentNull( 0, 0, 0, 1,    2, 9,  1, 9 );
     checkIntersectionLineSegmentNull( 0, 0, 0, 1,   -2, 9, -1, 9 );
     checkIntersectionLineSegmentNull( 0, 0, 0, 1,    2, 9,  1, 9 );
+  }
+
+  public void testIntersectionXY() throws Exception {
+    // intersection with dim 3 x dim3
+    WKTReader reader = new WKTReader();
+    Geometry poly1 = reader.read("POLYGON((0 0 0, 0 10000 2, 10000 10000 2, 10000 0 0, 0 0 0))");
+    Geometry clipArea = reader.read("POLYGON((0 0, 0 2500, 2500 2500, 2500 0, 0 0))");
+    Geometry clipped1 = poly1.intersection(clipArea);
+
+    // intersection with dim 3 x dim 2
+    GeometryFactory gf = poly1.getFactory();
+    CoordinateSequenceFactory csf = gf.getCoordinateSequenceFactory();
+    double xmin = 0.0;
+    double xmax = 2500.0;
+    double ymin = 0.0;
+    double ymax = 2500.0;
+
+    CoordinateSequence cs = csf.create(5,2);
+    cs.setOrdinate(0, 0, xmin);
+    cs.setOrdinate(0, 1, ymin);
+    cs.setOrdinate(1, 0, xmin);
+    cs.setOrdinate(1, 1, ymax);
+    cs.setOrdinate(2, 0, xmax);
+    cs.setOrdinate(2, 1, ymax);
+    cs.setOrdinate(3, 0, xmax);
+    cs.setOrdinate(3, 1, ymin);
+    cs.setOrdinate(4, 0, xmin);
+    cs.setOrdinate(4, 1, ymin);
+
+    LinearRing bounds = gf.createLinearRing(cs);
+
+    Polygon fence = gf.createPolygon(bounds, null);
+    Geometry clipped2 = poly1.intersection(fence);
+
+    assertTrue(clipped1.equals(clipped2));
   }
 
   //==================================================

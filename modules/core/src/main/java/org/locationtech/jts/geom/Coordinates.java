@@ -68,6 +68,26 @@ public class Coordinates {
   }
 
   /**
+   * Check if coordinate can store Z valye, based on subclass of {@link Coordinate}.
+   *
+   * @param coordinate supplied coordinate
+   * @return true if setZ is available
+   */
+  public static boolean hasZ(Coordinate coordinate)
+  {
+    if (coordinate instanceof CoordinateXY) {
+      return false;
+    } else if (coordinate instanceof CoordinateXYM) {
+      return false;
+    } else if (coordinate instanceof CoordinateXYZM) {
+      return true;
+    } else if (coordinate instanceof Coordinate) {
+      return true;
+    }
+    return true;
+  }
+
+  /**
    * Determine number of measures based on subclass of {@link Coordinate}.
    * 
    * @param coordinate supplied coordinate
