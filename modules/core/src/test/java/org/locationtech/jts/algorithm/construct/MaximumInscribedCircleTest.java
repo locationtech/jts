@@ -1,10 +1,13 @@
 package org.locationtech.jts.algorithm.construct;
 
+import org.junit.Assert;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.LineString;
 
 import junit.textui.TestRunner;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.Polygon;
 import test.jts.GeometryTestCase;
 
 public class MaximumInscribedCircleTest extends GeometryTestCase {
@@ -85,6 +88,35 @@ public class MaximumInscribedCircleTest extends GeometryTestCase {
   public void testVeryThin() {
     checkCircle("POLYGON ((100 100, 200 300, 300 100, 450 250, 300 99.999999, 200 299.99999, 100 100))", 
        0.01 );
+  }
+
+  /**
+   * This tests regression in GeoTools PolyLabellerTest.testDoubleDiamondHole when updating to JTS 1.20.0.
+   */
+  public void testDoubleDiamondHole() {
+    Polygon polygon = (Polygon) read("Polygon ((0 5, 5 10, 10 6, 15 10, 20 5, 15 0, 10 4, 5 0, 0 5),(5.4267578125 6.68164062499999822, 3.7451171875 5.30761718749999822, 5.365234375 3.21582031249999822, 8.3388671875 5.08203124999999822, 5.4267578125 6.68164062499999822))");
+    Point point = MaximumInscribedCircle.getCenter(polygon, 1);
+    Point expected = (Point) read("Point (15 5)");
+
+    // JTS 1.20.0 changed started cell from centroid to interior point resulting in a small difference from expected location
+    double delta = point.distance(expected);
+    Assert.assertTrue("close to expected label position: " + delta, delta < 1.0);
+  }
+
+  public void testDoubleDiamond() {
+    Polygon polygon = (Polygon) read("POLYGON((0 5, 5 10, 10 6, 15 10, 20 5, 15 0, 10 4, 5 0, 0 5))");
+    Point point = MaximumInscribedCircle.getCenter(polygon, 1);
+
+    // There are two valid locations:
+    // JTS 1.19.0 previously preferred this location
+    Point expected1 = (Point) read("POINT(5 5)");
+    // JTS 1.20.0 prefers this location
+    Point expected2 = (Point) read("POINT(15 5)");
+
+    // JTS 1.20.0 switched MaximumInscribedCircle grid start from centroid to interior point
+    double delta1 = point.distance(expected1);
+    double delta2 = point.distance(expected2);
+    Assert.assertTrue("close to expected label position", delta1 < 1.0 || delta2 < 1.0 );
   }
   
   /**
