@@ -5,18 +5,17 @@ The JTS Topology Suite is a Java library for creating and manipulating vector ge
 
 ![JTS logo](jts_logo.png)
 
-[![Travis Build Status](https://api.travis-ci.org/locationtech/jts.svg)](http://travis-ci.org/locationtech/jts) [![GitHub Action Status](https://github.com/locationtech/jts/workflows/GitHub%20CI/badge.svg)](https://github.com/locationtech/jts/actions) 
+[![GitHub Action Status](https://github.com/locationtech/jts/workflows/GitHub%20CI/badge.svg)](https://github.com/locationtech/jts/actions) 
 
 [![Join the chat at https://gitter.im/locationtech/jts](https://badges.gitter.im/locationtech/jts.svg)](https://gitter.im/locationtech/jts?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-
-JTS is a project in the [LocationTech](http://www.locationtech.org) working group of the Eclipse Foundation.
+JTS is a project in the [LocationTech](https://www.locationtech.org) working group of the Eclipse Foundation.
 
 ![LocationTech](locationtech_mark.png) 
 
 ## Requirements
 
-Currently JTS targets Java 1.8 and above.
+Currently JTS targets Java 8 and above.
 
 ## Resources
 
@@ -41,7 +40,7 @@ Currently JTS targets Java 1.8 and above.
 JTS is open source software.  It is dual-licensed under:
 
 * [Eclipse Public License 2.0](https://www.eclipse.org/legal/epl-v20.html)
-* [Eclipse Distribution License 1.0](http://www.eclipse.org/org/documents/edl-v10.php) (a BSD Style License)
+* [Eclipse Distribution License 1.0](https://www.eclipse.org/org/documents/edl-v10.php) (a BSD Style License)
 
 See also:
 
