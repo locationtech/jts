@@ -12,6 +12,7 @@
 package org.locationtech.jts.io;
 
 import java.io.IOException;
+import java.util.EnumSet;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateFilter;
@@ -150,6 +151,49 @@ public class WKBTest
       throws IOException, ParseException
   {
     runWKBTest("GEOMETRYCOLLECTION EMPTY");
+  }
+
+  /**
+   * Tests if a previously written WKB with M-coordinates can be read as expected.
+   */
+  public void testWriteAndReadM() throws ParseException
+  {
+    String wkt = "MULTILINESTRING M((1 1 1, 2 2 2))";
+    WKTReader wktReader = new WKTReader();
+    Geometry geometryBefore = wktReader.read(wkt);
+
+    WKBWriter wkbWriter = new WKBWriter(3);
+    wkbWriter.setOutputOrdinates(EnumSet.of(Ordinate.X, Ordinate.Y, Ordinate.M));
+    byte[] write = wkbWriter.write(geometryBefore);
+
+    WKBReader wkbReader = new WKBReader();
+    Geometry geometryAfter = wkbReader.read(write);
+    
+    assertEquals(1.0, geometryAfter.getCoordinates()[0].getX());
+    assertEquals(1.0, geometryAfter.getCoordinates()[0].getY());
+    assertEquals(Double.NaN, geometryAfter.getCoordinates()[0].getZ());
+    assertEquals(1.0, geometryAfter.getCoordinates()[0].getM());
+  }
+
+  /**
+   * Tests if a previously written WKB with Z-coordinates can be read as expected.
+   */
+  public void testWriteAndReadZ() throws ParseException
+  {
+    String wkt = "MULTILINESTRING ((1 1 1, 2 2 2))";
+    WKTReader wktReader = new WKTReader();
+    Geometry geometryBefore = wktReader.read(wkt);
+
+    WKBWriter wkbWriter = new WKBWriter(3);
+    byte[] write = wkbWriter.write(geometryBefore);
+
+    WKBReader wkbReader = new WKBReader();
+    Geometry geometryAfter = wkbReader.read(write);
+    
+    assertEquals(1.0, geometryAfter.getCoordinates()[0].getX());
+    assertEquals(1.0, geometryAfter.getCoordinates()[0].getY());
+    assertEquals(1.0, geometryAfter.getCoordinates()[0].getZ());
+    assertEquals(Double.NaN, geometryAfter.getCoordinates()[0].getM());
   }
 
   private void runWKBTest(String wkt) throws IOException, ParseException 
