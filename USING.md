@@ -44,7 +44,7 @@ Our [build server](https://ci.eclipse.org/jts/) publishes to the LocationTech Ma
 <repositories>
   <repository>
     <id>locationtech-releases</id>
-    <url>https://repo.eclipse.org/content/groups/releases</url>
+    <url>https://repo.eclipse.org/content/repositories/jts</url>
     <snapshots>
       <enabled>false</enabled>
     </snapshots>
@@ -66,7 +66,7 @@ The latest snapshot builds are now avaialble:
 
 ```xml
 <properties>
-    <jts.version>1.17.0-SNAPSHOT</jts.version>
+    <jts.version>1.20.0-SNAPSHOT</jts.version>
 </properties>
 <dependency>
     <groupId>org.locationtech.jts</groupId>
