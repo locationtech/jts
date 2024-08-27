@@ -45,7 +45,8 @@ Release Date: TBD
 * Add `ConcaveHull.alphaShape` function (#952)
 * Add `OffsetCurve` Joined mode (#956)
 * Add `PointLocation.isOnSegment` function (#1048)
-* Addd `RelateNG` API for improved topological relationship functionality and performance (#1052, #1055)
+* Add `RelateNG` API for improved topological relationship functionality and performance (#1052, #1055)
+* Add system property `jts.relate=ng` to enable use of RelateNG in `Geometry` methods (#1073)
 
 ### Functionality Improvements
 * Improve `TopologyPreservingSimplifier` to prevent edge-disjoint line collapse (#925)
