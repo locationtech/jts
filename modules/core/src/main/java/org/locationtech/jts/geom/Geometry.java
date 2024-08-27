@@ -713,10 +713,7 @@ public abstract class Geometry
    *      Returns <code>false</code> if both <code>Geometry</code>s are points
    */
   public boolean touches(Geometry g) {
-    // short-circuit test
-    if (! getEnvelopeInternal().intersects(g.getEnvelopeInternal()))
-      return false;
-    return relate(g).isTouches(getDimension(), g.getDimension());
+    return GeometryRelate.touches(this, g);
   }
 
   /**
@@ -771,18 +768,8 @@ public abstract class Geometry
     if (g.isRectangle()) {
       return RectangleIntersects.intersects((Polygon) g, this);
     }
-    if (isGeometryCollection() || g.isGeometryCollection()) {
-      for (int i = 0 ; i < getNumGeometries() ; i++) {
-        for (int j = 0 ; j < g.getNumGeometries() ; j++) {
-          if (getGeometryN(i).intersects(g.getGeometryN(j))) {
-            return true;
-          }
-        }
-      }
-      return false;
-    }
-    // general case
-    return relate(g).isIntersects();
+
+    return GeometryRelate.intersects(this, g);
   }
 
   /**
@@ -845,7 +832,7 @@ public abstract class Geometry
    * @see Geometry#coveredBy
    */
   public boolean within(Geometry g) {
-    return g.contains(this);
+    return GeometryRelate.within(this, g);
   }
 
   /**
@@ -876,25 +863,13 @@ public abstract class Geometry
    * @see Geometry#covers
    */
   public boolean contains(Geometry g) {
-    // optimization - lower dimension cannot contain areas
-    if (g.getDimension() == 2 && getDimension() < 2) {
-      return false;
-    }
-    // optimization - P cannot contain a non-zero-length L
-    // Note that a point can contain a zero-length lineal geometry,
-    // since the line has no boundary due to Mod-2 Boundary Rule
-    if (g.getDimension() == 1 && getDimension() < 1 && g.getLength() > 0.0) {
-      return false;
-    }
-    // optimization - envelope test
-    if (! getEnvelopeInternal().contains(g.getEnvelopeInternal()))
-      return false;
+
     // optimization for rectangle arguments
     if (isRectangle()) {
       return RectangleContains.contains((Polygon) this, g);
     }
     // general case
-    return relate(g).isContains();
+    return GeometryRelate.contains(this, g);
   }
 
   /**
@@ -919,10 +894,7 @@ public abstract class Geometry
    *@return        <code>true</code> if the two <code>Geometry</code>s overlap.
    */
   public boolean overlaps(Geometry g) {
-    // short-circuit test
-    if (! getEnvelopeInternal().intersects(g.getEnvelopeInternal()))
-      return false;
-    return relate(g).isOverlaps(getDimension(), g.getDimension());
+    return GeometryRelate.overlaps(this, g);
   }
 
   /**
@@ -960,24 +932,7 @@ public abstract class Geometry
    * @see Geometry#coveredBy
    */
   public boolean covers(Geometry g) {
-    // optimization - lower dimension cannot cover areas
-    if (g.getDimension() == 2 && getDimension() < 2) {
-      return false;
-    }
-    // optimization - P cannot cover a non-zero-length L
-    // Note that a point can cover a zero-length lineal geometry
-    if (g.getDimension() == 1 && getDimension() < 1 && g.getLength() > 0.0) {
-      return false;
-    }
-    // optimization - envelope test
-    if (! getEnvelopeInternal().covers(g.getEnvelopeInternal()))
-      return false;
-    // optimization for rectangle arguments
-    if (isRectangle()) {
-    	// since we have already tested that the test envelope is covered
-      return true;
-    }
-    return relate(g).isCovers();
+    return GeometryRelate.covers(this, g);
   }
 
   /**
@@ -1010,7 +965,7 @@ public abstract class Geometry
    * @see Geometry#covers
    */
   public boolean coveredBy(Geometry g) {
-    return g.covers(this);
+    return GeometryRelate.coveredBy(this, g);
   }
 
   /**
@@ -1037,7 +992,7 @@ public abstract class Geometry
    * @see IntersectionMatrix
    */
   public boolean relate(Geometry g, String intersectionPattern) {
-    return relate(g).matches(intersectionPattern);
+    return GeometryRelate.relate(this, g, intersectionPattern);
   }
 
   /**
@@ -1048,9 +1003,7 @@ public abstract class Geometry
    *      boundaries and exteriors of the two <code>Geometry</code>s
    */
   public IntersectionMatrix relate(Geometry g) {
-    checkNotGeometryCollection(this);
-    checkNotGeometryCollection(g);
-    return RelateOp.relate(this, g);
+    return GeometryRelate.relate(this, g);
   }
 
   /**
@@ -1101,10 +1054,7 @@ public abstract class Geometry
    */
   public boolean equalsTopo(Geometry g)
   {
-    // short-circuit test
-    if (! getEnvelopeInternal().equals(g.getEnvelopeInternal()))
-      return false;
-    return relate(g).isEquals(getDimension(), g.getDimension());
+    return GeometryRelate.equalsTopo(this, g);
   }
 
   /**

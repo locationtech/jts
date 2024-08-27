@@ -123,6 +123,7 @@ module org.foo.baz {
 ## JTS System Properties
 
 * `-Djts.overlay=ng` enables the use of OverlayNG in `Geometry` overlay methods. (*Note: in a future release this will become the default behaviour*) 
+* `-Djts.relate=ng` enables the use of RelateNG in `Geometry` topological predicate methods. (*Note: in a future release this will become the default behaviour*) 
 
 ## JTS Tools
 
