@@ -17,11 +17,9 @@ Distributions for older JTS versions can be obtained at the
 
 <!-- ================================================================ -->
 
-Version 1.x
+# Version 1.20.1
 
-Release Date: TBD
-
-# Version 1.x
+*Release Date: TBD**
 
 ### New Features
 
