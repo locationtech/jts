@@ -16,12 +16,12 @@ import org.locationtech.jts.geom.Geometry;
 import junit.textui.TestRunner;
 import test.jts.GeometryTestCase;
 
-public class ApproximateMedialAxisTest extends GeometryTestCase {
+public class DelaunayMedialAxisTest extends GeometryTestCase {
   public static void main(String args[]) {
-    TestRunner.run(ApproximateMedialAxisTest.class);
+    TestRunner.run(DelaunayMedialAxisTest.class);
   }
   
-  public ApproximateMedialAxisTest(String name) {
+  public DelaunayMedialAxisTest(String name) {
     super(name);
   }
 
@@ -37,7 +37,7 @@ public class ApproximateMedialAxisTest extends GeometryTestCase {
   
   private void checkTree(String wkt, String wktExpected) {
     Geometry geom = read(wkt);
-    Geometry actual = ApproximateMedialAxis.medialAxis(geom);
+    Geometry actual = DelaunayMedialAxis.medialAxis(geom);
     Geometry expected = read(wktExpected);
     //checkEqual(expected, actual);
   }

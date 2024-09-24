@@ -30,19 +30,18 @@ import org.locationtech.jts.geom.Triangle;
 import org.locationtech.jts.triangulate.polygon.ConstrainedDelaunayTriangulator;
 import org.locationtech.jts.triangulate.tri.Tri;
 
-
 /**
- * Constructs an approximation to the medial axis of a Polygon, 
- * as a set of linestrings representing the medial axis graph.
+ * Constructs an approximation to the medial axis of a {@link Polygon} 
+ * based on the Constrained Delaunay triangulation.
  * 
  * @author mdavis
  *
  */
-public class ApproximateMedialAxis {
+public class DelaunayMedialAxis {
 
   public static Geometry medialAxis(Geometry geom) {
-    ApproximateMedialAxis tt = new ApproximateMedialAxis((Polygon) geom);
-    return tt.compute();
+    DelaunayMedialAxis ma = new DelaunayMedialAxis((Polygon) geom);
+    return ma.compute();
   }
   
   /*
@@ -61,7 +60,7 @@ public class ApproximateMedialAxis {
   private Map<Tri, AxisNode> nodeMap = new HashMap<Tri, AxisNode>();
   private Deque<AxisNode> nodeQue = new ArrayDeque<AxisNode>();
 
-  public ApproximateMedialAxis(Polygon polygon) {
+  public DelaunayMedialAxis(Polygon polygon) {
     this.inputPolygon = polygon;
     geomFact = inputPolygon.getFactory();
   }
@@ -77,11 +76,36 @@ public class ApproximateMedialAxis {
   private List<LineString> constructLines(List<Tri> tris)
   {
     List<LineString> lines = new ArrayList<LineString>();
+    /**
+     * Construct paths from cap tris
+     * (tris with two outer sides).
+     * These will end at either a node tri
+     * or a previously processed tri (if the triangulation has no nodes).
+     */
+    int numCaps = 0;
     for (Tri tri : tris) {
       if (tri.numAdjacent() == 1) {
-        lines.add( constructLeafLine(tri) );
+        constructCapPaths(tri, lines);
+        numCaps++;
       }
     }
+    //TODO: handle case with two caps and no nodes (by rebuilding line connecting midpoints from cap to cap)
+    
+    //TODO: if no nodes in queue, search for a node to seed the queue
+    
+    /**
+     * If no caps and no nodes exist, triangulation is an O-shape.
+     * Pick any tri to start the path from.
+     * Path building terminates when start tri is encountered again 
+     */
+    if (numCaps == 0 && nodeQue.isEmpty()) {
+      
+    }
+    
+    /**
+     * Construct paths out of node tris
+     * with 1 or 2 entering paths.
+     */
     while (! nodeQue.isEmpty()) {
       AxisNode node = nodeQue.peek();
       if (node.isPathComplete()) {
@@ -99,14 +123,67 @@ public class ApproximateMedialAxis {
     return lines;
   }
 
-  private LineString constructLeafLine(Tri triStart) {
-    int eAdj = indexOfAdjacent(triStart);
+  private void constructCapPaths(Tri cap, List<LineString> lines) {
+    //- a cap has only one adjacent tri
+    int eAdj = indexOfAdjacent(cap);
+    Tri next = cap.getAdjacent(eAdj);
+    int nextType = next.numAdjacent();
+    if (nextType == 3 // next is node tri
+        || nextType <= 1 // next is a cap tri
+        ) {
+      //TODO: handle next node and cap tris better (single segment to midpoint)
+      int vOpp = Tri.oppVertex(eAdj);
+      Coordinate startPt = cap.getCoordinate(vOpp);
+      Coordinate edgePt = angleBisector(cap, vOpp);
+  
+      LineString path = constructPath(cap, eAdj, startPt, edgePt);
+      lines.add(path);
+      return;
+    }
+    //TODO: handle oblique tris (single segment to midpoint)
     
-    int vOpp = Tri.oppVertex(eAdj);
-    Coordinate startPt = triStart.getCoordinate(vOpp);
-    Coordinate edgePt = angleBisector(triStart, vOpp);
+    //-- next tri has one outer side (numAdj = 2).
+    //-- may be either a wedge or a tube
+    int eNextCap = next.getIndex(cap);
+    int eNext2 = indexOfAdjacentOther(next, eNextCap);
+    if (isTube(next, eNext2)) {
+      constructCapTubePaths(cap, next, eNext2, lines);
+    }
+    else { //-- wedge tri
+      constructCapWedgePaths(cap, next, lines);
+    }
+    
+  }
 
-    return constructPath(triStart, eAdj, startPt, edgePt);
+  private void constructCapWedgePaths(Tri cap, Tri next, List<LineString> lines) {
+    Coordinate capPt = cap.getCoordinate(Tri.oppVertex(cap.getIndex(next)));
+    Coordinate endPt = next.midpoint(indexOfAdjacentOther(next, cap));
+    addLine(capPt, endPt, lines);
+ 
+    //TODO: add line for side point of cap
+
+    //-- construct path after wedge
+    int eStart = indexOfAdjacentOther(next, cap);
+    Coordinate startPt = next.midpoint(eStart);
+    LineString path = constructPath(next, eStart, null, startPt);
+    if (path != null)
+      lines.add(path); 
+  }
+
+  private void constructCapTubePaths(Tri cap, Tri next, int eNext2, List<LineString> lines) {
+    Coordinate capPt = cap.getCoordinate(Tri.oppVertex(cap.getIndex(next)));
+    Tri next2 = next.getAdjacent(eNext2);
+    Coordinate endPt = next2.midpoint(indexOfAdjacentOther(next2, next));
+    addLine(capPt, endPt, lines);
+    
+    //TODO: add lines for side points of cap
+    
+    //-- construct path after tube
+    int eStart = indexOfAdjacentOther(next2, next);
+    Coordinate startPt = next2.midpoint(eStart);
+    LineString path = constructPath(next2, eStart, null, startPt);
+    if (path != null)
+      lines.add(path);      
   }
 
   private LineString constructPath(AxisNode node) {
@@ -139,6 +216,8 @@ public class ApproximateMedialAxis {
     int eAdjNext = triNext.getIndex(triStart);
     extendPath(triNext, eAdjNext, pts);
     
+    if (pts.size() < 2)
+      return null;
     return geomFact.createLineString(CoordinateArrays.toCoordinateArray(pts));
   }
   
@@ -154,13 +233,17 @@ public class ApproximateMedialAxis {
       return;
     }
     if (numAdj < 2) {
-      //-- leaf node - should never happen, has already been processed
+      //TODO: found cap tri - handle it
+      //-- add segment for cap, record it is processed to avoid redoing
       return;
     }
     
     //--- now are only dealing with 2-Adj triangles
     int eAdj = indexOfAdjacentOther(tri, edgeEntry);
-    if (false && isTube(tri, eAdj)) {
+    Tri triN;
+    int ePathNext;
+    if (//false &&
+        isTube(tri, eAdj)) {
      /**
       * This triangle and the next one form a "tube"
       * so use both to construct the medial line.
@@ -171,9 +254,9 @@ public class ApproximateMedialAxis {
       
       int eAdj2 = tri2.getIndex(tri);
       int eOpp2 = indexOfAdjacentOther(tri2, eAdj2);
-      Tri triN = tri2.getAdjacent(eOpp2);
-      int eOppN = triN.getIndex(tri2);
-      extendPath(triN, eOppN, pts);
+      triN = tri2.getAdjacent(eOpp2);
+      ePathNext = triN.getIndex(tri2);
+      extendPath(triN, ePathNext, pts);
     }
     else {
       /**
@@ -181,10 +264,13 @@ public class ApproximateMedialAxis {
        */
       Coordinate p = exitPointWedge(tri, eAdj);
       pts.add(p);
-      Tri triN = tri.getAdjacent(eAdj);
-      int eAdjN = triN.getIndex(tri);
-      extendPath(triN, eAdjN, pts);
+      triN = tri.getAdjacent(eAdj);
+      ePathNext = triN.getIndex(tri);
     }
+    //-- path is a loop
+    if (tri == triN)
+      return;
+    extendPath(triN, ePathNext, pts);
   }
 
   private void addNodePathPoint(Tri tri, int edgeEntry, Coordinate pt) {
@@ -198,6 +284,12 @@ public class ApproximateMedialAxis {
   }
   
   private Coordinate exitPointWedge(Tri tri, int eExit) {
+    /**
+     * Midpoint produces a straighter line in nearly-parallel corridors, 
+     * but is more see-sawed elsewhere. 
+     */
+    return tri.midpoint(eExit);
+    /*
     int eBdy = indexOfNonAdjacent(tri);
     Coordinate pt = tri.getCoordinate(Tri.oppVertex(eBdy));
     Coordinate p0 = tri.getCoordinate(eBdy);
@@ -206,13 +298,8 @@ public class ApproximateMedialAxis {
       p0 = tri.getCoordinate(Tri.next(eBdy));
       p1 = tri.getCoordinate(eBdy);
     }
-    /**
-     * Midpoint produces a straighter line in nearly-parallel corridors, 
-     * but is more see-sawed elsewhere. 
+    //return medialAxisPoint(pt, p0, p1);*
      */
-    
-    return tri.midpoint(eExit);
-    //return medialAxisPoint(pt, p0, p1);
   }
 
   /**
@@ -340,6 +427,13 @@ public class ApproximateMedialAxis {
     return ! pOppBdy.equals2D(pOppBdyN);
   }
   
+  private void addLine(Coordinate p0, Coordinate p1, List<LineString> lines) {
+    LineString line = geomFact.createLineString(new Coordinate[] {
+      p0.copy(), p1.copy()
+    });
+    lines.add(line);
+  }
+  
   private static int indexOfAdjacent(Tri tri) {
     for (int i = 0; i < 3; i++) {
       if (tri.hasAdjacent(i))
@@ -354,6 +448,11 @@ public class ApproximateMedialAxis {
         return i;
     }
     return -1;
+  }
+  
+  private static int indexOfAdjacentOther(Tri tri, Tri adj) {
+    int eAdj = tri.getIndex(adj);
+    return indexOfAdjacentOther(tri, eAdj);
   }
   
   private static int indexOfNonAdjacent(Tri tri) {
