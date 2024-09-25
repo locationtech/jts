@@ -27,6 +27,8 @@ Distributions for older JTS versions can be obtained at the
 
 ### Bug Fixes
 
+* Fix ConcaveHullOfPolygons nested shell handling (#1081)
+
 ### Performance Improvements
 
 # Version 1.20.0
