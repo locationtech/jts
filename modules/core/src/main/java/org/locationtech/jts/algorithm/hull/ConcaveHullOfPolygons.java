@@ -58,7 +58,8 @@ import org.locationtech.jts.triangulate.tri.Tri;
  * via {@link #setHolesAllowed(boolean)}.
  * <p>
  * The hull can be specified as being "tight", via {@link #setTight(boolean)}.
- * This causes the result to follow the outer boundaries of the input polygons. 
+ * This causes the result to follow the outer boundaries of the input polygons
+ * which "face away" from other input polygons. 
  * <p>
  * Instead of the complete hull, the "fill area" between the input polygons 
  * can be computed using {@link #getFill()}.
@@ -68,6 +69,9 @@ import org.locationtech.jts.triangulate.tri.Tri;
  * If needed, a set of possibly-overlapping Polygons 
  * can be converted to a valid MultiPolygon
  * by using {@link Geometry#union()};
+ * <p>
+ * If the input contains holes (possibly containing nested polygon elements, 
+ * these will be preserved in the output.
  * 
  * @author Martin Davis
  *
@@ -297,7 +301,7 @@ public class ConcaveHullOfPolygons {
   }
   
   private void buildHullTris() {
-    polygonRings = extractShellRings(inputPolygons);
+    polygonRings = OuterShellsExtracter.extractShells(inputPolygons);
     Polygon frame = createFrame(inputPolygons.getEnvelopeInternal(), polygonRings, geomFactory);
     ConstrainedDelaunayTriangulator cdt = new ConstrainedDelaunayTriangulator(frame);
     List<Tri> tris = cdt.getTriangles();
@@ -589,12 +593,4 @@ public class ConcaveHullOfPolygons {
     return frame;
   }
 
-  private static LinearRing[] extractShellRings(Geometry polygons) {
-    LinearRing[] rings = new LinearRing[polygons.getNumGeometries()];
-    for (int i = 0; i < polygons.getNumGeometries(); i++) {
-      Polygon consPoly = (Polygon) polygons.getGeometryN(i);
-      rings[i] = (LinearRing) consPoly.getExteriorRing().copy();
-    }
-    return rings;
-  }
 }

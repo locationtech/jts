@@ -80,7 +80,7 @@ public class ConcaveHullOfPolygonsTest extends GeometryTestCase {
         "POLYGON ((9 10, 10 9, 10 3, 7 0, 4 0, 0 2, 0 7, 4 10, 9 10))" );
   }
 
-  public void testPoly3WithHole() {
+  public void testPoly3WithHullHole() {
     String wkt = "MULTIPOLYGON (((1 9, 5 9, 5 7, 3 7, 3 5, 1 5, 1 9)), ((1 4, 3 4, 3 2, 5 2, 5 0, 1 0, 1 4)), ((6 9, 8 9, 9 5, 8 0, 6 0, 6 2, 8 5, 6 7, 6 9)))";
     checkHullWithHoles( wkt, .9, wkt);
     checkHullWithHoles( wkt, 1, 
@@ -91,6 +91,20 @@ public class ConcaveHullOfPolygonsTest extends GeometryTestCase {
         "POLYGON ((1 5, 1 9, 5 9, 6 9, 8 9, 9 5, 8 0, 6 0, 5 0, 1 0, 1 4, 1 5), (5 2, 6 2, 8 5, 6 7, 5 7, 3 5, 5 2))");
     checkHullWithHoles( wkt, 9, 
         "POLYGON ((6 9, 8 9, 9 5, 8 0, 6 0, 5 0, 1 0, 1 4, 1 5, 1 9, 5 9, 6 9))");
+  }
+  
+  public void testPolygonHole() {
+    checkHullByLenRatio(
+        "MULTIPOLYGON (((1 1, 10 3, 19 1, 16 8, 19 7, 19 19, 10 20, 8 17, 1 19, 1 1), (3 4, 5 10, 3 16, 9 14, 14 15, 15 9, 13 5, 3 4)))", 
+        0.9, 
+        "POLYGON ((10 20, 19 19, 19 7, 19 1, 10 3, 1 1, 1 19, 10 20), (13 5, 15 9, 14 15, 9 14, 3 16, 5 10, 3 4, 13 5))" );    
+  }
+
+  public void testPolygonNestedPoly() {
+    checkHullByLenRatio(
+        "MULTIPOLYGON (((1 1, 10 3, 19 1, 16 8, 19 7, 19 19, 10 20, 8 17, 1 19, 1 1), (3 4, 5 10, 3 16, 9 14, 14 15, 15 9, 13 5, 3 4)), ((6 10, 7 13, 10 12, 12 13, 13 11, 11 9, 13 8, 9 6, 6 6, 7 8, 6 10)))", 
+        0.9, 
+        "MULTIPOLYGON (((10 20, 19 19, 19 7, 19 1, 10 3, 1 1, 1 19, 10 20), (13 5, 15 9, 14 15, 9 14, 3 16, 5 10, 3 4, 13 5)), ((7 13, 10 12, 12 13, 13 11, 11 9, 13 8, 9 6, 6 6, 7 8, 6 10, 7 13)))" );    
   }
   
   private void checkHull(String wkt, double maxLen, String wktExpected) {
