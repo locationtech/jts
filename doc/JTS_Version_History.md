@@ -17,7 +17,7 @@ Distributions for older JTS versions can be obtained at the
 
 <!-- ================================================================ -->
 
-# Version 1.20.1
+# Version 1.21
 
 *Release Date: TBD**
 
@@ -28,6 +28,7 @@ Distributions for older JTS versions can be obtained at the
 ### Bug Fixes
 
 * Fix ConcaveHullOfPolygons nested shell handling (#1081)
+* Fix ConvexHull to avoid modifying input (#1083)
 
 ### Performance Improvements
 
