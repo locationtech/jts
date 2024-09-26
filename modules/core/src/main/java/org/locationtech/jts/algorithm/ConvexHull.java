@@ -205,8 +205,9 @@ public class ConvexHull
     Coordinate[] innerPolyPts = computeInnerOctolateralRing(inputPts);
  
     // unable to compute interior polygon for some reason
+    // Copy the input array, since it will be sorted later
     if (innerPolyPts == null)
-      return inputPts;
+      return inputPts.clone();
 
 //    LinearRing ring = geomFactory.createLinearRing(polyPts);
 //    System.out.println(ring);
