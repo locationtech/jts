@@ -100,11 +100,9 @@ class OuterShellsExtracter {
 
     @Override
     public int compare(Geometry o1, Geometry o2) {
-      return Double.compare(envArea(o1), envArea(o2));
-    }
-
-    private static double envArea(Geometry g) {
-      return g.getEnvelopeInternal().getArea();
+      double a1 = o1.getEnvelopeInternal().getArea();
+      double a2 = o2.getEnvelopeInternal().getArea();
+      return Double.compare(a1, a2);
     }
     
   }
