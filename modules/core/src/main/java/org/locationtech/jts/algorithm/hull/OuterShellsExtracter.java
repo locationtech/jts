@@ -46,12 +46,12 @@ class OuterShellsExtracter {
 
   private LinearRing[] extractShells() {
     LinearRing[] shells = extractShellRings(polygons);
-    /**
-     * sort shells in order of increasing envelope area
-     * to ensure that shells are added before any of their inner shells
-     */
+    
+    //-- sort shells in order of increasing envelope area
     Arrays.sort(shells, new EnvelopeAreaComparator());
     List<LinearRing> outerShells = new ArrayList<LinearRing>();
+
+    //-- Scan shells by decreasing area to ensure that shells are added before any nested shells
     for (int i = shells.length - 1; i >= 0; i--) {
       LinearRing shell = shells[i];
       if (outerShells.size() == 0 
