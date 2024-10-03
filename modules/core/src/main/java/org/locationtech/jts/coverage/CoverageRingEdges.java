@@ -42,6 +42,11 @@ import org.locationtech.jts.geom.Polygon;
  * splitting edges at nodes, and then identifying unique edges.
  * The unique edges are associated to their parent ring (in order),
  * to allow reforming the coverage polygons.
+ * <p>
+ * One ring in each polygonal geometry is marked as primary. 
+ * Primary edges are always retained during coverage processing
+ * (such as simplification), to ensure the geometry does not disappear entirely.
+ * The primary ring is the shell of the largest polygon in the geometry.
  * 
  * @author Martin Davis
  *
@@ -109,6 +114,12 @@ class CoverageRingEdges {
     }
   }
 
+  /**
+   * Finds the index of the polygonal element with largest area.
+   * 
+   * @param geom the polygonal geometry to scan
+   * @return the index of the polygonal element with largest area
+   */
   private int findLargestPolygonIndex(Geometry geom) {
     if (geom instanceof Polygon)
       return 0;
@@ -125,7 +136,20 @@ class CoverageRingEdges {
     return indexLargest;
   }
 
-  private void addRingEdges(int index, LinearRing ring, boolean isPrimary, Set<Coordinate> nodes, Set<LineSegment> boundarySegs,
+  /**
+   * Adds the {@link CoverageEdge}s for a ring
+   * to the map of ring edges.
+   * 
+   * @param index the index of the geometry in the coverage
+   * @param ring the ring to extract edges from
+   * @param isPrimary true if the ring is primary (must not be removed)
+   * @param nodes nodes in the coverage
+   * @param boundarySegs the coverage boundary segments
+   * @param uniqueEdgeMap map of unique edges
+   */
+  private void addRingEdges(int index, LinearRing ring, boolean isPrimary, 
+      Set<Coordinate> nodes, 
+      Set<LineSegment> boundarySegs,
       HashMap<LineSegment, CoverageEdge> uniqueEdgeMap) {
     addBoundaryInnerNodes(ring, boundarySegs, nodes);
     List<CoverageEdge> ringEdges = extractRingEdges(index, ring, isPrimary, uniqueEdgeMap, nodes);
@@ -139,9 +163,9 @@ class CoverageRingEdges {
    * These occur where two polygons are adjacent at the coverage boundary
    * (this is not detected by {@link #findMultiRingNodes(Geometry[])}).
    * 
-   * @param ring
-   * @param boundarySegs
-   * @param nodes
+   * @param ring the ring to extract edges from
+   * @param boundarySegs the coverage boundary segments
+   * @param nodes nodes in the coverage
    */
   private void addBoundaryInnerNodes(LinearRing ring, Set<LineSegment> boundarySegs, Set<Coordinate> nodes) {
     CoordinateSequence seq = ring.getCoordinateSequence();
@@ -159,12 +183,12 @@ class CoverageRingEdges {
 
   /**
    * Extracts the {@link CoverageEdge}s for a ring.
-   * @param index 
    * 
-   * @param ring
-   * @param isRetained true if the ring is retained (must not be removed)
-   * @param uniqueEdgeMap
-   * @param nodes
+   * @param index the index of the geometry in the coverage
+   * @param ring the ring to extract edges from
+   * @param isPrimary true if the ring is primary (must not be removed)
+   * @param uniqueEdgeMap map of unique edges
+   * @param nodes nodes in the coverage
    * @return null if the ring has too few distinct vertices
    */
   private List<CoverageEdge> extractRingEdges(int index, LinearRing ring, 
@@ -211,8 +235,8 @@ class CoverageRingEdges {
    * @param ring ring to create edge for
    * @param start start index of ring section; -1 indicates edge is entire ring
    * @param end end index of ring section
-   * @param index 
-   * @param isPrimary whether this ring is a primary ring
+   * @param index the index of the parent geometry in the coverage
+   * @param isPrimary true if the ring is primary (must not be removed)
    * @param uniqueEdgeMap map of edges
    * @return the CoverageEdge for the ring or portion of ring
    */
