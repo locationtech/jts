@@ -375,6 +375,7 @@ public class Coordinate implements Comparable<Coordinate>, Cloneable, Serializab
    *@return    -1, zero, or 1 as this <code>Coordinate</code>
    *      is less than, equal to, or greater than the specified <code>Coordinate</code>
    */
+  @Override
   public int compareTo(Coordinate o) {
     Coordinate other = (Coordinate) o;
 
@@ -394,6 +395,7 @@ public class Coordinate implements Comparable<Coordinate>, Cloneable, Serializab
     return "(" + x + ", " + y + ", " + getZ() + ")";
   }
 
+  @Override
   public Object clone() {
     try {
       Coordinate coord = (Coordinate) super.clone();
@@ -539,6 +541,7 @@ public class Coordinate implements Comparable<Coordinate>, Cloneable, Serializab
      * equal to, or greater than 02
      *
      */
+    @Override
     public int compare(Coordinate c1, Coordinate c2)
     {
       int compX = compare(c1.x, c2.x);

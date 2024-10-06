@@ -31,6 +31,7 @@ import java.util.List;
 public class SIRtree extends AbstractSTRtree {
 
   private Comparator comparator = new Comparator() {
+    @Override
     public int compare(Object o1, Object o2) {
       return compareDoubles(
           ((Interval)((Boundable)o1).getBounds()).getCentre(),
@@ -39,6 +40,7 @@ public class SIRtree extends AbstractSTRtree {
   };
 
   private IntersectsOp intersectsOp = new IntersectsOp() {
+    @Override
     public boolean intersects(Object aBounds, Object bBounds) {
       return ((Interval)aBounds).intersects((Interval)bBounds);
     }
@@ -57,8 +59,10 @@ public class SIRtree extends AbstractSTRtree {
     super(nodeCapacity);
   }
 
+  @Override
   protected AbstractNode createNode(int level) {
     return new AbstractNode(level) {
+      @Override
       protected Object computeBounds() {
         Interval bounds = null;
         for (Iterator i = getChildBoundables().iterator(); i.hasNext(); ) {
@@ -97,10 +101,12 @@ public class SIRtree extends AbstractSTRtree {
     return super.query(new Interval(Math.min(x1, x2), Math.max(x1, x2)));
   }
 
+  @Override
   protected IntersectsOp getIntersectsOp() {
     return intersectsOp;
   }
 
+  @Override
   protected Comparator getComparator() {
     return comparator;
   }

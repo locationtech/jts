@@ -239,6 +239,7 @@ public strictfp final class DD
    * 
    * @return a copy of this value
    */
+  @Override
   public Object clone()
   {
     try {
@@ -1033,7 +1034,8 @@ public strictfp final class DD
    * @return -1,0 or 1 depending on whether this value is less than, equal to
    * or greater than the value of <tt>o</tt>
    */
-  public int compareTo(Object o) 
+  @Override
+  public int compareTo(Object o)
   {
     DD other = (DD) o;
 

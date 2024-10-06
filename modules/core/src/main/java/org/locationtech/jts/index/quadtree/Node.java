@@ -57,6 +57,7 @@ public class Node
 
   public Envelope getEnvelope() { return env; }
 
+  @Override
   protected boolean isSearchMatch(Envelope searchEnv)
   {
   	if (searchEnv == null) return false;

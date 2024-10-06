@@ -50,6 +50,7 @@ public class HausdorffSimilarityMeasure
 	 */
 	private static final double DENSIFY_FRACTION = 0.25;
 
+	@Override
 	public double measure(Geometry g1, Geometry g2)
 	{
 		double distance = DiscreteHausdorffDistance.distance(g1, g2, DENSIFY_FRACTION);

@@ -118,6 +118,7 @@ public class TopologyPreservingSimplifier
       this.linestringMap = linestringMap;
     }
     
+    @Override
     protected CoordinateSequence transformCoordinates(CoordinateSequence coords, Geometry parent)
     {
       if (coords.size() == 0) return null;
@@ -156,6 +157,7 @@ public class TopologyPreservingSimplifier
      * 
      * geom a geometry of any type 
      */
+    @Override
     public void filter(Geometry geom)
     {
       if (geom instanceof LineString) {

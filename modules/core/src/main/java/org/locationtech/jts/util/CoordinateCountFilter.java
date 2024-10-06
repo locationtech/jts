@@ -34,6 +34,7 @@ public class CoordinateCountFilter implements CoordinateFilter {
     return n;
   }
 
+  @Override
   public void filter(Coordinate coord) {
     n++;
   }

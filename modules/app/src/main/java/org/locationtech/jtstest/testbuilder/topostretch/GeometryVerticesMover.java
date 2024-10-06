@@ -62,6 +62,7 @@ public class GeometryVerticesMover
     }
     
     
+    @Override
     public Coordinate[] edit(Coordinate[] coords,
         Geometry geometry)
     {

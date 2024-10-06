@@ -61,6 +61,7 @@ public class SegmentNode
    * 0 this SegmentNode is at the argument location;
    * 1 this SegmentNode is located after the argument location
    */
+  @Override
   public int compareTo(Object obj)
   {
     SegmentNode other = (SegmentNode) obj;

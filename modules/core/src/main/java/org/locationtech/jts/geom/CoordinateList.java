@@ -237,6 +237,7 @@ public class CoordinateList
    *
    * @return a clone of this <tt>CoordinateList</tt> instance
    */
+  @Override
   public Object clone() {
       CoordinateList clone = (CoordinateList) super.clone();
       for (int i = 0; i < this.size(); i++) {	  

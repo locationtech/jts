@@ -28,6 +28,7 @@ public class GeometryResult implements Result {
     return geometry;
   }
 
+  @Override
   public boolean equals(Result other, double tolerance) {
     if (!(other instanceof GeometryResult)) {
       return false;
@@ -43,15 +44,18 @@ public class GeometryResult implements Result {
     return isEqual;
   }
 
+  @Override
   public String toLongString() {
     return geometry.toText();
   }
 
+  @Override
   public String toFormattedString() {
     WKTWriter writer = new WKTWriter();
     return writer.writeFormatted(geometry);
   }
 
+  @Override
   public String toShortString() {
     return geometry.getClass().getName();
   }

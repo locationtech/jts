@@ -275,6 +275,7 @@ public class OverlapUnion
   private static void extractBorderSegments(Geometry geom, Envelope env, List<LineSegment> segs) {
     geom.apply(new CoordinateSequenceFilter() {
 
+      @Override
       public void filter(CoordinateSequence seq, int i) {
         if (i <= 0) return;
         
@@ -288,8 +289,10 @@ public class OverlapUnion
         }
       }
 
+      @Override
       public boolean isDone() {   return false;   }
 
+      @Override
       public boolean isGeometryChanged() {   return false;   }
       
     });

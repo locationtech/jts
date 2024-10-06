@@ -59,6 +59,7 @@ extends PerformanceTestCase
     setRunIterations(N_ITER);
   }
 
+  @Override
   public void setUp()
   {
     System.out.println("Geometry Precision Reducer perf test");
@@ -68,6 +69,7 @@ extends PerformanceTestCase
     System.out.println("# Iterations: " + N_ITER);
   }
   
+  @Override
   public void startRun(int npts)
   {
     iter = 0;
