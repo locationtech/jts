@@ -86,6 +86,12 @@ public class DouglasPeuckerSimplifierTest
         10,
         "LINESTRING (0 5, 5 5)");
   }
+
+  public void testLineStringWithFourDimensions() {
+    checkDPXYZM("LINESTRING ZM(0 5 114.6 1709024189000, 1 5 114.6 1709024190000, 2 5 114.5 1709024192000, 5 5 114.5 1709024196000)",
+        10,
+        "LINESTRING ZM(0 5 114.6 1709024189000, 5 5 114.5 1709024196000)");
+  }
   
   public void testMultiPoint() {
     checkDPNoChange("MULTIPOINT(80 200, 240 200, 240 60, 80 60, 80 200, 140 199, 120 120)",
@@ -166,7 +172,13 @@ public class DouglasPeuckerSimplifierTest
     Geometry expected = read(wktExpected);
     checkEqual(expected, result);
   }
-  
+    private void checkDPXYZM(String wkt, double tolerance, String wktExpected) {
+    Geometry geom = read(wkt);
+    Geometry result = DouglasPeuckerSimplifier.simplify(geom, tolerance);
+    Geometry expected = read(wktExpected);
+    checkEqualXYZM(expected, result);
+  }
+
   private void checkDPNoChange(String wkt, double tolerance) {
     checkDP(wkt, tolerance, wkt);
   }

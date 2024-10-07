@@ -68,7 +68,7 @@ class DouglasPeuckerLineSimplifier
     CoordinateList coordList = new CoordinateList();
     for (int i = 0; i < pts.length; i++) {
       if (usePt[i])
-        coordList.add(new Coordinate(pts[i]));
+        coordList.add(pts[i].copy());
     }
     
     if (! isPreserveEndpoint && CoordinateArrays.isRing(pts)) {
