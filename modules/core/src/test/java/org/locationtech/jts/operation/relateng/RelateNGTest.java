@@ -599,24 +599,64 @@ public class RelateNGTest extends RelateNGTestCase {
   
   //================  EMPTY geometries  ==============
 
-  public void testEmptyEquals() {
-    String empties[] = {
-        "POINT EMPTY",
-        "LINESTRING EMPTY",
-        "POLYGON EMPTY",
-        "MULTIPOINT EMPTY",
-        "MULTILINESTRING EMPTY",
-        "MULTIPOLYGON EMPTY",
-        "GEOMETRYCOLLECTION EMPTY"
-    };
-    int nempty = 7;
-    for (int i = 0; i < nempty; i++) {
-      for (int j = 0; j < nempty; j++) {
-        String a = empties[i];
+  String empties[] = {
+      "POINT EMPTY",
+      "LINESTRING EMPTY",
+      "POLYGON EMPTY",
+      "MULTIPOINT EMPTY",
+      "MULTILINESTRING EMPTY",
+      "MULTIPOLYGON EMPTY",
+      "GEOMETRYCOLLECTION EMPTY"
+  };
+  
+  public void testEmptyEmpty() {
+    for (int i = 0; i < empties.length; i++) {
+      String a = empties[i];
+      
+      for (int j = 0; j < empties.length; j++) {
         String b = empties[j];
-        ///-- empty geometries are all topologically equal
+        checkRelate(a, b, "FFFFFFFF2");
+        //-- empty geometries are all topologically equal
         checkEquals(a, b, true);
+        
+        checkIntersectsDisjoint(a, b, false);
+        checkContainsWithin(a, b, false);
       }
+    }  
+  }
+  
+  public void testEmptyNonEmpty() {
+    String nonEmptyPoint = "POINT (1 1)";
+    String nonEmptyLine = "LINESTRING (1 1, 2 2)";
+    String nonEmptyPolygon = "POLYGON ((1 1, 1 2, 2 1, 1 1))";
+    
+    for (int i = 0; i < empties.length; i++) {
+      String empty = empties[i];
+      
+      checkRelate(empty, nonEmptyPoint, "FFFFFF0F2");
+      checkRelate(nonEmptyPoint, empty, "FF0FFFFF2");
+      
+      checkRelate(empty, nonEmptyLine, "FFFFFF102");
+      checkRelate(nonEmptyLine, empty, "FF1FF0FF2");
+      
+      checkRelate(empty, nonEmptyPolygon, "FFFFFF212");
+      checkRelate(nonEmptyPolygon, empty, "FF2FF1FF2");
+      
+      checkEquals(empty, nonEmptyPoint, false);
+      checkEquals(empty, nonEmptyLine, false);
+      checkEquals(empty, nonEmptyPolygon, false);
+      
+      checkIntersectsDisjoint(empty, nonEmptyPoint, false);
+      checkIntersectsDisjoint(empty, nonEmptyLine, false);
+      checkIntersectsDisjoint(empty, nonEmptyPolygon, false);
+      
+      checkContainsWithin(empty, nonEmptyPoint, false);
+      checkContainsWithin(empty, nonEmptyLine, false);
+      checkContainsWithin(empty, nonEmptyPolygon, false);
+      
+      checkContainsWithin(nonEmptyPoint, empty, false);
+      checkContainsWithin(nonEmptyLine, empty, false);
+      checkContainsWithin(nonEmptyPolygon, empty, false);
     }  
   }
   
