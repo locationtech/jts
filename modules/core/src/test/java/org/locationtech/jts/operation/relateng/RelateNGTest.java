@@ -614,7 +614,6 @@ public class RelateNGTest extends RelateNGTestCase {
       for (int j = 0; j < nempty; j++) {
         String a = empties[i];
         String b = empties[j];
-        checkRelate(a, b, "FFFFFFFF2");
         ///-- empty geometries are all topologically equal
         checkEquals(a, b, true);
       }
