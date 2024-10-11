@@ -1,0 +1,1114 @@
+<run>
+  <desc>
+    Test relate predicates against cases containing EMPTY geometries.
+  </desc>
+
+<!-- ================  POINT ============== -->
+<case>
+  <desc>P/P - empty point VS empty point </desc>
+  <a>
+    POINT EMPTY
+  </a>
+  <b>
+    POINT EMPTY
+  </b>
+  <test><op name="relate" arg3="FFFFFFFF2" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> false </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> false </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> true </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> true </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> false </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> false </op></test>
+</case>
+
+<case>
+  <desc>P/L - empty point VS empty line</desc>
+  <a>
+    POINT EMPTY
+  </a>
+  <b>
+    LINESTRING EMPTY
+  </b>
+  <test><op name="relate" arg3="FFFFFFFF2" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> false </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> false </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> true </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> true </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> false </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> false </op></test>
+</case>
+
+<case>
+  <desc>P/A - empty point VS empty polygon</desc>
+  <a>
+    POINT EMPTY
+  </a>
+  <b>
+    POLYGON EMPTY
+  </b>
+  <test><op name="relate" arg3="FFFFFFFF2" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> false </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> false </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> true </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> true </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> false </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> false </op></test>
+</case>
+
+<case>
+  <desc>P/mP - empty Point VS empty MultiPoint </desc>
+  <a>
+    POINT EMPTY
+  </a>
+  <b>
+    MULTIPOINT EMPTY
+  </b>
+  <test><op name="relate" arg3="FFFFFFFF2" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> false </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> false </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> true </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> true </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> false </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> false </op></test>
+</case>
+
+<case>
+  <desc>P/mL - empty Point VS empty MultiLineString</desc>
+  <a>
+    POINT EMPTY
+  </a>
+  <b>
+    MULTILINESTRING EMPTY
+  </b>
+  <test><op name="relate" arg3="FFFFFFFF2" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> false </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> false </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> true </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> true </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> false </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> false </op></test>
+</case>
+
+<case>
+  <desc>P/mA - empty Point VS empty MultiPolygon</desc>
+  <a>
+    POINT EMPTY
+  </a>
+  <b>
+    MULTIPOLYGON EMPTY
+  </b>
+  <test><op name="relate" arg3="FFFFFFFF2" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> false </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> false </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> true </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> true </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> false </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> false </op></test>
+</case>
+
+<case>
+  <desc>P/GC - empty Point VS empty GC </desc>
+  <a>
+    POINT EMPTY
+  </a>
+  <b>
+    GEOMETRYCOLLECTION EMPTY
+  </b>
+  <test><op name="relate" arg3="FFFFFFFF2" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> false </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> false </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> true </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> true </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> false </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> false </op></test>
+</case>
+
+<!-- ================  LINESTRING ============== -->
+<case>
+  <desc>L/P - empty line VS empty point </desc>
+  <a>
+    LINESTRING EMPTY
+  </a>
+  <b>
+    POINT EMPTY
+  </b>
+  <test><op name="relate" arg3="FFFFFFFF2" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> false </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> false </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> true </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> true </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> false </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> false </op></test>
+</case>
+
+<case>
+  <desc>L/L - empty line VS empty line</desc>
+  <a>
+    LINESTRING EMPTY
+  </a>
+  <b>
+    LINESTRING EMPTY
+  </b>
+  <test><op name="relate" arg3="FFFFFFFF2" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> false </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> false </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> true </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> true </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> false </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> false </op></test>
+</case>
+
+<case>
+  <desc>L/A - empty line VS empty polygon</desc>
+  <a>
+    LINESTRING EMPTY
+  </a>
+  <b>
+    POLYGON EMPTY
+  </b>
+  <test><op name="relate" arg3="FFFFFFFF2" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> false </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> false </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> true </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> true </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> false </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> false </op></test>
+</case>
+
+<case>
+  <desc>L/mP - empty line VS empty MultiPoint </desc>
+  <a>
+    LINESTRING EMPTY
+  </a>
+  <b>
+    MULTIPOINT EMPTY
+  </b>
+  <test><op name="relate" arg3="FFFFFFFF2" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> false </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> false </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> true </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> true </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> false </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> false </op></test>
+</case>
+
+<case>
+  <desc>L/mL - empty line VS empty MultiLineString</desc>
+  <a>
+    LINESTRING EMPTY
+  </a>
+  <b>
+    MULTILINESTRING EMPTY
+  </b>
+  <test><op name="relate" arg3="FFFFFFFF2" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> false </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> false </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> true </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> true </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> false </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> false </op></test>
+</case>
+
+<case>
+  <desc>L/mA - empty line VS empty MultiPolygon</desc>
+  <a>
+    LINESTRING EMPTY
+  </a>
+  <b>
+    MULTIPOLYGON EMPTY
+  </b>
+  <test><op name="relate" arg3="FFFFFFFF2" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> false </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> false </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> true </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> true </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> false </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> false </op></test>
+</case>
+
+<case>
+  <desc>L/GC - empty line VS empty GC </desc>
+  <a>
+    LINESTRING EMPTY
+  </a>
+  <b>
+    GEOMETRYCOLLECTION EMPTY
+  </b>
+  <test><op name="relate" arg3="FFFFFFFF2" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> false </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> false </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> true </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> true </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> false </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> false </op></test>
+</case>
+
+<!-- ================  POLYGON ============== -->
+
+<case>
+  <desc>A/P - empty polygon VS empty line</desc>
+  <a>
+    POLYGON EMPTY
+  </a>
+  <b>
+    POINT EMPTY
+  </b>
+  <test><op name="relate" arg3="FFFFFFFF2" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> false </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> false </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> true </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> true </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> false </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> false </op></test>
+</case>
+
+<case>
+  <desc>A/L - empty polygon VS empty line</desc>
+  <a>
+    POLYGON EMPTY
+  </a>
+  <b>
+    LINESTRING EMPTY
+  </b>
+  <test><op name="relate" arg3="FFFFFFFF2" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> false </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> false </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> true </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> true </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> false </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> false </op></test>
+</case>
+
+<case>
+  <desc>A/A - empty polygon VS empty polygon</desc>
+  <a>
+    POLYGON EMPTY
+  </a>
+  <b>
+    POLYGON EMPTY
+  </b>
+  <test><op name="relate" arg3="FFFFFFFF2" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> false </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> false </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> true </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> true </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> false </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> false </op></test>
+</case>
+
+<case>
+  <desc>A/mP - empty polygon VS empty MultiPoint </desc>
+  <a>
+    POLYGON EMPTY
+  </a>
+  <b>
+    MULTIPOINT EMPTY
+  </b>
+  <test><op name="relate" arg3="FFFFFFFF2" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> false </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> false </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> true </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> true </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> false </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> false </op></test>
+</case>
+
+<case>
+  <desc>A/mP - empty polygon VS empty MultiLineString</desc>
+  <a>
+    POLYGON EMPTY
+  </a>
+  <b>
+    MULTILINESTRING EMPTY
+  </b>
+  <test><op name="relate" arg3="FFFFFFFF2" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> false </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> false </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> true </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> true </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> false </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> false </op></test>
+</case>
+
+<case>
+  <desc>A/mP - empty polygon VS empty MultiPolygon</desc>
+  <a>
+    POLYGON EMPTY
+  </a>
+  <b>
+    MULTIPOLYGON EMPTY
+  </b>
+  <test><op name="relate" arg3="FFFFFFFF2" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> false </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> false </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> true </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> true </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> false </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> false </op></test>
+</case>
+
+<case>
+  <desc>A/mP - empty polygon VS empty GC </desc>
+  <a>
+    POLYGON EMPTY
+  </a>
+  <b>
+    GEOMETRYCOLLECTION EMPTY
+  </b>
+  <test><op name="relate" arg3="FFFFFFFF2" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> false </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> false </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> true </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> true </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> false </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> false </op></test>
+</case>
+
+<!-- ================  MULTIPOINT ============== -->
+<case>
+  <desc>mP/P - empty MultiPoint VS empty point </desc>
+  <a>
+    MULTIPOINT EMPTY
+  </a>
+  <b>
+    POINT EMPTY
+  </b>
+  <test><op name="relate" arg3="FFFFFFFF2" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> false </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> false </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> true </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> true </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> false </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> false </op></test>
+</case>
+
+<case>
+  <desc>mP/L - empty MultiPoint VS empty line</desc>
+  <a>
+    MULTIPOINT EMPTY
+  </a>
+  <b>
+    LINESTRING EMPTY
+  </b>
+  <test><op name="relate" arg3="FFFFFFFF2" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> false </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> false </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> true </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> true </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> false </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> false </op></test>
+</case>
+
+<case>
+  <desc>mP/A - empty MultiPoint VS empty polygon</desc>
+  <a>
+    MULTIPOINT EMPTY
+  </a>
+  <b>
+    POLYGON EMPTY
+  </b>
+  <test><op name="relate" arg3="FFFFFFFF2" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> false </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> false </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> true </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> true </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> false </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> false </op></test>
+</case>
+
+<case>
+  <desc>mP/mP - empty MultiPoint VS empty MultiPoint </desc>
+  <a>
+    MULTIPOINT EMPTY
+  </a>
+  <b>
+    MULTIPOINT EMPTY
+  </b>
+  <test><op name="relate" arg3="FFFFFFFF2" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> false </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> false </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> true </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> true </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> false </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> false </op></test>
+</case>
+
+<case>
+  <desc>mP/mL - empty MultiPoint VS empty MultiLineString</desc>
+  <a>
+    MULTIPOINT EMPTY
+  </a>
+  <b>
+    MULTILINESTRING EMPTY
+  </b>
+  <test><op name="relate" arg3="FFFFFFFF2" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> false </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> false </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> true </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> true </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> false </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> false </op></test>
+</case>
+
+<case>
+  <desc>mP/mA - empty MultiPoint VS empty MultiPolygon</desc>
+  <a>
+    MULTIPOINT EMPTY
+  </a>
+  <b>
+    MULTIPOLYGON EMPTY
+  </b>
+  <test><op name="relate" arg3="FFFFFFFF2" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> false </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> false </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> true </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> true </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> false </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> false </op></test>
+</case>
+
+<case>
+  <desc>mP/GC - empty MultiPoint VS empty GC </desc>
+  <a>
+    MULTIPOINT EMPTY
+  </a>
+  <b>
+    GEOMETRYCOLLECTION EMPTY
+  </b>
+  <test><op name="relate" arg3="FFFFFFFF2" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> false </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> false </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> true </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> true </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> false </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> false </op></test>
+</case>
+
+<!-- ================  LINESTRING ============== -->
+<case>
+  <desc>mL/P - empty Multiline VS empty point </desc>
+  <a>
+    MULTILINESTRING EMPTY
+  </a>
+  <b>
+    POINT EMPTY
+  </b>
+  <test><op name="relate" arg3="FFFFFFFF2" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> false </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> false </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> true </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> true </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> false </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> false </op></test>
+</case>
+
+<case>
+  <desc>mL/L - empty Multiline VS empty line</desc>
+  <a>
+    MULTILINESTRING EMPTY
+  </a>
+  <b>
+    LINESTRING EMPTY
+  </b>
+  <test><op name="relate" arg3="FFFFFFFF2" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> false </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> false </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> true </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> true </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> false </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> false </op></test>
+</case>
+
+<case>
+  <desc>mL/A - empty Multiline VS empty polygon</desc>
+  <a>
+    MULTILINESTRING EMPTY
+  </a>
+  <b>
+    POLYGON EMPTY
+  </b>
+  <test><op name="relate" arg3="FFFFFFFF2" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> false </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> false </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> true </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> true </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> false </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> false </op></test>
+</case>
+
+<case>
+  <desc>mL/mP - empty Multiline VS empty MultiPoint </desc>
+  <a>
+    MULTILINESTRING EMPTY
+  </a>
+  <b>
+    MULTIPOINT EMPTY
+  </b>
+  <test><op name="relate" arg3="FFFFFFFF2" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> false </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> false </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> true </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> true </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> false </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> false </op></test>
+</case>
+
+<case>
+  <desc>mL/mL - empty Multiline VS empty MultiLineString</desc>
+  <a>
+    MULTILINESTRING EMPTY
+  </a>
+  <b>
+    MULTILINESTRING EMPTY
+  </b>
+  <test><op name="relate" arg3="FFFFFFFF2" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> false </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> false </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> true </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> true </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> false </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> false </op></test>
+</case>
+
+<case>
+  <desc>mL/mA - empty Multiline VS empty MultiPolygon</desc>
+  <a>
+    MULTILINESTRING EMPTY
+  </a>
+  <b>
+    MULTIPOLYGON EMPTY
+  </b>
+  <test><op name="relate" arg3="FFFFFFFF2" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> false </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> false </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> true </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> true </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> false </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> false </op></test>
+</case>
+
+<case>
+  <desc>mL/GC - empty Multiline VS empty GC </desc>
+  <a>
+    MULTILINESTRING EMPTY
+  </a>
+  <b>
+    GEOMETRYCOLLECTION EMPTY
+  </b>
+  <test><op name="relate" arg3="FFFFFFFF2" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> false </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> false </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> true </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> true </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> false </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> false </op></test>
+</case>
+
+<!-- ================  POLYGON ============== -->
+
+<case>
+  <desc>mA/P - empty Multipolygon VS empty line</desc>
+  <a>
+    MULTIPOLYGON EMPTY
+  </a>
+  <b>
+    POINT EMPTY
+  </b>
+  <test><op name="relate" arg3="FFFFFFFF2" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> false </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> false </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> true </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> true </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> false </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> false </op></test>
+</case>
+
+<case>
+  <desc>mA/L - empty Multipolygon VS empty line</desc>
+  <a>
+    MULTIPOLYGON EMPTY
+  </a>
+  <b>
+    LINESTRING EMPTY
+  </b>
+  <test><op name="relate" arg3="FFFFFFFF2" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> false </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> false </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> true </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> true </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> false </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> false </op></test>
+</case>
+
+<case>
+  <desc>mA/A - empty Multipolygon VS empty polygon</desc>
+  <a>
+    MULTIPOLYGON EMPTY
+  </a>
+  <b>
+    POLYGON EMPTY
+  </b>
+  <test><op name="relate" arg3="FFFFFFFF2" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> false </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> false </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> true </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> true </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> false </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> false </op></test>
+</case>
+
+<case>
+  <desc>mA/mP - empty Multipolygon VS empty MultiPoint </desc>
+  <a>
+    MULTIPOLYGON EMPTY
+  </a>
+  <b>
+    MULTIPOINT EMPTY
+  </b>
+  <test><op name="relate" arg3="FFFFFFFF2" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> false </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> false </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> true </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> true </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> false </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> false </op></test>
+</case>
+
+<case>
+  <desc>mA/mL - empty Multipolygon VS empty MultiLineString</desc>
+  <a>
+    MULTIPOLYGON EMPTY
+  </a>
+  <b>
+    MULTILINESTRING EMPTY
+  </b>
+  <test><op name="relate" arg3="FFFFFFFF2" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> false </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> false </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> true </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> true </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> false </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> false </op></test>
+</case>
+
+<case>
+  <desc>mA/mA - empty Multipolygon VS empty MultiPolygon</desc>
+  <a>
+    MULTIPOLYGON EMPTY
+  </a>
+  <b>
+    MULTIPOLYGON EMPTY
+  </b>
+  <test><op name="relate" arg3="FFFFFFFF2" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> false </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> false </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> true </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> true </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> false </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> false </op></test>
+</case>
+
+<case>
+  <desc>mA/GC - empty Multipolygon VS empty GC </desc>
+  <a>
+    MULTIPOLYGON EMPTY
+  </a>
+  <b>
+    GEOMETRYCOLLECTION EMPTY
+  </b>
+  <test><op name="relate" arg3="FFFFFFFF2" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> false </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> false </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> true </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> true </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> false </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> false </op></test>
+</case>
+
+<!-- ================  POLYGON ============== -->
+
+<case>
+  <desc>GC/P - empty GC VS empty line</desc>
+  <a>
+    GEOMETRYCOLLECTION EMPTY
+  </a>
+  <b>
+    POINT EMPTY
+  </b>
+  <test><op name="relate" arg3="FFFFFFFF2" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> false </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> false </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> true </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> true </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> false </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> false </op></test>
+</case>
+
+<case>
+  <desc>GC/L - empty GC VS empty line</desc>
+  <a>
+    GEOMETRYCOLLECTION EMPTY
+  </a>
+  <b>
+    LINESTRING EMPTY
+  </b>
+  <test><op name="relate" arg3="FFFFFFFF2" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> false </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> false </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> true </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> true </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> false </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> false </op></test>
+</case>
+
+<case>
+  <desc>GC/A - empty GC VS empty polygon</desc>
+  <a>
+    GEOMETRYCOLLECTION EMPTY
+  </a>
+  <b>
+    POLYGON EMPTY
+  </b>
+  <test><op name="relate" arg3="FFFFFFFF2" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> false </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> false </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> true </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> true </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> false </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> false </op></test>
+</case>
+
+<case>
+  <desc>GC/mP - empty GC VS empty MultiPoint </desc>
+  <a>
+    GEOMETRYCOLLECTION EMPTY
+  </a>
+  <b>
+    MULTIPOINT EMPTY
+  </b>
+  <test><op name="relate" arg3="FFFFFFFF2" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> false </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> false </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> true </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> true </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> false </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> false </op></test>
+</case>
+
+<case>
+  <desc>GC/mL - empty GC VS empty MultiLineString</desc>
+  <a>
+    GEOMETRYCOLLECTION EMPTY
+  </a>
+  <b>
+    MULTILINESTRING EMPTY
+  </b>
+  <test><op name="relate" arg3="FFFFFFFF2" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> false </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> false </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> true </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> true </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> false </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> false </op></test>
+</case>
+
+<case>
+  <desc>GC/mA - empty GC VS empty MultiPolygon</desc>
+  <a>
+    GEOMETRYCOLLECTION EMPTY
+  </a>
+  <b>
+    MULTIPOLYGON EMPTY
+  </b>
+  <test><op name="relate" arg3="FFFFFFFF2" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> false </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> false </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> true </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> true </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> false </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> false </op></test>
+</case>
+
+<case>
+  <desc>GC/GC - empty GC VS empty GC </desc>
+  <a>
+    GEOMETRYCOLLECTION EMPTY
+  </a>
+  <b>
+    GEOMETRYCOLLECTION EMPTY
+  </b>
+  <test><op name="relate" arg3="FFFFFFFF2" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> false </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> false </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> true </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> true </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> false </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> false </op></test>
+</case>
+
+<!-- ================  Mixed EMPTY and non-EMPTY ============== -->
+
+<case>
+  <desc>P/P - empty Point VS Point</desc>
+  <a>
+    POINT EMPTY
+  </a>
+  <b>
+    POINT (1 1)
+  </b>
+  <test><op name="relate" arg3="FFFFFF0F2" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> false </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> false </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> true </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> false </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> false </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> false </op></test>
+</case>
+
+
+<case>
+  <desc>P/L - empty Point VS LineString</desc>
+  <a>
+    POINT EMPTY
+  </a>
+  <b>
+    LINESTRING (1 1, 2 2)
+  </b>
+  <test><op name="relate" arg3="FFFFFF102" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> false </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> false </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> true </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> false </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> false </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> false </op></test>
+</case>
+
+<case>
+  <desc>P/L - empty Point VS Polygon</desc>
+  <a>
+    POINT EMPTY
+  </a>
+  <b>
+    POLYGON ((1 1, 1 2, 2 1, 1 1))
+  </b>
+  <test><op name="relate" arg3="FFFFFF212" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> false </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> false </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> true </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> false </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> false </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> false </op></test>
+</case>
+
+
+
+
+</run>
