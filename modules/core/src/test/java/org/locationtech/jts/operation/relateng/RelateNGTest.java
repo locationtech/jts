@@ -597,7 +597,7 @@ public class RelateNGTest extends RelateNGTestCase {
     checkRelate(a, b, "212F01FF2");
   }
   
-  //================  Repeated Points  ==============
+  //================  EMPTY geometries  ==============
 
   public void testEmptyEquals() {
     String empties[] = {
@@ -614,9 +614,8 @@ public class RelateNGTest extends RelateNGTestCase {
       for (int j = 0; j < nempty; j++) {
         String a = empties[i];
         String b = empties[j];
-        checkRelate(a, b, "FFFFFFFF2");
-        //-- currently in JTS empty geometries do NOT test equal
-         checkEquals(a, b, false);
+        ///-- empty geometries are all topologically equal
+        checkEquals(a, b, true);
       }
     }  
   }
