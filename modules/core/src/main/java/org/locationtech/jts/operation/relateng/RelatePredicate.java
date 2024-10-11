@@ -482,11 +482,20 @@ public interface RelatePredicate {
       @Override
       public void init(int dimA, int dimB) {
         super.init(dimA, dimB);
-        require(dimA == dimB);
+        //-- don't require equal dims, because EMPTY = EMPTY for all dims
       }
       
       @Override
+      public boolean requireInteraction() {
+        //-- allow EMPTY = EMPTY
+        return false;
+      };
+    
+      @Override
       public void init(Envelope envA, Envelope envB) {
+        //-- handle EMPTY = EMPTY cases
+        setValueIf(true, envA.isNull() && envB.isNull());
+        
         require(envA.equals(envB));
       }   
       
