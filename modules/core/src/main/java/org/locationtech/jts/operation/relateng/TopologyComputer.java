@@ -247,8 +247,14 @@ class TopologyComputer {
     updateDim(isGeomA, Location.INTERIOR, Location.EXTERIOR, Dimension.P); 
   }
   
-  public void addPointOnGeometry(boolean isA, int locTarget, int dimTarget, Coordinate pt) {
-    updateDim(isA, Location.INTERIOR, locTarget, Dimension.P); 
+  public void addPointOnGeometry(boolean isPointA, int locTarget, int dimTarget, Coordinate pt) {
+    //-- update entry for Point interior
+    updateDim(isPointA, Location.INTERIOR, locTarget, Dimension.P);
+    
+    //-- an empty geometry has no points to infer entries from
+    if (getGeometry(! isPointA).isEmpty())
+      return;
+    
     switch (dimTarget) {
     case Dimension.P:
       return;
@@ -266,8 +272,8 @@ class TopologyComputer {
        * If a point intersects an area target, then the area interior and boundary
        * must extend beyond the point and thus interact with its exterior.
        */
-      updateDim(isA, Location.EXTERIOR, Location.INTERIOR, Dimension.A);      
-      updateDim(isA, Location.EXTERIOR, Location.BOUNDARY, Dimension.L);      
+      updateDim(isPointA, Location.EXTERIOR, Location.INTERIOR, Dimension.A);      
+      updateDim(isPointA, Location.EXTERIOR, Location.BOUNDARY, Dimension.L);      
       return;
     }
     throw new IllegalStateException("Unknown target dimension: " + dimTarget);
@@ -289,6 +295,10 @@ class TopologyComputer {
     //-- record topology at line end point
     updateDim(isLineA, locLineEnd, locTarget, Dimension.P);
     
+    //-- an empty geometry has no points to infer entries from
+    if (getGeometry(! isLineA).isEmpty())
+      return;
+
     //-- Line and Area targets may have additional topology
     switch (dimTarget) {
     case Dimension.P:
