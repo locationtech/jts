@@ -65,7 +65,6 @@ public class CoverageEdgeExtractorTest extends GeometryTestCase {
         assertEquals(expected.getNumGeometries(), expectedParentRings.length);
         assertEquals(expectedParentRings.length, edges.length);
         for (int i = 0; i < edges.length; i++){
-            //CoverageEdgeParentRings parents = (CoverageEdgeParentRings) edges[i].getUserData();
             assertEquals(expectedParentRings[i], edges[i].getUserData());
         }
 
