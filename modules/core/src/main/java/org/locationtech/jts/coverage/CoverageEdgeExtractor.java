@@ -11,10 +11,7 @@
  */
 package org.locationtech.jts.coverage;
 
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.coverage.CoverageRingEdges;
-import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,9 +23,8 @@ import java.util.List;
  *
  * @author Nick Bowsher
  */
-
 public class CoverageEdgeExtractor {
-    /*
+    /**
      * Extracts the set of unique coverage edges from a polygonal coverage.
      *
      * @param coverage an array of polygons forming a coverage
@@ -39,7 +35,7 @@ public class CoverageEdgeExtractor {
         return e.extract();
     }
 
-    /*
+    /**
      * Creates a new coverage edge extractor
      *
      * @param coverage an array of polygons forming a coverage
@@ -48,20 +44,49 @@ public class CoverageEdgeExtractor {
         this.coverage = coverage;
     }
 
-    /*
+    /**
      * Extracts the set of unique coverage edges from a polygonal coverage.
-     * The result is an array of the same size as the input coverage.
+     * The result is an array of the same size as the amount of coverage edges.
      *
-     * @return an array of linear geometries representing coverage edges
+     * @return an array of linear geometries representing coverage edges with the {@link CoverageEdgeParentRings} set as user data for each coverage edge line geometry
      */
     public Geometry[] extract() {
         CoverageRingEdges covRings = new CoverageRingEdges(coverage);
-        GeometryFactory f = new GeometryFactory();
+        GeometryFactory f = new GeometryFactory(new PrecisionModel(1000));
         List<LineString> lines = new ArrayList<LineString>();
         for (CoverageEdge edge : covRings.getEdges()) {
-            lines.add(edge.toLineString(f));
+            LineString line = edge.toLineString(f);
+            line.setUserData(parentRings(edge, f));
+            lines.add(line);
         }
         return GeometryFactory.toLineStringArray(lines);
+    }
+
+    /**
+    * Retrieves the indices of the adjacent coverage polygons and verifies if they are to the left or right of the edge
+    *
+    * @param edge a coverage edge
+    * @param f a geometry factory
+    *
+    * @return the edge parent indices from the coverage
+    */
+    private CoverageEdgeParentRings parentRings(CoverageEdge edge, GeometryFactory f){
+        int index0 = edge.getAdjacentIndex(0);
+        int index1 = edge.getAdjacentIndex(1);
+
+        Coordinate start = edge.getStartCoordinate();
+        Coordinate end = edge.getCoordinates()[1];
+        Coordinate midPoint = LineSegment.midPoint(start, end);
+
+        double dx = end.x - start.x;
+        double dy = end.y - start.y;
+        double gridSize = f.getPrecisionModel().gridSize();
+        Coordinate leftPoint = new Coordinate(midPoint.x - dy * gridSize, midPoint.y + dx * gridSize);
+
+        if (coverage[index0].contains(f.createPoint(leftPoint))){
+            return new CoverageEdgeParentRings(index0, index1);
+        }
+        return new CoverageEdgeParentRings(index1, index0);
     }
 
     private Geometry[] coverage;

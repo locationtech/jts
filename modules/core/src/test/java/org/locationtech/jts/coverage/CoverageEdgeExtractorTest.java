@@ -29,31 +29,46 @@ public class CoverageEdgeExtractorTest extends GeometryTestCase {
 
     public void testTwoAdjacent() {
         checkEdges("GEOMETRYCOLLECTION (POLYGON ((1 1, 1 6, 6 5, 9 6, 9 1, 1 1)), POLYGON ((1 9, 6 9, 6 5, 1 6, 1 9)))",
-                "MULTILINESTRING ((1 6, 1 1, 9 1, 9 6, 6 5), (1 6, 1 9, 6 9, 6 5), (1 6, 6 5))");
+                "MULTILINESTRING ((1 6, 6 5), (6 5, 9 6, 9 1, 1 1, 1 6), (1 6, 1 9, 6 9, 6 5))",
+                new CoverageEdgeParentRings[]{ parentRings(1, 0), parentRings(-1, 0), parentRings(-1, 1) }
+        );
     }
 
     public void testTwoAdjacentWithFilledHole() {
         checkEdges("GEOMETRYCOLLECTION (POLYGON ((1 1, 1 6, 6 5, 9 6, 9 1, 1 1), (2 4, 4 4, 4 2, 2 2, 2 4)), POLYGON ((1 9, 6 9, 6 5, 1 6, 1 9)), POLYGON ((4 2, 2 2, 2 4, 4 4, 4 2)))",
-                "MULTILINESTRING ((1 6, 1 1, 9 1, 9 6, 6 5), (1 6, 1 9, 6 9, 6 5), (1 6, 6 5), (2 4, 2 2, 4 2, 4 4, 2 4))");
+                "MULTILINESTRING ((1 6, 6 5), (6 5, 9 6, 9 1, 1 1, 1 6), (2 4, 4 4, 4 2, 2 2, 2 4), (1 6, 1 9, 6 9, 6 5))",
+                new CoverageEdgeParentRings[]{ parentRings(1, 0), parentRings(-1, 0), parentRings(0, 2), parentRings(-1, 1) }
+        );
     }
 
     public void testHolesAndFillWithDifferentEndpoints() {
         checkEdges("GEOMETRYCOLLECTION (POLYGON ((0 10, 10 10, 10 0, 0 0, 0 10), (1 9, 4 8, 9 9, 9 1, 1 1, 1 9)), POLYGON ((9 9, 1 1, 1 9, 4 8, 9 9)), POLYGON ((1 1, 9 9, 9 1, 1 1)))",
-                "MULTILINESTRING ((0 10, 0 0, 10 0, 10 10, 0 10), (1 1, 1 9, 4 8, 9 9), (1 1, 9 1, 9 9), (1 1, 9 9))");
+                "MULTILINESTRING ((0 10, 10 10, 10 0, 0 0, 0 10), (9 9, 9 1, 1 1), (1 1, 1 9, 4 8, 9 9), (9 9, 1 1))",
+                new CoverageEdgeParentRings[]{ parentRings(-1, 0), parentRings(0, 2), parentRings(0, 1), parentRings(2, 1)}
+        );
     }
 
     public void testMultiPolygons() {
         checkEdges("GEOMETRYCOLLECTION (MULTIPOLYGON (((5 9, 2.5 7.5, 1 5, 5 5, 5 9)), ((5 5, 9 5, 7.5 2.5, 5 1, 5 5))), MULTIPOLYGON (((5 9, 6.5 6.5, 9 5, 5 5, 5 9)), ((1 5, 5 5, 5 1, 3.5 3.5, 1 5))))",
-                "MULTILINESTRING ((1 5, 2.5 7.5, 5 9), (1 5, 3.5 3.5, 5 1), (1 5, 5 5), (5 1, 5 5), (5 1, 7.5 2.5, 9 5), (5 5, 5 9), (5 5, 9 5), (5 9, 6.5 6.5, 9 5))"
+                "MULTILINESTRING ((5 9, 2.5 7.5, 1 5), (1 5, 5 5), (5 5, 5 9), (5 5, 9 5), (9 5, 7.5 2.5, 5 1), (5 1, 5 5), (5 9, 6.5 6.5, 9 5), (5 1, 3.5 3.5, 1 5)))",
+                new CoverageEdgeParentRings[]{ parentRings(0, -1), parentRings(0, 1), parentRings(0, 1), parentRings(1, 0),
+                        parentRings(-1, 0), parentRings(1, 0), parentRings(-1, 1), parentRings(-1, 1) }
         );
     }
 
-    private void checkEdges(String wkt, String wktExpected) {
+    private void checkEdges(String wkt, String wktExpected, CoverageEdgeParentRings[] expectedParentRings) {
         Geometry geom = read(wkt);
         Geometry[] coverage = toArray(geom);
         Geometry[] edges = CoverageEdgeExtractor.extract(coverage);
         MultiLineString edgeLines = toArray(edges, geom.getFactory());
         Geometry expected = read(wktExpected);
+        assertEquals(expected.getNumGeometries(), expectedParentRings.length);
+        assertEquals(expectedParentRings.length, edges.length);
+        for (int i = 0; i < edges.length; i++){
+            //CoverageEdgeParentRings parents = (CoverageEdgeParentRings) edges[i].getUserData();
+            assertEquals(expectedParentRings[i], edges[i].getUserData());
+        }
+
         checkEqual(expected, edgeLines);
     }
 
@@ -71,5 +86,9 @@ public class CoverageEdgeExtractorTest extends GeometryTestCase {
             geoms[i] = geom.getGeometryN(i);
         }
         return geoms;
+    }
+
+    private static CoverageEdgeParentRings parentRings(int leftIndex, int rightIndex){
+        return new CoverageEdgeParentRings(leftIndex,rightIndex);
     }
 }
