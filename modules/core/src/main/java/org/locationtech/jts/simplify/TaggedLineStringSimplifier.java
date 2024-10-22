@@ -41,11 +41,11 @@ public class TaggedLineStringSimplifier
 
   public TaggedLineStringSimplifier(LineSegmentIndex inputIndex,
                                      LineSegmentIndex outputIndex, 
-                                     ComponentJumpChecker crossChecker)
+                                     ComponentJumpChecker jumpChecker)
   {
     this.inputIndex = inputIndex;
     this.outputIndex = outputIndex;
-    this.jumpChecker = crossChecker;
+    this.jumpChecker = jumpChecker;
   }
 
   /**
