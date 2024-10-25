@@ -70,8 +70,8 @@ import org.locationtech.jts.triangulate.tri.Tri;
  * can be converted to a valid MultiPolygon
  * by using {@link Geometry#union()};
  * <p>
- * If the input contains holes (possibly containing nested polygon elements, 
- * these will be preserved in the output.
+ * If the input contains holes (possibly containing nested polygon elements) 
+ * these are preserved in the output.
  * 
  * @author Martin Davis
  *
