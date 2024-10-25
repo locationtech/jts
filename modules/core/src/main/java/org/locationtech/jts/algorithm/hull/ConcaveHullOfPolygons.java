@@ -348,6 +348,29 @@ public class ConcaveHullOfPolygons {
     return edgeLengthRatio * (maxEdgeLen - minEdgeLen) + minEdgeLen;
   }
 
+  /**
+   * Creates a rectangular "frame" around the input polygons,
+   * with the input polygons as holes in it.
+   * The frame is large enough that the constrained Delaunay triangulation
+   * of it should contain the convex hull of the input as edges.
+   * The frame corner triangles can be removed to produce a 
+   * triangulation of the space around and between the input polygons.
+   * 
+   * @param polygonsEnv
+   * @param polygonRings
+   * @param geomFactory 
+   * @return the frame polygon
+   */
+  private static Polygon createFrame(Envelope polygonsEnv, LinearRing[] polygonRings, GeometryFactory geomFactory) {
+    double diam = polygonsEnv.getDiameter();
+    Envelope envFrame = polygonsEnv.copy();
+    envFrame.expandBy(FRAME_EXPAND_FACTOR * diam);
+    Polygon frameOuter = (Polygon) geomFactory.toGeometry(envFrame);
+    LinearRing shell = (LinearRing) frameOuter.getExteriorRing().copy();
+    Polygon frame = geomFactory.createPolygon(shell, polygonRings);
+    return frame;
+  }
+  
   private static boolean isFrameTri(Tri tri, Coordinate[] frameCorners) {
     int index = vertexIndex(tri, frameCorners);
     boolean isFrameTri = index >= 0;
@@ -568,29 +591,6 @@ public class ConcaveHullOfPolygons {
     GeometryCollection geomColl = geomFactory.createGeometryCollection(geoms);
     Geometry hull = CoverageUnion.union(geomColl);
     return hull;
-  }
-  
-  /**
-   * Creates a rectangular "frame" around the input polygons,
-   * with the input polygons as holes in it.
-   * The frame is large enough that the constrained Delaunay triangulation
-   * of it should contain the convex hull of the input as edges.
-   * The frame corner triangles can be removed to produce a 
-   * triangulation of the space around and between the input polygons.
-   * 
-   * @param polygonsEnv
-   * @param polygonRings
-   * @param geomFactory 
-   * @return the frame polygon
-   */
-  private static Polygon createFrame(Envelope polygonsEnv, LinearRing[] polygonRings, GeometryFactory geomFactory) {
-    double diam = polygonsEnv.getDiameter();
-    Envelope envFrame = polygonsEnv.copy();
-    envFrame.expandBy(FRAME_EXPAND_FACTOR * diam);
-    Polygon frameOuter = (Polygon) geomFactory.toGeometry(envFrame);
-    LinearRing shell = (LinearRing) frameOuter.getExteriorRing().copy();
-    Polygon frame = geomFactory.createPolygon(shell, polygonRings);
-    return frame;
   }
 
 }
