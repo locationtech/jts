@@ -60,7 +60,21 @@ class TaggedLineString
     return parentLine.getNumPoints();
   }
   
+  /**
+   * Returns a vertex of the component,
+   * in either simplified or original form.
+   * Once the component is simplified a vertex of the simplified linework
+   * must be returned. 
+   * Otherwise the simplified linework could be jumped by a flattened line
+   * which does not cross an original vertex, and so is reported as valid.
+   * 
+   * @return a component vertex
+   */
   public Coordinate getComponentPoint() {
+    //-- simplified vertex
+    if (resultSegs.size() > 0) 
+      return resultSegs.get(0).p0;
+    //-- original vertex
     return getParentCoordinates()[1];
   }
   

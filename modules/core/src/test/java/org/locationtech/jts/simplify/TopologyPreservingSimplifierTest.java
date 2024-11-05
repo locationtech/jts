@@ -249,8 +249,7 @@ public class TopologyPreservingSimplifierTest
     Geometry geom = read(wkt);
     Geometry actual = TopologyPreservingSimplifier.simplify(geom, tolerance);
     Geometry expected = read(wktExpected);
-    //TODO: add this once the "skipping over rings" problem is fixed
-    //checkValid(actual);
+    checkValid(actual);
     checkEqual(expected, actual);
   }
   
