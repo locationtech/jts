@@ -54,7 +54,7 @@ class OffsetSegmentGenerator
   /**
    * Factor which controls how close curve vertices can be to be snapped
    */
-  private static final double CURVE_VERTEX_SNAP_DISTANCE_FACTOR = 1.0E-6;
+  private static final double CURVE_VERTEX_SNAP_DISTANCE_FACTOR = 1.0E-4;
 
   /**
    * Factor which determines how short closing segs can be for round buffers
