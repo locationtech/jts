@@ -51,6 +51,19 @@ public class SelectionNGFunctions
     });
   }
   
+  public static Geometry containsPrep(Geometry a, final Geometry mask)
+  {
+    RelateNG relateNG = RelateNG.prepare(mask);
+    Envelope maskEnv = mask.getEnvelopeInternal();
+    return SelectionFunctions.select(a, new GeometryPredicate() {
+      public boolean isTrue(Geometry g) {
+        if (maskEnv.disjoint(g.getEnvelopeInternal()))
+          return false;
+       return relateNG.evaluate(g, RelatePredicate.contains());
+      }
+    });
+  }
+  
   public static Geometry covers(Geometry a, final Geometry mask)
   {
     return SelectionFunctions.select(a, new GeometryPredicate() {

@@ -42,6 +42,25 @@ public class SelectionFunctions
     });
   }
   
+  public static Geometry contains(Geometry a, final Geometry mask)
+  {
+    return select(a, new GeometryPredicate() {
+      public boolean isTrue(Geometry g) {
+        return mask.contains(g);
+      }
+    });
+  }
+  
+  public static Geometry containsPrep(Geometry a, final Geometry mask)
+  {
+    PreparedGeometry prep = PreparedGeometryFactory.prepare(mask);
+    return select(a, new GeometryPredicate() {
+      public boolean isTrue(Geometry g) {
+        return prep.contains(g);
+      }
+    });
+  }
+  
   public static Geometry covers(Geometry a, final Geometry mask)
   {
     return select(a, new GeometryPredicate() {
