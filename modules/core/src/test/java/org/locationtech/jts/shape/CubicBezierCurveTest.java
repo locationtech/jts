@@ -57,6 +57,11 @@ extends GeometryTestCase {
         "LINESTRING (10 10, 10.1 11, 10.3 12, 10.6 13, 11 13.9, 11.5 14.8, 12.1 15.7, 12.8 16.5, 13.5 17.2, 14.3 17.9, 15.2 18.5, 16.1 19, 17 19.4, 18 19.7, 19 19.9, 20 20, 21 19.9, 21.9 19.5, 22.8 19, 23.6 18.2, 24.4 17.4, 25.1 16.5, 25.8 15.5, 26.4 14.5, 27.1 13.5, 27.6 12.6, 28.2 11.8, 28.7 11, 29.1 10.5, 29.6 10.1, 30 10, 30.5 10.2, 31.1 10.7, 31.8 11.5, 32.6 12.5, 33.5 13.7, 34.4 15, 35.3 16.2, 36.2 17.5, 37.1 18.6, 37.9 19.6, 38.6 20.4, 39.2 20.9, 39.6 21, 39.9 20.7, 40 20)");
   }
 
+  public void testSingleSegment() {
+    checkCurve("LINESTRING (10 10, 20 20)",
+        1, "LINESTRING (10 10, 20 20)");
+  }
+
   private void checkCurve(String wkt, double alpha, String wktExpected) {
     Geometry geom = read(wkt);
     Geometry actual = CubicBezierCurve.bezierCurve(geom, alpha);

@@ -18,9 +18,9 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.LinearRing;
+import org.locationtech.jts.geom.MultiLineString;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.util.GeometryMapper;
-import org.locationtech.jts.io.WKTWriter;
 
 /**
  * Creates a curved geometry by replacing the segments
@@ -176,6 +176,9 @@ public class CubicBezierCurve {
   }
   
   private LineString bezierLine(LineString ls) {
+    //-- can't curve a single segment
+    if (ls.getNumPoints() <= 2)
+      return (LineString) ls.copy();
     Coordinate[] coords = ls.getCoordinates();
     CoordinateList curvePts = bezierCurve(coords, false);
     curvePts.add(coords[coords.length - 1].copy(), false);
@@ -202,8 +205,12 @@ public class CubicBezierCurve {
   }
   
   private CoordinateList bezierCurve(Coordinate[] coords, boolean isRing) {
-    Coordinate[] control = controlPoints(coords, isRing);
     CoordinateList curvePts = new CoordinateList();
+    //-- can't curve a single segment
+    if (coords.length <= 2)
+      return curvePts;
+    
+    Coordinate[] control = controlPoints(coords, isRing);
     for (int i = 0; i < coords.length - 1; i++) {
       int ctrlIndex = 2 * i;
       addCurve(coords[i], coords[i + 1], control[ctrlIndex], control[ctrlIndex + 1], curvePts);
