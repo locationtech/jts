@@ -184,6 +184,10 @@ class RelateGeometry {
     return false;
   }
   
+  public boolean hasAreaAndLine() {
+    return hasAreas && hasLines;
+  }
+  
   /**
    * Gets the actual non-empty dimension of the geometry.
    * Zero-length LineStrings are treated as Points.
@@ -263,6 +267,9 @@ class RelateGeometry {
         return false;
     //-- a GC with a single polygon does not need noding
     if (hasAreas && geom.getNumGeometries() == 1) 
+      return false;
+    //-- GCs with only points do not need noding
+    if (! hasAreas && ! hasLines)
       return false;
     return true;
   }
