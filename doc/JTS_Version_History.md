@@ -33,6 +33,8 @@ Distributions for older JTS versions can be obtained at the
 
 ### Performance Improvements
 
+* Fix RelateNG to cache in prepared A-L cases (#1099)
+
 # Version 1.20.0
 
 *Release Date: 09/18/2024*
