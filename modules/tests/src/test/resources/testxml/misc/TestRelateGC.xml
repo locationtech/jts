@@ -574,10 +574,21 @@ GEOMETRYCOLLECTION (POLYGON ((1 9, 5 9, 6 6, 1 5, 1 9), (2 6, 4 8, 6 6, 2 6)), P
   <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
   <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
   <test><op name="within"     arg1="A" arg2="B"> true </op></test>
+  
+  <test><op name="contains"   arg1="B" arg2="A"> true </op></test>
+  <test><op name="coveredBy"  arg1="B" arg2="A"> true </op></test>
+  <test><op name="covers"     arg1="B" arg2="A"> true </op></test>
+  <test><op name="crosses"    arg1="B" arg2="A"> false </op></test>
+  <test><op name="disjoint"   arg1="B" arg2="A"> false </op></test>
+  <test><op name="equalsTopo" arg1="B" arg2="A"> true </op></test>
+  <test><op name="intersects" arg1="B" arg2="A"> true </op></test>
+  <test><op name="overlaps"   arg1="B" arg2="A"> false </op></test>
+  <test><op name="touches"    arg1="B" arg2="A"> false </op></test>
+  <test><op name="within"     arg1="B" arg2="A"> true </op></test>
 </case>
 
 <case>
-  <desc>GC:AL/A - polygon with overlapping line equal to polygon </desc>
+  <desc>GC:AL/A - polygon with line in boundary and interior equal to polygon </desc>
   <a>
     GEOMETRYCOLLECTION (POLYGON ((0 0, 10 0, 10 10, 0 10, 0 0)), 
       LINESTRING (0 2, 0 5, 5 5))
@@ -596,6 +607,17 @@ GEOMETRYCOLLECTION (POLYGON ((1 9, 5 9, 6 6, 1 5, 1 9), (2 6, 4 8, 6 6, 2 6)), P
   <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
   <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
   <test><op name="within"     arg1="A" arg2="B"> true </op></test>
+  
+  <test><op name="contains"   arg1="B" arg2="A"> true </op></test>
+  <test><op name="coveredBy"  arg1="B" arg2="A"> true </op></test>
+  <test><op name="covers"     arg1="B" arg2="A"> true </op></test>
+  <test><op name="crosses"    arg1="B" arg2="A"> false </op></test>
+  <test><op name="disjoint"   arg1="B" arg2="A"> false </op></test>
+  <test><op name="equalsTopo" arg1="B" arg2="A"> true </op></test>
+  <test><op name="intersects" arg1="B" arg2="A"> true </op></test>
+  <test><op name="overlaps"   arg1="B" arg2="A"> false </op></test>
+  <test><op name="touches"    arg1="B" arg2="A"> false </op></test>
+  <test><op name="within"     arg1="B" arg2="A"> true </op></test>
 </case>
 
 </run>
