@@ -372,7 +372,9 @@ public class CreateRandomShapeFunctions {
   @Metadata(description="Create Truchet tiling from lines defining lower left tile")
   public static Geometry truchetTiling(Geometry tileLines, 
       @Metadata(title="Grid side cell #")
-      int nSide) {
+      int nSide,
+      @Metadata(title="Randomness")
+      double randomness) {
     PrecisionModel pmSnap = new PrecisionModel(10000.0);
     //Geometry tileSnap = snapEndpoints(tileLines.copy(), pmSnap);
     Geometry tileSnap = GeometryPrecisionReducer.reduce(tileLines, pmSnap);
@@ -383,8 +385,13 @@ public class CreateRandomShapeFunctions {
     List<Geometry> tiles = new ArrayList<Geometry>();
     for (int i = 0; i < nSide; i++) {
       for (int j = 0; j < nSide; j++) {
+        
+        int nPi2 = (i + j) % 4;
+        if (Math.random() < randomness) {
         //-- random rotation by PI/2, translate to grid cell
-        int nPi2 = (int) (4 * Math.random());
+          nPi2 = (int) (4 * Math.random());
+        }
+        
         AffineTransformation trans = AffineTransformation.rotationInstance(nPi2 * Math.PI / 2.0, 
             centre.getX(), centre.getY());
         trans.translate(i * side, j * side);
