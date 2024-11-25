@@ -145,6 +145,12 @@ public class GeometryLocationsWriter
       }
       else {
         buf.append("(" + comp.getNumPoints() + ")");
+        if (comp.getDimension() >= 1) {
+          buf.append("  Len: " + comp.getLength());
+        }
+        if (comp.getDimension() >= 2) {
+          buf.append("  Area: " + comp.getArea());
+        }
       }
       if (comp.getUserData() != null) {
       	buf.append("  Data: ");
