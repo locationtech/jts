@@ -42,6 +42,7 @@ public class OperationMonitorManager
   
   private Timer repaintTimer = new Timer(50, new ActionListener() 
       {
+        @Override
         public void actionPerformed(ActionEvent e) {
           if (indicator != null) {
             paint();

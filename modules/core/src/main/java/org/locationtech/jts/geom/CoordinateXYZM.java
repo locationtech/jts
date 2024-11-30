@@ -65,6 +65,7 @@ public class CoordinateXYZM extends Coordinate {
    * 
    * @return a copy of this CoordinateXYZM
    */
+  @Override
   public CoordinateXYZM copy() {
     return new CoordinateXYZM(this);
   }
@@ -83,14 +84,17 @@ public class CoordinateXYZM extends Coordinate {
   private double m;
 
   /** The m-measure, if available. */
+  @Override
   public double getM() {
     return m;
   }
 
+  @Override
   public void setM(double m) {
     this.m = m;
   }
 
+  @Override
   public double getOrdinate(int ordinateIndex)
   {
     switch (ordinateIndex) {

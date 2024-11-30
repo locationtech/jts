@@ -198,6 +198,7 @@ public class SimplePointInAreaLocator
    * @param p the point to test
    * @return the Location of the point in the geometry  
    */
+	@Override
 	public int locate(Coordinate p) {
 		return SimplePointInAreaLocator.locate(p, geom);
 	}

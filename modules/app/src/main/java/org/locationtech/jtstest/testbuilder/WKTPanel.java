@@ -133,6 +133,7 @@ public class WKTPanel extends JPanel
         exchangeButton.setIcon(AppIcons.GEOM_EXCHANGE);
         
         JButton btnUndo = SwingUtil.createButton(AppIcons.UNDO, "Undo", new ActionListener() {
+          @Override
           public void actionPerformed(ActionEvent e) {
             tbModel.getGeometryEditModel().undo();
           }        
@@ -209,6 +210,7 @@ public class WKTPanel extends JPanel
         aRB.setAlignmentX(LEFT_ALIGNMENT);
         aRB.setSelected(true);
         aRB.addActionListener(new java.awt.event.ActionListener() {
+          @Override
           public void actionPerformed(ActionEvent e) {
             setFocusGeometry(0);
           }
@@ -245,6 +247,7 @@ public class WKTPanel extends JPanel
         //bLabelPanel.add(bRB);
         bRB.setAlignmentX(LEFT_ALIGNMENT);
         bRB.addActionListener(new java.awt.event.ActionListener() {
+          @Override
           public void actionPerformed(ActionEvent e) {
             setFocusGeometry(1);
           }
@@ -303,54 +306,63 @@ public class WKTPanel extends JPanel
         
         loadButton.addActionListener(
             new ActionListener() {
+              @Override
               public void actionPerformed(ActionEvent e) {
                 loadButton_actionPerformed(e);
               }
             });
         inspectButton.addActionListener(
             new ActionListener() {
+              @Override
               public void actionPerformed(ActionEvent e) {
                 JTSTestBuilder.controller().inspectGeometry();
               }
             });
         exchangeButton.addActionListener(
             new ActionListener() {
+              @Override
               public void actionPerformed(ActionEvent e) {
                 JTSTestBuilder.controller().exchangeGeometry();
               }
             });
        aCopyButton.addActionListener(
             new ActionListener() {
+              @Override
               public void actionPerformed(ActionEvent e) {
               	aCopyButton_actionPerformed(e);
               }
             });
         aPasteButton.addActionListener(
             new ActionListener() {
+              @Override
               public void actionPerformed(ActionEvent e) {
               	aPasteButton_actionPerformed(e);
               }
             });
         aCutButton.addActionListener(
             new ActionListener() {
+              @Override
               public void actionPerformed(ActionEvent e) {
               	aCutButton_actionPerformed(e);
               }
             });
         bCopyButton.addActionListener(
             new ActionListener() {
+              @Override
               public void actionPerformed(ActionEvent e) {
               	bCopyButton_actionPerformed(e);
               }
             });
         bPasteButton.addActionListener(
             new ActionListener() {
+              @Override
               public void actionPerformed(ActionEvent e) {
               	bPasteButton_actionPerformed(e);
               }
             });
         bCutButton.addActionListener(
             new ActionListener() {
+              @Override
               public void actionPerformed(ActionEvent e) {
               	bCutButton_actionPerformed(e);
               }
@@ -485,6 +497,7 @@ public class WKTPanel extends JPanel
       final int geomIndex = index;
       
       new FileDrop(comp, new FileDrop.Listener() {
+        @Override
         public void filesDropped(java.io.File[] files) {
           try {
             tbModel.loadMultipleGeometriesFromFile(geomIndex, files[0].getCanonicalPath());

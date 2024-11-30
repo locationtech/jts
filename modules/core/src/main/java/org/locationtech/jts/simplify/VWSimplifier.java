@@ -136,6 +136,7 @@ public class VWSimplifier
       this.distanceTolerance = distanceTolerance;
     }
 
+    @Override
     protected CoordinateSequence transformCoordinates(CoordinateSequence coords, Geometry parent)
     {
       Coordinate[] inputPts = coords.toCoordinateArray();
@@ -152,6 +153,7 @@ public class VWSimplifier
     /**
      * Simplifies a polygon, fixing it if required.
      */
+    @Override
     protected Geometry transformPolygon(Polygon geom, Geometry parent)
     {
       // empty geometries are simply removed
@@ -171,6 +173,7 @@ public class VWSimplifier
      * 
      * @return null if the simplification results in a degenerate ring
      */
+    @Override
     protected Geometry transformLinearRing(LinearRing geom, Geometry parent)
     {
       boolean removeDegenerateRings = parent instanceof Polygon;
@@ -184,6 +187,7 @@ public class VWSimplifier
     /**
      * Simplifies a MultiPolygon, fixing it if required.
      */
+    @Override
     protected Geometry transformMultiPolygon(MultiPolygon geom, Geometry parent)
     {
       Geometry rawGeom = super.transformMultiPolygon(geom, parent);

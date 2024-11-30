@@ -50,18 +50,22 @@ public class MultiPoint
     super(points, factory);
   }
 
+  @Override
   public int getDimension() {
     return 0;
   }
 
+  @Override
   public boolean hasDimension(int dim) {
     return dim == 0;
   }
   
+  @Override
   public int getBoundaryDimension() {
     return Dimension.FALSE;
   }
 
+  @Override
   public String getGeometryType() {
     return Geometry.TYPENAME_MULTIPOINT;
   }
@@ -74,14 +78,17 @@ public class MultiPoint
    * @return an empty GeometryCollection
    * @see Geometry#getBoundary
    */
+  @Override
   public Geometry getBoundary() {
     return getFactory().createGeometryCollection();
   }
 
+  @Override
   public MultiPoint reverse() {
     return (MultiPoint) super.reverse();
   }
   
+  @Override
   protected MultiPoint reverseInternal() {
     Point[] points = new Point[this.geometries.length];
     for (int i = 0; i < points.length; i++) {
@@ -90,6 +97,7 @@ public class MultiPoint
     return new MultiPoint(points, factory);
   }
 
+  @Override
   public boolean equalsExact(Geometry other, double tolerance) {
     if (!isEquivalentClass(other)) {
       return false;
@@ -108,6 +116,7 @@ public class MultiPoint
     return ((Point) geometries[n]).getCoordinate();
   }
   
+  @Override
   protected MultiPoint copyInternal() {
     Point[] points = new Point[this.geometries.length];
     for (int i = 0; i < points.length; i++) {
@@ -116,6 +125,7 @@ public class MultiPoint
     return new MultiPoint(points, factory);
   }
   
+  @Override
   protected int getTypeCode() {
     return Geometry.TYPECODE_MULTIPOINT;
   }

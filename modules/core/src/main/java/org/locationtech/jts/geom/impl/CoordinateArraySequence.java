@@ -168,6 +168,7 @@ public class CoordinateArraySequence
   /**
    * @see org.locationtech.jts.geom.CoordinateSequence#getDimension()
    */
+  @Override
   public int getDimension()
   {
     return dimension;
@@ -186,6 +187,7 @@ public class CoordinateArraySequence
    *                  the index of the coordinate
    * @return the requested Coordinate instance
    */
+  @Override
   public Coordinate getCoordinate(int i) {
     return coordinates[i];
   }
@@ -196,6 +198,7 @@ public class CoordinateArraySequence
    * @param i  the index of the coordinate
    * @return a copy of the requested Coordinate
    */
+  @Override
   public Coordinate getCoordinateCopy(int i) {
     Coordinate copy = createCoordinate();
     copy.setCoordinate(coordinates[i]);
@@ -205,6 +208,7 @@ public class CoordinateArraySequence
   /**
    * @see org.locationtech.jts.geom.CoordinateSequence#getX(int)
    */
+  @Override
   public void getCoordinate(int index, Coordinate coord) {
     coord.setCoordinate(coordinates[index]);
   }
@@ -212,6 +216,7 @@ public class CoordinateArraySequence
   /**
    * @see org.locationtech.jts.geom.CoordinateSequence#getX(int)
    */
+  @Override
   public double getX(int index) {
     return coordinates[index].x;
   }
@@ -219,6 +224,7 @@ public class CoordinateArraySequence
   /**
    * @see org.locationtech.jts.geom.CoordinateSequence#getY(int)
    */
+  @Override
   public double getY(int index) {
     return coordinates[index].y;
   }
@@ -226,6 +232,7 @@ public class CoordinateArraySequence
   /**
    * @see org.locationtech.jts.geom.CoordinateSequence#getZ(int)
    */
+  @Override
   public double getZ(int index)
   {
     if (hasZ()) {
@@ -239,6 +246,7 @@ public class CoordinateArraySequence
   /**
    * @see org.locationtech.jts.geom.CoordinateSequence#getM(int)
    */
+  @Override
   public double getM(int index) {
     if (hasM()) {
       return coordinates[index].getM();
@@ -251,6 +259,7 @@ public class CoordinateArraySequence
   /**
    * @see org.locationtech.jts.geom.CoordinateSequence#getOrdinate(int, int)
    */
+  @Override
   public double getOrdinate(int index, int ordinateIndex)
   {
     switch (ordinateIndex) {
@@ -267,6 +276,7 @@ public class CoordinateArraySequence
    * @return The deep copy
    * @deprecated
    */
+  @Override
   public Object clone() {
     return copy();
   }
@@ -275,6 +285,7 @@ public class CoordinateArraySequence
    *
    * @return The deep copy
    */
+  @Override
   public CoordinateArraySequence copy() {
     Coordinate[] cloneCoordinates = new Coordinate[size()];
     for (int i = 0; i < coordinates.length; i++) {
@@ -289,6 +300,7 @@ public class CoordinateArraySequence
    *
    * @return the number of coordinates
    */
+  @Override
   public int size() {
     return coordinates.length;
   }
@@ -296,6 +308,7 @@ public class CoordinateArraySequence
   /**
    * @see org.locationtech.jts.geom.CoordinateSequence#setOrdinate(int, int, double)
    */
+  @Override
   public void setOrdinate(int index, int ordinateIndex, double value)
   {
     switch (ordinateIndex) {
@@ -315,10 +328,12 @@ public class CoordinateArraySequence
    *
    * @return the Coordinate[] array.
    */
+  @Override
   public Coordinate[] toCoordinateArray() {
     return coordinates;
   }
 
+  @Override
   public Envelope expandEnvelope(Envelope env)
   {
     for (int i = 0; i < coordinates.length; i++ ) {

@@ -217,9 +217,11 @@ public class TestCasePanel extends JPanel {
     editPanel.addMouseMotionListener(
       new java.awt.event.MouseMotionAdapter() {
 
+        @Override
         public void mouseMoved(MouseEvent e) {
           editPanel_mouseMoved(e);
         }
+        @Override
         public void mouseDragged(MouseEvent e) {
           editPanel_mouseMoved(e);
         }
@@ -230,12 +232,14 @@ public class TestCasePanel extends JPanel {
     btnRunTests.addActionListener(
       new java.awt.event.ActionListener() {
 
+        @Override
         public void actionPerformed(ActionEvent e) {
           btnRunTests_actionPerformed(e);
         }
       });    
     validPanel.addValidPanelListener(
         new ValidPanelListener() {
+          @Override
           public void setHighlightPerformed(ValidPanelEvent e) {
             validPanel_setHighlightPerformed(e);
           }
@@ -244,6 +248,7 @@ public class TestCasePanel extends JPanel {
     txtDesc.addFocusListener(
       new java.awt.event.FocusAdapter() {
 
+        @Override
         public void focusLost(FocusEvent e) {
           txtDesc_focusLost(e);
         }
@@ -251,6 +256,7 @@ public class TestCasePanel extends JPanel {
     jTabbedPane1.addChangeListener(
       new javax.swing.event.ChangeListener() {
 
+        @Override
         public void stateChanged(ChangeEvent e) {
           jTabbedPane1_stateChanged(e);
         }
@@ -287,6 +293,7 @@ public class TestCasePanel extends JPanel {
     cbDisplayAB.setSelected(true);
     cbDisplayAB.setToolTipText("Display A and B");
      cbDisplayAB.addActionListener(new java.awt.event.ActionListener() {
+        @Override
         public void actionPerformed(ActionEvent e) {
           JTSTestBuilderController.editPanel().setShowingInput(cbDisplayAB.isSelected());
         }
@@ -298,6 +305,7 @@ public class TestCasePanel extends JPanel {
     cbDisplayGrid.setSelected(true);
     cbDisplayGrid.setToolTipText("Display Grid");
     cbDisplayGrid.addActionListener(new java.awt.event.ActionListener() {
+        @Override
         public void actionPerformed(ActionEvent e) {
           JTSTestBuilderController.editPanel().setShowingGrid(cbDisplayGrid.isSelected());
         }
@@ -324,6 +332,7 @@ public class TestCasePanel extends JPanel {
     JButton btnSaveImage = SwingUtil.createButton(
         AppIcons.SAVE_IMAGE, AppStrings.TIP_SAVE_IMAGE,   
         new java.awt.event.ActionListener() {
+          @Override
           public void actionPerformed(ActionEvent e) {
             if (SwingUtil.isCtlKeyPressed(e)) {
               JTSTestBuilder.controller().saveImageAsPNG();

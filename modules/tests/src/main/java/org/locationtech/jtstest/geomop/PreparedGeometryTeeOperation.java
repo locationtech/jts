@@ -40,6 +40,7 @@ public class PreparedGeometryTeeOperation
   	super(chainOp);
   }
 
+	@Override
 	protected void runTeeOp(String opName, Geometry geometry, Object[] args)
 	{
 		if (args.length < 1) return;

@@ -77,18 +77,21 @@ extends JPanel
     
     JButton copyButton = SwingUtil.createButton(AppIcons.COPY, "Copy Result (Ctl-click for formatted)", 
         new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         rCopyButton_actionPerformed(e);
       }
     });
     JButton copyToTestButton = SwingUtil.createButton(AppIcons.COPY_TO_TEST, "Copy Result to new Test",
         new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         JTSTestBuilderFrame.instance().copyResultToTest();
       }
     });
     JButton btnClearResult = SwingUtil.createButton(AppIcons.CUT, "Clear Result",         
         new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         JTSTestBuilder.controller().clearResult();
       }
@@ -134,6 +137,7 @@ extends JPanel
 
     //-------------------------------------
     JButton btnInspect = SwingUtil.createButton(AppIcons.GEOM_INSPECT, "Inspect", new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         JTSTestBuilder.controller().inspectResult();
       }        

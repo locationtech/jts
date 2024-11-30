@@ -54,6 +54,7 @@ public class EdgeEndBundle
     this(null, e);
   }
 
+  @Override
   public Label getLabel() { return label; }
   public Iterator iterator() { return edgeEnds.iterator(); }
   public List getEdgeEnds() { return edgeEnds; }
@@ -69,6 +70,7 @@ public class EdgeEndBundle
    * edges in this EdgeStubBundle.  It essentially merges
    * the ON and side labels for each edge.  These labels must be compatible
    */
+  @Override
   public void computeLabel(BoundaryNodeRule boundaryNodeRule)
   {
     // create the label.  If any of the edges belong to areas,
@@ -177,6 +179,7 @@ public class EdgeEndBundle
   {
     Edge.updateIM(label, im);
   }
+  @Override
   public void print(PrintStream out)
   {
     out.println("EdgeEndBundle--> Label: " + label);

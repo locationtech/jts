@@ -40,6 +40,7 @@ public class NonRobustLineIntersector
   public NonRobustLineIntersector() {
   }
 
+  @Override
   public void computeIntersection(
       Coordinate p,
       Coordinate p1,
@@ -90,6 +91,7 @@ public class NonRobustLineIntersector
     result = POINT_INTERSECTION;
   }
 
+  @Override
   protected int computeIntersect(
       Coordinate p1,
       Coordinate p2,

@@ -56,6 +56,7 @@ public class TestListPanel extends JPanel {
         private final ImageIcon clearIcon = new ImageIcon(this.getClass().getResource("clear.gif"));
          */
         
+        @Override
         public Component getListCellRendererComponent(
             JList list,
             Object value,
@@ -146,6 +147,7 @@ public class TestListPanel extends JPanel {
     private void registerListSelectionListener() {
         list.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 
+            @Override
             public void valueChanged(ListSelectionEvent e) {
                 if (list.getSelectedValue() == null)
                     return;

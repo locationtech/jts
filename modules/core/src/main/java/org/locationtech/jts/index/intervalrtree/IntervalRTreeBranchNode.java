@@ -32,6 +32,7 @@ extends IntervalRTreeNode
 		max = Math.max(n1.max, n2.max);
 	}
 	
+	@Override
 	public void query(double queryMin, double queryMax, ItemVisitor visitor)
 	{
 		if (! intersects(queryMin, queryMax)) {

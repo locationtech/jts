@@ -70,6 +70,7 @@ public interface PointShapeFactory {
      *          the location of the point
      * @return a shape
      */
+    @Override
     public abstract Shape createPoint(Point2D point);
   }
 
@@ -99,6 +100,7 @@ public interface PointShapeFactory {
      *          the location of the point
      * @return a shape
      */
+    @Override
     public Shape createPoint(Point2D point) {
       Line2D.Double pointMarker =
         new Line2D.Double(
@@ -136,6 +138,7 @@ public interface PointShapeFactory {
      *          the location of the point
      * @return a shape
      */
+    @Override
     public Shape createPoint(Point2D point) {
       Rectangle2D.Double pointMarker =
         new Rectangle2D.Double(
@@ -176,6 +179,7 @@ public interface PointShapeFactory {
      *          the location of the point
      * @return a shape
      */
+    @Override
     public Shape createPoint(Point2D point) {
       GeneralPath path = new GeneralPath();
       path.moveTo((float) point.getX(), (float) (point.getY() - size/2));
@@ -219,6 +223,7 @@ public interface PointShapeFactory {
      *          the location of the point
      * @return a shape
      */
+    @Override
     public Shape createPoint(Point2D point) {
 
       GeneralPath path = new GeneralPath();
@@ -257,6 +262,7 @@ public interface PointShapeFactory {
      *          the location of the point
      * @return a shape
      */
+    @Override
     public Shape createPoint(Point2D point) {
       Ellipse2D.Double pointMarker =
         new Ellipse2D.Double(
@@ -297,6 +303,7 @@ public interface PointShapeFactory {
      *          the location of the point
      * @return a shape
      */
+    @Override
     public Shape createPoint(Point2D point) {
 
       float x1 = (float) (point.getX() - size/2f);
@@ -354,6 +361,7 @@ public interface PointShapeFactory {
      *          the location of the point
      * @return a shape
      */
+    @Override
     public Shape createPoint(Point2D point) {
       GeneralPath path = new GeneralPath();
       path.moveTo((float) (point.getX()), (float) (point.getY() - size * 1/8));

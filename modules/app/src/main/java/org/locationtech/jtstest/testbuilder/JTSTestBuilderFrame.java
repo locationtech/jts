@@ -105,6 +105,7 @@ public class JTSTestBuilderFrame extends JFrame
       jbInit();
       testCasePanel.cbRevealTopo.addActionListener(
           new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
               displayRevealTopo();
             }
@@ -112,6 +113,7 @@ public class JTSTestBuilderFrame extends JFrame
       //testCasePanel.editCtlPanel.stretchDist
       testCasePanel.spStretchDist
       .addChangeListener(new javax.swing.event.ChangeListener() {
+        @Override
         public void stateChanged(javax.swing.event.ChangeEvent e) {
           displayRevealTopo();
         }
@@ -128,6 +130,7 @@ public class JTSTestBuilderFrame extends JFrame
 
   private void initFileDrop(Component comp) {
     new FileDrop(comp, new FileDrop.Listener() {
+      @Override
       public void filesDropped(java.io.File[] files) {
         try {
           openXmlFilesAndDirectories(files);
@@ -196,6 +199,7 @@ public class JTSTestBuilderFrame extends JFrame
     
     model.getGeometryEditModel().addGeometryListener(
         new org.locationtech.jtstest.testbuilder.model.GeometryListener() {
+          @Override
           public void geometryChanged(GeometryEvent e) {
             model_geometryChanged(e);
           }
@@ -292,6 +296,7 @@ public class JTSTestBuilderFrame extends JFrame
   /**
    *  Overridden so we can exit when window is closed
    */
+  @Override
   protected void processWindowEvent(WindowEvent e) {
     super.processWindowEvent(e);
     if (e.getID() == WindowEvent.WINDOW_CLOSING) {
@@ -450,6 +455,7 @@ public class JTSTestBuilderFrame extends JFrame
     inputTabbedPane.add(commandPanel,  AppStrings.TAB_LABEL_COMMAND);
     inputTabbedPane.setSelectedIndex(1);
     inputTabbedPane.addChangeListener(new ChangeListener() {
+      @Override
       public void stateChanged(ChangeEvent e)
       {
         updateStatsPanelIfVisible();

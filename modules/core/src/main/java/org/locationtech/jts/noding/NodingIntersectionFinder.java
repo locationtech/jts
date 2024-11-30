@@ -245,6 +245,7 @@ public class NodingIntersectionFinder
    * this call for segment pairs which they have determined do not intersect
    * (e.g. by an disjoint envelope test).
    */
+  @Override
   public void processIntersections(
       SegmentString e0,  int segIndex0,
       SegmentString e1,  int segIndex1
@@ -378,6 +379,7 @@ public class NodingIntersectionFinder
   /**
    * 
    */
+  @Override
   public boolean isDone()
   { 
   	if (findAllIntersections) return false;

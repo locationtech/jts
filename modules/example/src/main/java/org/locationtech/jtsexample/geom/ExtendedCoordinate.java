@@ -53,6 +53,7 @@ public class ExtendedCoordinate
     m = coord.m;
   }
   
+  @Override
   public ExtendedCoordinate copy() {
     return new ExtendedCoordinate(this);
   }
@@ -62,7 +63,9 @@ public class ExtendedCoordinate
    * The m variable holds a measure value for linear referencing
    */
   private double m;
+  @Override
   public double getM() { return m; }
+  @Override
   public void setM(double m) { this.m = m; }
 
   @Override

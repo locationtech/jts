@@ -52,6 +52,7 @@ extends PerformanceTestCase
     setRunIterations(N_ITER);
   }
 
+  @Override
   public void setUp()
   {
     System.out.println("OverlaySR perf test");
@@ -63,6 +64,7 @@ extends PerformanceTestCase
     System.out.println("Precision scale: " + PREC_SCALE_FACTOR);
   }
   
+  @Override
   public void startRun(int npts)
   {
     iter = 0;

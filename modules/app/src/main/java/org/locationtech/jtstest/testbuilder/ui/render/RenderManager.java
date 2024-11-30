@@ -35,6 +35,7 @@ public class RenderManager
 	
 	private Timer repaintTimer = new Timer(100, new ActionListener() 
 	{
+		@Override
 		public void actionPerformed(ActionEvent e) {
 			if (worker.isRendering()) {
 				paintPanel();
@@ -137,6 +138,7 @@ class RendererSwingWorker extends SwingWorker
 		this.image = image;
 	}
 	
+  @Override
   public Object construct()
   {
   	isRendering = true;
