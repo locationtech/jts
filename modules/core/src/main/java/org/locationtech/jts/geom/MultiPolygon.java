@@ -65,15 +65,15 @@ public class MultiPolygon
   }
 
   public int getDimension() {
-    return 2;
+    return Dimension.A;
   }
 
   public boolean hasDimension(int dim) {
-    return dim == 2;
+    return dim == Dimension.A;
   }
   
   public int getBoundaryDimension() {
-    return 1;
+    return Dimension.L;
   }
 
   public String getGeometryType() {

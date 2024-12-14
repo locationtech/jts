@@ -51,11 +51,11 @@ public class MultiPoint
   }
 
   public int getDimension() {
-    return 0;
+    return Dimension.P;
   }
 
   public boolean hasDimension(int dim) {
-    return dim == 0;
+    return dim == Dimension.P;
   }
   
   public int getBoundaryDimension() {
