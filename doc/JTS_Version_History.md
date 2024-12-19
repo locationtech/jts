@@ -34,6 +34,7 @@ Distributions for older JTS versions can be obtained at the
 ### Performance Improvements
 
 * Fix RelateNG to cache in prepared A-L cases (#1099)
+* Add `GeometryCollection` dimension cache (#1103)
 
 # Version 1.20.0
 
