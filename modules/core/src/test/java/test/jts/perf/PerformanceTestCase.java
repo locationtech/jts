@@ -47,6 +47,7 @@ public abstract class PerformanceTestCase
   
   /**
    * Sets the size(s) for the runs of the test.
+   * The default is 1 iteration.
    * 
    * @param runSize a list of the sizes for the test runs
    */
