@@ -33,8 +33,7 @@ class GeometryCollectionDimension {
     Iterator geomi = new GeometryCollectionIterator(coll);
     while (geomi.hasNext()) {
       Geometry elem = (Geometry) geomi.next();
-      if (elem.isEmpty()) 
-        continue;
+      //-- empty elements still determine dimension, to match previous semantics
       if (elem instanceof Point) {
         hasP = true;
         if (dimension < Dimension.P) dimension = Dimension.P;
