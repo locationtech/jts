@@ -31,6 +31,7 @@ public class GeometryCollection extends Geometry {
    *  Internal representation of this <code>GeometryCollection</code>.
    */
   protected Geometry[] geometries;
+  private GeometryCollectionDimension geomCollDim;
 
   /** @deprecated Use GeometryFactory instead */
   public GeometryCollection(Geometry[] geometries, PrecisionModel precisionModel, int SRID) {
@@ -97,19 +98,26 @@ public class GeometryCollection extends Geometry {
   }
 
   public int getDimension() {
+    /*
     int dimension = Dimension.FALSE;
     for (int i = 0; i < geometries.length; i++) {
       dimension = Math.max(dimension, geometries[i].getDimension());
     }
     return dimension;
+    //*/
+ //*
+    if (geomCollDim == null) {
+      geomCollDim = new GeometryCollectionDimension(this);
+    }
+    return geomCollDim.getDimension();
+    //*/
   }
 
   public boolean hasDimension(int dim) {
-    for (int i = 0; i < geometries.length; i++) {
-      if (geometries[i].hasDimension(dim))
-        return true;
+    if (geomCollDim == null) {
+      geomCollDim = new GeometryCollectionDimension(this);
     }
-    return false;
+    return geomCollDim.hasDimension(dim);
   }
   
   public int getBoundaryDimension() {
