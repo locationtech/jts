@@ -33,51 +33,59 @@ public class DistanceFunctions {
     return a.getFactory().createLineString(pts);
   }
 
-  public static double discreteFrechetfDistance(Geometry a, Geometry b)  
+  public static double frechetDistance(Geometry a, Geometry b)  
   {   
     return DiscreteFrechetDistance.distance(a, b);
   }
 
-  public static Geometry discreteFrechetfDistanceLine(Geometry a, Geometry b)  
+  public static Geometry frechetDistanceLine(Geometry a, Geometry b)  
   {   
     DiscreteFrechetDistance dist = new DiscreteFrechetDistance(a, b);
     return a.getFactory().createLineString(dist.getCoordinates());
   }
 
-  public static Geometry discreteHausdorffDistanceLine(Geometry a, Geometry b)  
+  public static double hausdorffDistance(Geometry a, Geometry b)  
+  {   
+    DiscreteHausdorffDistance dist = new DiscreteHausdorffDistance(a, b);
+    return dist.distance();
+  }
+  
+  public static Geometry hausdorffDistanceLine(Geometry a, Geometry b)  
   {   
     DiscreteHausdorffDistance dist = new DiscreteHausdorffDistance(a, b);
     dist.distance();
     return a.getFactory().createLineString(dist.getCoordinates());
   }
 
-	public static Geometry densifiedDiscreteHausdorffDistanceLine(Geometry a, Geometry b, double frac)	
+	public static Geometry hausdorffDistanceLineDensified(Geometry a, Geometry b, double frac)	
 	{		
-    DiscreteHausdorffDistance hausDist = new DiscreteHausdorffDistance(a, b);
-    hausDist.setDensifyFraction(frac);
-    hausDist.distance();
-    return a.getFactory().createLineString(hausDist.getCoordinates());
+    DiscreteHausdorffDistance dist = new DiscreteHausdorffDistance(a, b);
+    dist.setDensifyFraction(frac);
+    dist.distance();
+    return a.getFactory().createLineString(dist.getCoordinates());
 	}
 
-	public static Geometry discreteOrientedHausdorffDistanceLine(Geometry a, Geometry b)	
+	public static Geometry orientedHausdorffDistanceLine(Geometry a, Geometry b)	
 	{		
     DiscreteHausdorffDistance dist = new DiscreteHausdorffDistance(a, b);
     dist.orientedDistance();
     return a.getFactory().createLineString(dist.getCoordinates());
 	}
 
-	public static double discreteHausdorffDistance(Geometry a, Geometry b)	
-	{		
-    DiscreteHausdorffDistance dist = new DiscreteHausdorffDistance(a, b);
-    return dist.distance();
-	}
-	
-	public static double discreteOrientedHausdorffDistance(Geometry a, Geometry b)	
+	public static double orientedHausdorffDistance(Geometry a, Geometry b)	
 	{		
     DiscreteHausdorffDistance dist = new DiscreteHausdorffDistance(a, b);
     return dist.orientedDistance();
 	}
 	
+  public static Geometry orientedHausdorffDistanceLineDensified(Geometry a, Geometry b, double frac)  
+  {   
+    DiscreteHausdorffDistance dist = new DiscreteHausdorffDistance(a, b);
+    dist.setDensifyFraction(frac);
+    dist.orientedDistance();
+    return a.getFactory().createLineString(dist.getCoordinates());
+  }
+
   public static double distanceIndexed(Geometry a, Geometry b) {
     return IndexedFacetDistance.distance(a, b);
   }
