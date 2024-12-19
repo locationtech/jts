@@ -373,6 +373,15 @@ public class OffsetCurveTest extends GeometryTestCase {
     );
   }
   
+  // See https://github.com/libgeos/geos/issues/1037
+  public void testMitreJoinNegDistance() {
+    checkOffsetCurve(
+        "LINESTRING (0 0, 10 0, 10 10, 0 10, 0 0)", 
+        -1, 0, BufferParameters.JOIN_MITRE, 5,
+        "LINESTRING (-1 -1, 11 -1, 11 11, -1 11, -1 -1)"
+    );
+  }
+  
   //=======================================
   
   private static final double EQUALS_TOL = 0.05;
