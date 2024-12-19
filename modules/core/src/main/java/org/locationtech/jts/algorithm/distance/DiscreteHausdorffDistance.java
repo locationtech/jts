@@ -17,6 +17,7 @@ import org.locationtech.jts.geom.CoordinateFilter;
 import org.locationtech.jts.geom.CoordinateSequence;
 import org.locationtech.jts.geom.CoordinateSequenceFilter;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.LineString;
 
 /**
  * An algorithm for computing a distance metric
@@ -26,7 +27,8 @@ import org.locationtech.jts.geom.Geometry;
  * for one of the geometries.
  * The points can be either the vertices of the geometries (the default), 
  * or the geometries with line segments densified by a given fraction.
- * Also determines two points of the Geometries which are separated by the computed distance.
+ * The class can also determine two points of the geometries 
+ * which are separated by the computed distance.
 * <p>
  * This algorithm is an approximation to the standard Hausdorff distance.
  * Specifically, 
@@ -53,20 +55,139 @@ import org.locationtech.jts.geom.Geometry;
  *   DHD(A, B) = 22.360679774997898
  *   HD(A, B) ~= 47.8
  * </pre>
+ * The class can compute the oriented Hausdorff distance from A to B.
+ * This computes the distance to the farthest point on A from B.
+ * A use case is to test whether a geometry A lies completely within a given 
+ * distance of another one B.
+ * This is more efficient than testing inclusion in a buffer of B.
+ * 
+ * @see DiscreteFrechetDistance
+ * 
  */
 public class DiscreteHausdorffDistance
 {
+  /**
+   * Computes the Hausdorff distance between two geometries.
+   * 
+   * @param g0 the first input
+   * @param g1 the second input
+   * @return the Hausdorff distance between g0 and g1
+   */
   public static double distance(Geometry g0, Geometry g1)
   {
     DiscreteHausdorffDistance dist = new DiscreteHausdorffDistance(g0, g1);
     return dist.distance();
   }
 
+  /**
+   * Computes the Hausdorff distance between two geometries,
+   * densified by the given fraction.
+   * 
+   * @param g0 the first input
+   * @param g1 the second input
+   * @param densifyFrac the densification fraction
+   * @return the Hausdorff distance between g0 and g1
+   */
   public static double distance(Geometry g0, Geometry g1, double densifyFrac)
   {
     DiscreteHausdorffDistance dist = new DiscreteHausdorffDistance(g0, g1);
     dist.setDensifyFraction(densifyFrac);
     return dist.distance();
+  }
+
+  /**
+   * Computes a line containing points indicating 
+   * the Hausdorff distance between two geometries.
+   * 
+   * @param g0 the first input
+   * @param g1 the second input
+   * @return a 2-point line indicating the distance
+   */
+  public static LineString distanceLine(Geometry g0, Geometry g1)
+  {
+    DiscreteHausdorffDistance dist = new DiscreteHausdorffDistance(g0, g1);
+    dist.distance();
+    return g0.getFactory().createLineString(dist.getCoordinates());  
+  }
+
+  /**
+   * Computes a line containing points indicating 
+   * the Hausdorff distance between two geometries,
+   * densified by the given fraction.
+   * 
+   * @param g0 the first input
+   * @param g1 the second input
+   * @param densifyFrac the densification fraction
+   * @return a 2-point line indicating the distance
+   */
+  public static LineString distanceLine(Geometry g0, Geometry g1, double densifyFrac)
+  {
+    DiscreteHausdorffDistance dist = new DiscreteHausdorffDistance(g0, g1);
+    dist.setDensifyFraction(densifyFrac);
+    dist.distance();
+    return g0.getFactory().createLineString(dist.getCoordinates());  
+  }
+
+  /**
+   * Computes the oriented Hausdorff distance from one geometry to another.
+   * 
+   * @param g0 the first input
+   * @param g1 the second input
+   * @return the oriented Hausdorff distance from g0 to g1
+   */
+  public static double orientedDistance(Geometry g0, Geometry g1)
+  {
+    DiscreteHausdorffDistance dist = new DiscreteHausdorffDistance(g0, g1);
+    return dist.orientedDistance();
+  }
+
+  /**
+   * Computes the oriented Hausdorff distance from one geometry to another,
+   * densified by the given fraction.
+   * 
+   * @param g0 the first input
+   * @param g1 the second input
+   * @param densifyFrac the densification fraction
+   * @return the oriented Hausdorff distance from g0 to g1
+   */
+  public static double orientedDistance(Geometry g0, Geometry g1, double densifyFrac)
+  {
+    DiscreteHausdorffDistance dist = new DiscreteHausdorffDistance(g0, g1);
+    dist.setDensifyFraction(densifyFrac);
+    return dist.orientedDistance();
+  }
+
+  /**
+   * Computes a line containing points indicating 
+   * the computed oriented Hausdorff distance from one geometry to another.
+   * 
+   * @param g0 the first input
+   * @param g1 the second input
+   * @return a 2-point line indicating the distance
+   */
+  public static LineString orientedDistanceLine(Geometry g0, Geometry g1)
+  {
+    DiscreteHausdorffDistance dist = new DiscreteHausdorffDistance(g0, g1);
+    dist.orientedDistance();
+    return g0.getFactory().createLineString(dist.getCoordinates());  
+  }
+
+  /**
+   * Computes a line containing points indicating 
+   * the computed oriented Hausdorff distance from one geometry to another,
+   * densified by the given fraction.
+   *
+   * @param g0 the first input
+   * @param g1 the second input
+   * @param densifyFrac the densification fraction
+   * @return a 2-point line indicating the distance
+   */
+  public static LineString orientedDistanceLine(Geometry g0, Geometry g1, double densifyFrac)
+  {
+    DiscreteHausdorffDistance dist = new DiscreteHausdorffDistance(g0, g1);
+    dist.setDensifyFraction(densifyFrac);
+    dist.orientedDistance();
+    return g0.getFactory().createLineString(dist.getCoordinates());  
   }
 
   private Geometry g0;
@@ -90,7 +211,7 @@ public class DiscreteHausdorffDistance
    * subsegments, whose fraction of the total length is closest
    * to the given fraction.
    * 
-   * @param densifyFrac
+   * @param densifyFrac a fraction in range (0, 1]
    */
   public void setDensifyFraction(double densifyFrac)
   {
@@ -101,12 +222,22 @@ public class DiscreteHausdorffDistance
     this.densifyFrac = densifyFrac;
   }
   
+  /** 
+   * Computes the Hausdorff distance between A and B.
+   * 
+   * @return the Hausdorff distance
+   */
   public double distance() 
   { 
     compute(g0, g1);
     return ptDist.getDistance(); 
   }
 
+  /** 
+   * Computes the oriented Hausdorff distance from A to B.
+   * 
+   * @return the oriented Hausdorff distance
+   */
   public double orientedDistance() 
   { 
     computeOrientedDistance(g0, g1, ptDist);

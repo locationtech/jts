@@ -47,6 +47,8 @@ import org.locationtech.jts.geom.Geometry;
  * @see <a href="https://hal.archives-ouvertes.fr/hal-02110055/document">Distance discrète de Fréchet optimisée</a>
  * @see <a href="https://towardsdatascience.com/fast-discrete-fr%C3%A9chet-distance-d6b422a8fb77">
  *   Fast Discrete Fréchet Distance</a>
+ *   
+ * @see DiscreteHausdorffDistance
  */
 public class DiscreteFrechetDistance {
 
