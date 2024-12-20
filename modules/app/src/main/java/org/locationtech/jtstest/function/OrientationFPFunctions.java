@@ -27,15 +27,16 @@ public class OrientationFPFunctions {
     return index;
   }
 
-  private static int orientationIndex(Coordinate p1, Coordinate p2, Coordinate q)
-  {
-        double dx1 = p2.x - p1.x;
-        double dy1 = p2.y - p1.y;
-        double dx2 = q.x - p2.x;
-        double dy2 = q.y - p2.y;
-        double det = dx1*dy2 - dx2*dy1;
-        if (det > 0.0) return 1;
-        if (det < 0.0) return -1;
-        return 0;
+  private static int orientationIndex(Coordinate p1, Coordinate p2, Coordinate q) {
+    double dx1 = p2.x - p1.x;
+    double dy1 = p2.y - p1.y;
+    double dx2 = q.x - p2.x;
+    double dy2 = q.y - p2.y;
+    double det = dx1 * dy2 - dx2 * dy1;
+    if (det > 0.0)
+      return 1;
+    if (det < 0.0)
+      return -1;
+    return 0;
   }
 }
