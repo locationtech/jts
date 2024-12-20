@@ -50,9 +50,11 @@ class GeometryCollectionDimension {
   }
   
   public boolean hasDimension(int dim) {
-    if (dim == Dimension.A && hasA) return true;
-    if (dim == Dimension.L && hasL) return true;
-    if (dim == Dimension.P && hasP) return true;
+    switch (dim) {
+    case Dimension.A: return hasA;
+    case Dimension.L: return hasL;
+    case Dimension.P: return hasP;
+    }
     return false;
   }
 
