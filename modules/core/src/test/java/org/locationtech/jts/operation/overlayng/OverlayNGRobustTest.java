@@ -14,6 +14,7 @@ package org.locationtech.jts.operation.overlayng;
 import java.util.List;
 
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.noding.SegmentNode;
 
 import junit.textui.TestRunner;
@@ -60,6 +61,23 @@ public class OverlayNGRobustTest extends GeometryTestCase {
     Geometry a = read("POLYGON ((654948.3853299792 1794977.105854025, 655016.3812220972 1794939.918901604, 655016.2022581929 1794940.1099794197, 655014.9264068712 1794941.4254068714, 655014.7408834674 1794941.6101225375, 654948.3853299792 1794977.105854025))");
     Geometry b = read("POLYGON ((655103.6628454948 1794805.456674405, 655016.20226 1794940.10998, 655014.8317182435 1794941.5196832407, 655014.8295602322 1794941.5218318563, 655014.740883467 1794941.610122538, 655016.6029214273 1794938.7590508445, 655103.6628454948 1794805.456674405))");
     checkOverlaySuccess(a, b, OverlayNG.INTERSECTION);
+  }
+  
+  /**
+   * See https://github.com/locationtech/jts/issues/288
+   */
+  public void testUnionFixed() {
+    final String wkt1 =
+        "POLYGON ((-25 700, -25 327.5217935613, -24.9999982443 71.51813717395, 2000 70, -25 700))";
+    final String wkt2 =
+        "POLYGON ((-24.9999998349 674.30377216845, -25 674.30377216845, -24.99999893265 171.8884408023, -24.99999871375 139.9692190221, -25 139.9692190221, -25 20, 900 800, -25 700, -24.9999998349 674.30377216845))";
+
+    final Geometry geom1 = read(wkt1);
+    final Geometry geom2 = read(wkt2);
+
+    PrecisionModel pm = new PrecisionModel(2E10);
+    //-- no TopologyException thrown with fixed precision
+    OverlayNG.overlay(geom1, geom2, OverlayNG.UNION, pm);
   }
   
   // MD 2020-09-14 There is no known test case that requires Snap-Rounding to succeed.
@@ -126,4 +144,5 @@ public class OverlayNGRobustTest extends GeometryTestCase {
     }
     checkEqual(expected, result);
   }
+  
 }
