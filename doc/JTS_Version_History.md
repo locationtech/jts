@@ -25,6 +25,8 @@ Distributions for older JTS versions can be obtained at the
 
 ### Functionality Improvements
 
+* Improve `DouglasPeuckerSimplifier` to preserve XYZM coordinates (#1045)
+
 ### Bug Fixes
 
 * Fix `ConcaveHullOfPolygons` nested shell handling (#1081)
