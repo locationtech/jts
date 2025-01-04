@@ -28,8 +28,6 @@ import org.locationtech.jts.geom.Location;
  */
 class InputGeometry {
   
-  //private static final PointLocator ptLocator = new PointLocator();
-
   private Geometry[] geom = new Geometry[2];
   private PointOnGeometryLocator ptLocatorA;
   private PointOnGeometryLocator ptLocatorB;
@@ -118,11 +116,7 @@ class InputGeometry {
     
     if ( isCollapsed[geomIndex]) 
       return Location.EXTERIOR;
-
     
-    //return ptLocator.locate(pt, geom[geomIndex]);
-    
-    //*
     // this check is required because IndexedPointInAreaLocator can't handle empty polygons
     if (getGeometry(geomIndex).isEmpty()  
         || isCollapsed[geomIndex]) 
@@ -130,7 +124,6 @@ class InputGeometry {
     
     PointOnGeometryLocator ptLocator = getLocator(geomIndex);
     return ptLocator.locate(pt);
-    //*/
   }
 
   private PointOnGeometryLocator getLocator(int geomIndex) {
@@ -149,6 +142,5 @@ class InputGeometry {
   public void setCollapsed(int geomIndex, boolean isGeomCollapsed) {
     isCollapsed[geomIndex] = isGeomCollapsed;
   }
-
 
 }
