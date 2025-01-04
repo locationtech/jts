@@ -38,10 +38,11 @@ import org.locationtech.jts.util.Assert;
  * Input semantics are:
  * <ul>
  * <li>Duplicates are removed from Point output 
- * <li>Non-point output is rounded and noded using the given precision model
+ * <li>Non-point input is rounded and noded using the given precision model
  * </ul>
  * Output semantics are:
  * <ul>
+ * <li>Points are rounded to the precision model (if present)
  * <ii>An empty result is an empty atomic geometry 
  *     with dimension determined by the inputs and the operation,
  *     as per overlay semantics<li>
