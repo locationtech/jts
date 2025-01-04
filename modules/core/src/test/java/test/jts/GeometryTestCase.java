@@ -38,6 +38,7 @@ public abstract class GeometryTestCase extends TestCase{
 
   private static final String CHECK_EQUAL_FAIL = "FAIL - Expected = %s -- Actual = %s\n";
   private static final String CHECK_EQUAL_FAIL_MSG = "FAIL - %s: Expected = %s -- Actual = %s\n";
+  private static final String CHECK_NO_AlIAS_FAIL = "FAIL - geometries have aliased coordinates\n";
 
   final GeometryFactory geomFactory;
   
@@ -225,6 +226,22 @@ public abstract class GeometryTestCase extends TestCase{
     assertEquals(message + " Y", expected.getY(), actual.getY(), tolerance);
   }
  
+  protected void checkNoAlias(Geometry geom, Geometry geom2) {
+    Geometry geom2Copy = geom2.copy();
+    geom.apply(new CoordinateFilter() {
+
+      @Override
+      public void filter(Coordinate coord) {
+        coord.x = coord.x + 1;
+      }
+      
+    });
+    boolean equal = geom2.equalsExact(geom2Copy);
+    if (! equal) {
+      System.out.println(CHECK_NO_AlIAS_FAIL);
+      fail();
+    }
+  }
   
   /**
    * Reads a {@link Geometry} from a WKT string using a custom {@link GeometryFactory}.

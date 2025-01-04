@@ -13,6 +13,7 @@
 package org.locationtech.jts.simplify;
 
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateArrays;
 import org.locationtech.jts.geom.CoordinateList;
 import org.locationtech.jts.geom.Triangle;
 
@@ -51,9 +52,9 @@ class VWLineSimplifier
     Coordinate[] simp = vwLine.getCoordinates();
     // ensure computed value is a valid line
     if (simp.length < 2) {
-      return new Coordinate[] { simp[0], new Coordinate(simp[0]) };
+      return new Coordinate[] { simp[0].copy(), simp[0].copy() };
     }
-    return simp;
+    return CoordinateArrays.copyDeep(simp);
   }
 
   private double simplifyVertex(VWLineSimplifier.VWVertex vwLine)

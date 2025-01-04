@@ -12,18 +12,20 @@
 
 package org.locationtech.jts.simplify;
 
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateFilter;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
 
-import junit.framework.TestCase;
+import test.jts.GeometryTestCase;
 
 
 /**
  * @version 1.7
  */
 public class VWSimplifierTest
-    extends TestCase
+    extends GeometryTestCase
 {
   public VWSimplifierTest(String name) {
     super(name);
@@ -67,6 +69,11 @@ public class VWSimplifierTest
         .test();
   }
 
+  public void testNoAlias() {
+    Geometry geom = read("LINESTRING (1 1, 3 6, 6 5, 8 6, 9 1)");
+    Geometry result = VWSimplifier.simplify(geom, 2);
+    checkNoAlias(geom, result);
+  }
  
 }
 
