@@ -202,9 +202,11 @@ public class CoordinateList
     }
   }
 
-  /** Returns the Coordinates in this collection.
+  /** 
+   * Returns the Coordinates in this list as an array.
+   * Coordinates are not copied
    *
-   * @return the coordinates
+   * @return the coordinate array
    */
   public Coordinate[] toCoordinateArray()
   {
