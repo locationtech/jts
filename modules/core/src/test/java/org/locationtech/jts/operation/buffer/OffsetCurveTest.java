@@ -347,7 +347,7 @@ public class OffsetCurveTest extends GeometryTestCase {
   }
   
   // See https://trac.osgeo.org/postgis/ticket/4072
-  public void testMitreJoinError() {
+  public void testJoinMitreError() {
     checkOffsetCurve(
         "LINESTRING(362194.505 5649993.044,362197.451 5649994.125,362194.624 5650001.876,362189.684 5650000.114,362192.542 5649992.324,362194.505 5649993.044)", 
         -0.045, 0, BufferParameters.JOIN_MITRE, -1,
@@ -356,7 +356,7 @@ public class OffsetCurveTest extends GeometryTestCase {
   }
   
   // See https://trac.osgeo.org/postgis/ticket/4072
-  public void testMitreJoinErrorSimple() {
+  public void testJoinMitreErrorSimple() {
     checkOffsetCurve(
         "LINESTRING (4.821 0.72, 7.767 1.801, 4.94 9.552, 0 7.79, 2.858 0, 4.821 0.72)", 
         -0.045, 0, BufferParameters.JOIN_MITRE, -1,
@@ -365,7 +365,7 @@ public class OffsetCurveTest extends GeometryTestCase {
   }
   
   // See https://trac.osgeo.org/postgis/ticket/3279
-  public void testMitreJoinSingleLine() {
+  public void testJoinMitreSingleLine() {
     checkOffsetCurve(
         "LINESTRING (0.39 -0.02, 0.4650008997915482 -0.02, 0.4667128891457749 -0.0202500016082272, 0.4683515425280024 -0.0210000000000019, 0.4699159706879993 -0.0222499999999996, 0.4714061701120011 -0.0240000000000018, 0.4929087886040002 -0.0535958153351002, 0.4968358395870001 -0.0507426457862002, 0.4774061701119963 -0.0239999999999952, 0.476353470688 -0.0222500000000011, 0.4761015425280001 -0.0210000000000007, 0.4766503813740676 -0.0202500058185111, 0.4779990890331232 -0.02, 0.6189999999999996 -0.02, 0.619 -0.0700000000000002, 0.634 -0.0700000000000002, 0.6339999999999998 -0.02, 0.65 -0.02)", 
         -0.002, 0, BufferParameters.JOIN_MITRE, -1,
@@ -374,7 +374,7 @@ public class OffsetCurveTest extends GeometryTestCase {
   }
   
   // See https://github.com/libgeos/geos/issues/1037
-  public void testMitreJoinNegDistance() {
+  public void testJoinMitreNegDistance() {
     checkOffsetCurve(
         "LINESTRING (0 0, 10 0, 10 10, 0 10, 0 0)", 
         -1, 0, BufferParameters.JOIN_MITRE, 5,
@@ -382,7 +382,7 @@ public class OffsetCurveTest extends GeometryTestCase {
     );
   }
   
-  public void testPolygonMitreJoin() {
+  public void testPolygonJoinMitre() {
     checkOffsetCurve(
         "POLYGON ((1 1, 1 7, 5 4, 8 8, 8 1, 1 1))", 
         1, 0, BufferParameters.JOIN_MITRE, 5,
