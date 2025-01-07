@@ -208,25 +208,35 @@ public class OffsetCurve {
       public Geometry map(Geometry geom) {
         if (geom instanceof Point) return null;
         if (geom instanceof Polygon ) {
-          return toLineString(geom.buffer(distance).getBoundary());
+          return computePolygonCurve((Polygon) geom, distance);
         } 
         return computeCurve((LineString) geom, distance);
       }
-
-      /**
-       * Force LinearRings to be LineStrings.
-       * 
-       * @param geom a geometry which may be a LinearRing
-       * @return a geometry which will be a LineString or MultiLineString
-       */
-      private Geometry toLineString(Geometry geom) {
-        if (geom instanceof LinearRing) {
-          LinearRing ring = (LinearRing) geom;
-          return geom.getFactory().createLineString(ring.getCoordinateSequence());
-        }
-        return geom;
-      }
     });
+  }
+  
+  private Geometry computePolygonCurve(Polygon poly, double distance) {
+    Geometry buffer;
+    if (bufferParams == null)
+      buffer = BufferOp.bufferOp(poly, distance);
+    else {
+      buffer = BufferOp.bufferOp(poly, distance, bufferParams);
+    }
+    return toLineString(buffer.getBoundary());
+  }
+  
+  /**
+   * Force LinearRings to be LineStrings.
+   * 
+   * @param geom a linear geometry which may be a LinearRing
+   * @return a geometry which if linear is a LineString or MultiLineString
+   */
+  private static Geometry toLineString(Geometry geom) {
+    if (geom instanceof LinearRing) {
+      LinearRing ring = (LinearRing) geom;
+      return geom.getFactory().createLineString(ring.getCoordinateSequence());
+    }
+    return geom;
   }
   
   /**

@@ -382,6 +382,21 @@ public class OffsetCurveTest extends GeometryTestCase {
     );
   }
   
+  public void testPolygonMitreJoin() {
+    checkOffsetCurve(
+        "POLYGON ((1 1, 1 7, 5 4, 8 8, 8 1, 1 1))", 
+        1, 0, BufferParameters.JOIN_MITRE, 5,
+        "LINESTRING (0 0, 0 9, 4.8 5.4, 9 11, 9 0, 0 0)",
+        0.0001
+    );
+    checkOffsetCurve(
+        "POLYGON ((1 1, 1 7, 5 4, 8 8, 8 1, 1 1))", 
+        -1, 0, BufferParameters.JOIN_MITRE, 5,
+        "LINESTRING (2 2, 2 5, 5.2 2.6, 7 5, 7 2, 2 2)",
+        0.0001
+    );
+
+  }
   //=======================================
   
   private static final double EQUALS_TOL = 0.05;
