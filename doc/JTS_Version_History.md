@@ -26,6 +26,7 @@ Distributions for older JTS versions can be obtained at the
 ### Functionality Improvements
 
 * Improve `DouglasPeuckerSimplifier` to preserve XYZM coordinates (#1045)
+* Improve `OffsetCurve` to support miter joins for polygonal input (#1109)
 
 ### Bug Fixes
 
