@@ -200,6 +200,7 @@ public class ConvexHullTest extends GeometryTestCase {
     public ConvexHullEx(Geometry geometry) {
       super(geometry);
     }
+    @Override
     protected Coordinate[] toCoordinateArray(Stack stack) {
       return super.toCoordinateArray(stack);
     }

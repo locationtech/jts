@@ -55,6 +55,7 @@ public class SnappingIntersectionAdder
    * this call for segment pairs which they have determined do not intersect
    * (e.g. by an disjoint envelope test).
    */
+  @Override
   public void processIntersections(
       SegmentString seg0,  int segIndex0,
       SegmentString seg1,  int segIndex1
@@ -165,6 +166,7 @@ public class SnappingIntersectionAdder
    * 
    * @return false always
    */
+  @Override
   public boolean isDone() { return false; }
 
 }

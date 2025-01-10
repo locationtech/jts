@@ -79,6 +79,7 @@ public class VertexStyle  implements Style
     stroke = new BasicStroke(strokeSize);
   }
 
+  @Override
   public void paint(Geometry geom, Viewport viewport, Graphics2D g)
   {
     g.setPaint(color);

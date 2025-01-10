@@ -458,6 +458,7 @@ public class OffsetCurve {
       return bufferRingMinIndex;
     }
     
+    @Override
     public void select(MonotoneChain mc, int segIndex)
     {
       /**

@@ -108,6 +108,7 @@ public class SimpleGeometryPrecisionReducer
   private class PrecisionReducerCoordinateOperation
       extends GeometryEditor.CoordinateOperation
   {
+    @Override
     public Coordinate[] edit(Coordinate[] coordinates, Geometry geom)
     {
       if (coordinates.length == 0) return null;

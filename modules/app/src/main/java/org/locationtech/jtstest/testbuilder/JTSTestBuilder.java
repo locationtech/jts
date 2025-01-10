@@ -150,6 +150,7 @@ public class JTSTestBuilder
      * Invoke on Swing thread to pass Java security requirements
      */
     javax.swing.SwingUtilities.invokeAndWait(new Runnable() {
+      @Override
       public void run()
       {
         try {

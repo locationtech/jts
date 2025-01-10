@@ -704,6 +704,7 @@ public class LineSegment
    *@return    a negative integer, zero, or a positive integer as this <code>LineSegment</code>
    *      is less than, equal to, or greater than the specified <code>LineSegment</code>
    */
+  @Override
   public int compareTo(Object o) {
     LineSegment other = (LineSegment) o;
     int comp0 = p0.compareTo(other.p0);

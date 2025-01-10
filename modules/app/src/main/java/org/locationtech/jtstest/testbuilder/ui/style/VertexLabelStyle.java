@@ -67,6 +67,7 @@ public class VertexLabelStyle  implements Style
   private void init() {
   }
 
+  @Override
   public void paint(Geometry geom, Viewport viewport, Graphics2D g)
   {
     g.setPaint(color);

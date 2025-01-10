@@ -45,6 +45,7 @@ public class OverlayAreaGridsPerfTest extends PerformanceTestCase
     setRunIterations(1);
   }
 
+  @Override
   public void startRun(int size) throws IOException, ParseException
   {
     //geom = createSineStar(10_000, 0);

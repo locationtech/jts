@@ -46,6 +46,7 @@ public class PointHandler implements ShapeHandler{
         myShapeType = 1; //2d
     }
     
+    @Override
     public Geometry read(EndianDataInputStream file,GeometryFactory geometryFactory,int contentLength) throws IOException,InvalidShapefileException
     {
       //  file.setLittleEndianMode(true);
@@ -88,7 +89,8 @@ public class PointHandler implements ShapeHandler{
      * Returns the shapefile shape type value for a point
      * @return int Shapefile.POINT
      */
-    public  int getShapeType(){  
+    @Override
+    public  int getShapeType(){
         return myShapeType;
     }
     
@@ -96,6 +98,7 @@ public class PointHandler implements ShapeHandler{
      * Calcuates the record length of this object.
      * @return int The length of the record that this shapepoint will take up in a shapefile
      **/
+    @Override
     public int getLength(Geometry geometry){
         if (myShapeType == Shapefile.POINT)
             return 10;

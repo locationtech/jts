@@ -86,6 +86,7 @@ public class GeometryFunctions
     final List holePolys = new ArrayList();
     geom.apply(new GeometryFilter() {
 
+      @Override
       public void filter(Geometry geom) {
         if (geom instanceof Polygon) {
           Polygon poly = (Polygon) geom;

@@ -83,6 +83,7 @@ public class UnaryUnionNG {
   private static UnionStrategy createUnionStrategy(PrecisionModel pm) {
     UnionStrategy unionSRFun = new UnionStrategy() {
 
+      @Override
       public Geometry union(Geometry g0, Geometry g1) {
         return OverlayNG.overlay(g0, g1, UNION, pm);
       }

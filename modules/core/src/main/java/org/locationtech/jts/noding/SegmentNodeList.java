@@ -333,11 +333,13 @@ class NodeVertexIterator
     readNextNode();
   }
 
+  @Override
   public boolean hasNext() {
     if (nextNode == null) return false;
     return true;
   }
 
+  @Override
   public Object next()
   {
     if (currNode == null) {
@@ -374,6 +376,7 @@ class NodeVertexIterator
    *
    *@throws  UnsupportedOperationException  This method is not implemented.
    */
+  @Override
   public void remove() {
     throw new UnsupportedOperationException(getClass().getName());
   }

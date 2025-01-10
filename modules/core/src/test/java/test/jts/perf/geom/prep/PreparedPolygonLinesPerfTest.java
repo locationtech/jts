@@ -64,6 +64,7 @@ public class PreparedPolygonLinesPerfTest extends PerformanceTestCase
     setRunIterations(MAX_ITER);
   }
 
+  @Override
   public void startRun(int npts)
   {
 //  	Geometry poly = createCircle(new Coordinate(0, 0), 100, nPts);

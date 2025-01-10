@@ -41,12 +41,14 @@ public class ExtendedCoordinateSequenceFactory
      * directly if it is an instance of ExtendedCoordinate[]; otherwise it is
      * copied.
      */
+    @Override
     public CoordinateSequence create(Coordinate[] coordinates) {
       return coordinates instanceof ExtendedCoordinate[]
           ? new ExtendedCoordinateSequence((ExtendedCoordinate[]) coordinates)
           : new ExtendedCoordinateSequence(coordinates);
     }
 
+    @Override
     public CoordinateSequence create(CoordinateSequence coordSeq) {
       return coordSeq instanceof ExtendedCoordinateSequence
           ? new ExtendedCoordinateSequence((ExtendedCoordinateSequence) coordSeq)
@@ -56,6 +58,7 @@ public class ExtendedCoordinateSequenceFactory
     /**
      * @see org.locationtech.jts.geom.CoordinateSequenceFactory#create(int, int)
      */
+    @Override
     public CoordinateSequence create(int size, int dimension) {
       return new ExtendedCoordinateSequence(size);
     }

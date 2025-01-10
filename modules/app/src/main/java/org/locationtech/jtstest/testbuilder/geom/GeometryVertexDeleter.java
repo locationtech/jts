@@ -42,6 +42,7 @@ public class GeometryVertexDeleter
       this.vertexIndex = vertexIndex;
     }
     
+    @Override
     public Coordinate[] edit(Coordinate[] coords,
         Geometry geometry)
     {

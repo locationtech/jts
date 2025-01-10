@@ -35,6 +35,7 @@ public class Node
     label = new Label(0, Location.NONE);
   }
 
+  @Override
   public Coordinate getCoordinate() { return coord; }
   public EdgeEndStar getEdges() { return edges; }
 
@@ -56,6 +57,7 @@ public class Node
     return false;
   }
 
+  @Override
   public boolean isIsolated()
   {
     return (label.getGeometryCount() == 1);
@@ -63,6 +65,7 @@ public class Node
   /**
    * Basic nodes do not compute IMs
    */
+  @Override
   protected void computeIM(IntersectionMatrix im) {}
   /**
    * Add the edge to the list of edges at this node.
