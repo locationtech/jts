@@ -12,6 +12,7 @@
 
 package org.locationtech.jts.operation.overlay.snap;
 
+import org.locationtech.jts.algorithm.Distance;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateList;
 import org.locationtech.jts.geom.LineSegment;
@@ -191,22 +192,22 @@ public class LineStringSnapper
     double minDist = Double.MAX_VALUE;
     int snapIndex = -1;
     for (int i = 0; i < srcCoords.size() - 1; i++) {
-      seg.p0 = (Coordinate) srcCoords.get(i);
-      seg.p1 = (Coordinate) srcCoords.get(i + 1);
+      final Coordinate p0 = srcCoords.get(i);
+      final Coordinate p1 = srcCoords.get(i+1);
 
       /**
        * Check if the snap pt is equal to one of the segment endpoints.
        * 
        * If the snap pt is already in the src list, don't snap at all.
        */
-      if (seg.p0.equals2D(snapPt) || seg.p1.equals2D(snapPt)) {
+      if (p0.equals2D(snapPt) || p1.equals2D(snapPt)) {
         if (allowSnappingToSourceVertices)
           continue;
         else
           return -1;
       }
       
-      double dist = seg.distance(snapPt);
+      double dist = Distance.pointToSegment(snapPt, p0, p1);
       if (dist < snapTolerance && dist < minDist) {
         minDist = dist;
         snapIndex = i;
