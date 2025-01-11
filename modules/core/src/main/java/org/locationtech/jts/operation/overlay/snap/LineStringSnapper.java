@@ -31,9 +31,9 @@ import org.locationtech.jts.geom.LineString;
 public class LineStringSnapper
 {
   private double snapTolerance = 0.0;
+  private double snapToleranceSq = 0.0;
 
   private Coordinate[] srcPts;
-  private LineSegment seg = new LineSegment(); // for reuse during snapping
   private boolean allowSnappingToSourceVertices = false;
   private boolean isClosed = false;
 
@@ -61,6 +61,7 @@ public class LineStringSnapper
     this.srcPts = srcPts;
     isClosed = isClosed(srcPts);
     this.snapTolerance = snapTolerance;
+    this.snapToleranceSq = snapTolerance*snapTolerance;
   }
 
   public void setAllowSnappingToSourceVertices(boolean allowSnappingToSourceVertices)
@@ -189,7 +190,6 @@ public class LineStringSnapper
    */
   private int findSegmentIndexToSnap(Coordinate snapPt, CoordinateList srcCoords)
   {
-	final double snapTolSq = snapTolerance*snapTolerance;
     double minDist = Double.MAX_VALUE;
     int snapIndex = -1;
     for (int i = 0; i < srcCoords.size() - 1; i++) {
@@ -209,7 +209,7 @@ public class LineStringSnapper
       }
       
       double dist = Distance.pointToSegmentSq(snapPt, p0, p1);
-      if (dist < snapTolSq && dist < minDist) {
+      if (dist < snapToleranceSq && dist < minDist) {
         minDist = dist;
         snapIndex = i;
       }
