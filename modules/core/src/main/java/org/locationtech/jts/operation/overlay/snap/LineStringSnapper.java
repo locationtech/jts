@@ -12,6 +12,7 @@
 
 package org.locationtech.jts.operation.overlay.snap;
 
+import org.locationtech.jts.algorithm.Distance;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateList;
 import org.locationtech.jts.geom.LineSegment;
@@ -30,9 +31,9 @@ import org.locationtech.jts.geom.LineString;
 public class LineStringSnapper
 {
   private double snapTolerance = 0.0;
+  private double snapToleranceSq = 0.0;
 
   private Coordinate[] srcPts;
-  private LineSegment seg = new LineSegment(); // for reuse during snapping
   private boolean allowSnappingToSourceVertices = false;
   private boolean isClosed = false;
 
@@ -60,6 +61,7 @@ public class LineStringSnapper
     this.srcPts = srcPts;
     isClosed = isClosed(srcPts);
     this.snapTolerance = snapTolerance;
+    this.snapToleranceSq = snapTolerance*snapTolerance;
   }
 
   public void setAllowSnappingToSourceVertices(boolean allowSnappingToSourceVertices)
@@ -191,23 +193,23 @@ public class LineStringSnapper
     double minDist = Double.MAX_VALUE;
     int snapIndex = -1;
     for (int i = 0; i < srcCoords.size() - 1; i++) {
-      seg.p0 = (Coordinate) srcCoords.get(i);
-      seg.p1 = (Coordinate) srcCoords.get(i + 1);
+      final Coordinate p0 = srcCoords.get(i);
+      final Coordinate p1 = srcCoords.get(i+1);
 
       /**
        * Check if the snap pt is equal to one of the segment endpoints.
        * 
        * If the snap pt is already in the src list, don't snap at all.
        */
-      if (seg.p0.equals2D(snapPt) || seg.p1.equals2D(snapPt)) {
+      if (p0.equals2D(snapPt) || p1.equals2D(snapPt)) {
         if (allowSnappingToSourceVertices)
           continue;
         else
           return -1;
       }
       
-      double dist = seg.distance(snapPt);
-      if (dist < snapTolerance && dist < minDist) {
+      double dist = Distance.pointToSegmentSq(snapPt, p0, p1);
+      if (dist < snapToleranceSq && dist < minDist) {
         minDist = dist;
         snapIndex = i;
       }
