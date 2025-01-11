@@ -189,6 +189,7 @@ public class LineStringSnapper
    */
   private int findSegmentIndexToSnap(Coordinate snapPt, CoordinateList srcCoords)
   {
+	final double snapTolSq = snapTolerance*snapTolerance;
     double minDist = Double.MAX_VALUE;
     int snapIndex = -1;
     for (int i = 0; i < srcCoords.size() - 1; i++) {
@@ -207,8 +208,8 @@ public class LineStringSnapper
           return -1;
       }
       
-      double dist = Distance.pointToSegment(snapPt, p0, p1);
-      if (dist < snapTolerance && dist < minDist) {
+      double dist = Distance.pointToSegmentSq(snapPt, p0, p1);
+      if (dist < snapTolSq && dist < minDist) {
         minDist = dist;
         snapIndex = i;
       }
