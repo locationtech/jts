@@ -605,7 +605,7 @@ public class CGAlgorithms
       double dx = x1 - x0;
       double dy = y1 - y0;
 
-      len += Math.hypot(dx, dy);
+      len += MathUtil.hypot(dx, dy);
 
       x0 = x1;
       y0 = y1;

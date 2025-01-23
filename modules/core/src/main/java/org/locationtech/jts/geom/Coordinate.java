@@ -14,6 +14,7 @@ package org.locationtech.jts.geom;
 import java.io.Serializable;
 import java.util.Comparator;
 
+import org.locationtech.jts.math.MathUtil;
 import org.locationtech.jts.util.Assert;
 import org.locationtech.jts.util.NumberUtil;
 
@@ -435,7 +436,7 @@ public class Coordinate implements Comparable<Coordinate>, Cloneable, Serializab
   public double distance(Coordinate c) {
     double dx = x - c.x;
     double dy = y - c.y;
-    return Math.hypot(dx, dy);
+    return MathUtil.hypot(dx, dy);
   }
 
   /**

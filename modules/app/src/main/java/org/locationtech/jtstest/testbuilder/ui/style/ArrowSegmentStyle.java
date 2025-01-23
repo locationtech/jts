@@ -20,6 +20,7 @@ import java.awt.geom.GeneralPath;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 
+import org.locationtech.jts.math.MathUtil;
 import org.locationtech.jtstest.testbuilder.ui.Viewport;
 
 
@@ -101,7 +102,7 @@ public class ArrowSegmentStyle
     double dx = p1.getX() - p0.getX();
     double dy = p1.getY() - p0.getY();
 
-    double len = Math.hypot(dx, dy);
+    double len = MathUtil.hypot(dx, dy);
     
     double vy = dy / len;
     double vx = dx / len;
@@ -162,7 +163,7 @@ public class ArrowSegmentStyle
     double dx = p1.getX() - origin.getX();
     double dy = p1.getY() - origin.getY();
     
-    double vlen = Math.hypot(dx, dy);
+    double vlen = MathUtil.hypot(dx, dy);
     
     if (vlen <= 0) return null;
     
@@ -206,7 +207,7 @@ public class ArrowSegmentStyle
     double dx = p1.getX() - p0.getX();
     double dy = p1.getY() - p0.getY();
     
-    double len = Math.hypot(dx, dy);
+    double len = MathUtil.hypot(dx, dy);
     
     return len < minLen;
   }

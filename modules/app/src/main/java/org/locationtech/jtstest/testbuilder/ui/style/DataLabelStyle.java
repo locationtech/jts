@@ -23,6 +23,7 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.LineSegment;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.math.MathUtil;
 import org.locationtech.jtstest.testbuilder.geom.ConstrainedInteriorPoint;
 import org.locationtech.jtstest.testbuilder.ui.GraphicsUtil;
 import org.locationtech.jtstest.testbuilder.ui.Viewport;
@@ -103,7 +104,7 @@ public class DataLabelStyle implements Style
     double offsetLen = 15;
     double nudgeX = 5;
     
-    double dirVecLen = Math.hypot(dx, dy);
+    double dirVecLen = MathUtil.hypot(dx, dy);
     
     double offsetX = offsetLen * dx / dirVecLen;
     double offsetY = offsetLen * dy / dirVecLen;
