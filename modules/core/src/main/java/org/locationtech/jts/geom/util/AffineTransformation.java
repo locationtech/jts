@@ -16,6 +16,7 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateSequence;
 import org.locationtech.jts.geom.CoordinateSequenceFilter;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.math.MathUtil;
 import org.locationtech.jts.util.Assert;
 /**
  * Represents an affine transformation on the 2D Cartesian plane. 
@@ -494,7 +495,7 @@ public class AffineTransformation
     }
     double dx = x1 - x0;
     double dy = y1 - y0;
-    double d = Math.hypot(dx, dy);
+    double d = MathUtil.hypot(dx, dy);
     double sin = dy / d;
     double cos = dx / d;
     double cs2 = 2 * sin * cos;
@@ -525,7 +526,7 @@ public class AffineTransformation
     // rotate vector to positive x axis direction
     double dx = x1 - x0;
     double dy = y1 - y0;
-    double d = Math.hypot(dx, dy);
+    double d = MathUtil.hypot(dx, dy);
     double sin = dy / d;
     double cos = dx / d;
     rotate(-sin, cos);
@@ -576,7 +577,7 @@ public class AffineTransformation
     }
     
     // rotate vector to positive x axis direction
-    double d = Math.hypot(x, y);
+    double d = MathUtil.hypot(x, y);
     double sin = y / d;
     double cos = x / d;
     rotate(-sin, cos);

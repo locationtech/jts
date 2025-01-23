@@ -12,6 +12,7 @@
 package org.locationtech.jtslab.edgeray;
 
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.math.MathUtil;
 
 class EdgeRay {
 
@@ -28,7 +29,7 @@ class EdgeRay {
 
     double dx = x1 - x0;
     double dy = y1 - y0;
-    double len = Math.hypot(dx, dy);
+    double len = MathUtil.hypot(dx, dy);
     
     double u0x = dx / len;
     double u0y = dy / len;
@@ -59,7 +60,7 @@ class EdgeRay {
 
     double dx = x1 - x0;
     double dy = y1 - y0;
-    double len = Math.hypot(dx, dy);
+    double len = MathUtil.hypot(dx, dy);
     
     if (len <= 0) return 0;
     

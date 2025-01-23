@@ -12,6 +12,7 @@
 package org.locationtech.jts.index.strtree;
 
 import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.math.MathUtil;
 
 /**
  * Functions for computing distances between {@link Envelope}s.
@@ -44,7 +45,7 @@ public class EnvelopeDistance
   private static double distance(double x1, double y1, double x2, double y2) {
     double dx = x2 - x1;
     double dy = y2 - y1;
-    return Math.hypot(dx, dy);    
+    return MathUtil.hypot(dx, dy);    
   }
   
   /**

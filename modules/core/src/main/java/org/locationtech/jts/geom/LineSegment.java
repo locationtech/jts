@@ -19,6 +19,7 @@ import org.locationtech.jts.algorithm.LineIntersector;
 import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.algorithm.RobustLineIntersector;
 import org.locationtech.jts.io.WKTConstants;
+import org.locationtech.jts.math.MathUtil;
 
 
 /**
@@ -337,7 +338,7 @@ public class LineSegment
     
     double dx = p1.x - p0.x;
     double dy = p1.y - p0.y;
-    double len = Math.hypot(dx, dy);
+    double len = MathUtil.hypot(dx, dy);
     double ux = 0.0;
     double uy = 0.0;
     if (offsetDistance != 0.0) {

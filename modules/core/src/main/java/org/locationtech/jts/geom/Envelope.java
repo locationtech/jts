@@ -13,6 +13,8 @@ package org.locationtech.jts.geom;
 
 import java.io.Serializable;
 
+import org.locationtech.jts.math.MathUtil;
+
 /**
  *  Defines a rectangular region of the 2D coordinate plane.
  *  It is often used to represent the bounding box of a {@link Geometry},
@@ -303,7 +305,7 @@ public class Envelope
     }
     double w = getWidth();
     double h = getHeight();
-    return Math.hypot(w, h);
+    return MathUtil.hypot(w, h);
   }
   /**
    *  Returns the <code>Envelope</code>s minimum x-value. min x &gt; max x
@@ -780,7 +782,7 @@ public class Envelope
     // if either is zero, the envelopes overlap either vertically or horizontally
     if (dx == 0.0) return dy;
     if (dy == 0.0) return dx;
-    return Math.hypot(dx, dy);
+    return MathUtil.hypot(dx, dy);
   }
 
   public boolean equals(Object other) {

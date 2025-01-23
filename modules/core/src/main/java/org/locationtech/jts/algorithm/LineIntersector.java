@@ -17,6 +17,7 @@ package org.locationtech.jts.algorithm;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.io.WKTWriter;
+import org.locationtech.jts.math.MathUtil;
 import org.locationtech.jts.util.Assert;
 
 /**
@@ -131,7 +132,7 @@ public abstract class LineIntersector
   {
     double dx = p.x - p1.x;
     double dy = p.y - p1.y;
-    double dist = Math.hypot(dx, dy);   // dummy value
+    double dist = MathUtil.hypot(dx, dy);   // dummy value
     Assert.isTrue(! (dist == 0.0 && ! p.equals(p1)), "Invalid distance calculation");
     return dist;
   }

@@ -17,6 +17,7 @@ import org.locationtech.jts.geom.CoordinateArrays;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Triangle;
+import org.locationtech.jts.math.MathUtil;
 import org.locationtech.jts.util.Assert;
 
 /**
@@ -367,7 +368,7 @@ public class MinimumBoundingCircle
 			double dx = p.x - P.x;
 			double dy = p.y - P.y;
 			if (dy < 0) dy = -dy;
-			double len = Math.hypot(dx, dy);
+			double len = MathUtil.hypot(dx, dy);
 			double sin = dy / len;
 			
 			if (sin < minSin) {

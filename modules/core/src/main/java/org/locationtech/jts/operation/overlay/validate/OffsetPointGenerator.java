@@ -20,6 +20,7 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.util.LinearComponentExtracter;
+import org.locationtech.jts.math.MathUtil;
 
 /**
  * Generates points offset by a given distance 
@@ -95,7 +96,7 @@ public class OffsetPointGenerator
   {
     double dx = p1.x - p0.x;
     double dy = p1.y - p0.y;
-    double len = Math.hypot(dx, dy);
+    double len = MathUtil.hypot(dx, dy);
     // u is the vector that is the length of the offset, in the direction of the segment
     double ux = offsetDistance * dx / len;
     double uy = offsetDistance * dy / len;
