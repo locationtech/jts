@@ -438,6 +438,19 @@ public class Coordinate implements Comparable<Coordinate>, Cloneable, Serializab
     double dy = y - c.y;
     return MathUtil.hypot(dx, dy);
   }
+  
+  /**
+   * Computes the 2-dimensional squared Euclidean distance to another location.
+   * The Z-ordinate is ignored.
+   * 
+   * @param c a point
+   * @return the 2-dimensional squared Euclidean distance between the locations
+   */
+  public double distanceSq(Coordinate c) {
+    double dx = x - c.x;
+    double dy = y - c.y;
+    return dx * dx + dy * dy;
+  }
 
   /**
    * Computes the 3-dimensional Euclidean distance to another location.

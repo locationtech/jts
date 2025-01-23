@@ -188,6 +188,64 @@ public class Distance {
         / len2;
     return Math.abs(s) * Math.sqrt(len2);
   }
+  
+  /**
+   * Computes the squared distance from a point p to a line segment AB.
+   * 
+   * Note: NON-ROBUST!
+   * 
+   * @param p
+   *          the point to compute the distance for
+   * @param A
+   *          one point of the line
+   * @param B
+   *          another point of the line (must be different to A)
+   * @return the distance from p to line segment AB
+   */
+  public static double pointToSegmentSq(Coordinate p, Coordinate A,
+	      Coordinate B)
+	  {
+	    // if start = end, then just compute distance to one of the endpoints
+	    if (A.x == B.x && A.y == B.y)
+	      return p.distanceSq(A);
+	  
+	    // otherwise use comp.graphics.algorithms Frequently Asked Questions method
+	    /*
+	     * (1) r = AC dot AB 
+	     *         --------- 
+	     *         ||AB||^2 
+	     *         
+	     * r has the following meaning: 
+	     *   r=0 P = A 
+	     *   r=1 P = B 
+	     *   r<0 P is on the backward extension of AB 
+	     *   r>1 P is on the forward extension of AB 
+	     *   0<r<1 P is interior to AB
+	     */
+	  
+	    double len2 = (B.x - A.x) * (B.x - A.x) + (B.y - A.y) * (B.y - A.y);
+	    double r = ((p.x - A.x) * (B.x - A.x) + (p.y - A.y) * (B.y - A.y))
+	        / len2;
+	  
+	    if (r <= 0.0)
+	      return p.distanceSq(A);
+	    if (r >= 1.0)
+	      return p.distanceSq(B);
+	  
+	    /*
+	     * (2) s = (Ay-Cy)(Bx-Ax)-(Ax-Cx)(By-Ay) 
+	     *         ----------------------------- 
+	     *                    L^2
+	     * 
+	     * Then the distance from C to P = |s|*L.
+	     * 
+	     * This is the same calculation as {@link #distancePointLinePerpendicular}.
+	     * Unrolled here for performance.
+	     */
+	    double s = ((A.y - p.y) * (B.x - A.x) - (A.x - p.x) * (B.y - A.y))
+	        / len2;
+	    return s*s*len2;
+	  }
 
   /**
    * Computes the perpendicular distance from a point p to the (infinite) line
