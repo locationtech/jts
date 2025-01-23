@@ -39,6 +39,7 @@ Distributions for older JTS versions can be obtained at the
 
 * Fix RelateNG to cache in prepared A-L cases (#1099)
 * Add `GeometryCollection` dimension cache (#1103)
+* Add `MathUtil.hypot` function and use it for length calculations (#1112)
 
 # Version 1.20.0
 
