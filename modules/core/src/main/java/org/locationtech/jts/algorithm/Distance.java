@@ -200,7 +200,7 @@ public class Distance {
    *          one point of the line
    * @param B
    *          another point of the line (must be different to A)
-   * @return the distance from p to line segment AB
+   * @return the squared distance from p to line segment AB
    */
   public static double pointToSegmentSq(Coordinate p, Coordinate A,
 	      Coordinate B)
