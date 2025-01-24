@@ -99,6 +99,7 @@ public class OverlayNGRobust
   
   private static UnionStrategy OVERLAY_UNION = new UnionStrategy() {
 
+    @Override
     public Geometry union(Geometry g0, Geometry g1) {
        return overlay(g0, g1, OverlayNG.UNION );
     }

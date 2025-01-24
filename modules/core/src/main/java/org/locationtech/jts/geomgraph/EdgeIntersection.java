@@ -57,6 +57,7 @@ public class EdgeIntersection
 
   public double getDistance() { return dist; }
 
+  @Override
   public int compareTo(Object obj)
   {
     EdgeIntersection other = (EdgeIntersection) obj;

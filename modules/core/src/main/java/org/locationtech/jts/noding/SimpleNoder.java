@@ -33,11 +33,13 @@ public class SimpleNoder
   public SimpleNoder() {
   }
 
+  @Override
   public Collection getNodedSubstrings()
   {
     return  NodedSegmentString.getNodedSubstrings(nodedSegStrings);
   }
 
+  @Override
   public void computeNodes(Collection inputSegStrings)
   {
     this.nodedSegStrings = inputSegStrings;

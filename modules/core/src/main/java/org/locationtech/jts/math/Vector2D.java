@@ -291,6 +291,7 @@ public class Vector2D {
    * 
    * @return a copy of this vector
    */
+  @Override
   public Object clone()
   {
     return new Vector2D(this);

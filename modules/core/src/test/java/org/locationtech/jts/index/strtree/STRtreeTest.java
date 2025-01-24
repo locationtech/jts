@@ -59,6 +59,7 @@ public class STRtreeTest extends TestCase {
   {
     STRtree tree = new STRtree();
     tree.query(new Envelope(0,0,1,1), new ItemVisitor() {
+      @Override
       public void visitItem(Object item) {
         assertTrue("Should never reach here", true);
       }

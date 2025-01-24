@@ -39,6 +39,7 @@ public class SimpleOverlayAreaPerfTest extends PerformanceTestCase
     setRunIterations(10000);
   }
 
+  @Override
   public void startRun(int size) throws IOException, ParseException
   {
     WKTReader rdr= new WKTReader();

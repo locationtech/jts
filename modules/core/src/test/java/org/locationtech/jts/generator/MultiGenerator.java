@@ -67,6 +67,7 @@ public class MultiGenerator extends GeometryGenerator {
 	 * @throws IllegalStateException when the number of child geoms is too small
 	 * @throws IllegalStateException when the selected alg. is invalid
 	 */
+	@Override
 	public Geometry create() {
 		if(generator == null)
 			throw new NullPointerException("Missing child generator");
@@ -149,6 +150,7 @@ public class MultiGenerator extends GeometryGenerator {
 	/**
 	 * @see org.locationtech.jts.generator.GeometryGenerator#setBoundingBox(org.locationtech.jts.geom.Envelope)
 	 */
+	@Override
 	public void setBoundingBox(Envelope boundingBox) {
 		super.setBoundingBox(boundingBox);
 		if(generator!=null)
@@ -158,6 +160,7 @@ public class MultiGenerator extends GeometryGenerator {
 	/**
 	 * @see org.locationtech.jts.generator.GeometryGenerator#setDimensions(int)
 	 */
+	@Override
 	public void setDimensions(int dimensions) {
 		super.setDimensions(dimensions);
 		if(generator!=null)
@@ -167,6 +170,7 @@ public class MultiGenerator extends GeometryGenerator {
 	/**
 	 * @see org.locationtech.jts.generator.GeometryGenerator#setGeometryFactory(org.locationtech.jts.geom.GeometryFactory)
 	 */
+	@Override
 	public void setGeometryFactory(GeometryFactory geometryFactory) {
 		super.setGeometryFactory(geometryFactory);
 		if(generator!=null)

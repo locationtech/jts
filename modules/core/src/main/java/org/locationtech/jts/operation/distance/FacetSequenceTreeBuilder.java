@@ -53,6 +53,7 @@ public class FacetSequenceTreeBuilder {
 
     g.apply(new GeometryComponentFilter() {
 
+      @Override
       public void filter(Geometry geom) {
         CoordinateSequence seq = null;
         if (geom instanceof LineString) {
