@@ -601,6 +601,35 @@ public class KdTree {
     //-- point not found
     return null;           
   }
+  
+	/**
+	 * Performs an in-order traversal of the tree, collecting and returning all
+	 * nodes that have been inserted.
+	 * 
+	 * @return A list containing all nodes in the KdTree. Returns an empty list if
+	 *         the tree is empty.
+	 */
+	public List<KdNode> getNodes() {
+		List<KdNode> nodeList = new ArrayList<>();
+		if (root == null) {
+			return nodeList; // empty list for empty tree
+		}
+
+		Deque<KdNode> stack = new ArrayDeque<>();
+		KdNode currentNode = root;
+
+		while (currentNode != null || !stack.isEmpty()) {
+			if (currentNode != null) {
+				stack.push(currentNode);
+				currentNode = currentNode.getLeft();
+			} else {
+				currentNode = stack.pop();
+				nodeList.add(currentNode);
+				currentNode = currentNode.getRight();
+			}
+		}
+		return nodeList;
+	}
 
   /**
    * Computes the depth of the tree.

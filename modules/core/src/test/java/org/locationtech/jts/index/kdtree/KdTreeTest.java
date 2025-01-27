@@ -206,6 +206,21 @@ public class KdTreeTest extends TestCase {
       }
   }
   
+  public void testCollectNodes() {
+      int n = 1000; // Number of random points to seed
+      KdTree tree = new KdTree();
+      Random rand = new Random(1337);
+
+      // Seed n random points
+      for (int i = 0; i < n; i++) {
+          double x = rand.nextDouble() * 100; // Random x between 0 and 100
+          double y = rand.nextDouble() * 100; // Random y between 0 and 100
+          tree.insert(new Coordinate(x, y));
+      }
+      
+      assertEquals(n, tree.getNodes().size());
+  }
+  
   private void testQuery(String wktInput, double tolerance,
       Envelope queryEnv, String wktExpected) {
     KdTree index = build(wktInput, tolerance);
