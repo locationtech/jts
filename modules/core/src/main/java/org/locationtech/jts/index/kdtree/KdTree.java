@@ -67,7 +67,7 @@ public class KdTree {
    *          a collection of nodes
    * @return an array of the coordinates represented by the nodes
    */
-  public static Coordinate[] toCoordinates(Collection kdnodes) {
+  public static Coordinate[] toCoordinates(Collection<KdNode> kdnodes) {
     return toCoordinates(kdnodes, false);
   }
 
@@ -82,9 +82,9 @@ public class KdTree {
    *   be included multiple times
    * @return an array of the coordinates represented by the nodes
    */
-  public static Coordinate[] toCoordinates(Collection kdnodes, boolean includeRepeated) {
+  public static Coordinate[] toCoordinates(Collection<KdNode> kdnodes, boolean includeRepeated) {
     CoordinateList coord = new CoordinateList();
-    for (Iterator it = kdnodes.iterator(); it.hasNext();) {
+    for (Iterator<KdNode> it = kdnodes.iterator(); it.hasNext();) {
       KdNode node = (KdNode) it.next();
       int count = includeRepeated ? node.getCount() : 1;
       for (int i = 0; i < count; i++) {
