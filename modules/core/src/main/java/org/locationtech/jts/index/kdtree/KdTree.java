@@ -26,34 +26,31 @@ import org.locationtech.jts.geom.CoordinateList;
 import org.locationtech.jts.geom.Envelope;
 
 /**
- * An implementation of a 
- * <a href='https://en.wikipedia.org/wiki/K-d_tree'>KD-Tree</a> 
- * over two dimensions (X and Y). 
- * KD-trees provide fast range searching and fast lookup for point data.
- * The tree is built dynamically by inserting points.
- * The tree supports queries by location and range, and for point equality.
- * For querying, an internal stack is used instead of recursion to avoid overflow. 
+ * A 2D <a href='https://en.wikipedia.org/wiki/K-d_tree'>KD-Tree</a> spatial
+ * index for efficient point query and retrieval.
+ * <p>
+ * KD-trees provide fast range searching and fast lookup for point data. The
+ * tree is built dynamically by inserting points. The tree supports queries by
+ * location and range, and for point equality. For querying, an internal stack
+ * is used instead of recursion to avoid overflow.
  * <p>
  * This implementation supports detecting and snapping points which are closer
- * than a given distance tolerance.
- * If the same point (up to tolerance) is inserted
- * more than once, it is snapped to the existing node.
- * In other words, if a point is inserted which lies 
- * within the tolerance of a node already in the index,
- * it is snapped to that node. 
- * When an inserted point is snapped to a node then a new node is not created 
- * but the count of the existing node is incremented.  
- * If more than one node in the tree is within tolerance of an inserted point, 
- * the closest and then lowest node is snapped to.
+ * than a given distance tolerance. If the same point (up to tolerance) is
+ * inserted more than once, it is snapped to the existing node. In other words,
+ * if a point is inserted which lies within the tolerance of a node already in
+ * the index, it is snapped to that node. When an inserted point is snapped to a
+ * node then a new node is not created but the count of the existing node is
+ * incremented. If more than one node in the tree is within tolerance of an
+ * inserted point, the closest and then lowest node is snapped to.
  * <p>
- * The structure of a KD-Tree depends on the order of insertion of the points.
- * A tree may become unbalanced if the inserted points are coherent 
- * (e.g. monotonic in one or both dimensions).
- * A perfectly balanced tree has depth of only log2(N), 
- * but an unbalanced tree may be much deeper.
- * This has a serious impact on query efficiency.  
- * One solution to this is to randomize the order of points before insertion
- * (e.g. by using <a href="https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle">Fisher-Yates shuffling</a>).
+ * The structure of a KD-Tree depends on the order of insertion of the points. A
+ * tree may become unbalanced if the inserted points are coherent (e.g.
+ * monotonic in one or both dimensions). A perfectly balanced tree has depth of
+ * only log2(N), but an unbalanced tree may be much deeper. This has a serious
+ * impact on query efficiency. One solution to this is to randomize the order of
+ * points before insertion (e.g. by using <a href=
+ * "https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle">Fisher-Yates
+ * shuffling</a>).
  * 
  * @author David Skea
  * @author Martin Davis
@@ -96,7 +93,8 @@ public class KdTree {
 
   private KdNode root = null;
   private long numberOfNodes;
-  private double tolerance;
+  private final double tolerance;
+  private final double toleranceSq;
 
   /**
    * Creates a new instance of a KdTree with a snapping tolerance of 0.0. (I.e.
@@ -116,6 +114,7 @@ public class KdTree {
    */
   public KdTree(double tolerance) {
     this.tolerance = tolerance;
+    this.toleranceSq = tolerance*tolerance;
   }
 
   /**
@@ -205,6 +204,9 @@ public class KdTree {
         if (currentDist < bestDistance) {
           bestNode = currentNode;
           bestDistance = currentDist;
+          if (bestDistance == 0) {
+              return bestNode; // Early termination
+          }
         }
 
         boolean currentIsXLevel = isXLevel;
@@ -279,15 +281,12 @@ public class KdTree {
 	    while (currentNode != null || !stack.isEmpty()) {
 	      if (currentNode != null) {
 	        double currentDist = query.distanceSq(currentNode.getCoordinate());
-	        if (heap.size() < n) {
-	          heap.offer(currentNode);
-	        } else {
-	          double maxDist = query.distanceSq(heap.peek().getCoordinate());
-	          if (currentDist < maxDist) {
-	            heap.poll();
-	            heap.offer(currentNode);
-	          }
-	        }
+            if (heap.size() < n || currentDist < query.distanceSq(heap.peek().getCoordinate())) {
+                if (heap.size() == n) {
+                    heap.poll();
+                }
+                heap.offer(currentNode);
+            }
 
 	        boolean currentIsXLevel = isXLevel;
 	        double splitValue = currentNode.splitValue(currentIsXLevel);
@@ -434,7 +433,7 @@ public class KdTree {
      * then top-bottom (by Y ordinate)
      */
     while (currentNode != null) {
-      boolean isInTolerance = p.distance(currentNode.getCoordinate()) <= tolerance;
+      boolean isInTolerance = p.distanceSq(currentNode.getCoordinate()) <= toleranceSq;
 
       // check if point is already in tree (up to tolerance) and if so simply
       // return existing node
@@ -451,10 +450,8 @@ public class KdTree {
       }
       leafNode = currentNode;
       if (isLessThan) {
-        //System.out.print("L");
         currentNode = currentNode.getLeft();
       } else {
-        //System.out.print("R");
         currentNode = currentNode.getRight();
       }
 
