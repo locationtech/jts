@@ -14,10 +14,10 @@ package org.locationtech.jts.index.kdtree;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateArrays;
@@ -108,73 +108,68 @@ public class KdTreeTest extends TestCase {
   }
   
   public void testNearestNeighbor() {
-      int n = 1000; // Number of random points to seed
+      int n = 1000;
+      int queries = 500;
       KdTree tree = new KdTree();
       Random rand = new Random(1337);
 
-      // Seed n random points
       for (int i = 0; i < n; i++) {
-          double x = rand.nextDouble() * 100; // Random x between 0 and 100
-          double y = rand.nextDouble() * 100; // Random y between 0 and 100
+          double x = rand.nextDouble();
+          double y = rand.nextDouble();
           tree.insert(new Coordinate(x, y));
       }
 
-      // Test 5 different query points
-      for (int i = 0; i < 500; i++) {
-          double queryX = rand.nextDouble() * 100; // Random query x between 0 and 100
-          double queryY = rand.nextDouble() * 100; // Random query y between 0 and 100
+      for (int i = 0; i < queries; i++) {
+          double queryX = rand.nextDouble();
+          double queryY = rand.nextDouble();
           Coordinate query = new Coordinate(queryX, queryY);
 
-          // Find nearest neighbor using k-d tree
           KdNode nearestNode = tree.nearestNeighbor(query);
 
-          // Find nearest neighbor using brute-force
           Coordinate bruteForceNearest = bruteForceNearestNeighbor(tree, query);
           
           assertEquals(nearestNode.getCoordinate(), bruteForceNearest);
       }
   }
-
+  
   public void testNearestNeighbors() {
-      int n = 100; // Number of random points to seed
-      KdTree tree = new KdTree();
+      int n = 2500;
+      int numTrials = 50;
       Random rand = new Random(0);
-      
-      // Seed n random points
-      for (int i = 0; i < n; i++) {
-          double x = rand.nextDouble() * 100; // Random x between 0 and 100
-          double y = rand.nextDouble() * 100; // Random y between 0 and 100
-          tree.insert(new Coordinate(x, y));
-      }
 
-      // Query point
-      Coordinate query = new Coordinate(rand.nextDouble(), rand.nextDouble());
-      int k = 50;
+      for (int trial = 0; trial < numTrials; trial++) {
+          KdTree tree = new KdTree();
 
-      // Find k-nearest neighbors using k-d tree
-      List<KdNode> nearestNodes = tree.nearestNeighbors(query, k);
+          for (int i = 0; i < n; i++) {
+              double x = rand.nextDouble();
+              double y = rand.nextDouble();
+              tree.insert(new Coordinate(x, y));
+          }
 
-      // Find k-nearest neighbors using brute-force
-      List<Coordinate> bruteForceNearest = bruteForceNearestNeighbors(tree, query, k);
+          Coordinate query = new Coordinate(rand.nextDouble(), rand.nextDouble());
+          int k = rand.nextInt(n/10);
+          
+          List<KdNode> nearestNodes = tree.nearestNeighbors(query, k);
 
-      // Verify that both methods return the same results
-      assertEquals(k, nearestNodes.size());
-      for (int i = 0; i < k; i++) {
-          assertEquals(bruteForceNearest.get(i), nearestNodes.get(i).getCoordinate());
+          List<Coordinate> bruteForceNearest = bruteForceNearestNeighbors(tree, query, k);
+
+          assertEquals(k, nearestNodes.size());
+          for (int i = 0; i < k; i++) {
+              assertEquals(bruteForceNearest.get(i), nearestNodes.get(i).getCoordinate());
+          }
       }
   }
   
-  public void testPerformance() {
-      int n = 1_000_000; // Number of random points to seed
-      int k = 100; // Number of nearest neighbors to find
+  public void testNearestNeighborsPerformance() {
+      int n = 1_000_000;
+      int k = 100;
       KdTree tree = new KdTree();
       Random rand = new Random(1);
 
-      // Seed n random points
       List<Coordinate> points = new ArrayList<>();
       for (int i = 0; i < n; i++) {
-          double x = rand.nextDouble(); // Random x between 0 and 100
-          double y = rand.nextDouble(); // Random y between 0 and 100
+          double x = rand.nextDouble();
+          double y = rand.nextDouble();
           points.add(new Coordinate(x, y));
       }
       long startTime = System.nanoTime();
@@ -184,7 +179,6 @@ public class KdTreeTest extends TestCase {
       long insertTime = System.nanoTime() - startTime;
       System.out.println("Time to insert " + n + " points: " + (insertTime / 1_000_000) + " ms");
 
-      // Generate a random query point
       Coordinate query = new Coordinate(rand.nextDouble(), rand.nextDouble());
 
       // Time k-NN query using k-d tree
@@ -199,22 +193,19 @@ public class KdTreeTest extends TestCase {
       long bruteForceTime = System.nanoTime() - startTime;
       System.out.println("Time to find " + k + " nearest neighbors using brute-force: " + (bruteForceTime / 1_000_000) + " ms");
 
-      // Verify that both methods return the same results
-//      assertEquals(k, nearestNodes.size());
       for (int i = 0; i < k; i++) {
           assertEquals(bruteForceNearest.get(i), nearest.get(i).getCoordinate());
       }
   }
   
   public void testCollectNodes() {
-      int n = 1000; // Number of random points to seed
+      int n = 1000;
       KdTree tree = new KdTree();
       Random rand = new Random(1337);
 
-      // Seed n random points
       for (int i = 0; i < n; i++) {
-          double x = rand.nextDouble() * 100; // Random x between 0 and 100
-          double y = rand.nextDouble() * 100; // Random y between 0 and 100
+          double x = rand.nextDouble();
+          double y = rand.nextDouble();
           tree.insert(new Coordinate(x, y));
       }
       
@@ -291,44 +282,18 @@ public class KdTreeTest extends TestCase {
       return nearest;
   }
   
-  private Coordinate bruteForceNearestNeighbor(Collection<Coordinate> allPoints, Coordinate query) {
-	  Coordinate nearest = null;
-	  double minDistance = Double.POSITIVE_INFINITY;
-	  
-	  for (Coordinate point : allPoints) {
-		  double distance = query.distance(point);
-		  if (distance < minDistance) {
-			  minDistance = distance;
-			  nearest = point;
-		  }
-	  }
-	  
-	  return nearest;
-  }
-  
   private List<Coordinate> bruteForceNearestNeighbors(KdTree tree, Coordinate query, int k) {
       List<Coordinate> allPoints = getAllPoints(tree);
 
       // Sort all points by distance to the query point
       allPoints.sort(Comparator.comparingDouble(point -> query.distance(point)));
 
-      // Return the first k points
+      // Return the first k points (ordered closest first)
       return allPoints.subList(0, Math.min(k, allPoints.size()));
   }
   
   private List<Coordinate> getAllPoints(KdTree tree) {
-      List<Coordinate> points = new ArrayList<>();
-      collectPoints(tree.getRoot(), points);
-      return points;
-  }
-  
-  private void collectPoints(KdNode node, List<Coordinate> points) {
-      if (node == null) {
-          return;
-      }
-      points.add(node.getCoordinate());
-      collectPoints(node.getLeft(), points);
-      collectPoints(node.getRight(), points);
+	  return Arrays.stream(KdTree.toCoordinates(tree.getNodes())).collect(Collectors.toList());
   }
 
   private KdTree build(String wktInput, double tolerance) {
