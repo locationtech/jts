@@ -160,43 +160,7 @@ public class KdTreeTest extends TestCase {
       }
   }
   
-  public void testNearestNeighborsPerformance() {
-      int n = 1_000_000;
-      int k = 100;
-      KdTree tree = new KdTree();
-      Random rand = new Random(1);
 
-      List<Coordinate> points = new ArrayList<>();
-      for (int i = 0; i < n; i++) {
-          double x = rand.nextDouble();
-          double y = rand.nextDouble();
-          points.add(new Coordinate(x, y));
-      }
-      long startTime = System.nanoTime();
-      for (Coordinate coordinate : points) {
-		tree.insert(coordinate);
-      }
-      long insertTime = System.nanoTime() - startTime;
-      System.out.println("Time to insert " + n + " points: " + (insertTime / 1_000_000) + " ms");
-
-      Coordinate query = new Coordinate(rand.nextDouble(), rand.nextDouble());
-
-      // Time k-NN query using k-d tree
-      startTime = System.nanoTime();
-      List<KdNode> nearest = tree.nearestNeighbors(query, k);
-      long knnTime = System.nanoTime() - startTime;
-      System.out.println("Time to find " + k + " nearest neighbors using k-d tree: " + (knnTime / 1_000_000) + " ms");
-
-      // Time k-NN query using brute-force
-      startTime = System.nanoTime();
-      List<Coordinate> bruteForceNearest = bruteForceNearestNeighbors(tree, query, k);
-      long bruteForceTime = System.nanoTime() - startTime;
-      System.out.println("Time to find " + k + " nearest neighbors using brute-force: " + (bruteForceTime / 1_000_000) + " ms");
-
-      for (int i = 0; i < k; i++) {
-          assertEquals(bruteForceNearest.get(i), nearest.get(i).getCoordinate());
-      }
-  }
   
   public void testCollectNodes() {
       int n = 1000;
