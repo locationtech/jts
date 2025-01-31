@@ -33,8 +33,6 @@ public class PerformanceTestRunner
 {
   private static final String RUN_PREFIX = "run";
 
-  private static final String INIT_METHOD = "init";
-
   public static void run(Class clz)
   {
     PerformanceTestRunner runner = new PerformanceTestRunner();
@@ -57,6 +55,9 @@ public class PerformanceTestRunner
       
       // do the run
       test.setUp();
+      //-- initial times are zero (factor is not printed)
+      long[] runTimePrev = new long[runMethod.length];
+      
       for (int runNum = 0; runNum < runSize.length; runNum++)
       {
         int size = runSize[runNum];
@@ -67,8 +68,10 @@ public class PerformanceTestRunner
             runMethod[i].invoke(test);
           }
           long time = sw.getTime();
-          System.out.println(runMethod[i].getName()
-              + " : " + sw.getTimeString());
+          long timePrev = runTimePrev[i];
+          int sizePrev = runNum > 0 ? runSize[runNum-1] : -1;
+          reportRun(runMethod[i].getName(), sw.getTimeString(), size, time, sizePrev, timePrev);
+          runTimePrev[i] = time;
           test.setTime(runNum, time);
         }
         test.endRun();
@@ -84,6 +87,17 @@ public class PerformanceTestRunner
   }
   
   
+  private void reportRun(String name, String timeString, int size, long time, int sizePrev, long timePrev) {
+    String factorStr = "";
+    if (sizePrev > 0 && timePrev > 0) {
+      double sizeFactor = size / (double) sizePrev;
+      double timeFactor = time / (double) timePrev;
+      factorStr = String.format( "  ( %.1fx - size %.1fx)", timeFactor, sizeFactor);
+    }
+    System.out.println(name
+        + " : " + timeString + factorStr);
+  }
+
   private static Method[] findMethods(Class clz, String methodPrefix)
   {
     List runMeths = new ArrayList();

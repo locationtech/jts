@@ -16,14 +16,26 @@ package test.jts.perf;
  * A base class for classes implementing performance tests
  * to be run by the {@link PerformanceTestRunner}.
  * <p>
- * In a subclass of this class,
- * all public methods which start with <code>run</code> are 
- * executed as performance tests.
+ * The {@link #setUp()} is called at the start of test class execution, 
+ * and {@link #tearDown()} is called at the end.  
+ * These allow creating and release resources needed for testing
+ * (e.g. a database connection).
  * <p>
- * Multiple test runs with different run sizes may be made.
- * Within each run, each <code>run</code> method is executed 
- * the specified number of iterations.
- * The time to run the method is printed for each one.
+ * Subclasses provide performance tests as
+ * public methods which start with <code>run</code>.
+ * Each test is executed once per test run.
+ * The number of runs is determined by the length
+ * of the array provided to {@link #setRunSize(int[])}.  
+ * The array entry for each run specifies a size for the run.
+ * The size is provided at the start of each run via {@link #startRun(int)}.
+ * It can be used to determine the size of data to generate for the run.
+ * <p>
+ * Within a run, each <code>run</code> test method is executed 
+ * for the number of iterations specified by {@link #setRunIterations(int).
+ * This allows running tests of fast operations long enough for accurate timing.
+ * A performance report is printed after each test.
+ * <p>
+ * {@link #endRun()} is called at the end of the run.
  * 
  * @author Martin Davis
  *
@@ -40,14 +52,19 @@ public abstract class PerformanceTestCase
     this.name = name;
   }
   
+  /**
+   * Gets the name of this test case.
+   * 
+   * @return the name of the test case
+   */
   public String getName()
   {
     return name;
   }
   
   /**
-   * Sets the size(s) for the runs of the test.
-   * The default is 1 iteration.
+   * Sets the size(s) for the runs of the test(s).
+   * The default is one run with a size of 1.
    * 
    * @param runSize a list of the sizes for the test runs
    */
@@ -57,11 +74,23 @@ public abstract class PerformanceTestCase
     runTime = new long[runSize.length];
   }
   
+  /**
+   * Gets the array of run sizes.
+   * 
+   * @return the array of run sizes
+   */
   public int[] getRunSize()
   {
     return runSize;
   }
   
+  /**
+   * Gets the run times for the final run method in each run.
+   * This allows comparing run times across different run sizes
+   * (e.g. to compute a time factor).
+   * 
+   * @return the run times
+   */
   public long[] getRunTime()
   {
     return runTime;
@@ -69,6 +98,7 @@ public abstract class PerformanceTestCase
   
   /**
    * Sets the number of iterations to execute the test methods in each test run.
+   * The default is 1 iteration.
    * 
    * @param runIter the number of iterations to execute.
    */
@@ -77,6 +107,11 @@ public abstract class PerformanceTestCase
     this.runIter = runIter;
   }
   
+  /**
+   * Gets the number of iterations for the run methods.
+   * 
+   * @return the number of iterations
+   */
   public int getRunIterations()
   {
     return runIter;
