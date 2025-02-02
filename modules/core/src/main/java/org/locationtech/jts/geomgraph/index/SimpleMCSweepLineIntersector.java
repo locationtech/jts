@@ -46,6 +46,7 @@ public class SimpleMCSweepLineIntersector
   public SimpleMCSweepLineIntersector() {
   }
 
+  @Override
   public void computeIntersections(List edges, SegmentIntersector si, boolean testAllSegments)
   {
     if (testAllSegments)
@@ -55,6 +56,7 @@ public class SimpleMCSweepLineIntersector
     computeIntersections(si);
   }
 
+  @Override
   public void computeIntersections(List edges0, List edges1, SegmentIntersector si)
   {
     addEdges(edges0, edges0);

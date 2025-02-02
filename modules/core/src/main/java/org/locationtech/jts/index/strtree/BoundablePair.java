@@ -110,6 +110,7 @@ class BoundablePair
   /**
    * Compares two pairs based on their minimum distances
    */
+  @Override
   public int compareTo(Object o)
   {
     BoundablePair nd = (BoundablePair) o;

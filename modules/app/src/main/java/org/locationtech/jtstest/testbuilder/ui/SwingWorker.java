@@ -112,10 +112,12 @@ public abstract class SwingWorker {
      */
     public SwingWorker() {
         final Runnable doFinished = new Runnable() {
+           @Override
            public void run() { finished(); }
         };
 
         Runnable doConstruct = new Runnable() { 
+            @Override
             public void run() {
                 try {
                     setValue(construct());

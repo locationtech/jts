@@ -44,6 +44,7 @@ public class DirectedEdgeStar
   /**
    * Insert a directed edge in the list
    */
+  @Override
   public void insert(EdgeEnd ee)
   {
     DirectedEdge de = (DirectedEdge) ee;
@@ -103,6 +104,7 @@ public class DirectedEdgeStar
    * Compute the labelling for all dirEdges in this star, as well
    * as the overall labelling
    */
+  @Override
   public void computeLabelling(GeometryGraph[] geom)
   {
 //Debug.print(this);
@@ -372,6 +374,7 @@ public class DirectedEdgeStar
     return currDepth;
   }
 
+  @Override
   public void print(PrintStream out)
   {
     out.println("DirectedEdgeStar: " + getCoordinate());

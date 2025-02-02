@@ -74,6 +74,7 @@ public class EdgeEnd
   public void setNode(Node node) { this.node = node; }
   public Node getNode() { return node; }
 
+  @Override
   public int compareTo(Object obj)
   {
       EdgeEnd e = (EdgeEnd) obj;

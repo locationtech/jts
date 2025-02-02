@@ -19,7 +19,7 @@ public class GeometryOpGCUnsupportedTest extends GeometryTestCase {
     final Geometry a = read(WKT_GC);
     final Geometry b = read(WKT_POLY);
    
-    (new FailureChecker() { void operation() {
+    (new FailureChecker() { @Override void operation() {
       a.getBoundary();
     }  }).check(IllegalArgumentException.class);
 
@@ -29,11 +29,11 @@ public class GeometryOpGCUnsupportedTest extends GeometryTestCase {
     final Geometry a = read(WKT_GC);
     final Geometry b = read(WKT_POLY);
    
-    (new FailureChecker() { void operation() {
+    (new FailureChecker() { @Override void operation() {
       a.relate(b);
     }  }).check(IllegalArgumentException.class);
     
-    (new FailureChecker() { void operation() {
+    (new FailureChecker() { @Override void operation() {
       b.relate(a);
     }  }).check(IllegalArgumentException.class);
 
@@ -43,11 +43,11 @@ public class GeometryOpGCUnsupportedTest extends GeometryTestCase {
     final Geometry a = read(WKT_GC);
     final Geometry b = read(WKT_POLY);
    
-    (new FailureChecker() { void operation() {
+    (new FailureChecker() { @Override void operation() {
         a.union(b);
      }  }).check(IllegalArgumentException.class);
     
-    (new FailureChecker() { void operation() {
+    (new FailureChecker() { @Override void operation() {
       b.union(a);
    }  }).check(IllegalArgumentException.class);
   }
@@ -56,11 +56,11 @@ public class GeometryOpGCUnsupportedTest extends GeometryTestCase {
     final Geometry a = read(WKT_GC);
     final Geometry b = read(WKT_POLY);
    
-    (new FailureChecker() { void operation() {
+    (new FailureChecker() { @Override void operation() {
         a.difference(b);
      }  }).check(IllegalArgumentException.class);
     
-    (new FailureChecker() { void operation() {
+    (new FailureChecker() { @Override void operation() {
       b.difference(a);
    }  }).check(IllegalArgumentException.class);
   }
@@ -69,11 +69,11 @@ public class GeometryOpGCUnsupportedTest extends GeometryTestCase {
     final Geometry a = read(WKT_GC);
     final Geometry b = read(WKT_POLY);
    
-    (new FailureChecker() { void operation() {
+    (new FailureChecker() { @Override void operation() {
         a.symDifference(b);
      }  }).check(IllegalArgumentException.class);
     
-    (new FailureChecker() { void operation() {
+    (new FailureChecker() { @Override void operation() {
       b.symDifference(a);
    }  }).check(IllegalArgumentException.class);
   }

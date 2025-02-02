@@ -57,6 +57,7 @@ public class LocationIndexedLineTest
     checkExpected(result, expected);
   }
 
+  @Override
   protected Geometry indicesOfThenExtract(Geometry input, Geometry subLine)
   {
     LocationIndexedLine indexedLine = new LocationIndexedLine(input);
@@ -65,6 +66,7 @@ public class LocationIndexedLineTest
     return result;
   }
 
+  @Override
   protected boolean indexOfAfterCheck(Geometry linearGeom, Coordinate testPt)
   {
     LocationIndexedLine indexedLine = new LocationIndexedLine(linearGeom);
@@ -83,6 +85,7 @@ public class LocationIndexedLineTest
     return true;
   }
 
+  @Override
   protected boolean indexOfAfterCheck(Geometry linearGeom, Coordinate testPt, Coordinate afterPt)
   {
     LocationIndexedLine indexedLine = new LocationIndexedLine(linearGeom);
@@ -95,6 +98,7 @@ public class LocationIndexedLineTest
     return true;
   }
 
+  @Override
   protected Coordinate extractOffsetAt(Geometry linearGeom, Coordinate testPt, double offsetDistance)
   {
   	LocationIndexedLine indexedLine = new LocationIndexedLine(linearGeom);

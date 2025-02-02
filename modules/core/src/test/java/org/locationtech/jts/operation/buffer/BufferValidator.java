@@ -65,6 +65,7 @@ public class BufferValidator
     }
     public abstract void test() throws Exception;
     private int priority;
+    @Override
     public int compareTo(Object o) {
       return priority - ((Test) o).priority;
     }
@@ -126,6 +127,7 @@ public class BufferValidator
   }
   public BufferValidator setExpectedArea(final double expectedArea) {
     return addTest(new Test("Area Test") {
+      @Override
       public void test() throws Exception {
         double tolerance =
           Math.abs(
@@ -146,6 +148,7 @@ public class BufferValidator
 
   public BufferValidator setEmptyBufferExpected(final boolean emptyBufferExpected) {
     return addTest(new Test("Empty Buffer Test", 1) {
+      @Override
       public void test() throws Exception {
         Assert.assertTrue(
           supplement(
@@ -159,6 +162,7 @@ public class BufferValidator
 
   public BufferValidator setBufferHolesExpected(final boolean bufferHolesExpected) {
     return addTest(new Test("Buffer Holes Test") {
+      @Override
       public void test() throws Exception {
         Assert.assertTrue(
           supplement(
@@ -221,6 +225,7 @@ public class BufferValidator
 
   private void addContainsTest() {
     addTest(new Test("Contains Test") {
+      @Override
       public void test() throws Exception {
         if (getOriginal().getClass() == GeometryCollection.class) {
           return;
@@ -250,6 +255,7 @@ public class BufferValidator
 
   private void addBufferResultValidatorTest() {
     addTest(new Test("BufferResultValidator Test") {
+      @Override
       public void test() throws Exception {
         if (getOriginal().getClass() == GeometryCollection.class) {
           return;

@@ -50,6 +50,7 @@ public class PrecisionModelDialog extends JDialog {
     panel1.setLayout(borderLayout1);
     okButton.setText("OK");
     okButton.addActionListener(new java.awt.event.ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         okButton_actionPerformed(e);
       }

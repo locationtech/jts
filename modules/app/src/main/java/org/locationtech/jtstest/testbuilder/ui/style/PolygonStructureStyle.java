@@ -39,6 +39,7 @@ extends LineStringStyle
     this.color = color;
   }
 
+  @Override
   protected void paintLineString(LineString lineString,
       int lineType,
       Viewport viewport, Graphics2D gr)
