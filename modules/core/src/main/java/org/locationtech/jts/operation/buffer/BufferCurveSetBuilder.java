@@ -216,9 +216,9 @@ public class BufferCurveSetBuilder {
 
     LinearRing shell = p.getExteriorRing();
     Coordinate[] shellCoord = clean(shell.getCoordinates());
-    // optimization - don't bother computing buffer
+    // optimization - don't compute buffer
     // if the polygon would be completely eroded
-    if (distance < 0.0 && isErodedCompletely(shell, distance))
+    if (distance < 0.0 && isRingFullyEroded(shell, false, distance))
         return;
     // don't attempt to buffer a polygon with too few distinct vertices
     if (distance <= 0.0 && shellCoord.length < 3)
@@ -236,9 +236,9 @@ public class BufferCurveSetBuilder {
       LinearRing hole = p.getInteriorRingN(i);
       Coordinate[] holeCoord = clean(hole.getCoordinates());
 
-      // optimization - don't bother computing buffer for this hole
+      // optimization - don't compute buffer for this hole
       // if the hole would be completely covered
-      if (distance > 0.0 && isErodedCompletely(hole, -distance))
+      if (distance > 0.0 && isRingFullyEroded(hole, true, distance))
           continue;
 
       // Holes are topologically labelled opposite to the shell, since
@@ -255,14 +255,27 @@ public class BufferCurveSetBuilder {
   
   private void addRingBothSides(Coordinate[] coord, double distance)
   {
-    addRingSide(coord, distance,
-      Position.LEFT, 
-      Location.EXTERIOR, Location.INTERIOR);
-    /* Add the opposite side of the ring
-    */
-    addRingSide(coord, distance,
-      Position.RIGHT,
-      Location.INTERIOR, Location.EXTERIOR);
+    /*
+     * (f "hole" side will be eroded completely, avoid generating it.
+     * This prevents hole artifacts (e.g. https://github.com/libgeos/geos/issues/1223)
+     */
+    //-- distance is assumed positive, due to previous checks
+    boolean isHoleComputed = ! isRingFullyEroded(coord, CoordinateArrays.envelope(coord), true, distance);
+    
+    boolean isCCW = isRingCCW(coord);
+    
+    boolean isShellLeft = ! isCCW;
+    if (isShellLeft || isHoleComputed) {
+      addRingSide(coord, distance,
+        Position.LEFT, 
+        Location.EXTERIOR, Location.INTERIOR);
+    }
+    boolean isShellRight = isCCW;
+    if (isShellRight || isHoleComputed) {
+      addRingSide(coord, distance,
+        Position.RIGHT,
+        Location.INTERIOR, Location.EXTERIOR);
+    }
   }
   
   /**
@@ -411,25 +424,32 @@ public class BufferCurveSetBuilder {
    * @param offsetDistance
    * @return
    */
-  private static boolean isErodedCompletely(LinearRing ring, double bufferDistance)
+  private static boolean isRingFullyEroded(LinearRing ring, boolean isHole, double bufferDistance)
   {
-    Coordinate[] ringCoord = ring.getCoordinates();
+    return isRingFullyEroded(ring.getCoordinates(), ring.getEnvelopeInternal(), isHole, bufferDistance);
+  }
+  
+  private static boolean isRingFullyEroded(Coordinate[] ringCoord, Envelope ringEnv, boolean isHole, double bufferDistance)
+  {
     // degenerate ring has no area
     if (ringCoord.length < 4)
-      return bufferDistance < 0;
+      return true;
 
     // important test to eliminate inverted triangle bug
     // also optimizes erosion test for triangles
     if (ringCoord.length == 4)
       return isTriangleErodedCompletely(ringCoord, bufferDistance);
 
-    // if envelope is narrower than twice the buffer distance, ring is eroded
-    Envelope env = ring.getEnvelopeInternal();
-    double envMinDimension = Math.min(env.getHeight(), env.getWidth());
-    if (bufferDistance < 0.0
-        && 2 * Math.abs(bufferDistance) > envMinDimension)
-      return true;
-
+    boolean isErodable = 
+        (  isHole && bufferDistance > 0) ||
+        (! isHole && bufferDistance < 0);
+    
+    if (isErodable) {
+      //-- if envelope is narrower than twice the buffer distance, ring is eroded
+      double envMinDimension = Math.min(ringEnv.getHeight(), ringEnv.getWidth());
+      if (2 * Math.abs(bufferDistance) > envMinDimension)
+        return true;
+    }
     return false;
   }
 
