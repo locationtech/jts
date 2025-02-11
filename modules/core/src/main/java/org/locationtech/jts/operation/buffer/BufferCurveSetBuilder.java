@@ -184,7 +184,7 @@ public class BufferCurveSetBuilder {
      * Singled-sided buffers currently treat rings as if they are lines.
      */
     if (CoordinateArrays.isRing(coord) && ! curveBuilder.getBufferParameters().isSingleSided()) {
-      addRingBothSides(coord, distance);
+      addLinearRingSides(coord, distance);
     }
     else {
       Coordinate[] curve = curveBuilder.getLineCurve(coord, distance);
@@ -224,7 +224,7 @@ public class BufferCurveSetBuilder {
     if (distance <= 0.0 && shellCoord.length < 3)
     	return;
 
-    addRingSide(
+    addPolygonRingSide(
             shellCoord,
             offsetDistance,
             offsetSide,
@@ -244,7 +244,7 @@ public class BufferCurveSetBuilder {
       // Holes are topologically labelled opposite to the shell, since
       // the interior of the polygon lies on their opposite side
       // (on the left, if the hole is oriented CCW)
-      addRingSide(
+      addPolygonRingSide(
             holeCoord,
             offsetDistance,
             Position.opposite(offsetSide),
@@ -253,13 +253,51 @@ public class BufferCurveSetBuilder {
     }
   }
   
-  private void addRingBothSides(Coordinate[] coord, double distance)
+  /**
+   * Adds an offset curve for one side of a polygon ring.
+   * The side and left and right topological location arguments
+   * are provided as if the ring is oriented CW.
+   * If the ring is in the opposite orientation,
+   * the left and right locations are interchanged and the side is flipped.
+   *
+   * @param coord the coordinates of the ring (must not contain repeated points)
+   * @param offsetDistance the positive distance at which to create the buffer
+   * @param side the side {@link Position} of the ring on which to construct the buffer line
+   * @param cwLeftLoc the location on the L side of the ring (if it is CW)
+   * @param cwRightLoc the location on the R side of the ring (if it is CW)
+   */
+  private void addPolygonRingSide(Coordinate[] coord, double offsetDistance, int side, int cwLeftLoc, int cwRightLoc)
+  {
+    // don't bother adding ring if it is "flat" and will disappear in the output
+    if (offsetDistance == 0.0 && coord.length < LinearRing.MINIMUM_VALID_SIZE)
+      return;
+    
+    int leftLoc  = cwLeftLoc;
+    int rightLoc = cwRightLoc;
+    boolean isCCW = isRingCCW(coord);
+    if (coord.length >= LinearRing.MINIMUM_VALID_SIZE 
+      && isCCW) {
+      leftLoc = cwRightLoc;
+      rightLoc = cwLeftLoc;
+      side = Position.opposite(side);
+    }
+    addRingSide(coord, offsetDistance, side, leftLoc, rightLoc);
+  }
+  
+  /**
+   * Add both sides of a linear ring.
+   * Checks for erosion of the hole side.
+   * 
+   * @param coord ring vertices
+   * @param distance offset distance (must be non-zero positive)
+   */
+  private void addLinearRingSides(Coordinate[] coord, double distance)
   {
     /*
      * (f "hole" side will be eroded completely, avoid generating it.
      * This prevents hole artifacts (e.g. https://github.com/libgeos/geos/issues/1223)
      */
-    //-- distance is assumed positive, due to previous checks
+    //-- distance is assumed > 0, due to previous checks
     boolean isHoleComputed = ! isRingFullyEroded(coord, CoordinateArrays.envelope(coord), true, distance);
     
     boolean isCCW = isRingCCW(coord);
@@ -278,37 +316,9 @@ public class BufferCurveSetBuilder {
     }
   }
   
-  /**
-   * Adds an offset curve for one side of a ring.
-   * The side and left and right topological location arguments
-   * are provided as if the ring is oriented CW.
-   * (If the ring is in the opposite orientation,
-   * this is detected and 
-   * the left and right locations are interchanged and the side is flipped.)
-   *
-   * @param coord the coordinates of the ring (must not contain repeated points)
-   * @param offsetDistance the positive distance at which to create the buffer
-   * @param side the side {@link Position} of the ring on which to construct the buffer line
-   * @param cwLeftLoc the location on the L side of the ring (if it is CW)
-   * @param cwRightLoc the location on the R side of the ring (if it is CW)
-   */
-  private void addRingSide(Coordinate[] coord, double offsetDistance, int side, int cwLeftLoc, int cwRightLoc)
+  private void addRingSide(Coordinate[] coord, double offsetDistance, int side, int leftLoc, int rightLoc)
   {
-    // don't bother adding ring if it is "flat" and will disappear in the output
-    if (offsetDistance == 0.0 && coord.length < LinearRing.MINIMUM_VALID_SIZE)
-      return;
-    
-    int leftLoc  = cwLeftLoc;
-    int rightLoc = cwRightLoc;
-    boolean isCCW = isRingCCW(coord);
-    if (coord.length >= LinearRing.MINIMUM_VALID_SIZE 
-      && isCCW) {
-      leftLoc = cwRightLoc;
-      rightLoc = cwLeftLoc;
-      side = Position.opposite(side);
-    }
     Coordinate[] curve = curveBuilder.getRingCurve(coord, side, offsetDistance);
-    
     /**
      * If the offset curve has inverted completely it will produce
      * an unwanted artifact in the result, so skip it. 
@@ -316,7 +326,6 @@ public class BufferCurveSetBuilder {
     if (isRingCurveInverted(coord, offsetDistance, curve)) {
       return;
     }
-
     addCurve(curve, leftLoc, rightLoc);
   }
 
