@@ -39,7 +39,7 @@ Distributions for older JTS versions can be obtained at the
 
 ### Performance Improvements
 
-* Fix RelateNG to cache in prepared A-L cases (#1099)
+* Fix `RelateNG` to cache in prepared A-L cases (#1099)
 * Add `GeometryCollection` dimension cache (#1103)
 * Add `MathUtil.hypot` function and use it for length calculations (#1112)
 * Improve `LineStringSnapper` performance by using squared distance (#1111)
