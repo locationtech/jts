@@ -34,8 +34,8 @@ Distributions for older JTS versions can be obtained at the
 * Fix `ConvexHull` to avoid modifying input (#1083)
 * Fix `TopologyPreservingSimplifier` to avoid jumping components (#1096)
 * Fix `VWSimplifier` coordinate aliasing (#1107)
-* Add buffer hole erosion heuristic for rings (#1117)
-* Fix buffer element erosion for negative distance (#1119)
+* Add `BufferOp` hole erosion heuristic for rings (#1117)
+* Fix `BufferOp` element erosion for negative distance (#1119)
 
 ### Performance Improvements
 
