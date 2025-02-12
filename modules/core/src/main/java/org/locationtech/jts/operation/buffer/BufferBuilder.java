@@ -40,10 +40,6 @@ import org.locationtech.jts.noding.IntersectionAdder;
 import org.locationtech.jts.noding.MCIndexNoder;
 import org.locationtech.jts.noding.Noder;
 import org.locationtech.jts.noding.SegmentString;
-import org.locationtech.jts.operation.overlay.OverlayNodeFactory;
-import org.locationtech.jts.operation.overlay.PolygonBuilder;
-
-
 
 /**
  * Builds the buffer geometry for a given input geometry and precision model.
@@ -167,7 +163,7 @@ class BufferBuilder
     boolean isNodingValidated = distance == 0.0;
     computeNodedEdges(bufferSegStrList, precisionModel, isNodingValidated);
     
-    graph = new PlanarGraph(new OverlayNodeFactory());
+    graph = new PlanarGraph(new BufferNodeFactory());
     graph.addEdges(edgeList.getEdges());
 
     List subgraphList = createSubgraphs(graph);
