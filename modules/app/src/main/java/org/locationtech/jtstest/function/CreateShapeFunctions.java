@@ -364,6 +364,22 @@ public class CreateShapeFunctions {
     return CubicBezierCurve.bezierCurve(geom, controlPoints);
   }
   
+  @Metadata(description="Get the generated control points for a Bezier curve")
+  public static Geometry bezierControl(Geometry geom, 
+      @Metadata(title="Alpha (curveness)")
+      double alpha) {
+    return CubicBezierCurve.controlPoints(geom, alpha);
+  }
+  
+  @Metadata(description="Get the generated control points for a Bezier curve with a skew")
+  public static Geometry bezierControlSkew(Geometry geom, 
+      @Metadata(title="Alpha (curveness)")
+      double alpha,
+    @Metadata(title="Skew factor")
+    double skew) {
+    return CubicBezierCurve.controlPoints(geom, alpha, skew);
+  }
+  
   public static Geometry nGon(Geometry g, 
       @Metadata(title="Num sides")
       int sides) {
