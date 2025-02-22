@@ -289,12 +289,8 @@ public class QuadEdgeSubdivision {
 			 * since the orientation predicates may experience precision failures.
 			 */
 			if (iter > maxIter) {
-				throw new LocateFailureException(e.toLineSegment());
-				// String msg = "Locate failed to converge (at edge: " + e + ").
-				// Possible causes include invalid Subdivision topology or very close
-				// sites";
-				// System.err.println(msg);
-				// dumpTriangles();
+			  //System.out.println(getTriangles(new GeometryFactory()));
+			  throw new LocateFailureException(e.toLineSegment()); 
 			}
 
 			if ((v.equals(e.orig())) || (v.equals(e.dest()))) {
