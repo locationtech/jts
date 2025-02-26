@@ -42,10 +42,13 @@ public class DelaunayTriangulationBuilder
 {
 	/**
 	 * Extracts the unique {@link Coordinate}s from the given {@link Geometry}.
+   * Has the side effect of sorting the coordinates in XY order.
+   * This significantly improves the robustness of Delaunay triangulation construction.
+   *  
 	 * @param geom the geometry to extract from
-	 * @return a List of the unique Coordinates
+	 * @return a sorted list of the unique Coordinates
 	 */
-	public static CoordinateList extractUniqueCoordinates(Geometry geom)
+	static CoordinateList extractUniqueCoordinates(Geometry geom)
 	{
 		if (geom == null)
 			return new CoordinateList();
@@ -54,7 +57,15 @@ public class DelaunayTriangulationBuilder
 		return unique(coords);
 	}
 	
-	public static CoordinateList unique(Coordinate[] coords)
+	/**
+	 * Copies a list of coordinates and ensures they are unique.
+	 * Has the side effect of sorting the coordinates in XY order.
+	 * This significantly improves the robustness of Delaunay triangulation construction.
+	 * 
+	 * @param coords a list of coordinates
+	 * @return a sorted list of unique coordinates
+	 */
+	static CoordinateList unique(Coordinate[] coords)
 	{
 	  Coordinate[] coordsCopy = CoordinateArrays.copyDeep(coords);
 		Arrays.sort(coordsCopy);
