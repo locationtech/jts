@@ -18,6 +18,7 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.operation.distance.DistanceOp;
 import org.locationtech.jts.operation.distance.IndexedFacetDistance;
+import org.locationtech.jtstest.geomfunction.Metadata;
 
 public class DistanceFunctions {
   public static double distance(Geometry a, Geometry b) {
@@ -46,44 +47,41 @@ public class DistanceFunctions {
 
   public static double hausdorffDistance(Geometry a, Geometry b)  
   {   
-    DiscreteHausdorffDistance dist = new DiscreteHausdorffDistance(a, b);
-    return dist.distance();
+    return DiscreteHausdorffDistance.distance(a, b);
   }
   
+  @Metadata(description="Hausdorff distance between A and B")
   public static Geometry hausdorffDistanceLine(Geometry a, Geometry b)  
   {   
-    DiscreteHausdorffDistance dist = new DiscreteHausdorffDistance(a, b);
-    dist.distance();
-    return a.getFactory().createLineString(dist.getCoordinates());
+    return DiscreteHausdorffDistance.distanceLine(a, b);
   }
 
-	public static Geometry hausdorffDistanceLineDensified(Geometry a, Geometry b, double frac)	
+  @Metadata(description="Hausdorff distance between A and B, densified")
+	public static Geometry hausdorffDistanceLineDensify(Geometry a, Geometry b, 
+      @Metadata(title="Densify fraction")
+	    double frac)	
 	{		
-    DiscreteHausdorffDistance dist = new DiscreteHausdorffDistance(a, b);
-    dist.setDensifyFraction(frac);
-    dist.distance();
-    return a.getFactory().createLineString(dist.getCoordinates());
+    return DiscreteHausdorffDistance.distanceLine(a, b, frac);
 	}
 
+  @Metadata(description="Oriented Hausdorff distance from A to B")
 	public static Geometry orientedHausdorffDistanceLine(Geometry a, Geometry b)	
 	{		
-    DiscreteHausdorffDistance dist = new DiscreteHausdorffDistance(a, b);
-    dist.orientedDistance();
-    return a.getFactory().createLineString(dist.getCoordinates());
+    return DiscreteHausdorffDistance.orientedDistanceLine(a, b);
 	}
 
+  @Metadata(description="Oriented Hausdorff distance from A to B")
 	public static double orientedHausdorffDistance(Geometry a, Geometry b)	
 	{		
-    DiscreteHausdorffDistance dist = new DiscreteHausdorffDistance(a, b);
-    return dist.orientedDistance();
+    return DiscreteHausdorffDistance.orientedDistance(a, b);
 	}
 	
-  public static Geometry orientedHausdorffDistanceLineDensified(Geometry a, Geometry b, double frac)  
+  @Metadata(description="Oriented Hausdorff distance from A to B, densified")
+  public static Geometry orientedHausdorffDistanceLineDensify(Geometry a, Geometry b, 
+      @Metadata(title="Densify fraction")
+      double frac)  
   {   
-    DiscreteHausdorffDistance dist = new DiscreteHausdorffDistance(a, b);
-    dist.setDensifyFraction(frac);
-    dist.orientedDistance();
-    return a.getFactory().createLineString(dist.getCoordinates());
+    return DiscreteHausdorffDistance.orientedDistanceLine(a, b, frac);
   }
 
   public static double distanceIndexed(Geometry a, Geometry b) {
