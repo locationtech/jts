@@ -24,6 +24,7 @@ import org.locationtech.jts.geomgraph.NodeMap;
 public class RelateNodeFactory
   extends NodeFactory
 {
+  @Override
   public Node createNode(Coordinate coord)
   {
     return new RelateNode(coord, new EdgeEndBundleStar());

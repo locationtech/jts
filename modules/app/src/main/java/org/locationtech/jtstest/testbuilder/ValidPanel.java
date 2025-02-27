@@ -89,6 +89,7 @@ public class ValidPanel extends JPanel {
     JButton btnValidate = new JButton();
     btnValidate.setText("Valid?");
     btnValidate.addActionListener(new java.awt.event.ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         btnValidate_actionPerformed(e);
       }
@@ -96,6 +97,7 @@ public class ValidPanel extends JPanel {
     JButton btnSimple = new JButton();
     btnSimple.setText("Simple?");
     btnSimple.addActionListener(new java.awt.event.ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         btnSimple_actionPerformed(e);
       }
@@ -104,6 +106,7 @@ public class ValidPanel extends JPanel {
     JButton btnClear = new JButton();
     btnClear.setText("Clear");
     btnClear.addActionListener(new java.awt.event.ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         clearAll();
       }
@@ -190,6 +193,7 @@ public class ValidPanel extends JPanel {
     btnClearMark.setToolTipText("");
     btnClearMark.setText("Clear Mark");
     btnClearMark.addActionListener(new java.awt.event.ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         clearMark();
       }
@@ -198,6 +202,7 @@ public class ValidPanel extends JPanel {
     btnSetMark.setToolTipText("");
     btnSetMark.setText("Set Mark");
     btnSetMark.addActionListener(new java.awt.event.ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         btnSetMark_actionPerformed(e);
       }

@@ -196,6 +196,7 @@ public class WKTWriter
     }
 
     /** @see org.locationtech.jts.geom.CoordinateSequenceFilter#isGeometryChanged */
+    @Override
     public void filter(CoordinateSequence seq, int i) {
 
       if (checkOrdinateFlags.contains(Ordinate.Z) && !outputOrdinates.contains(Ordinate.Z)) {
@@ -210,11 +211,13 @@ public class WKTWriter
     }
 
     /** @see org.locationtech.jts.geom.CoordinateSequenceFilter#isGeometryChanged */
+    @Override
     public boolean isGeometryChanged() {
       return false;
     }
 
     /** @see org.locationtech.jts.geom.CoordinateSequenceFilter#isDone */
+    @Override
     public boolean isDone() {
       return outputOrdinates.equals(checkOrdinateFlags);
     }

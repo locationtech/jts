@@ -41,6 +41,7 @@ public class SimpleSweepLineIntersector
   public SimpleSweepLineIntersector() {
   }
 
+  @Override
   public void computeIntersections(List edges, SegmentIntersector si, boolean testAllSegments)
   {
     if (testAllSegments)
@@ -50,6 +51,7 @@ public class SimpleSweepLineIntersector
     computeIntersections(si);
   }
 
+  @Override
   public void computeIntersections(List edges0, List edges1, SegmentIntersector si)
   {
     add(edges0, edges0);

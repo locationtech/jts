@@ -40,12 +40,14 @@ public class GeometryCollectionShape implements Shape {
         shapes.add(shape);
     }
 
+    @Override
     public Rectangle getBounds() {
         /**@todo Implement this java.awt.Shape method*/
         throw new java.lang.UnsupportedOperationException(
             "Method getBounds() not yet implemented.");
     }
 
+    @Override
     public Rectangle2D getBounds2D() {
         Rectangle2D rectangle = null;
 
@@ -62,46 +64,54 @@ public class GeometryCollectionShape implements Shape {
         return rectangle;
     }
 
+    @Override
     public boolean contains(double x, double y) {
         /**@todo Implement this java.awt.Shape method*/
         throw new java.lang.UnsupportedOperationException(
             "Method contains() not yet implemented.");
     }
 
+    @Override
     public boolean contains(Point2D p) {
         /**@todo Implement this java.awt.Shape method*/
         throw new java.lang.UnsupportedOperationException(
             "Method contains() not yet implemented.");
     }
 
+    @Override
     public boolean intersects(double x, double y, double w, double h) {
         /**@todo Implement this java.awt.Shape method*/
         throw new java.lang.UnsupportedOperationException(
             "Method intersects() not yet implemented.");
     }
 
+    @Override
     public boolean intersects(Rectangle2D r) {
         /**@todo Implement this java.awt.Shape method*/
         throw new java.lang.UnsupportedOperationException(
             "Method intersects() not yet implemented.");
     }
 
+    @Override
     public boolean contains(double x, double y, double w, double h) {
         /**@todo Implement this java.awt.Shape method*/
         throw new java.lang.UnsupportedOperationException(
             "Method contains() not yet implemented.");
     }
 
+    @Override
     public boolean contains(Rectangle2D r) {
         /**@todo Implement this java.awt.Shape method*/
         throw new java.lang.UnsupportedOperationException(
             "Method contains() not yet implemented.");
     }
 
+    @Override
     public PathIterator getPathIterator(AffineTransform at) {
         return new ShapeCollectionPathIterator(shapes, at);
     }
 
+    @Override
     public PathIterator getPathIterator(AffineTransform at, double flatness) {
         // since Geometry is linear, can simply delegate to the simple method
         return getPathIterator(at);

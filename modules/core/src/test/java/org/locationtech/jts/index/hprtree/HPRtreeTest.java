@@ -52,6 +52,7 @@ public class HPRtreeTest extends TestCase {
   {
     HPRtree tree = new HPRtree(0);
     tree.query(new Envelope(0,0,1,1), new ItemVisitor() {
+      @Override
       public void visitItem(Object item) {
         assertTrue("Should never reach here", true);
       }

@@ -47,6 +47,7 @@ public class PreparedGeometryThreadSafeTest extends ThreadTestCase
     
   }
   
+  @Override
   public void setup()
   {
     Geometry sinePoly = createSineStar(new Coordinate(0, 0), 100000.0, nPts);
@@ -70,6 +71,7 @@ public class PreparedGeometryThreadSafeTest extends ThreadTestCase
   {
     return new Runnable() {
 
+      @Override
       public void run()
       {
         while (true) {

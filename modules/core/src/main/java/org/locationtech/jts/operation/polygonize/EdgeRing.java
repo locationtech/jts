@@ -474,6 +474,7 @@ class EdgeRing {
    *
    */
   static class EnvelopeComparator implements Comparator<EdgeRing> {
+    @Override
     public int compare(EdgeRing r0, EdgeRing r1) {
       return r0.getRing().getEnvelope().compareTo(r1.getRing().getEnvelope());
     }
@@ -488,6 +489,7 @@ class EdgeRing {
    *
    */
   static class EnvelopeAreaComparator implements Comparator<EdgeRing> {
+    @Override
     public int compare(EdgeRing r0, EdgeRing r1) {
       return Double.compare(
           r0.getRing().getEnvelope().getArea(),

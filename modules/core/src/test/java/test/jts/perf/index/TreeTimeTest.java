@@ -76,14 +76,17 @@ public class TreeTimeTest {
   }
   STRtree index;
 
+  @Override
   public void insert(Envelope itemEnv, Object item)
   {
     index.insert(itemEnv, item);
   }
+  @Override
   public List query(Envelope searchEnv)
   {
     return index.query(searchEnv);
   }
+  @Override
   public void finishInserting()
   {
     index.build();
@@ -102,14 +105,17 @@ public class TreeTimeTest {
   }
   HPRtree index;
 
+  @Override
   public void insert(Envelope itemEnv, Object item)
   {
     index.insert(itemEnv, item);
   }
+  @Override
   public List query(Envelope searchEnv)
   {
     return index.query(searchEnv);
   }
+  @Override
   public void finishInserting()
   {
     index.build();
@@ -122,14 +128,17 @@ public class TreeTimeTest {
   {
     Quadtree index = new Quadtree();
     public String toString() { return "Quad"; }
+    @Override
     public void insert(Envelope itemEnv, Object item)
     {
       index.insert(itemEnv, item);
     }
+    @Override
     public List query(Envelope searchEnv)
     {
       return index.query(searchEnv);
     }
+    @Override
     public void finishInserting()
     {
     }
@@ -140,14 +149,17 @@ public class TreeTimeTest {
   {
     EnvelopeList index = new EnvelopeList();
     public String toString() { return "Env"; }
+    @Override
     public void insert(Envelope itemEnv, Object item)
     {
       index.add(itemEnv);
     }
+    @Override
     public List query(Envelope searchEnv)
     {
       return index.query(searchEnv);
     }
+    @Override
     public void finishInserting()
     {
     }

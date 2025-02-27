@@ -27,21 +27,26 @@ public class ShapeCollectionPathIterator implements PathIterator {
     
     // initialize with a no-op iterator
     private PathIterator currentPathIterator = new PathIterator() {
+            @Override
             public int getWindingRule() {
                 throw new UnsupportedOperationException();
             }
 
+            @Override
             public boolean isDone() {
                 return true;
             }
 
+            @Override
             public void next() {
             }
 
+            @Override
             public int currentSegment(float[] coords) {
                 throw new UnsupportedOperationException();
             }
 
+            @Override
             public int currentSegment(double[] coords) {
                 throw new UnsupportedOperationException();
             }
@@ -63,6 +68,7 @@ public class ShapeCollectionPathIterator implements PathIterator {
         next();
     }
 
+    @Override
     public int getWindingRule() {
     	/**
        * WIND_NON_ZERO is more accurate than WIND_EVEN_ODD, and can be comparable
@@ -74,10 +80,12 @@ public class ShapeCollectionPathIterator implements PathIterator {
       return PathIterator.WIND_EVEN_ODD;
     }
 
+    @Override
     public boolean isDone() {
         return done;
     }
 
+    @Override
     public void next() {
         currentPathIterator.next();
 
@@ -90,10 +98,12 @@ public class ShapeCollectionPathIterator implements PathIterator {
         }
     }
 
+    @Override
     public int currentSegment(float[] coords) {
         return currentPathIterator.currentSegment(coords);
     }
 
+    @Override
     public int currentSegment(double[] coords) {
         return currentPathIterator.currentSegment(coords);
     }

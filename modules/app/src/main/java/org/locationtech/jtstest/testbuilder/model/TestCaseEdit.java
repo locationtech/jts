@@ -69,10 +69,12 @@ public class TestCaseEdit implements Testable {
     return (Geometry) geom.clone();
   }
   
+  @Override
   public void setGeometry(int i, Geometry geom) {
     testable.setGeometry(i, geom);
   }
 
+  @Override
   public void setName(String name) {
     testable.setName(name);
   }
@@ -91,6 +93,7 @@ public class TestCaseEdit implements Testable {
   
   public void setOpName(String name) { opName = name; }
   
+  @Override
   public Geometry getGeometry(int i) {
 //    return geom[i];
     return testable.getGeometry(i);
@@ -102,25 +105,31 @@ public class TestCaseEdit implements Testable {
   }
 
 
+  @Override
   public String getName() {
     return testable.getName();
   }
 
+  @Override
   public IntersectionMatrix getIntersectionMatrix() {
     return testable.getIntersectionMatrix();
   }
 
+  @Override
   public void setIntersectionMatrix(IntersectionMatrix im) {
     testable.setIntersectionMatrix(im);
   }
+  @Override
   public String getDescription() {
     return testable.getDescription();
   }
 
+  @Override
   public String getWellKnownText(int i) {
     return testable.getWellKnownText(i);
   }
 
+  @Override
   public void initGeometry() throws ParseException {
     testable.initGeometry();
   }

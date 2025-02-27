@@ -34,6 +34,7 @@ public class RelateNode
    * Update the IM with the contribution for this component.
    * A component only contributes if it has a labelling for both parent geometries
    */
+  @Override
   protected void computeIM(IntersectionMatrix im)
   {
     im.setAtLeastIfValid(label.getLocation(0), label.getLocation(1), 0);

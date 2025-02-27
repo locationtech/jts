@@ -55,6 +55,7 @@ extends PerformanceTestCase
     setRunIterations(N_ITER);
   }
 
+  @Override
   public void setUp()
   {
     System.out.println("Interior Point Area perf test");
@@ -64,6 +65,7 @@ extends PerformanceTestCase
     System.out.println("# Iterations: " + N_ITER);
   }
   
+  @Override
   public void startRun(int npts)
   {
     iter = 0;

@@ -33,6 +33,7 @@ public class RobustLineIntersector
   public RobustLineIntersector() {
   }
 
+  @Override
   public void computeIntersection(Coordinate p, Coordinate p1, Coordinate p2) {
     isProper = false;
     // do between check first, since it is faster than the orientation test
@@ -50,6 +51,7 @@ public class RobustLineIntersector
     result = NO_INTERSECTION;
   }
 
+  @Override
   protected int computeIntersect(
                 Coordinate p1, Coordinate p2,
                 Coordinate q1, Coordinate q2  ) {

@@ -107,6 +107,7 @@ class OverlayEdge extends HalfEdge {
   public boolean isForward() {
     return direction;
   }
+  @Override
   public Coordinate directionPt() {
     return dirPt;
   }

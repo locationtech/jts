@@ -32,6 +32,7 @@ public class LocatePointInRingTest extends AbstractPointInRingTest {
 
   public LocatePointInRingTest(String name) { super(name); }
 
+  @Override
   protected void runPtInRing(int expectedLoc, Coordinate pt, String wkt)
       throws Exception
   {

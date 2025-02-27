@@ -105,6 +105,7 @@ public class GeometryPointLocater
       this.vertexOnly = vertexOnly;
     }
 
+    @Override
     public void filter(Geometry geom)
     {
       if (! (geom instanceof LineString)) return;

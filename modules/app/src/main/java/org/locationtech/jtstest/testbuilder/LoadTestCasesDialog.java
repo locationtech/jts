@@ -68,6 +68,7 @@ public class LoadTestCasesDialog extends JDialog {
         btnCancel.setText("Cancel");
         btnCancel.addActionListener(new java.awt.event.ActionListener() {
 
+            @Override
             public void actionPerformed(ActionEvent e) {
                 btnCancel_actionPerformed(e);
             }
@@ -75,6 +76,7 @@ public class LoadTestCasesDialog extends JDialog {
         btnOk.setText("Ok");
         btnOk.addActionListener(new java.awt.event.ActionListener() {
 
+            @Override
             public void actionPerformed(ActionEvent e) {
                 btnOk_actionPerformed(e);
             }

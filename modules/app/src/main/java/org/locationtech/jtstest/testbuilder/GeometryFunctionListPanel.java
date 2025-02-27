@@ -44,6 +44,7 @@ public class GeometryFunctionListPanel extends JPanel {
   JScrollPane jScrollPane1 = new JScrollPane();
 
   JList list = new JList(listModel){
+    @Override
     public String getToolTipText(MouseEvent e) {
       int index = locationToIndex(e.getPoint());
       if (-1 < index) {
@@ -69,6 +70,7 @@ public class GeometryFunctionListPanel extends JPanel {
     private final ImageIcon unaryIcon = new ImageIcon(this.getClass()
         .getResource("UnaryGeomFunction.png"));
 
+    @Override
     public Component getListCellRendererComponent(JList list, Object value,
         int index, boolean isSelected, boolean cellHasFocus) {
       GeometryFunction func = (GeometryFunction) value;

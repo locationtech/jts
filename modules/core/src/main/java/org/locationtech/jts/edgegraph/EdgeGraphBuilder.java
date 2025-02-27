@@ -57,6 +57,7 @@ public class EdgeGraphBuilder
    */  
   public void add(Geometry geometry) {
     geometry.apply(new GeometryComponentFilter() {
+      @Override
       public void filter(Geometry component) {
         if (component instanceof LineString) {
           add((LineString)component);

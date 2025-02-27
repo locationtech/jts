@@ -26,6 +26,7 @@ public class TriangleFunctions {
   {
     return GeometryMapper.map(g, 
         new GeometryMapper.MapOp() {
+      @Override
       public Geometry map(Geometry g) {
         Coordinate[] pts = trianglePts(g);
         Coordinate cc = Triangle.centroid(pts[0], pts[1], pts[2]);
@@ -38,6 +39,7 @@ public class TriangleFunctions {
   {
     return GeometryMapper.map(g, 
         new GeometryMapper.MapOp() {
+      @Override
       public Geometry map(Geometry g) {
         Coordinate[] pts = trianglePts(g);
         Coordinate cc = Triangle.circumcentre(pts[0], pts[1], pts[2]);
@@ -65,6 +67,7 @@ public class TriangleFunctions {
   {
     return GeometryMapper.map(g, 
         new GeometryMapper.MapOp() {
+      @Override
       public Geometry map(Geometry g) {
         Coordinate[] pts = trianglePts(g);
         Coordinate cc = Triangle.circumcentreDD(pts[0], pts[1], pts[2]);
@@ -92,6 +95,7 @@ public class TriangleFunctions {
   {
     return GeometryMapper.map(g, 
         new GeometryMapper.MapOp() {
+      @Override
       public Geometry map(Geometry g) {
         Coordinate[] pts = trianglePts(g);
         Coordinate cc = Triangle.inCentre(pts[0], pts[1], pts[2]);

@@ -32,10 +32,12 @@ public class MinimalEdgeRing
     super(start, geometryFactory);
   }
 
+  @Override
   public DirectedEdge getNext(DirectedEdge de)
   {
     return de.getNextMin();
   }
+  @Override
   public void setEdgeRing(DirectedEdge de, EdgeRing er)
   {
     de.setMinEdgeRing(er);

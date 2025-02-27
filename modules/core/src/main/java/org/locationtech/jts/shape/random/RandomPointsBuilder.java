@@ -70,6 +70,7 @@ extends GeometricShapeBuilder
   	extentLocator = new IndexedPointInAreaLocator(mask);
   }
   
+  @Override
   public Geometry getGeometry()
   {
   	Coordinate[] pts = new Coordinate[numPts];
@@ -90,6 +91,7 @@ extends GeometricShapeBuilder
   	return getExtent().contains(p);
   }
   
+  @Override
   protected Coordinate createCoord(double x, double y)
   {
   	Coordinate pt = new Coordinate(x, y);

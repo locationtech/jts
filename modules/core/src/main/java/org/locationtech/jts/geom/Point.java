@@ -69,28 +69,34 @@ public class Point
     this.coordinates = coordinates;
   }
 
+  @Override
   public Coordinate[] getCoordinates() {
     return isEmpty() ? new Coordinate[]{} : new Coordinate[]{
         getCoordinate()
         };
   }
 
+  @Override
   public int getNumPoints() {
     return isEmpty() ? 0 : 1;
   }
 
+  @Override
   public boolean isEmpty() {
     return coordinates.size() == 0;
   }
 
+  @Override
   public boolean isSimple() {
     return true;
   }
 
+  @Override
   public int getDimension() {
     return 0;
   }
 
+  @Override
   public int getBoundaryDimension() {
     return Dimension.FALSE;
   }
@@ -109,10 +115,12 @@ public class Point
     return getCoordinate().y;
   }
 
+  @Override
   public Coordinate getCoordinate() {
     return coordinates.size() != 0 ? coordinates.getCoordinate(0): null;
   }
 
+  @Override
   public String getGeometryType() {
     return Geometry.TYPENAME_POINT;
   }
@@ -125,10 +133,12 @@ public class Point
    * @return an empty GeometryCollection
    * @see Geometry#getBoundary
    */
+  @Override
   public Geometry getBoundary() {
     return getFactory().createGeometryCollection();
   }
 
+  @Override
   protected Envelope computeEnvelopeInternal() {
     if (isEmpty()) {
       return new Envelope();
@@ -138,6 +148,7 @@ public class Point
     return env;
   }
 
+  @Override
   public boolean equalsExact(Geometry other, double tolerance) {
     if (!isEquivalentClass(other)) {
       return false;
@@ -151,11 +162,13 @@ public class Point
     return equal(((Point) other).getCoordinate(), this.getCoordinate(), tolerance);
   }
 
+  @Override
   public void apply(CoordinateFilter filter) {
 	    if (isEmpty()) { return; }
 	    filter.filter(getCoordinate());
 	  }
 
+  @Override
   public void apply(CoordinateSequenceFilter filter)
   {
 	    if (isEmpty())
@@ -165,10 +178,12 @@ public class Point
         geometryChanged();
 	  }
 
+  @Override
   public void apply(GeometryFilter filter) {
     filter.filter(this);
   }
 
+  @Override
   public void apply(GeometryComponentFilter filter) {
     filter.filter(this);
   }
@@ -180,39 +195,47 @@ public class Point
    * @return a clone of this instance
    * @deprecated
    */
+  @Override
   public Object clone() {
     return copy();
   }
 
+  @Override
   protected Point copyInternal() {
     return new Point(coordinates.copy(), factory);
   }
 
+  @Override
   public Point reverse() {
     return (Point) super.reverse();
   }
 
+  @Override
   protected Point reverseInternal()
   {
     return getFactory().createPoint(coordinates.copy());
   }
 
+  @Override
   public void normalize()
   {
     // a Point is always in normalized form
   }
 
+  @Override
   protected int compareToSameClass(Object other) {
     Point point = (Point) other;
     return getCoordinate().compareTo(point.getCoordinate());
   }
 
+  @Override
   protected int compareToSameClass(Object other, CoordinateSequenceComparator comp)
   {
     Point point = (Point) other;
     return comp.compare(this.coordinates, point.coordinates);
   }
   
+  @Override
   protected int getTypeCode() {
     return Geometry.TYPECODE_POINT;
   }

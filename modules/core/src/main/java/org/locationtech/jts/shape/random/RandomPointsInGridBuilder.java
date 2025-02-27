@@ -84,6 +84,7 @@ extends GeometricShapeBuilder
    * 
    * @return a MultiPoint
    */
+  @Override
   public Geometry getGeometry()
   {
     int nCells = (int) Math.sqrt(numPts);

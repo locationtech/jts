@@ -144,6 +144,7 @@ public class GeometryExtracter
     return false;
   }
 
+  @Override
   public void filter(Geometry geom) {
     if (geometryType == null || isOfType(geom, geometryType))
       comps.add(geom);

@@ -25,6 +25,7 @@ extends IntervalRTreeNode
 		this.item = item;
 	}
 	
+	@Override
 	public void query(double queryMin, double queryMax, ItemVisitor visitor)
 	{
 		if (! intersects(queryMin, queryMax)) 

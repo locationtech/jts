@@ -53,6 +53,7 @@ public class Node
 
   public Interval getInterval() { return interval; }
 
+  @Override
   protected boolean isSearchMatch(Interval itemInterval)
   {
 //    System.out.println(itemInterval + " overlaps " + interval + " : "

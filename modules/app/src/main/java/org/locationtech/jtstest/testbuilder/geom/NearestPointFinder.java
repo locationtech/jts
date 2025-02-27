@@ -51,6 +51,7 @@ public class NearestPointFinder
       this.tolerance = tolerance;
     }
 
+    @Override
     public void filter(CoordinateSequence seq, int i)
     {
       Coordinate p = seq.getCoordinate(i);
@@ -68,8 +69,10 @@ public class NearestPointFinder
     {
       return nearestPt;
     }
+    @Override
     public boolean isDone() { return false; }
 
+    @Override
     public boolean isGeometryChanged() { return false; }
   }
 

@@ -62,6 +62,7 @@ public class IteratedNoder
     this.maxIter = maxIter;
   }
 
+  @Override
   public Collection getNodedSubstrings()  {    return nodedSegStrings;  }
 
   /**
@@ -73,6 +74,7 @@ public class IteratedNoder
    * @param segStrings a collection of SegmentStrings to be noded
    * @throws TopologyException if the iterated noding fails to converge.
    */
+  @Override
   public void computeNodes(Collection segStrings)
     throws TopologyException
   {

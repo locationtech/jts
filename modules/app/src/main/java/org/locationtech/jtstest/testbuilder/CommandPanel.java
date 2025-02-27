@@ -78,12 +78,15 @@ extends JPanel
     //txtResult.setBackground(AppColors.BACKGROUND);
     // save command whenever it is changed
     txtCmd.getDocument().addDocumentListener(new DocumentListener() {
+      @Override
       public void changedUpdate(DocumentEvent e) {
         save();
       }
+      @Override
       public void removeUpdate(DocumentEvent e) {
         //save();
       }
+      @Override
       public void insertUpdate(DocumentEvent e) {
         save();
       }
@@ -124,12 +127,14 @@ extends JPanel
     
     
     JButton btnRun = SwingUtil.createButton(AppIcons.EXECUTE, "Run Command", new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         doRun();
       }
     });
     
     JButton btnPaste = SwingUtil.createButton(AppIcons.PASTE, "Paste Command", new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         setCommandText(getPaste());
         update();
@@ -137,6 +142,7 @@ extends JPanel
     });
     
     JButton btnClear = SwingUtil.createButton(AppIcons.CUT, "Clear Command", new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         setCommandText("");
         update();
@@ -144,6 +150,7 @@ extends JPanel
     });
     
     JButton btnPrev = SwingUtil.createButton(AppIcons.LEFT, "Previous Command", new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         if (historyIndex == -1) {
           historyIndex = commandLog.size()-1;
@@ -157,6 +164,7 @@ extends JPanel
     });
     
     JButton btnNext = SwingUtil.createButton(AppIcons.RIGHT, "Next Command", new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         if (historyIndex == -1) return;
         if (historyIndex == commandLog.size()-1) {
@@ -189,6 +197,7 @@ extends JPanel
     JButton btnAwkt = SwingUtil.createButton("A-WKT", 
         "Insert variable " + CommandController.VAR_A + " for A as WKT", 
         new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         insertCmdText(CommandController.VAR_A);
       }
@@ -196,6 +205,7 @@ extends JPanel
     JButton btnAwkb = SwingUtil.createButton("A-WKB", 
         "Insert variable " + CommandController.VAR_A_WKB + " for A as WKB", 
         new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         insertCmdText(CommandController.VAR_A_WKB);
       }
@@ -203,6 +213,7 @@ extends JPanel
     JButton btnBwkt = SwingUtil.createButton("B-WKT", 
         "Insert variable " + CommandController.VAR_B + " for B as WKT", 
         new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         insertCmdText(CommandController.VAR_B);
       }
@@ -210,6 +221,7 @@ extends JPanel
     JButton btnBwkb = SwingUtil.createButton("B-WKB", 
         "Insert variable " + CommandController.VAR_B_WKB + " for B as WKB", 
         new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         insertCmdText(CommandController.VAR_B_WKB);
       }

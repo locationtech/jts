@@ -36,6 +36,7 @@ public class ArrayListVisitor
    * 
    * @param item the item to visit
    */
+  @Override
   public void visitItem(Object item)
   {
     items.add(item);

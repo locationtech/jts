@@ -58,6 +58,7 @@ public class ComponentCoordinateExtracter
     this.coords = coords;
   }
 
+  @Override
   public void filter(Geometry geom)
   {
     if (geom.isEmpty())

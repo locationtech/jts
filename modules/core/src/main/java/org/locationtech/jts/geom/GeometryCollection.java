@@ -57,6 +57,7 @@ public class GeometryCollection extends Geometry {
     this.geometries = geometries;
   }
 
+  @Override
   public Coordinate getCoordinate() {
     for (int i = 0; i < geometries.length; i++) {
       if (! geometries[i].isEmpty()) {
@@ -75,6 +76,7 @@ public class GeometryCollection extends Geometry {
    *
    * @return the collected coordinates
    *    */
+  @Override
   public Coordinate[] getCoordinates() {
     Coordinate[] coordinates = new Coordinate[getNumPoints()];
     int k = -1;
@@ -88,6 +90,7 @@ public class GeometryCollection extends Geometry {
     return coordinates;
   }
 
+  @Override
   public boolean isEmpty() {
     for (int i = 0; i < geometries.length; i++) {
       if (!geometries[i].isEmpty()) {
@@ -97,6 +100,7 @@ public class GeometryCollection extends Geometry {
     return true;
   }
 
+  @Override
   public int getDimension() {
     /*
     int dimension = Dimension.FALSE;
@@ -113,6 +117,7 @@ public class GeometryCollection extends Geometry {
     //*/
   }
 
+  @Override
   public boolean hasDimension(int dim) {
     if (geomCollDim == null) {
       geomCollDim = new GeometryCollectionDimension(this);
@@ -120,6 +125,7 @@ public class GeometryCollection extends Geometry {
     return geomCollDim.hasDimension(dim);
   }
   
+  @Override
   public int getBoundaryDimension() {
     int dimension = Dimension.FALSE;
     for (int i = 0; i < geometries.length; i++) {
@@ -128,14 +134,17 @@ public class GeometryCollection extends Geometry {
     return dimension;
   }
 
+  @Override
   public int getNumGeometries() {
     return geometries.length;
   }
 
+  @Override
   public Geometry getGeometryN(int n) {
     return geometries[n];
   }
 
+  @Override
   public int getNumPoints() {
     int numPoints = 0;
     for (int i = 0; i < geometries.length; i++) {
@@ -144,10 +153,12 @@ public class GeometryCollection extends Geometry {
     return numPoints;
   }
 
+  @Override
   public String getGeometryType() {
     return Geometry.TYPENAME_GEOMETRYCOLLECTION;
   }
 
+  @Override
   public Geometry getBoundary() {
     checkNotGeometryCollection(this);
     Assert.shouldNeverReachHere();
@@ -159,6 +170,7 @@ public class GeometryCollection extends Geometry {
    *
    * @return the area of the polygon
    */
+  @Override
   public double getArea()
   {
     double area = 0.0;
@@ -168,6 +180,7 @@ public class GeometryCollection extends Geometry {
     return area;
   }
 
+  @Override
   public double getLength()
   {
     double sum = 0.0;
@@ -177,6 +190,7 @@ public class GeometryCollection extends Geometry {
     return sum;
   }
 
+  @Override
   public boolean equalsExact(Geometry other, double tolerance) {
     if (!isEquivalentClass(other)) {
       return false;
@@ -193,12 +207,14 @@ public class GeometryCollection extends Geometry {
     return true;
   }
 
+  @Override
   public void apply(CoordinateFilter filter) {
 	    for (int i = 0; i < geometries.length; i++) {
 	      geometries[i].apply(filter);
 	    }
 	  }
 
+  @Override
   public void apply(CoordinateSequenceFilter filter) {
     if (geometries.length == 0)
       return;
@@ -212,6 +228,7 @@ public class GeometryCollection extends Geometry {
       geometryChanged();
   }
 
+  @Override
   public void apply(GeometryFilter filter) {
     filter.filter(this);
     for (int i = 0; i < geometries.length; i++) {
@@ -219,6 +236,7 @@ public class GeometryCollection extends Geometry {
     }
   }
 
+  @Override
   public void apply(GeometryComponentFilter filter) {
     filter.filter(this);
     for (int i = 0; i < geometries.length; i++) {
@@ -233,10 +251,12 @@ public class GeometryCollection extends Geometry {
    * @return a clone of this instance
    * @deprecated
    */
+  @Override
   public Object clone() {
     return copy();
   }
 
+  @Override
   protected GeometryCollection copyInternal() {
     Geometry[] geometries = new Geometry[this.geometries.length];
     for (int i = 0; i < geometries.length; i++) {
@@ -245,6 +265,7 @@ public class GeometryCollection extends Geometry {
     return new GeometryCollection(geometries, factory);
   }
 
+  @Override
   public void normalize() {
     for (int i = 0; i < geometries.length; i++) {
       geometries[i].normalize();
@@ -252,6 +273,7 @@ public class GeometryCollection extends Geometry {
     Arrays.sort(geometries);
   }
 
+  @Override
   protected Envelope computeEnvelopeInternal() {
     Envelope envelope = new Envelope();
     for (int i = 0; i < geometries.length; i++) {
@@ -260,12 +282,14 @@ public class GeometryCollection extends Geometry {
     return envelope;
   }
 
+  @Override
   protected int compareToSameClass(Object o) {
     TreeSet theseElements = new TreeSet(Arrays.asList(geometries));
     TreeSet otherElements = new TreeSet(Arrays.asList(((GeometryCollection) o).geometries));
     return compare(theseElements, otherElements);
   }
 
+  @Override
   protected int compareToSameClass(Object o, CoordinateSequenceComparator comp) {
     GeometryCollection gc = (GeometryCollection) o;
 
@@ -285,6 +309,7 @@ public class GeometryCollection extends Geometry {
 
   }
   
+  @Override
   protected int getTypeCode() {
     return Geometry.TYPECODE_GEOMETRYCOLLECTION;
   }
@@ -296,10 +321,12 @@ public class GeometryCollection extends Geometry {
    *
    * @return a {@link GeometryCollection} in the reverse order
    */
+  @Override
   public GeometryCollection reverse() {
     return (GeometryCollection) super.reverse();
   }
 
+  @Override
   protected GeometryCollection reverseInternal()
   {
     Geometry[] geometries = new Geometry[this.geometries.length];

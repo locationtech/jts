@@ -29,11 +29,13 @@ public abstract class AbstractDrawTool extends LineBandTool {
 
 	protected abstract int getGeometryType();
 
+	@Override
 	public void mouseClicked(MouseEvent e) {
 		setBandType();
 		super.mouseClicked(e);
 	}
 
+	@Override
 	protected void bandFinished() throws Exception {
 		setType();
 		geomModel().addComponent(getCoordinates());

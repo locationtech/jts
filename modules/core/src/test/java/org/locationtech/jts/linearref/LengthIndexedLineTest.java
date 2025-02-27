@@ -132,6 +132,7 @@ public class LengthIndexedLineTest
    * These tests work for LengthIndexedLine, but not LocationIndexedLine
    *
    */
+  @Override
   public void testOffsetStartPointRepeatedPoint()
   {
     runOffsetTest("LINESTRING (0 0, 10 10, 10 10, 20 20)", "POINT(0 0)", 1.0, "POINT (-0.7071067811865475 0.7071067811865475)");
@@ -181,6 +182,7 @@ public class LengthIndexedLineTest
     checkExpected(result, expected);
   }
 
+  @Override
   protected Geometry indicesOfThenExtract(Geometry linearGeom, Geometry subLine)
   {
     LengthIndexedLine indexedLine = new LengthIndexedLine(linearGeom);
@@ -189,6 +191,7 @@ public class LengthIndexedLineTest
     return result;
   }
 
+  @Override
   protected boolean indexOfAfterCheck(Geometry linearGeom, Coordinate testPt)
   {
     LengthIndexedLine indexedLine = new LengthIndexedLine(linearGeom);
@@ -207,6 +210,7 @@ public class LengthIndexedLineTest
     return true;
   }
 
+  @Override
   protected boolean indexOfAfterCheck(Geometry linearGeom, Coordinate testPt, Coordinate checkPt)
   {
     LengthIndexedLine indexedLine = new LengthIndexedLine(linearGeom);
@@ -219,6 +223,7 @@ public class LengthIndexedLineTest
     return true;
   }
 
+  @Override
   protected Coordinate extractOffsetAt(Geometry linearGeom, Coordinate testPt, double offsetDistance)
   {
     LengthIndexedLine indexedLine = new LengthIndexedLine(linearGeom);

@@ -106,6 +106,7 @@ class GeometryOverlay
       return GeometryCollectionMapper.map(
           (GeometryCollection) a,
           new GeometryMapper.MapOp() {
+            @Override
             public Geometry map(Geometry g) {
               return g.intersection(g2);
             }

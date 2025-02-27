@@ -75,6 +75,7 @@ public class IndexedPointInAreaLocator
    * @param p the point to test
    * @return the location of the point in the geometry  
    */
+  @Override
   public int locate(Coordinate p)
   {
     // avoid calling synchronized method improves performance
@@ -115,6 +116,7 @@ public class IndexedPointInAreaLocator
       this.counter = counter;
     }
     
+    @Override
     public void visitItem(Object item)
     {
       LineSegment seg = (LineSegment) item;

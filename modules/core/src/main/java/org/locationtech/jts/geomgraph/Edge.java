@@ -69,6 +69,7 @@ public class Edge
   {
     return pts[i];
   }
+  @Override
   public Coordinate getCoordinate()
   {
     if (pts.length > 0) return pts[0];
@@ -137,6 +138,7 @@ public class Edge
   {
     this.isIsolated = isIsolated;
   }
+  @Override
   public boolean isIsolated()
   {
     return isIsolated;
@@ -197,6 +199,7 @@ public class Edge
    * Update the IM with the contribution for this component.
    * A component only contributes if it has a labelling for both parent geometries
    */
+  @Override
   public void computeIM(IntersectionMatrix im)
   {
     updateIM(label, im);

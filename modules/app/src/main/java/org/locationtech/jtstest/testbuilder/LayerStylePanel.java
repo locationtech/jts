@@ -147,6 +147,7 @@ public class LayerStylePanel extends JPanel {
     add( stylePanel(), BorderLayout.CENTER );
     
     JButton btnReset = SwingUtil.createButton(AppIcons.CLEAR, "Reset style to default", new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent arg0) {
         if (layer == null) return;
         layer.resetStyle();
@@ -187,6 +188,7 @@ public class LayerStylePanel extends JPanel {
     cbShift.setAlignmentX(Component.LEFT_ALIGNMENT);
     cbShift.setText("Shift");
     cbShift.addActionListener(new java.awt.event.ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         if (layer == null) return;
         layer.getLayerStyle().setShift(cbShift.isSelected());
@@ -197,12 +199,15 @@ public class LayerStylePanel extends JPanel {
     addRow("Name", txtName, cbShift);
     
     txtName.getDocument().addDocumentListener(new DocumentListener() {
+      @Override
       public void changedUpdate(DocumentEvent e) {
         update();
       }
+      @Override
       public void removeUpdate(DocumentEvent e) {
         update();
       }
+      @Override
       public void insertUpdate(DocumentEvent e) {
         update();
       }
@@ -220,6 +225,7 @@ public class LayerStylePanel extends JPanel {
     cbVertex.setToolTipText(AppStrings.TIP_STYLE_VERTEX_ENABLE);
     cbVertex.setAlignmentX(Component.LEFT_ALIGNMENT);
     cbVertex.addActionListener(new java.awt.event.ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         if (layer == null) return;
         layer.getLayerStyle().setVertices(cbVertex.isSelected());
@@ -230,6 +236,7 @@ public class LayerStylePanel extends JPanel {
         "Vertex",
         AppColors.GEOM_VIEW_BACKGROUND,
         new ColorControl.ColorListener() {
+          @Override
           public void colorChanged(Color clr) {
             if (layer == null) return;
             layer.getLayerStyle().setVertexColor(clr);
@@ -243,6 +250,7 @@ public class LayerStylePanel extends JPanel {
     spinVertexSize.setMaximumSize(new Dimension(40,16));
     spinVertexSize.setAlignmentX(Component.LEFT_ALIGNMENT);
     spinVertexSize.addChangeListener(new ChangeListener() {
+      @Override
       public void stateChanged(ChangeEvent e) {
         int size = vertexSizeModel.getNumber().intValue();
         layer.getLayerStyle().setVertexSize(size);
@@ -254,6 +262,7 @@ public class LayerStylePanel extends JPanel {
     cbVertexLabel.setText("Label");
     cbVertexLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
     cbVertexLabel.addActionListener(new java.awt.event.ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         if (layer == null) return;
         layer.getLayerStyle().setVertexLabels(cbVertexLabel.isSelected());
@@ -263,6 +272,7 @@ public class LayerStylePanel extends JPanel {
 
     comboVertexSymbol = new JComboBox(vertexSymbolNames);
     comboVertexSymbol.addActionListener(new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         JComboBox cb = (JComboBox)e.getSource();
         int symType = getVertexSymbol(cb);
@@ -280,6 +290,7 @@ public class LayerStylePanel extends JPanel {
     cbStroked.setToolTipText(AppStrings.TIP_STYLE_LINE_ENABLE);
     cbStroked.setAlignmentX(Component.LEFT_ALIGNMENT);
     cbStroked.addActionListener(new java.awt.event.ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         geomStyle().setStroked(cbStroked.isSelected());
         JTSTestBuilder.controller().geometryViewChanged();
@@ -290,6 +301,7 @@ public class LayerStylePanel extends JPanel {
         "Line",
         AppColors.GEOM_VIEW_BACKGROUND,
         new ColorControl.ColorListener() {
+          @Override
           public void colorChanged(Color clr) {
             geomStyle().setLineColor(clr);
             layer.getLayerStyle().setColor(clr);
@@ -299,6 +311,7 @@ public class LayerStylePanel extends JPanel {
         }
        );
     JButton btnVertexSynch = createSynchButton("^", "Synch Vertex Color", new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent arg0) {
         if (layer == null) return;
         Color clr = ColorControl.getColor(btnLineColor);
@@ -317,6 +330,7 @@ public class LayerStylePanel extends JPanel {
     spinnerLineWidth.setAlignmentX(Component.LEFT_ALIGNMENT);
     
     spinnerLineWidth.addChangeListener(new ChangeListener() {
+      @Override
       public void stateChanged(ChangeEvent e) {
         float width = lineWidthModel.getNumber().floatValue();
         geomStyle().setStrokeWidth(width);
@@ -326,6 +340,7 @@ public class LayerStylePanel extends JPanel {
     });
 
     sliderLineAlpha = createOpacitySlider(new ChangeListener() {
+      @Override
       public void stateChanged(ChangeEvent e) {
         JSlider source = (JSlider)e.getSource();
         if (! source.getValueIsAdjusting()) {
@@ -341,6 +356,7 @@ public class LayerStylePanel extends JPanel {
     //cbDashed.setToolTipText(AppStrings.STYLE_VERTEX_ENABLE);
     cbDashed.setAlignmentX(Component.LEFT_ALIGNMENT);
     cbDashed.addActionListener(new java.awt.event.ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         if (layer == null) return;
         geomStyle().setDashed(cbDashed.isSelected());
@@ -352,6 +368,7 @@ public class LayerStylePanel extends JPanel {
     //cbDashed.setToolTipText(AppStrings.STYLE_VERTEX_ENABLE);
     cbOffset.setAlignmentX(Component.LEFT_ALIGNMENT);
     cbOffset.addActionListener(new java.awt.event.ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         if (layer == null) return;
         layer.getLayerStyle().setOffset(cbOffset.isSelected());
@@ -363,6 +380,7 @@ public class LayerStylePanel extends JPanel {
     spinOffsetSize.setMaximumSize(new Dimension(40,16));
     spinOffsetSize.setAlignmentX(Component.LEFT_ALIGNMENT);
     spinOffsetSize.addChangeListener(new ChangeListener() {
+      @Override
       public void stateChanged(ChangeEvent e) {
         int size = offsetSizeModel.getNumber().intValue();
         layer.getLayerStyle().setOffsetSize(size);
@@ -379,6 +397,7 @@ public class LayerStylePanel extends JPanel {
     cbEndpoint.setText("Endpoints");
     cbEndpoint.setAlignmentX(Component.LEFT_ALIGNMENT);
     cbEndpoint.addActionListener(new java.awt.event.ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         if (layer == null) return;
         layer.getLayerStyle().setEndpoints(cbEndpoint.isSelected());
@@ -390,6 +409,7 @@ public class LayerStylePanel extends JPanel {
     cbOrient.setText("Orientation");
     cbOrient.setAlignmentX(Component.LEFT_ALIGNMENT);
     cbOrient.addActionListener(new java.awt.event.ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         if (layer == null) return;
         layer.getLayerStyle().setOrientations(cbOrient.isSelected());
@@ -401,6 +421,7 @@ public class LayerStylePanel extends JPanel {
     cbStructure.setText("Structure");
     cbStructure.setAlignmentX(Component.LEFT_ALIGNMENT);
     cbStructure.addActionListener(new java.awt.event.ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         if (layer == null) return;
         layer.getLayerStyle().setStructure(cbStructure.isSelected());
@@ -412,6 +433,7 @@ public class LayerStylePanel extends JPanel {
     cbSegIndex.setText("Index");
     cbSegIndex.setAlignmentX(Component.LEFT_ALIGNMENT);
     cbSegIndex.addActionListener(new java.awt.event.ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         if (layer == null) return;
         layer.getLayerStyle().setSegIndex(cbSegIndex.isSelected());
@@ -428,6 +450,7 @@ public class LayerStylePanel extends JPanel {
     cbFilled.setToolTipText(AppStrings.TIP_STYLE_FILL_ENABLE);
     cbFilled.setAlignmentX(Component.LEFT_ALIGNMENT);
     cbFilled.addActionListener(new java.awt.event.ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         geomStyle().setFilled(cbFilled.isSelected());
         JTSTestBuilder.controller().geometryViewChanged();
@@ -436,6 +459,7 @@ public class LayerStylePanel extends JPanel {
     });
    
     sliderFillAlpha = createOpacitySlider(new ChangeListener() {
+      @Override
       public void stateChanged(ChangeEvent e) {
         JSlider source = (JSlider)e.getSource();
         if (! source.getValueIsAdjusting()) {
@@ -450,6 +474,7 @@ public class LayerStylePanel extends JPanel {
         "Fill",
         AppColors.GEOM_VIEW_BACKGROUND,
         new ColorControl.ColorListener() {
+          @Override
           public void colorChanged(Color clr) {
             geomStyle().setFillColor(clr);
             updateStyleControls();
@@ -459,6 +484,7 @@ public class LayerStylePanel extends JPanel {
         }
        );
     JButton btnLineSynch = createSynchButton("^", "Synch Line Color", new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent arg0) {
         Color clr = lineColorFromFill( ColorControl.getColor(btnFillColor));
         geomStyle().setLineColor(clr );
@@ -473,6 +499,7 @@ public class LayerStylePanel extends JPanel {
 
     comboPalette = new JComboBox(paletteNames);
     comboPalette.addActionListener(new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         JComboBox cb = (JComboBox)e.getSource();
         int fillType = getPaletteType(cb);
@@ -490,6 +517,7 @@ public class LayerStylePanel extends JPanel {
     //cbLabel.setToolTipText(AppStrings.TIP_STYLE_VERTEX_ENABLE);
     cbLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
     cbLabel.addActionListener(new java.awt.event.ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         if (layer == null) return;
         layer.getLayerStyle().setLabel(cbLabel.isSelected());
@@ -500,6 +528,7 @@ public class LayerStylePanel extends JPanel {
         "Label",
         AppColors.GEOM_VIEW_BACKGROUND,
         new ColorControl.ColorListener() {
+          @Override
           public void colorChanged(Color clr) {
             if (layer == null) return;
             layer.getLayerStyle().setLabelColor(clr);
@@ -513,6 +542,7 @@ public class LayerStylePanel extends JPanel {
     spinLabelSize.setMaximumSize(new Dimension(40,16));
     spinLabelSize.setAlignmentX(Component.LEFT_ALIGNMENT);
     spinLabelSize.addChangeListener(new ChangeListener() {
+      @Override
       public void stateChanged(ChangeEvent e) {
         int size = labelSizeModel.getNumber().intValue();
         layer.getLayerStyle().setLabelSize(size);

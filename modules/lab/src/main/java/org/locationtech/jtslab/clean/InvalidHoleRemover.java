@@ -71,6 +71,7 @@ public class InvalidHoleRemover {
   
   private static class InvalidHoleRemoverMapOp implements MapOp {
 
+    @Override
     public Geometry map(Geometry geom) {
       if (geom instanceof Polygon)
         return  PolygonInvalidHoleRemover.clean((Polygon) geom);

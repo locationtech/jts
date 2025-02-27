@@ -50,6 +50,7 @@ public class OverlayNGFunctions {
   public static Geometry unaryUnion(Geometry a) {
     UnionStrategy unionSRFun = new UnionStrategy() {
 
+      @Override
       public Geometry union(Geometry g0, Geometry g1) {
          return OverlayNG.overlay(g0, g1, UNION );
       }

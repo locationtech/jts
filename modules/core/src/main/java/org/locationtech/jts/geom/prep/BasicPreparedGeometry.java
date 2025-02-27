@@ -43,6 +43,7 @@ class BasicPreparedGeometry
     representativePts = ComponentCoordinateExtracter.getCoordinates(geom);
   }
 
+  @Override
   public Geometry getGeometry() { return baseGeom; }
 
   /**
@@ -111,6 +112,7 @@ class BasicPreparedGeometry
   /**
    * Default implementation.
    */
+  @Override
   public boolean contains(Geometry g)
   {
     return baseGeom.contains(g);
@@ -119,6 +121,7 @@ class BasicPreparedGeometry
   /**
    * Default implementation.
    */
+  @Override
   public boolean containsProperly(Geometry g)
   {
   	// since raw relate is used, provide some optimizations
@@ -134,6 +137,7 @@ class BasicPreparedGeometry
   /**
    * Default implementation.
    */
+  @Override
   public boolean coveredBy(Geometry g)
   {
     return baseGeom.coveredBy(g);
@@ -142,6 +146,7 @@ class BasicPreparedGeometry
   /**
    * Default implementation.
    */
+  @Override
   public boolean covers(Geometry g)
   {
     return baseGeom.covers(g);
@@ -150,6 +155,7 @@ class BasicPreparedGeometry
   /**
    * Default implementation.
    */
+  @Override
   public boolean crosses(Geometry g)
   {
     return baseGeom.crosses(g);
@@ -159,6 +165,7 @@ class BasicPreparedGeometry
    * Standard implementation for all geometries.
    * Supports {@link GeometryCollection}s as input.
    */
+  @Override
   public boolean disjoint(Geometry g)
   {
     return ! intersects(g);
@@ -167,6 +174,7 @@ class BasicPreparedGeometry
   /**
    * Default implementation.
    */
+  @Override
   public boolean intersects(Geometry g)
   {
     return baseGeom.intersects(g);
@@ -175,6 +183,7 @@ class BasicPreparedGeometry
   /**
    * Default implementation.
    */
+  @Override
   public boolean overlaps(Geometry g)
   {
     return baseGeom.overlaps(g);
@@ -183,6 +192,7 @@ class BasicPreparedGeometry
   /**
    * Default implementation.
    */
+  @Override
   public boolean touches(Geometry g)
   {
     return baseGeom.touches(g);
@@ -191,6 +201,7 @@ class BasicPreparedGeometry
   /**
    * Default implementation.
    */
+  @Override
   public boolean within(Geometry g)
   {
     return baseGeom.within(g);

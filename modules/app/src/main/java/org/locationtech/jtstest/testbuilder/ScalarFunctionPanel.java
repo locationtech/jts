@@ -106,6 +106,7 @@ extends JPanel implements FunctionPanel
     
     execButton = SwingUtil.createButton(AppIcons.EXECUTE, AppStrings.TIP_EXECUTE,
         new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         execButton_actionPerformed(e);
       }
@@ -120,9 +121,11 @@ extends JPanel implements FunctionPanel
     this.add(panelExecParam, BorderLayout.SOUTH);
 
     GeometryFunctionListener gfListener = new GeometryFunctionListener() {
+      @Override
       public void functionSelected(GeometryFunctionEvent e) {
         functionChanged(e.getFunction());
       }
+      @Override
       public void functionInvoked(GeometryFunctionEvent e) {
         execFunction(e.getFunction(), false);
       }
@@ -189,6 +192,7 @@ extends JPanel implements FunctionPanel
     return null;
   }
   
+  @Override
   public Object[] getFunctionParams()
   {
     if (currentFunc == null) return null;
@@ -220,6 +224,7 @@ extends JPanel implements FunctionPanel
     return currentFunc.getName();
   }
 
+  @Override
   public GeometryFunction getFunction() {
     return currentFunc;
   }

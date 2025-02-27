@@ -49,6 +49,7 @@ public class BasicSegmentString
    *
    * @return the user-defined data
    */
+  @Override
   public Object getData() { return data; }
 
   /**
@@ -56,12 +57,17 @@ public class BasicSegmentString
    *
    * @param data an Object containing user-defined data
    */
+  @Override
   public void setData(Object data) { this.data = data; }
 
+  @Override
   public int size() { return pts.length; }
+  @Override
   public Coordinate getCoordinate(int i) { return pts[i]; }
+  @Override
   public Coordinate[] getCoordinates() { return pts; }
 
+  @Override
   public boolean isClosed()
   {
     return pts[0].equals(pts[pts.length - 1]);

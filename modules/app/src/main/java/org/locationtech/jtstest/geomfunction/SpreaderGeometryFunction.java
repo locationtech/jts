@@ -29,10 +29,12 @@ public class SpreaderGeometryFunction implements GeometryFunction {
     this.isEachB = eachB;
   }
   
+  @Override
   public String getCategory() {
     return fun.getCategory();
   }
 
+  @Override
   public String getName() {
     String name = fun.getName();
     if (isEachA) name += "*A";
@@ -40,32 +42,40 @@ public class SpreaderGeometryFunction implements GeometryFunction {
     return name;
   }
 
+  @Override
   public String getDescription() {
     return fun.getDescription();
   }
 
+  @Override
   public String[] getParameterNames() {
     return fun.getParameterNames();
   }
 
+  @Override
   public Class<?>[] getParameterTypes() {
     return fun.getParameterTypes();
   }
 
+  @Override
   public Class<?> getReturnType() {
     return fun.getReturnType();
   }
 
+  @Override
   public String getSignature() {
     return fun.getSignature();
   }
 
+  @Override
   public boolean isBinary() {
     return fun.isBinary();
   }
+  @Override
   public boolean isRequiredB() {
     return fun.isRequiredB();
   }
+  @Override
   public Object invoke(Geometry geom, Object[] args) {
     List<Geometry> result = new ArrayList<Geometry>();
     if (isEachA) {

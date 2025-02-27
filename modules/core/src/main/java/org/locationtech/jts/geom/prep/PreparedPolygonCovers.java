@@ -71,6 +71,7 @@ class PreparedPolygonCovers
 	 * @param geom the test geometry
 	 * @return true if this prepared polygon covers the test geometry
 	 */
+	@Override
 	protected boolean fullTopologicalPredicate(Geometry geom)
 	{
 		boolean result = prepPoly.getGeometry().covers(geom);

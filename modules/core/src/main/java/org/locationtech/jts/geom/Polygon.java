@@ -128,10 +128,12 @@ public class Polygon
     this.holes = holes;
   }
 
+  @Override
   public Coordinate getCoordinate() {
     return shell.getCoordinate();
   }
 
+  @Override
   public Coordinate[] getCoordinates() {
     if (isEmpty()) {
       return new Coordinate[]{};
@@ -153,6 +155,7 @@ public class Polygon
     return coordinates;
   }
 
+  @Override
   public int getNumPoints() {
     int numPoints = shell.getNumPoints();
     for (int i = 0; i < holes.length; i++) {
@@ -161,18 +164,22 @@ public class Polygon
     return numPoints;
   }
 
+  @Override
   public int getDimension() {
     return 2;
   }
 
+  @Override
   public int getBoundaryDimension() {
     return 1;
   }
 
+  @Override
   public boolean isEmpty() {
     return shell.isEmpty();
   }
 
+  @Override
   public boolean isRectangle()
   {
     if (getNumInteriorRing() != 0) return false;
@@ -218,6 +225,7 @@ public class Polygon
     return holes[n];
   }
 
+  @Override
   public String getGeometryType() {
     return Geometry.TYPENAME_POLYGON;
   }
@@ -227,6 +235,7 @@ public class Polygon
    *
    *@return the area of the polygon
    */
+  @Override
   public double getArea()
   {
     double area = 0.0;
@@ -242,6 +251,7 @@ public class Polygon
    *
    *@return the perimeter of the polygon
    */
+  @Override
   public double getLength()
   {
     double len = 0.0;
@@ -258,6 +268,7 @@ public class Polygon
    * @return a lineal geometry (which may be empty)
    * @see Geometry#getBoundary
    */
+  @Override
   public Geometry getBoundary() {
     if (isEmpty()) {
       return getFactory().createMultiLineString();
@@ -273,10 +284,12 @@ public class Polygon
     return getFactory().createMultiLineString(rings);
   }
 
+  @Override
   protected Envelope computeEnvelopeInternal() {
     return shell.getEnvelopeInternal();
   }
 
+  @Override
   public boolean equalsExact(Geometry other, double tolerance) {
     if (!isEquivalentClass(other)) {
       return false;
@@ -298,6 +311,7 @@ public class Polygon
     return true;
   }
 
+  @Override
   public void apply(CoordinateFilter filter) {
 	    shell.apply(filter);
 	    for (int i = 0; i < holes.length; i++) {
@@ -305,6 +319,7 @@ public class Polygon
 	    }
 	  }
 
+  @Override
   public void apply(CoordinateSequenceFilter filter)
   {
 	    shell.apply(filter);
@@ -319,10 +334,12 @@ public class Polygon
         geometryChanged();
 	  }
 
+  @Override
   public void apply(GeometryFilter filter) {
     filter.filter(this);
   }
 
+  @Override
   public void apply(GeometryComponentFilter filter) {
     filter.filter(this);
     shell.apply(filter);
@@ -338,11 +355,13 @@ public class Polygon
    * @return a clone of this instance
    * @deprecated
    */
+  @Override
   public Object clone() {
 
     return copy();
   }
 
+  @Override
   protected Polygon copyInternal() {
     LinearRing shellCopy = (LinearRing) shell.copy();
     LinearRing[] holeCopies = new LinearRing[this.holes.length];
@@ -352,10 +371,12 @@ public class Polygon
     return new Polygon(shellCopy, holeCopies, factory);
   }
 
+  @Override
   public Geometry convexHull() {
     return getExteriorRing().convexHull();
   }
 
+  @Override
   public void normalize() {
     shell = normalized(shell, true);
     for (int i = 0; i < holes.length; i++) {
@@ -364,6 +385,7 @@ public class Polygon
     Arrays.sort(holes);
   }
 
+  @Override
   protected int compareToSameClass(Object o) {
     Polygon poly = (Polygon) o;
 
@@ -387,6 +409,7 @@ public class Polygon
     return 0;
   }
 
+  @Override
   protected int compareToSameClass(Object o, CoordinateSequenceComparator comp) {
     Polygon poly = (Polygon) o;
 
@@ -410,6 +433,7 @@ public class Polygon
     return 0;
   }
   
+  @Override
   protected int getTypeCode() {
     return Geometry.TYPECODE_POLYGON;
   }
@@ -432,10 +456,12 @@ public class Polygon
       CoordinateSequences.reverse(seq);
   }
 
+  @Override
   public Polygon reverse() {
     return (Polygon) super.reverse();
   }
 
+  @Override
   protected Polygon reverseInternal()
   {
     LinearRing shell = (LinearRing) getExteriorRing().reverse();

@@ -33,6 +33,7 @@ public class PointTool extends AbstractDrawTool
     	setDrawBandLines(false);
     }
     
+    @Override
     protected int getGeometryType()
     {
     	return GeometryType.POINT;

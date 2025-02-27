@@ -64,6 +64,7 @@ public class AdjacentVertexFinder
       this.basePt = basePt;
     }
 
+    @Override
     public void filter(CoordinateSequence seq, int i)
     {
       Coordinate p = seq.getCoordinate(i);
@@ -83,8 +84,10 @@ public class AdjacentVertexFinder
       return CoordinateArrays.toCoordinateArray(adjVerts);
     }
     
+    @Override
     public boolean isDone() { return false; }
 
+    @Override
     public boolean isGeometryChanged() { return false; }
   }
 

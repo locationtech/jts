@@ -34,7 +34,8 @@ public class BufferResultMatcher
 	 * 
 	 * @return true if the actual and expected results are considered equal
 	 */
-	public boolean isMatch(Geometry geom, String opName, Object[] args, 
+	@Override
+	public boolean isMatch(Geometry geom, String opName, Object[] args,
 			Result actualResult, Result expectedResult,
 			double tolerance)
 	{

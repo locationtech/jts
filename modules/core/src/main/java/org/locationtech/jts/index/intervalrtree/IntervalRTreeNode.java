@@ -43,6 +43,7 @@ public abstract class IntervalRTreeNode
   
   public static class NodeComparator implements Comparator
   {
+    @Override
     public int compare(Object o1, Object o2)
     {
       IntervalRTreeNode n1 = (IntervalRTreeNode) o1;

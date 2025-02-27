@@ -69,6 +69,7 @@ public class SnappingNoder
    * 
 	 * @return a Collection of NodedSegmentStrings representing the substrings
 	 */
+  @Override
   public Collection getNodedSubstrings()
   {
     return nodedResult;
@@ -79,6 +80,7 @@ public class SnappingNoder
    * 
    * @param inputSegStrings a Collection of SegmentStrings
    */
+  @Override
   public void computeNodes(Collection inputSegStrings)
   {
     List<NodedSegmentString> snappedSS = snapVertices(inputSegStrings);

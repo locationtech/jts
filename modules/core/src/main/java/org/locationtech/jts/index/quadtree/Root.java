@@ -89,6 +89,7 @@ public class Root
     node.add(item);
   }
 
+  @Override
   protected boolean isSearchMatch(Envelope searchEnv)
   {
     return true;

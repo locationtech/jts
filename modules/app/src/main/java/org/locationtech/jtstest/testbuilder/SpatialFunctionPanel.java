@@ -221,6 +221,7 @@ extends JPanel implements FunctionPanel
     
     execButton = SwingUtil.createButton(AppIcons.EXECUTE, AppStrings.TIP_EXECUTE,
         new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         execFunction(false);
       }
@@ -229,6 +230,7 @@ extends JPanel implements FunctionPanel
     
     execToNewButton = SwingUtil.createButton("New", AppIcons.EXECUTE, "Compute function result to a new case",
         new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         execFunction(true);
       }
@@ -237,6 +239,7 @@ extends JPanel implements FunctionPanel
     
     JButton btnShowExecExt = SwingUtil.createButton(expandDownIcon, "Show extended/meta Compute tools",
         new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         clearExtended();
         panelExecMeta.setVisible(! panelExecMeta.isVisible());
@@ -285,9 +288,11 @@ extends JPanel implements FunctionPanel
     this.add(panelExecParam, BorderLayout.SOUTH);
 
     GeometryFunctionListener gfListener = new GeometryFunctionListener() {
+      @Override
       public void functionSelected(GeometryFunctionEvent e) {
       	functionChanged(e.getFunction());
       }
+      @Override
       public void functionInvoked(GeometryFunctionEvent e) {
         execFunction(e.getFunction(), false);
       }
@@ -444,6 +449,7 @@ extends JPanel implements FunctionPanel
     setCurrentFunction(null);
   }
 
+  @Override
   public Object[] getFunctionParams()
   {
     if (currentFunc == null) return null;
@@ -488,6 +494,7 @@ extends JPanel implements FunctionPanel
     return cbExecAuto.isSelected();
   }
 
+  @Override
   public GeometryFunction getFunction() {
     return currentFunc;
   }

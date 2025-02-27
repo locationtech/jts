@@ -191,6 +191,7 @@ public class LinearComponentExtracter
   	this.isForcedToLineString = isForcedToLineString;
   }
   
+  @Override
   public void filter(Geometry geom)
   {
   	if (isForcedToLineString && geom instanceof LinearRing) {

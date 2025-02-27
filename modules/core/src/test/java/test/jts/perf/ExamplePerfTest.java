@@ -33,11 +33,13 @@ extends PerformanceTestCase
     setRunIterations(10);
   }
 
+  @Override
   public void setUp()
   {
     // read data and allocate resources here
   }
   
+  @Override
   public void startRun(int size)
   {
     System.out.println("Running with size " + size);
@@ -58,6 +60,7 @@ extends PerformanceTestCase
     // do test work here
   }
   
+  @Override
   public void tearDown()
   {
     // deallocate resources here

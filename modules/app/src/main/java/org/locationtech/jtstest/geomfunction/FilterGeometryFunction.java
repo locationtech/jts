@@ -38,38 +38,47 @@ public class FilterGeometryFunction implements GeometryFunction {
     this.filterVal = val;
   }
   
+  @Override
   public String getCategory() {
     return fun.getCategory();
   }
 
+  @Override
   public String getName() {
     return fun.getName() + "?";
   }
 
+  @Override
   public String getDescription() {
     return fun.getDescription();
   }
 
+  @Override
   public String[] getParameterNames() {
     return fun.getParameterNames();
   }
 
+  @Override
   public Class[] getParameterTypes() {
     return fun.getParameterTypes();
   }
 
+  @Override
   public Class getReturnType() {
     return Geometry.class;
   }
 
+  @Override
   public String getSignature() {
     return fun.getSignature();
   }
 
+  @Override
   public boolean isBinary() {
     return fun.isBinary();
   }
   
+  @Override
   public boolean isRequiredB() {
     return fun.isRequiredB();
   }

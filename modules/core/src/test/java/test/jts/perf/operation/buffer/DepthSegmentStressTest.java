@@ -42,6 +42,7 @@ extends PerformanceTestCase
     setRunIterations(100);
   }
 
+  @Override
   public void startRun(int size)
   {
     System.out.println("Running with size " + size);
@@ -165,6 +166,7 @@ extends PerformanceTestCase
      * @param obj
      * @return the comparison value
      */
+    @Override
     public int compareTo(Object obj)
     {
       DepthSegment other = (DepthSegment) obj;

@@ -122,6 +122,7 @@ public class TestCase implements Runnable {
     tests.remove(test);
   }
 
+  @Override
   public void run() {
   	isRun = true;
     for (Test test : tests ) {

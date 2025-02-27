@@ -29,6 +29,7 @@ import org.locationtech.jts.geomgraph.PlanarGraph;
 public class OverlayNodeFactory
   extends NodeFactory
 {
+  @Override
   public Node createNode(Coordinate coord)
   {
     return new Node(coord, new DirectedEdgeStar());

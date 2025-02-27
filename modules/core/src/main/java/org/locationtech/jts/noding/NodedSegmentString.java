@@ -98,6 +98,7 @@ public class NodedSegmentString
    *
    * @return the user-defined data
    */
+  @Override
   public Object getData() { return data; }
 
   /**
@@ -105,11 +106,15 @@ public class NodedSegmentString
    *
    * @param data an Object containing user-defined data
    */
+  @Override
   public void setData(Object data) { this.data = data; }
 
   public SegmentNodeList getNodeList() { return nodeList; }
+  @Override
   public int size() { return pts.length; }
+  @Override
   public Coordinate getCoordinate(int i) { return pts[i]; }
+  @Override
   public Coordinate[] getCoordinates() { return pts; }
 
   /**
@@ -121,6 +126,7 @@ public class NodedSegmentString
     return nodeList.getSplitCoordinates();
   }
   
+  @Override
   public boolean isClosed()
   {
     return pts[0].equals(pts[pts.length - 1]);
@@ -182,6 +188,7 @@ public class NodedSegmentString
    * @param intPt the location of the intersection
    * @param segmentIndex the index of the segment containing the intersection
    */
+  @Override
   public void  addIntersection(Coordinate intPt, int segmentIndex) {
   	addIntersectionNode(intPt, segmentIndex);
   }

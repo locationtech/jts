@@ -181,6 +181,7 @@ public class BufferFunctions {
   {
     return GeometryMapper.map(g, new MapOp() {
 
+      @Override
       public Geometry map(Geometry g)
       {
         return g.buffer(distance);

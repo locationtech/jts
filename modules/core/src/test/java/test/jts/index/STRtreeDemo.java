@@ -39,14 +39,19 @@ public class STRtreeDemo {
     public TestTree(int nodeCapacity) {
       super(nodeCapacity);
     }
+    @Override
     public List boundablesAtLevel(int level) { return super.boundablesAtLevel(level); }
+    @Override
     public AbstractNode getRoot() { return root; }
+    @Override
     public List createParentBoundables(List verticalSlice, int newLevel) {
       return super.createParentBoundables(verticalSlice, newLevel);
     }
+    @Override
     public List[] verticalSlices(List childBoundables, int size) {
       return super.verticalSlices(childBoundables, size);
     }
+    @Override
     public List createParentBoundablesFromVerticalSlice(List childBoundables, int newLevel) {
       return super.createParentBoundablesFromVerticalSlice(childBoundables, newLevel);
     }

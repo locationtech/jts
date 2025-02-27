@@ -33,11 +33,13 @@ extends PerformanceTestCase {
     setRunIterations(1);
   }
 
+  @Override
   public void setUp()
   {
     
   }
   
+  @Override
   public void startRun(int size)
   {
     System.out.println("----- Tree size: " + size);

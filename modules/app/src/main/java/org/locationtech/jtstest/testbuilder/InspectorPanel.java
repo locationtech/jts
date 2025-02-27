@@ -60,6 +60,7 @@ public class InspectorPanel extends TestBuilderPanel  {
     uiInit();
    }
 
+  @Override
   protected void uiInit() {
     this.setLayout(new BorderLayout());
     geomTreePanel = new GeometryTreePanel();
@@ -68,26 +69,31 @@ public class InspectorPanel extends TestBuilderPanel  {
     this.add(geomTreePanel, BorderLayout.CENTER);
     
     JButton btnZoom = SwingUtil.createButton(AppIcons.ZOOM, "Zoom to component", new java.awt.event.ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         actionZoom(e);
       }
     });
     JButton btnCopy = SwingUtil.createButton(AppIcons.COPY, "Copy (Ctl-click to Copy formatted", new java.awt.event.ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         actionCopy(e);
       }
     });
     JButton btnNext = SwingUtil.createButton(AppIcons.DOWN, "Next (Ctl-click to Zoom)", new java.awt.event.ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
          actionZoomNext(e, 1);
       }
     });
     JButton btnPrev = SwingUtil.createButton(AppIcons.UP, "Previous (Ctl-click to Zoom)", new java.awt.event.ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         actionZoomNext(e, -1);
       }
     });
     btnDelete = SwingUtil.createButton(AppIcons.DELETE, "Delete", new java.awt.event.ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         deleteGeom();
       }
@@ -114,16 +120,19 @@ public class InspectorPanel extends TestBuilderPanel  {
     this.add(btnPanel, BorderLayout.WEST);
     
     JButton btnSortNone = SwingUtil.createButton(AppIcons.CLEAR, "Unsorted", new java.awt.event.ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         sortNone();
       }
     });
     JButton btnSortByArea = SwingUtil.createButton(AppIcons.ICON_POLYGON, "Sort by Area (Asc/Desc)", new java.awt.event.ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         sortByArea();
       }
     });
     JButton btnSortByLen = SwingUtil.createButton(AppIcons.ICON_LINESTRING, "Sort by Length (Asc/Desc)", new java.awt.event.ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         sortByLen();
       }
@@ -141,6 +150,7 @@ public class InspectorPanel extends TestBuilderPanel  {
     btnExpand.setText("...");
     btnExpand.setToolTipText("Display in window");
     btnExpand.addActionListener(new java.awt.event.ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e)
       {
         btnExpand_actionPerformed();
