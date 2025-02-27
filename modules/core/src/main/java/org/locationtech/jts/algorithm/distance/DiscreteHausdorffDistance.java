@@ -81,11 +81,11 @@ public class DiscreteHausdorffDistance
 
   /**
    * Computes the Hausdorff distance between two geometries,
-   * densified by the given fraction.
+   * with each segment densified by the given fraction.
    * 
    * @param g0 the first input
    * @param g1 the second input
-   * @param densifyFrac the densification fraction
+   * @param densifyFrac the densification fraction (in [0, 1])
    * @return the Hausdorff distance between g0 and g1
    */
   public static double distance(Geometry g0, Geometry g1, double densifyFrac)
@@ -113,11 +113,11 @@ public class DiscreteHausdorffDistance
   /**
    * Computes a line containing points indicating 
    * the Hausdorff distance between two geometries,
-   * densified by the given fraction.
+   * with each segment densified by the given fraction.
    * 
    * @param g0 the first input
    * @param g1 the second input
-   * @param densifyFrac the densification fraction
+   * @param densifyFrac the densification fraction (in [0, 1])
    * @return a 2-point line indicating the distance
    */
   public static LineString distanceLine(Geometry g0, Geometry g1, double densifyFrac)
@@ -143,11 +143,11 @@ public class DiscreteHausdorffDistance
 
   /**
    * Computes the oriented Hausdorff distance from one geometry to another,
-   * densified by the given fraction.
+   * with each segment densified by the given fraction.
    * 
    * @param g0 the first input
    * @param g1 the second input
-   * @param densifyFrac the densification fraction
+   * @param densifyFrac the densification fraction (in [0, 1])
    * @return the oriented Hausdorff distance from g0 to g1
    */
   public static double orientedDistance(Geometry g0, Geometry g1, double densifyFrac)
@@ -175,11 +175,11 @@ public class DiscreteHausdorffDistance
   /**
    * Computes a line containing points indicating 
    * the computed oriented Hausdorff distance from one geometry to another,
-   * densified by the given fraction.
+   * with each segment densified by the given fraction.
    *
    * @param g0 the first input
    * @param g1 the second input
-   * @param densifyFrac the densification fraction
+   * @param densifyFrac the densification fraction (in [0, 1])
    * @return a 2-point line indicating the distance
    */
   public static LineString orientedDistanceLine(Geometry g0, Geometry g1, double densifyFrac)
