@@ -59,7 +59,7 @@ import org.locationtech.jts.geom.LineString;
  * This computes the distance to the farthest point on A from B.
  * A use case is to test whether a geometry A lies completely within a given 
  * distance of another one B.
- * This is more efficient than testing inclusion in a buffer of B.
+ * This is more efficient than testing whether A is covered by a buffer of B.
  * 
  * @see DiscreteFrechetDistance
  * 
