@@ -32,14 +32,14 @@ import org.locationtech.jts.geom.LineString;
 * <p>
  * This algorithm is an approximation to the standard Hausdorff distance.
  * Specifically, 
- * <pre>
- *    for all geometries a, b:    DHD(a, b) &lt;= HD(a, b)
- * </pre>
+ * <blockquote>
+ *    <i>for all geometries A, B:    DHD(A, B) &lt;= HD(A, B)</i>
+ * </blockquote>
  * The approximation can be made as close as needed by densifying the input geometries.  
  * In the limit, this value will approach the true Hausdorff distance:
- * <pre>
- *    DHD(A, B, densifyFactor) -&gt; HD(A, B) as densifyFactor -&gt; 0.0
- * </pre>
+ * <blockquote>
+ *    <i>DHD(A, B, densifyFactor) &rarr; HD(A, B) as densifyFactor &rarr; 0.0</i>
+ * </blockquote>
  * The default approximation is exact or close enough for a large subset of useful cases.
  * Examples of these are:
  * <ul>
@@ -57,6 +57,13 @@ import org.locationtech.jts.geom.LineString;
  * </pre>
  * The class can compute the oriented Hausdorff distance from A to B.
  * This computes the distance to the farthest point on A from B.
+ * <blockquote>
+ *   <i>OHD(A, B) = max<sub>a &isin; A</sub>( Distance(a, B) )</i>
+ *   <br>
+ *   with
+ *   <br>
+ *   <i>HD(A, B) = max( OHD(A, B), OHD(B, A) )</i>
+ * </blockquote>
  * A use case is to test whether a geometry A lies completely within a given 
  * distance of another one B.
  * This is more efficient than testing whether A is covered by a buffer of B.
