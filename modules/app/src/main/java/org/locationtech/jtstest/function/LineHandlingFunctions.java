@@ -92,15 +92,15 @@ public class LineHandlingFunctions {
   }
 
   /**
-   * Clips line A to line B.
-   * Can also be thought of as the projection of B onto A.
+   * Trims line A to geometry B.
+   * Equivalent to the projection of B onto A.
    * 
-   * @param a line to clip
-   * @param b mask line
-   * @return line A clipped to B
+   * @param a line to trim
+   * @param b trimming geometry
+   * @return line A trimmed to B
    */
-  @Metadata(description="Clip line A to line B")
-  public static Geometry clip(Geometry a, Geometry b) {
+  @Metadata(description="Trim line A to geometry B")
+  public static Geometry trim(Geometry a, Geometry b) {
     return LinearReferencingFunctions.project(a, b);
   }
 
