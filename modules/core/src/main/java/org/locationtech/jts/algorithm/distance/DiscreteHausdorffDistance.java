@@ -273,7 +273,7 @@ public class DiscreteHausdorffDistance
     }
   }
 
-  public static class MaxPointDistanceFilter
+  private static class MaxPointDistanceFilter
       implements CoordinateFilter
   {
     private PointPairDistance maxPtDist = new PointPairDistance();
@@ -295,52 +295,52 @@ public class DiscreteHausdorffDistance
     public PointPairDistance getMaxPointDistance() { return maxPtDist; }
   }
   
-  public static class MaxDensifiedByFractionDistanceFilter 
+  private static class MaxDensifiedByFractionDistanceFilter 
   implements CoordinateSequenceFilter 
   {
-  private PointPairDistance maxPtDist = new PointPairDistance();
-  private PointPairDistance minPtDist = new PointPairDistance();
-  private Geometry geom;
-  private int numSubSegs = 0;
-
-  public MaxDensifiedByFractionDistanceFilter(Geometry geom, double fraction) {
-    this.geom = geom;
-    numSubSegs = (int) Math.rint(1.0/fraction);
-  }
-
-  public void filter(CoordinateSequence seq, int index) 
-  {
-    /**
-     * This logic also handles skipping Point geometries
-     */
-    if (index == 0)
-      return;
-    
-    Coordinate p0 = seq.getCoordinate(index - 1);
-    Coordinate p1 = seq.getCoordinate(index);
-    
-    double delx = (p1.x - p0.x)/numSubSegs;
-    double dely = (p1.y - p0.y)/numSubSegs;
-
-    for (int i = 0; i < numSubSegs; i++) {
-      double x = p0.x + i*delx;
-      double y = p0.y + i*dely;
-      Coordinate pt = new Coordinate(x, y);
-      minPtDist.initialize();
-      DistanceToPoint.computeDistance(geom, pt, minPtDist);
-      maxPtDist.setMaximum(minPtDist);  
+    private PointPairDistance maxPtDist = new PointPairDistance();
+    private PointPairDistance minPtDist = new PointPairDistance();
+    private Geometry geom;
+    private int numSubSegs = 0;
+  
+    public MaxDensifiedByFractionDistanceFilter(Geometry geom, double fraction) {
+      this.geom = geom;
+      numSubSegs = (int) Math.rint(1.0/fraction);
     }
-    
-    
-  }
-
-  public boolean isGeometryChanged() { return false; }
   
-  public boolean isDone() { return false; }
+    public void filter(CoordinateSequence seq, int index) 
+    {
+      /**
+       * This logic also handles skipping Point geometries
+       */
+      if (index == 0)
+        return;
+      
+      Coordinate p0 = seq.getCoordinate(index - 1);
+      Coordinate p1 = seq.getCoordinate(index);
+      
+      double delx = (p1.x - p0.x)/numSubSegs;
+      double dely = (p1.y - p0.y)/numSubSegs;
   
-  public PointPairDistance getMaxPointDistance() {
-    return maxPtDist;
+      for (int i = 0; i < numSubSegs; i++) {
+        double x = p0.x + i*delx;
+        double y = p0.y + i*dely;
+        Coordinate pt = new Coordinate(x, y);
+        minPtDist.initialize();
+        DistanceToPoint.computeDistance(geom, pt, minPtDist);
+        maxPtDist.setMaximum(minPtDist);  
+      }
+      
+      
+    }
+  
+    public boolean isGeometryChanged() { return false; }
+    
+    public boolean isDone() { return false; }
+    
+    public PointPairDistance getMaxPointDistance() {
+      return maxPtDist;
+    }
   }
-}
 
 }
