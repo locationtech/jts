@@ -23,6 +23,7 @@ import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.util.LinearComponentExtracter;
 import org.locationtech.jts.operation.linemerge.LineMerger;
 import org.locationtech.jts.operation.linemerge.LineSequencer;
+import org.locationtech.jtstest.geomfunction.Metadata;
 
 public class LineHandlingFunctions {
 	
@@ -88,6 +89,19 @@ public class LineHandlingFunctions {
   public static Geometry dissolve(Geometry geom)
   {
     return LineDissolver.dissolve(geom);
+  }
+
+  /**
+   * Clips line A to line B.
+   * Can also be thought of as the projection of B onto A.
+   * 
+   * @param a line to clip
+   * @param b mask line
+   * @return line A clipped to B
+   */
+  @Metadata(description="Clip line A to line B")
+  public static Geometry clip(Geometry a, Geometry b) {
+    return LinearReferencingFunctions.project(a, b);
   }
 
 }

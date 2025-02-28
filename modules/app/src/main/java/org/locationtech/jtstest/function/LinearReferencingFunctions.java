@@ -27,6 +27,7 @@ public class LinearReferencingFunctions
     Coordinate p = ll.extractPoint(index);
     return g.getFactory().createPoint(p);
   }
+  
   public static Geometry extractLine(Geometry g,
       @Metadata(title="Start length")
       double start, 
@@ -36,28 +37,48 @@ public class LinearReferencingFunctions
     LengthIndexedLine ll = new LengthIndexedLine(g);
     return ll.extractLine(start, end);
   }
-  public static Geometry project(Geometry g, Geometry g2)
+  
+  public static Geometry project(Geometry line, Geometry geom)
   {
-    LengthIndexedLine ll = new LengthIndexedLine(g);
-    if (g2.getDimension() == 1) {
-      LineString line = (LineString) g2.getGeometryN(0);
-      Coordinate pStart = line.getCoordinateN(0);
-      Coordinate pEnd = line.getCoordinateN(line.getNumPoints() - 1);
-      double indexStart = ll.project(pStart);
-      double indexEnd = ll.project(pEnd);
-      Geometry lineProj = ll.extractLine(indexStart, indexEnd);
-      return lineProj;
+    LengthIndexedLine ll = new LengthIndexedLine(line);
+    if (geom.getDimension() == 0) {
+      Coordinate[] projPts = new Coordinate[geom.getNumPoints()];
+      for (int i = 0; i < geom.getNumPoints(); i++) {
+        Coordinate pt = geom.getGeometryN(i).getCoordinate();
+        double index = ll.project(pt);
+        Coordinate p = ll.extractPoint(index);
+      }
+      if (projPts.length == 1) {
+        return geom.getFactory().createPoint(projPts[0]);
+      }
+      return geom.getFactory().createMultiPointFromCoords(projPts);
     }
     else {
-      double index = ll.project(g2.getCoordinate());
-      Coordinate p = ll.extractPoint(index);
-      return g.getFactory().createPoint(p);
+      return projectOnLine(line, geom);
     }
+  }  
+  
+  private static Geometry projectOnLine(Geometry line, Geometry geom) {
+    Coordinate[] bPts = geom.getCoordinates();
+    
+    LengthIndexedLine aLR = new LengthIndexedLine((LineString) line);
+    
+    double locStart = -1.0;
+    double locEnd = -1.0;
+    for (int i = 0; i < bPts.length; i++) {
+      Coordinate maskPt = bPts[i];
+      double loc = aLR.indexOf(maskPt);
+      if (locStart < 0 || loc < locStart) locStart = loc;
+      if (loc < 0 || loc > locEnd) locEnd = loc;
+    }
+    
+    return aLR.extractLine(locStart, locEnd);
   }
-  public static double projectIndex(Geometry g, Geometry g2)
+  
+  public static double projectIndex(Geometry line, Geometry geom)
   {
-    LengthIndexedLine ll = new LengthIndexedLine(g);
-    return ll.project(g2.getCoordinate());
+    LengthIndexedLine ll = new LengthIndexedLine(line);
+    return ll.project(geom.getCoordinate());
   }
 
 }

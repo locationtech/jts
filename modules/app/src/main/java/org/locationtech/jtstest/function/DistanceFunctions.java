@@ -65,10 +65,18 @@ public class DistanceFunctions {
 	}
 
   @Metadata(description="Oriented Hausdorff distance from A to B")
-	public static Geometry orientedHausdorffDistanceLine(Geometry a, Geometry b)	
-	{		
+  public static Geometry orientedHausdorffDistanceLine(Geometry a, Geometry b)  
+  {   
     return DiscreteHausdorffDistance.orientedDistanceLine(a, b);
-	}
+  }
+
+  @Metadata(description="Oriented Hausdorff distance from A to B")
+  public static Geometry clippedOrientedHausdorffDistanceLine(Geometry a, Geometry b)  
+  {   
+    //TODO: would this be more efficient done as part of DiscreteHausdorffDistance?
+    Geometry clippedLine = LinearReferencingFunctions.project(a, b);
+    return DiscreteHausdorffDistance.orientedDistanceLine(clippedLine, b);
+  }
 
   @Metadata(description="Oriented Hausdorff distance from A to B")
 	public static double orientedHausdorffDistance(Geometry a, Geometry b)	
