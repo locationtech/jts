@@ -125,6 +125,9 @@ public class FacetLocater
 
   private void findLocations(Stack<Integer> path, Geometry compGeom, CoordinateSequence seq, List<GeometryLocation> locations)
   {
+    if (seq.size() < 1)
+      return;
+    
     int lastVertexIndexAdded = -1;
     Coordinate p0 = seq.getCoordinate(0);
     if (p0.distance(queryPt) <= tolerance) {
