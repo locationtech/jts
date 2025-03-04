@@ -37,7 +37,7 @@ import org.locationtech.jts.index.strtree.STRtree;
  * <p>
  * A valid coverage may contain holes (regions of no coverage).
  * Sometimes it is desired to detect whether coverages contain 
- * narrow gaps between polygons
+ * holes which are narrow gaps between polygons
  * (which can be a result of digitizing error or misaligned data).
  * This class can detect narrow gaps, 
  * by specifying a maximum gap width using {@link #setGapWidth(double)}.
@@ -46,6 +46,9 @@ import org.locationtech.jts.index.strtree.STRtree;
  * In some situations it may also produce false positives 
  * (linework identified as part of a gap which is actually wider).
  * See {@link CoverageGapFinder} for an alternate way to detect gaps which may be more accurate.
+ * 
+ * <h3>Known Bugs</h3>
+ * If the specified gap width is large, some narrow gaps may not be identified.
  * 
  * @author Martin Davis
  *
@@ -59,6 +62,20 @@ public class CoverageValidator {
    */
   public static boolean isValid(Geometry[] coverage) {
     CoverageValidator v = new CoverageValidator(coverage);
+    return ! hasInvalidResult(v.validate());     
+  }
+  
+  /**
+   * Tests whether a polygonal coverage is valid
+   * and contains no gaps narrower than a specified width.
+   * 
+   * @param coverage an array of polygons forming a coverage
+   * @param gapWidth the maximum width of invalid gaps
+   * @return true if the coverage is valid with no narrow gaps
+   */
+  public static boolean isValid(Geometry[] coverage, double gapWidth) {
+    CoverageValidator v = new CoverageValidator(coverage);
+    v.setGapWidth(gapWidth);
     return ! hasInvalidResult(v.validate());     
   }
   
