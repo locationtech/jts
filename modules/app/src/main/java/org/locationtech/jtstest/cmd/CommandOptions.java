@@ -37,6 +37,7 @@ public class CommandOptions {
   public static final String QUIET = "q";
   public static final String VALIDATE = "validate";
   public static final String WHERE = "where";  
+  public static final String OUTPUT = "o";  
   
   public static final String SOURCE_STDIN = "stdin";
   
