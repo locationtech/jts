@@ -43,6 +43,7 @@ import org.locationtech.jtstest.function.JTSFunctions;
 import org.locationtech.jtstest.function.LineHandlingFunctions;
 import org.locationtech.jtstest.function.LineSegmentFunctions;
 import org.locationtech.jtstest.function.LinearReferencingFunctions;
+import org.locationtech.jtstest.function.MetricFunctions;
 import org.locationtech.jtstest.function.NodingFunctions;
 import org.locationtech.jtstest.function.OffsetCurveFunctions;
 import org.locationtech.jtstest.function.OrientationFPFunctions;
@@ -100,6 +101,7 @@ public class GeometryFunctionRegistry
     funcRegistry.add(HullFunctions.class);
     funcRegistry.add(LinearReferencingFunctions.class);
     funcRegistry.add(LineHandlingFunctions.class);
+    funcRegistry.add(MetricFunctions.class);
     funcRegistry.add(NodingFunctions.class);
     funcRegistry.add(PolygonizeFunctions.class);
     funcRegistry.add(PrecisionFunctions.class);
