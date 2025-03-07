@@ -12,15 +12,14 @@
 package org.locationtech.jtstest.function;
 
 import java.util.Arrays;
-import java.util.List;
 
 import org.locationtech.jts.coverage.CoverageGapFinder;
 import org.locationtech.jts.coverage.CoveragePolygonValidator;
 import org.locationtech.jts.coverage.CoverageSimplifier;
 import org.locationtech.jts.coverage.CoverageUnion;
 import org.locationtech.jts.coverage.CoverageValidator;
+import org.locationtech.jts.coverage.clean.CoverageCleaner;
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.util.PolygonExtracter;
 import org.locationtech.jtstest.geomfunction.Metadata;
 
 public class CoverageFunctions {
@@ -125,7 +124,7 @@ public class CoverageFunctions {
     Geometry[] cov = toGeometryArray(coverage);
     double[] tolerances = tolerances(tolerancesCSV, cov.length);
     Geometry[] result =  CoverageSimplifier.simplify(cov, tolerances);
-    return FunctionsUtil.buildGeometry(result);
+    return coverage.getFactory().createGeometryCollection(result);
   }
   
   private static double[] tolerances(String csvList, int len) {
@@ -136,6 +135,14 @@ public class CoverageFunctions {
     }
     return tols;
   }  
+  
+  public static Geometry clean(Geometry coverage, double tolerance) {
+    Geometry[] cov = toGeometryArray(coverage);
+    Geometry[] result =  CoverageCleaner.clean(cov, tolerance);
+    return coverage.getFactory().createGeometryCollection(result);
+  }
+  
+  //====================================================================
   
   private static Double[] toDoubleArray(String csvList) {
     return Arrays.stream(csvList.split(",")).map(Double::parseDouble).toArray(Double[]::new);
