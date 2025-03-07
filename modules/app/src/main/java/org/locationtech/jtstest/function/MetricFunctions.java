@@ -84,4 +84,11 @@ public class MetricFunctions {
     
     return geom.getFactory().createLineString(pts);
   }
+  
+  public static double compactness(Geometry poly) {
+    double perimeter = poly.getLength();
+    double area = poly.getArea();
+    if (perimeter <= 0) return 0;
+    return Math.abs(area) * Math.PI * 4 / (perimeter * perimeter);
+  }
 }
