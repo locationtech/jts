@@ -9,8 +9,9 @@
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
  */
-package org.locationtech.jts.coverage.clean;
+package org.locationtech.jts.coverage;
 
+import org.locationtech.jts.coverage.CoverageCleaner;
 import org.locationtech.jts.coverage.CoverageValidator;
 import org.locationtech.jts.geom.Geometry;
 

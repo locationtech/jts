@@ -13,12 +13,12 @@ package org.locationtech.jtstest.function;
 
 import java.util.Arrays;
 
+import org.locationtech.jts.coverage.CoverageCleaner;
 import org.locationtech.jts.coverage.CoverageGapFinder;
 import org.locationtech.jts.coverage.CoveragePolygonValidator;
 import org.locationtech.jts.coverage.CoverageSimplifier;
 import org.locationtech.jts.coverage.CoverageUnion;
 import org.locationtech.jts.coverage.CoverageValidator;
-import org.locationtech.jts.coverage.clean.CoverageCleaner;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jtstest.geomfunction.Metadata;

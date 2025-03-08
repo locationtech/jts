@@ -9,7 +9,7 @@
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
  */
-package org.locationtech.jts.coverage.clean;
+package org.locationtech.jts.coverage;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,6 +29,17 @@ import org.locationtech.jts.operation.polygonize.Polygonizer;
 import org.locationtech.jts.operation.relateng.RelateNG;
 import org.locationtech.jts.operation.relateng.RelatePredicate;
 
+/**
+ * Cleans a polygonal coverage, removing overlaps and specified gaps.
+ * 
+ * Overlaps are merged with an adjacent polygon chosen according to a specified strategy.
+ * 
+ * Gaps which exceed a specified tolerance are filled and merged with an adjacent polygon.
+ * 
+ * @see CoverageValidator
+ * @author mdavis
+ *
+ */
 public class CoverageCleaner {
   private static final double SLIVER_COMPACTNESS_RATIO = 0.05;
   private static final int RESULT_OVERLAP = -2;

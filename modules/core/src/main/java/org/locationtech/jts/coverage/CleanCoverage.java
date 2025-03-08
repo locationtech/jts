@@ -9,12 +9,11 @@
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
  */
-package org.locationtech.jts.coverage.clean;
+package org.locationtech.jts.coverage;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.locationtech.jts.coverage.CoverageUnion;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Polygon;
@@ -58,6 +57,8 @@ class CleanCoverage {
 
   private CleanArea findBestMergeTargeet(List<CleanArea> adjacent) {
     //TODO: other strategies here
+    //TODO: max adj len - prob produces best result
+    //TODO: max/min id ?
     return findMaxArea(adjacent);
   }
 
@@ -121,6 +122,7 @@ class CleanCoverage {
 
     public boolean isAdjacent(RelateNG rel) {
       for (Polygon geom : polys) {
+        //TODO: is there a faster way to check adjacency in coverage?
         boolean isAdjacent = rel.evaluate(geom, IntersectionMatrixPattern.ADJACENT);
         if (isAdjacent)
           return true;
