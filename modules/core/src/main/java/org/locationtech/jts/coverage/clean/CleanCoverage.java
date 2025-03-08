@@ -43,12 +43,21 @@ class CleanCoverage {
   
   private void merge(Polygon poly, boolean isOverlap) {
     List<CleanArea> adjacent = findAdjacent(poly);
+    /**
+     * No adjacent means this is likely an artifact
+     * of an invalid input polygon. 
+     * Discard polygon.
+     */
+    if (adjacent.size() == 0)
+      return;
+    
     //TODO merge pick strategies go here
     CleanArea mergeTarget = findBestMergeTargeet(adjacent);
     mergeTarget.add(poly);
   }
 
   private CleanArea findBestMergeTargeet(List<CleanArea> adjacent) {
+    //TODO: other strategies here
     return findMaxArea(adjacent);
   }
 
@@ -70,6 +79,8 @@ class CleanCoverage {
     List<CleanArea> adjacent = new ArrayList<CleanArea>();
     RelateNG rel = RelateNG.prepare(poly);
     for (CleanArea res : cov) {
+      if (res == null)
+        continue;
       if (res.isAdjacent(rel))
         adjacent.add(res);
     }
