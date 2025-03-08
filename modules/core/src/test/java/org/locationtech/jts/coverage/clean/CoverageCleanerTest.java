@@ -49,6 +49,19 @@ public class CoverageCleanerTest extends GeometryTestCase {
             "POLYGON ((90 0, 10 0, 89.99 30, 90 0))"));
   }
   
+  // Tests that if interior point lies in a spike that is snapped away, polygon is still in result
+  public void testPolygonsSnappedPreserved() {
+    checkCleaner(readArray(
+        "POLYGON ((0 0, 0 2, 5 2, 5 8, 5.01 0, 0 0))",
+        "POLYGON ((0 8, 5 8, 5 2, 0 2, 0 8))"
+        ),
+        0.02,
+        readArray(
+            "POLYGON ((0 0, 0 2, 5 2, 5.01 0, 0 0))",
+            "POLYGON ((0 8, 5 8, 5 2, 0 2, 0 8))"
+            ));
+  }
+  
   //TODO: add test with MultiPolygon that snaps together (so needs merging)
   
   private void checkCleaner(Geometry[] cov, double tolerance) {

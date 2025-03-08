@@ -13,18 +13,12 @@ package org.locationtech.jts.coverage.clean;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
 
-import org.locationtech.jts.algorithm.locate.IndexedPointInAreaLocator;
 import org.locationtech.jts.dissolve.LineDissolver;
-import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.Location;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.noding.NodedSegmentString;
@@ -32,12 +26,13 @@ import org.locationtech.jts.noding.Noder;
 import org.locationtech.jts.noding.SegmentStringUtil;
 import org.locationtech.jts.noding.snap.SnappingNoder;
 import org.locationtech.jts.operation.polygonize.Polygonizer;
-import org.locationtech.jts.operation.relateng.IntersectionMatrixPattern;
 import org.locationtech.jts.operation.relateng.RelateNG;
 import org.locationtech.jts.operation.relateng.RelatePredicate;
 
 public class CoverageCleaner {
   private static final double SLIVER_COMPACTNESS_RATIO = 0.05;
+  private static final int RESULT_OVERLAP = -2;
+  private static final int RESULT_GAP = -1;
 
   public static Geometry[] clean(Geometry[] coverage, double tolerance) {
     CoverageCleaner c = new CoverageCleaner(coverage);
@@ -45,161 +40,99 @@ public class CoverageCleaner {
   }
 
   private Geometry[] coverage;
-  private GeometryFactory geomFactory;  
+  private GeometryFactory geomFactory;
+  private ArrayList<Polygon> overlaps;
+  private ArrayList<Polygon> gaps;
+  private CleanCoverage cleanCov;
+  private List<Polygon> mergableGaps;  
   
   public CoverageCleaner(Geometry[] coverage) {
     this.coverage = coverage;
     this.geomFactory = coverage[0].getFactory();
   }
 
-  private Geometry[] clean(double tolerance) {
+  public List<Polygon> getOverlaps() {
+    return overlaps;
+  }
+  
+  public List<Polygon> getMergedGaps() {
+    return mergableGaps;
+  }
+  
+  public Geometry[] clean(double tolerance) {
+    computeResultants(tolerance);
+   
+    //Geometry[] holes = extract(resultants, holeIndex);
+    //return holes;
+    
+    cleanCov.merge(overlaps, true);
+    cleanCov.merge(mergableGaps, false);
+    
+    return cleanCov.toCoverage(geomFactory);
+  }
+
+  private void computeResultants(double tolerance) {
     Geometry nodedEdges = node(coverage, tolerance);
     Geometry cleanEdges = LineDissolver.dissolve(nodedEdges);
     //TODO: specify Polygon[] as return type?
     Geometry[] resultants = polygonize(cleanEdges);
     
-    List<CoverageElement> coverageElements = CoverageElement.createElements(coverage);
+    overlaps = new ArrayList<Polygon>();
+    gaps = new ArrayList<Polygon>();
+    cleanCov = new CleanCoverage(coverage.length);
     
-    Coordinate[] parentIntPt = new Coordinate[resultants.length];
-    List<Integer> cleanIndex = new ArrayList<Integer>();
-    List<Integer> otherIndex = new ArrayList<Integer>();
-    //List<Integer> sliverIndex = new ArrayList<Integer>();
-    findClean(resultants, coverageElements,
-        parentIntPt, cleanIndex, otherIndex);
-   
-    //Geometry[] holes = extract(resultants, holeIndex);
-    //return holes;
+    classify(resultants, cleanCov, overlaps, gaps);
     
-    Map<Coordinate, CoverageElement> intPtCoverageMap = CoverageElement.createMap(coverageElements);
-    Geometry[] cleanCov = buildCoverage(resultants, cleanIndex, parentIntPt, intPtCoverageMap);
-    
-    List<Geometry> mergable = findMergable(resultants, otherIndex, cleanCov);
-    //return GeometryFactory.toGeometryArray(mergable);
-    merge(mergable, cleanCov);
-    
-    //TODO: handle geoms with interior point in location which causes geom to disappear
-    return cleanCov;
+    mergableGaps = findSlivers(gaps);
   }
 
-  private void merge(List<Geometry> mergable, Geometry[] cleanCov) {
-    for (Geometry poly : mergable) {
-      merge(poly, cleanCov);
-    }
+  private List<Polygon> findSlivers(List<Polygon> gaps) {
+    return gaps.stream().filter(gap -> isSliver(gap))
+        .collect(Collectors.toList());
   }
 
-  private void merge(Geometry poly, Geometry[] cleanCov) {
-    List<Integer> adjacentIndex = findAdjacent(poly, cleanCov);
-    //TODO: be smart about which one to merge with
-    // longest edge?  large/small area?
-    //TODO: split mergable to avoid spikes?
-    
-    //TODO: if a mergable overlaps a polygon which is not adjacent, it should be added to that polygon
-    // this can happen if snapping causes a coverage interior point to be outside the snapped polygon 
-    
-    System.out.println(poly);
-    
-    if (adjacentIndex.size() <= 0) {
-      //TODO: find parent coverage polygon and merge with it
-      System.out.println("No adjacent >>>>>> " + poly);
-      return;
-    }
-    //TODO: for now just merge to first
-    int firstAdjIndex = adjacentIndex.get(0);
-    //TODO: do this faster.  Can do with Coverage Union
-    Geometry merged = cleanCov[firstAdjIndex].union(poly);
-    cleanCov[firstAdjIndex] = merged;
-  }
-
-  private List<Integer> findAdjacent(Geometry poly, Geometry[] cleanCov) {
-    List<Integer> adjIndex = new ArrayList<Integer>();
-    RelateNG rel = RelateNG.prepare(poly);
-    for (int i = 0; i < cleanCov.length; i++) {
-      boolean isAdjacent = rel.evaluate(cleanCov[i], IntersectionMatrixPattern.ADJACENT);
-      if (isAdjacent)
-        adjIndex.add(i);
-    }
-    return adjIndex;
-  }
-
-  /**
-   * Find resultants which overlap an input polygon or are a narrow hole.
-   * Does not include resultants which are "large" holes.
-   * 
-   * @param resultants
-   * @param otherIndex
-   * @param cleanCov
-   * @return
-   */
-  private List<Geometry> findMergable(Geometry[] resultants, List<Integer> otherIndex, Geometry[] cleanCov) {
-    List<Geometry> mergable = new ArrayList<Geometry>();
-    for (int index : otherIndex) {
-      //-- should be a Polygon - type it?
-      Geometry resultantPoly = resultants[index];
-      if (isSliver(resultantPoly) || isOverlap(resultantPoly, coverage)) {
-        mergable.add(resultantPoly);
-      }
-    }
-    return mergable;
-  }
-
-  private boolean isOverlap(Geometry poly, Geometry[] coverage) {
-    //TODO: make this more efficient with index over coverage?
-    Point intPt = poly.getInteriorPoint();
-    for (Geometry covPoly : coverage) {
-      if (RelateNG.relate(covPoly, intPt, RelatePredicate.covers()))
-        return true;
-    }
-    return false;
-  }
-
-  private static Geometry[] extract(Geometry[] resultants, List<Integer> indices) {
-    Geometry[] result = new Geometry[indices.size()];
-    int i = 0;
-    for (int index : indices) {
-      result[i++] = resultants[index];
-    }
-    return result;
-  }
-
-  private void findClean(Geometry[] resultants, 
-      List<CoverageElement> coverageElements,
-      Coordinate[] parentIntPt,
-      List<Integer> keepIndex,
-      List<Integer> otherIndex
-      ) {
+  private void classify(Geometry[] resultants, CleanCoverage cleanCov, 
+      List<Polygon> overlaps, List<Polygon> gaps) {
     for (int i = 0; i < resultants.length; i++) {
-      Geometry poly = resultants[i];
-      Coordinate intPt = findIntPt(poly, coverageElements);
-      if (intPt != null) {
-        keepIndex.add(i);
-        parentIntPt[i] = intPt;
+      Geometry res = resultants[i];
+      Point intPt = res.getInteriorPoint();
+      int cleanParentIndex = findUniqueParent(coverage, intPt);
+      if (cleanParentIndex >= 0) {
+        cleanCov.add(cleanParentIndex, (Polygon) res);
+      }
+      else if (cleanParentIndex == RESULT_GAP) {
+        gaps.add((Polygon) res);
       }
       else {
-        otherIndex.add(i);
+        overlaps.add((Polygon) res);
       }
     }
   }
 
   /**
-   * Finds an interior point of a polygon.
-   * If the polygon contains multiple interior points
-   * (which can happen if an input polygon collapses completely 
-   * due to a large tolerance)
-   * finds the interior point of the largest coverage element.
+   * Classifies a resultant to be either in a unique parent, an overlap (-2), or a gap (-1)
    * 
-   * @param poly
-   * @param coverageElements
+   * @param coverage
+   * @param intPt
    * @return
    */
-  private Coordinate findIntPt(Geometry poly, List<CoverageElement> coverageElements) {
-    //TODO: use spatial index on int pts
-    IndexedPointInAreaLocator loc = new IndexedPointInAreaLocator(poly);
-    for (CoverageElement elem : coverageElements) {
-      Coordinate intPt = elem.getInteriorPoint();
-      if (loc.locate(intPt) != Location.EXTERIOR)
-        return intPt;
+  public int findUniqueParent(Geometry[] coverage, Point intPt) {
+    //TODO: use spatial index on coverage?
+    int index = RESULT_GAP;
+    for (int i = 0; i < coverage.length; i++) {
+      Geometry parent = coverage[i];
+      if (covers(parent, intPt)) {
+        if (index >= 0)
+          return RESULT_OVERLAP;
+        index = i;
+      }
     }
-    return null;
+    //-- RESULT_GAP or a unique parent index
+    return index;
+  }
+  
+  private static boolean covers(Geometry poly, Point intPt) {
+    return RelateNG.relate(poly, intPt, RelatePredicate.covers());
   }
 
   private boolean isSliver(Geometry poly) {
@@ -215,49 +148,6 @@ public class CoverageCleaner {
     double area = poly.getArea();
     if (perimeter <= 0) return 0;
     return Math.abs(area) * Math.PI * 4 / (perimeter * perimeter);
-  }
-  
-  private Geometry[] buildCoverage(Geometry[] resultants, 
-      List<Integer> resultIndex, 
-      Coordinate[] parentIntPt,
-      Map<Coordinate, CoverageElement> intPtCoverageIndexMap) {
-    Geometry[] cleanCov = new Geometry[coverage.length];
-    PolygonMultiMap multiPolyMap = new PolygonMultiMap();
-    for (int index : resultIndex) {
-      Polygon resultant = (Polygon) resultants[index];
-      
-      CoverageElement covElem = intPtCoverageIndexMap.get(parentIntPt[index]);
-      int covIndex = covElem.getIndex();
-      if (cleanCov[covIndex] == null) {
-        cleanCov[covIndex] = resultant;
-      }
-      else {
-        //-- either: parent is a MultiPoly, or cov polygon was split by noding (can this ever happen?)
-        if (! multiPolyMap.containsKey(covIndex)) {
-          multiPolyMap.add(covIndex, (Polygon) cleanCov[covIndex]);
-        }
-        multiPolyMap.add(covIndex, resultant);
-      }
-    }
-    for (int index : multiPolyMap.keys()) {
-      cleanCov[index] = multiPolyMap.getGeometry(index, geomFactory);
-    }
-    /**
-     * An output element may be null if the 
-     * input polygon collapsed entirely
-     * (due to a large snapping tolerance).
-     * null entries are filled with empty geoms.
-     */
-    fillEmpty(cleanCov, geomFactory);
-    return cleanCov;
-  }
-
-  private static void fillEmpty(Geometry[] geom, GeometryFactory geomFactory) {
-    for (int i = 0; i < geom.length; i++) {
-      if (geom[i] == null) {
-        geom[i] = geomFactory.createEmpty(2);
-      }
-    }
   }
 
   private Geometry[] polygonize(Geometry cleanEdges) {
@@ -295,60 +185,4 @@ public class CoverageCleaner {
     return geoms;
   }
   
-  private static class CoverageElement {
-    private Geometry coverageItem;
-    private Geometry polygon;
-    private double area;
-    private Coordinate interiorPoint;
-    private int index;
-    private int indexElement;
-
-    public CoverageElement(Geometry coverageItem, int index, 
-        Geometry polygon, int iElement)
-    {
-      this.coverageItem = coverageItem;
-      this.index = index;
-      this.polygon = polygon;
-      this.indexElement = iElement;
-      this.area = polygon.getArea();
-      this.interiorPoint = polygon.getInteriorPoint().getCoordinate();
-    }
-
-    public int getIndex() {
-      return index;
-    }
-
-    public Coordinate getInteriorPoint() {
-      return interiorPoint;
-    }
-
-    public static Map<Coordinate, CoverageElement> createMap(List<CoverageElement> coverageIntPts) {
-      Map<Coordinate, CoverageElement> map = new HashMap<Coordinate, CoverageElement>();
-      for (CoverageElement elem : coverageIntPts) {
-        map.put(elem.interiorPoint, elem);
-      }
-      return map;
-    }
-
-    public static List<CoverageElement> createElements(Geometry[] geoms) {
-      List<CoverageElement> covElems = new ArrayList<CoverageElement>();
-      for (int index = 0; index < geoms.length; index++) {
-        Geometry geom = geoms[index];
-        for (int iElement = 0; iElement < geom.getNumGeometries(); iElement++) {
-          Polygon poly = (Polygon) geom.getGeometryN(iElement);
-          covElems.add(new CoverageElement(geom, index, poly, iElement));
-        }
-      }
-      Collections.sort(covElems, new Comparator<CoverageElement> () {
-
-        @Override
-        public int compare(CoverageElement e1, CoverageElement e2) {
-          //-- sort in order of decreasing area
-          return Double.compare(e2.area, e1.area);
-        }
-        
-      });
-      return covElems;
-    }
-  }
 }

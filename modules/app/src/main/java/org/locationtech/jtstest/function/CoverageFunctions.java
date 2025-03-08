@@ -20,6 +20,7 @@ import org.locationtech.jts.coverage.CoverageUnion;
 import org.locationtech.jts.coverage.CoverageValidator;
 import org.locationtech.jts.coverage.clean.CoverageCleaner;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jtstest.geomfunction.Metadata;
 
 public class CoverageFunctions {
@@ -140,6 +141,22 @@ public class CoverageFunctions {
     Geometry[] cov = toGeometryArray(coverage);
     Geometry[] result =  CoverageCleaner.clean(cov, tolerance);
     return coverage.getFactory().createGeometryCollection(result);
+  }
+  
+  public static Geometry cleanOverlaps(Geometry coverage, double tolerance) {
+    Geometry[] cov = toGeometryArray(coverage);
+    CoverageCleaner cleaner = new CoverageCleaner(cov);
+    cleaner.clean(tolerance);
+    Geometry[] overlaps = GeometryFactory.toGeometryArray(cleaner.getOverlaps());
+    return coverage.getFactory().createGeometryCollection(overlaps);
+  }
+  
+  public static Geometry cleanGaps(Geometry coverage, double tolerance) {
+    Geometry[] cov = toGeometryArray(coverage);
+    CoverageCleaner cleaner = new CoverageCleaner(cov);
+    cleaner.clean(tolerance);
+    Geometry[] gaps = GeometryFactory.toGeometryArray(cleaner.getMergedGaps());
+    return coverage.getFactory().createGeometryCollection(gaps);
   }
   
   //====================================================================
