@@ -36,11 +36,16 @@ class CleanCoverage {
   
   public void merge(List<Polygon> mergables, boolean isOverlap) {
     for (Polygon poly : mergables) {
-      merge(poly, isOverlap);
+      if (isOverlap)
+        mergeOverlap(poly);
+      else 
+        mergeGap(poly);
     }
   }
   
-  private void merge(Polygon poly, boolean isOverlap) {
+  private void mergeOverlap(Polygon poly) {
+    //TODO: ensure overlaps are only merged wth parent polygons (NOT all adjacent)
+    
     List<CleanArea> adjacent = findAdjacent(poly);
     /**
      * No adjacent means this is likely an artifact
@@ -50,29 +55,60 @@ class CleanCoverage {
     if (adjacent.size() == 0)
       return;
     
-    //TODO merge pick strategies go here
-    CleanArea mergeTarget = findBestMergeTargeet(adjacent);
+    CleanArea mergeTarget = findMergeTargeet(poly, adjacent);
     mergeTarget.add(poly);
   }
 
-  private CleanArea findBestMergeTargeet(List<CleanArea> adjacent) {
+  private CleanArea findMergeTargeet(Polygon poly, List<CleanArea> adjacent) {
     //TODO: other strategies here
     //TODO: max adj len - prob produces best result
     //TODO: max/min id ?
     return findMaxArea(adjacent);
   }
 
-  private static CleanArea findMaxArea(List<CleanArea> items) {
+  private static CleanArea findMaxArea(List<CleanArea> areas) {
     double maxArea = 0;
-    CleanArea found = items.get(0);
-    for (CleanArea res : items) {
-      double area = res.getArea();
-      if (res != found && area > maxArea) {
+    CleanArea result = areas.get(0);
+    for (CleanArea a : areas) {
+      if (a == result)
+        continue;
+      double area = a.getArea();
+      if (area > maxArea) {
         maxArea = area;
-        found = res;
+        result = a;
       }
     }
-    return found;
+    return result;
+  }
+
+  private void mergeGap(Polygon poly) {
+    List<CleanArea> adjacent = findAdjacent(poly);
+    /**
+     * No adjacent means this is likely an artifact
+     * of an invalid input polygon. 
+     * Discard polygon.
+     */
+    if (adjacent.size() == 0)
+      return;
+    
+    CleanArea mergeTarget = findMaxBorder(poly, adjacent);
+    mergeTarget.add(poly);
+  }
+  
+  private CleanArea findMaxBorder(Polygon poly, List<CleanArea> areas) {
+    double maxLen = 0;
+    CleanArea result = areas.get(0);
+    for (CleanArea a : areas) {
+      if (a == result)
+        continue;
+      double len = a.getBorderLen(poly);
+      if (len > maxLen) {
+        maxLen = len;
+        result = a;
+      }
+    }
+    return result;
+    
   }
 
   private List<CleanArea> findAdjacent(Geometry poly) {
@@ -111,6 +147,17 @@ class CleanCoverage {
       polys.add(poly);
     }
     
+    public double getBorderLen(Polygon adjPoly) {
+      //TODO: find optimal way of computing border len given a coverage
+      double len = 0;
+      for (Polygon poly : polys) {
+        //TODO: find longest connected border len
+        double borderLen = poly.intersection(adjPoly).getLength();
+        len += borderLen;
+      }
+      return len;
+    }
+
     public double getArea() {
       //TODO: cache area?
       double area = 0;

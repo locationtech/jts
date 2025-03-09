@@ -33,8 +33,13 @@ import org.locationtech.jts.operation.relateng.RelatePredicate;
  * Cleans a polygonal coverage, removing overlaps and specified gaps.
  * 
  * Overlaps are merged with an adjacent polygon chosen according to a specified strategy.
+ * Strategies:
+ * - Id (min/max)
+ * - Parent Area (min/max)
+ * - Maximum Border Length
  * 
  * Gaps which exceed a specified tolerance are filled and merged with an adjacent polygon.
+ * Merge with adjacent item with longest border
  * 
  * @see CoverageValidator
  * @author mdavis

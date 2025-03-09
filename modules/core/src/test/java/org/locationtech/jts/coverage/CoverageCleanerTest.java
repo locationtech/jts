@@ -11,8 +11,6 @@
  */
 package org.locationtech.jts.coverage;
 
-import org.locationtech.jts.coverage.CoverageCleaner;
-import org.locationtech.jts.coverage.CoverageValidator;
 import org.locationtech.jts.geom.Geometry;
 
 import junit.textui.TestRunner;
