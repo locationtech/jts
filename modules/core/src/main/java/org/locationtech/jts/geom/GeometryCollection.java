@@ -31,7 +31,7 @@ public class GeometryCollection extends Geometry {
    *  Internal representation of this <code>GeometryCollection</code>.
    */
   protected Geometry[] geometries;
-  private GeometryCollectionDimension geomCollDim;
+  private transient GeometryCollectionDimension geomCollDim;
 
   /** @deprecated Use GeometryFactory instead */
   public GeometryCollection(Geometry[] geometries, PrecisionModel precisionModel, int SRID) {
