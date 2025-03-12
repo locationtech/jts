@@ -13,6 +13,7 @@ package org.locationtech.jts.coverage;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,6 +22,7 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.index.strtree.STRtree;
 import org.locationtech.jts.noding.NodedSegmentString;
 import org.locationtech.jts.noding.Noder;
 import org.locationtech.jts.noding.SegmentStringUtil;
@@ -28,9 +30,11 @@ import org.locationtech.jts.noding.snap.SnappingNoder;
 import org.locationtech.jts.operation.polygonize.Polygonizer;
 import org.locationtech.jts.operation.relateng.RelateNG;
 import org.locationtech.jts.operation.relateng.RelatePredicate;
+import org.locationtech.jts.util.IntArrayList;
+import org.locationtech.jts.util.Stopwatch;
 
 /**
- * Cleans a polygonal coverage, removing overlaps and specified gaps.
+ * Cleans a polygonal coverage, removing overlaps and gaps smaller than a given tolerance.
  * 
  * Overlaps are merged with an adjacent polygon chosen according to a specified strategy.
  * Strategies:
@@ -38,7 +42,8 @@ import org.locationtech.jts.operation.relateng.RelatePredicate;
  * - Parent Area (min/max)
  * - Maximum Border Length
  * 
- * Gaps which exceed a specified tolerance are filled and merged with an adjacent polygon.
+ * Gaps which exceed a specified tolerance are filled 
+ * and merged with an adjacent polygon.
  * Merge with adjacent item with longest border
  * 
  * @see CoverageValidator
@@ -47,26 +52,43 @@ import org.locationtech.jts.operation.relateng.RelatePredicate;
  */
 public class CoverageCleaner {
   private static final double SLIVER_COMPACTNESS_RATIO = 0.05;
-  private static final int RESULT_OVERLAP = -2;
-  private static final int RESULT_GAP = -1;
 
   public static Geometry[] clean(Geometry[] coverage, double tolerance) {
     CoverageCleaner c = new CoverageCleaner(coverage);
-    return c.clean(tolerance);
+    c.clean(tolerance);
+    return c.getResult();
+  }
+
+  public static List<Polygon> getOverlaps(Geometry[] coverage, double tolerance) {
+    CoverageCleaner c = new CoverageCleaner(coverage);
+    c.clean(tolerance);
+    return c.getOverlaps();
+  }
+
+  public static List<Polygon> getMergedGaps(Geometry[] coverage, double tolerance) {
+    CoverageCleaner c = new CoverageCleaner(coverage);
+    c.clean(tolerance);
+    return c.getMergedGaps();
   }
 
   private Geometry[] coverage;
   private GeometryFactory geomFactory;
-  private ArrayList<Polygon> overlaps;
-  private ArrayList<Polygon> gaps;
+  private Polygon[] resultants = null;  
   private CleanCoverage cleanCov;
-  private List<Polygon> mergableGaps;  
+  private HashMap<Integer, IntArrayList> overlapParentMap = new HashMap<Integer, IntArrayList>();
+  private List<Polygon> overlaps = new ArrayList<Polygon>();
+  private List<Polygon> gaps = new ArrayList<Polygon>();
+  private List<Polygon> mergableGaps;
+  private STRtree covIndex;
   
   public CoverageCleaner(Geometry[] coverage) {
     this.coverage = coverage;
     this.geomFactory = coverage[0].getFactory();
   }
 
+  //TODO: add overlap merge strategies
+  //TODO: add mergable gap area/diameter
+  
   public List<Polygon> getOverlaps() {
     return overlaps;
   }
@@ -75,80 +97,108 @@ public class CoverageCleaner {
     return mergableGaps;
   }
   
-  public Geometry[] clean(double tolerance) {
-    computeResultants(tolerance);
-   
-    //Geometry[] holes = extract(resultants, holeIndex);
-    //return holes;
-    
-    cleanCov.merge(overlaps, true);
-    cleanCov.merge(mergableGaps, false);
-    
+  public Geometry[] getResult() {
     return cleanCov.toCoverage(geomFactory);
   }
+  
+  public void clean(double tolerance) {
+    computeResultants(tolerance);
+    System.out.format("Overlaps: %d  Gaps: %d\n", overlaps.size(), mergableGaps.size());
+  
+    Stopwatch sw = new Stopwatch();
+    mergeOverlaps(overlapParentMap);
+    System.out.println("Merging Overlaps: " + sw.getTimeString());
+    sw.reset();
+    cleanCov.mergeGaps(mergableGaps);
+    System.out.println("Merging Gaps: " + sw.getTimeString());
+  }
 
+  private void mergeOverlaps(HashMap<Integer, IntArrayList> overlapParentMap) {
+    for (int resIndex : overlapParentMap.keySet()) {
+      cleanCov.mergeOverlap(resultants[resIndex], overlapParentMap.get(resIndex));
+    }
+  }
+  
   private void computeResultants(double tolerance) {
+    Stopwatch sw = new Stopwatch();
+    sw.start();
+    
     Geometry nodedEdges = node(coverage, tolerance);
     Geometry cleanEdges = LineDissolver.dissolve(nodedEdges);
-    //TODO: specify Polygon[] as return type?
-    Geometry[] resultants = polygonize(cleanEdges);
+    resultants = polygonize(cleanEdges);
+    System.out.println("Noding/Polygonize: " + sw.getTimeString());
     
-    overlaps = new ArrayList<Polygon>();
-    gaps = new ArrayList<Polygon>();
     cleanCov = new CleanCoverage(coverage.length);
     
-    classify(resultants, cleanCov, overlaps, gaps);
+    sw.reset();
+    createCoverageIndex();
+    classifyResult(resultants);
+    System.out.println("Classify: " + sw.getTimeString());
     
     mergableGaps = findSlivers(gaps);
+   }
+
+  private void createCoverageIndex() {
+    covIndex = new STRtree();
+    for (int i = 0; i < coverage.length; i++) {
+      covIndex.insert(coverage[i].getEnvelopeInternal(), i);
+    }
+  }
+
+  private void classifyResult(Polygon[] resultants) {
+    for (int i = 0; i < resultants.length; i++) {
+      Polygon res = resultants[i];
+      classifyResult(i, res);
+    }
+  }
+
+  private void classifyResult(int resultIndex, Polygon resPoly) {
+    int parentIndex = -1;
+    IntArrayList overlapIndexes = null;
+    Point intPt = resPoly.getInteriorPoint();
+    
+    @SuppressWarnings("unchecked")
+    List<Integer> candidatesIndex = covIndex.query(resPoly.getEnvelopeInternal());
+    for (int i : candidatesIndex) {
+      Geometry parent = coverage[i];
+      if (covers(parent, intPt)) {
+        if (parentIndex < 0) {
+          parentIndex = i;
+        }
+        else {
+          if (overlapIndexes == null) {
+            overlapIndexes = new IntArrayList();
+          }
+          overlapIndexes.add(parentIndex);
+          overlapIndexes.add(i);
+        }
+      }
+    }
+    /**
+     * Classify resultant based on # of parents:
+     * 0 - gap
+     * 1 - single polygon face
+     * >1 - overlap
+     */
+    if (parentIndex < 0) {
+      gaps.add(resPoly);
+    }
+    else if (overlapIndexes != null) {
+      overlapParentMap.put(resultIndex, overlapIndexes);
+      overlaps.add(resPoly);
+    }
+    else {
+      cleanCov.add(parentIndex, resPoly);
+    }
+  }
+  
+  private static boolean covers(Geometry poly, Point intPt) {
+    return RelateNG.relate(poly, intPt, RelatePredicate.covers());
   }
 
   private List<Polygon> findSlivers(List<Polygon> gaps) {
     return gaps.stream().filter(gap -> isSliver(gap))
         .collect(Collectors.toList());
-  }
-
-  private void classify(Geometry[] resultants, CleanCoverage cleanCov, 
-      List<Polygon> overlaps, List<Polygon> gaps) {
-    for (int i = 0; i < resultants.length; i++) {
-      Geometry res = resultants[i];
-      Point intPt = res.getInteriorPoint();
-      int cleanParentIndex = findUniqueParent(coverage, intPt);
-      if (cleanParentIndex >= 0) {
-        cleanCov.add(cleanParentIndex, (Polygon) res);
-      }
-      else if (cleanParentIndex == RESULT_GAP) {
-        gaps.add((Polygon) res);
-      }
-      else {
-        overlaps.add((Polygon) res);
-      }
-    }
-  }
-
-  /**
-   * Classifies a resultant to be either in a unique parent, an overlap (-2), or a gap (-1)
-   * 
-   * @param coverage
-   * @param intPt
-   * @return
-   */
-  public int findUniqueParent(Geometry[] coverage, Point intPt) {
-    //TODO: use spatial index on coverage?
-    int index = RESULT_GAP;
-    for (int i = 0; i < coverage.length; i++) {
-      Geometry parent = coverage[i];
-      if (covers(parent, intPt)) {
-        if (index >= 0)
-          return RESULT_OVERLAP;
-        index = i;
-      }
-    }
-    //-- RESULT_GAP or a unique parent index
-    return index;
-  }
-  
-  private static boolean covers(Geometry poly, Point intPt) {
-    return RelateNG.relate(poly, intPt, RelatePredicate.covers());
   }
 
   private boolean isSliver(Geometry poly) {
@@ -166,11 +216,11 @@ public class CoverageCleaner {
     return Math.abs(area) * Math.PI * 4 / (perimeter * perimeter);
   }
 
-  private Geometry[] polygonize(Geometry cleanEdges) {
+  private static Polygon[] polygonize(Geometry cleanEdges) {
     Polygonizer polygonizer = new Polygonizer();
     polygonizer.add(cleanEdges);
     Geometry polys = polygonizer.getGeometry();
-    return toGeometryArray(polys);
+    return toPolygonArray(polys);
   }
   
   public static Geometry node(Geometry[] coverage,  
@@ -193,12 +243,11 @@ public class CoverageCleaner {
     segs.addAll(segsGeom);
   }
   
-  private static Geometry[] toGeometryArray(Geometry geom) {
-    Geometry[] geoms = new Geometry[geom.getNumGeometries()];
+  private static Polygon[] toPolygonArray(Geometry geom) {
+    Polygon[] geoms = new Polygon[geom.getNumGeometries()];
     for (int i = 0; i < geom.getNumGeometries(); i++) {
-      geoms[i]= geom.getGeometryN(i);
+      geoms[i]= (Polygon) geom.getGeometryN(i);
     }
     return geoms;
   }
-  
 }

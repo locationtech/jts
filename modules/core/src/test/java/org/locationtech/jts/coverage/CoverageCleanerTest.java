@@ -61,6 +61,34 @@ public class CoverageCleanerTest extends GeometryTestCase {
             ));
   }
   
+  public void testMergeGapToLongestBorder() {
+    checkCleaner(readArray(
+        "POLYGON ((1 9, 9 9, 9 5, 1 5, 1 9))",
+        "POLYGON ((5 1, 5 5, 1 5, 5 1))",
+        "POLYGON ((5 1, 5.1 5, 9 5, 5 1))"
+        ),
+        0.1,
+        readArray(
+            "POLYGON ((5 5, 1 5, 1 9, 9 9, 9 5, 5 5))",
+            "POLYGON ((5 1, 5 5, 1 5, 5 1))",
+            "POLYGON ((5 1, 5 5, 9 5, 5 1))"
+            ));
+  }
+  
+  public void testMergeOverlap() {
+    checkCleaner(readArray(
+        "POLYGON ((5 9, 9 9, 9 1, 5 1, 5 9))",
+        "POLYGON ((1 5, 5 5, 5 2, 1 2, 1 5))",
+        "POLYGON ((2 7, 5 7, 5 4, 2 4, 2 7))"
+        ),
+        0.1,
+        readArray(
+            "POLYGON ((5 1, 5 2, 5 4, 5 5, 5 7, 5 9, 9 9, 9 1, 5 1))",
+            "POLYGON ((5 2, 1 2, 1 5, 2 5, 5 5, 5 4, 5 2))",
+            "POLYGON ((5 5, 2 5, 2 7, 5 7, 5 5))"
+            ));
+  }
+  
   //TODO: add test with MultiPolygon that snaps together (so needs merging)
   
   private void checkCleaner(Geometry[] cov, double tolerance) {

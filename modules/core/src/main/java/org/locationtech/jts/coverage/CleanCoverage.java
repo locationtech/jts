@@ -17,8 +17,11 @@ import java.util.List;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.operation.overlayng.OverlayNG;
+import org.locationtech.jts.operation.overlayng.OverlayNGRobust;
 import org.locationtech.jts.operation.relateng.IntersectionMatrixPattern;
 import org.locationtech.jts.operation.relateng.RelateNG;
+import org.locationtech.jts.util.IntArrayList;
 
 class CleanCoverage {
   private CleanArea[] cov;
@@ -34,32 +37,31 @@ class CleanCoverage {
     cov[i].add(poly);
   }
   
-  public void merge(List<Polygon> mergables, boolean isOverlap) {
+  public void mergeGaps(List<Polygon> mergables) {
     for (Polygon poly : mergables) {
-      if (isOverlap)
-        mergeOverlap(poly);
-      else 
-        mergeGap(poly);
+      mergeGap(poly);
     }
   }
   
-  private void mergeOverlap(Polygon poly) {
-    //TODO: ensure overlaps are only merged wth parent polygons (NOT all adjacent)
-    
-    List<CleanArea> adjacent = findAdjacent(poly);
-    /**
-     * No adjacent means this is likely an artifact
-     * of an invalid input polygon. 
-     * Discard polygon.
-     */
-    if (adjacent.size() == 0)
-      return;
-    
-    CleanArea mergeTarget = findMergeTargeet(poly, adjacent);
+  public void mergeOverlap(Polygon poly, IntArrayList parentIndexes) {
+    List<CleanArea> parents = getAreas(parentIndexes);
+
+    //CleanArea mergeTarget = findOverlapMergeTargeet(poly, adjacent);
+    CleanArea mergeTarget = findMaxBorderLength(poly, parents);
     mergeTarget.add(poly);
   }
 
-  private CleanArea findMergeTargeet(Polygon poly, List<CleanArea> adjacent) {
+  private List<CleanArea> getAreas(IntArrayList parentIndexes) {
+    List<CleanArea> areas = new ArrayList<CleanArea>();
+    for (int i : parentIndexes.toArray()) {
+      if (cov[i] != null) {
+        areas.add(cov[i]);
+      }
+    }
+    return areas;
+  }
+
+  private CleanArea findOverlapMergeTargeet(Polygon poly, List<CleanArea> adjacent) {
     //TODO: other strategies here
     //TODO: max adj len - prob produces best result
     //TODO: max/min id ?
@@ -67,8 +69,9 @@ class CleanCoverage {
   }
 
   private static CleanArea findMaxArea(List<CleanArea> areas) {
-    double maxArea = 0;
     CleanArea result = areas.get(0);
+    double maxArea = result.getArea();
+    
     for (CleanArea a : areas) {
       if (a == result)
         continue;
@@ -91,23 +94,21 @@ class CleanCoverage {
     if (adjacent.size() == 0)
       return;
     
-    CleanArea mergeTarget = findMaxBorder(poly, adjacent);
+    CleanArea mergeTarget = findMaxBorderLength(poly, adjacent);
     mergeTarget.add(poly);
   }
   
-  private CleanArea findMaxBorder(Polygon poly, List<CleanArea> areas) {
+  private CleanArea findMaxBorderLength(Polygon poly, List<CleanArea> areas) {
     double maxLen = 0;
-    CleanArea result = areas.get(0);
+    CleanArea maxLenArea = null;
     for (CleanArea a : areas) {
-      if (a == result)
-        continue;
-      double len = a.getBorderLen(poly);
-      if (len > maxLen) {
+      double len = a.getBorderLength(poly);
+      if (maxLenArea == null || len > maxLen) {
         maxLen = len;
-        result = a;
+        maxLenArea = a;
       }
     }
-    return result;
+    return maxLenArea;
     
   }
 
@@ -115,11 +116,9 @@ class CleanCoverage {
     //TODO: use spatial index on cov
     List<CleanArea> adjacent = new ArrayList<CleanArea>();
     RelateNG rel = RelateNG.prepare(poly);
-    for (CleanArea res : cov) {
-      if (res == null)
-        continue;
-      if (res.isAdjacent(rel))
-        adjacent.add(res);
+    for (CleanArea area : cov) {
+      if (area != null && area.isAdjacent(rel))
+        adjacent.add(area);
     }
     return adjacent;
   }
@@ -147,12 +146,13 @@ class CleanCoverage {
       polys.add(poly);
     }
     
-    public double getBorderLen(Polygon adjPoly) {
+    public double getBorderLength(Polygon adjPoly) {
       //TODO: find optimal way of computing border len given a coverage
       double len = 0;
       for (Polygon poly : polys) {
         //TODO: find longest connected border len
-        double borderLen = poly.intersection(adjPoly).getLength();
+        Geometry border = OverlayNGRobust.overlay(poly, adjPoly, OverlayNG.INTERSECTION);
+        double borderLen = border.getLength();
         len += borderLen;
       }
       return len;
@@ -182,6 +182,5 @@ class CleanCoverage {
       return CoverageUnion.union(geoms);
     }
   }
-
 
 }

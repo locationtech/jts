@@ -13,6 +13,7 @@ package org.locationtech.jtstest.function;
 
 import java.util.Arrays;
 
+import org.locationtech.jts.algorithm.distance.DiscreteHausdorffDistance;
 import org.locationtech.jts.coverage.CoverageCleaner;
 import org.locationtech.jts.coverage.CoverageGapFinder;
 import org.locationtech.jts.coverage.CoveragePolygonValidator;
@@ -145,18 +146,31 @@ public class CoverageFunctions {
   
   public static Geometry cleanOverlaps(Geometry coverage, double tolerance) {
     Geometry[] cov = toGeometryArray(coverage);
-    CoverageCleaner cleaner = new CoverageCleaner(cov);
-    cleaner.clean(tolerance);
-    Geometry[] overlaps = GeometryFactory.toGeometryArray(cleaner.getOverlaps());
+    Geometry[] overlaps = GeometryFactory.toGeometryArray(
+        CoverageCleaner.getOverlaps(cov, tolerance));
     return coverage.getFactory().createGeometryCollection(overlaps);
   }
   
   public static Geometry cleanGaps(Geometry coverage, double tolerance) {
     Geometry[] cov = toGeometryArray(coverage);
-    CoverageCleaner cleaner = new CoverageCleaner(cov);
-    cleaner.clean(tolerance);
-    Geometry[] gaps = GeometryFactory.toGeometryArray(cleaner.getMergedGaps());
+    Geometry[] gaps = GeometryFactory.toGeometryArray(
+        CoverageCleaner.getMergedGaps(cov, tolerance));
     return coverage.getFactory().createGeometryCollection(gaps);
+  }
+  
+  //--------------------------------------------------
+  
+  public static Geometry maxDistances(Geometry coverage1, Geometry coverage2) {
+    if (coverage1.getNumGeometries() != coverage2.getNumGeometries()) {
+      throw new IllegalArgumentException("Coverages must have same number of elements");
+    }
+    Geometry[] hd = new Geometry[coverage1.getNumGeometries()];
+    for (int i = 0; i < coverage1.getNumGeometries(); i++) {
+      Geometry e1 = coverage1.getGeometryN(i);
+      Geometry e2 = coverage2.getGeometryN(i);
+      hd[i] = DiscreteHausdorffDistance.distanceLine(e1, e2);
+    }
+    return coverage1.getFactory().createGeometryCollection(hd);
   }
   
   //====================================================================
