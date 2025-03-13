@@ -86,8 +86,10 @@ public class CoverageCleaner {
     this.geomFactory = coverage[0].getFactory();
   }
 
+  //TODO: allow snap distance = 0 -> non-snapping noder
+  //TODO: allow snap-rounding noder for precision reduction
   //TODO: add overlap merge strategies
-  //TODO: add mergable gap area/diameter
+  //TODO: add merge gaps by: area / diameter / no merge
   
   public List<Polygon> getOverlaps() {
     return overlaps;
