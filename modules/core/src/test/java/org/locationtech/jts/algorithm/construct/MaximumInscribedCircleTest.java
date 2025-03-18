@@ -15,6 +15,16 @@ public class MaximumInscribedCircleTest extends GeometryTestCase {
 
   public MaximumInscribedCircleTest(String name) { super(name); }
   
+  public void testTriangleRight() {
+    checkCircle("POLYGON ((1 1, 1 9, 9 1, 1 1))", 
+       0.001, 3.343, 3.343, 2.343 );
+  }
+
+  public void testTriangleObtuse() {
+    checkCircle("POLYGON ((1 1, 1 9, 2 2, 1 1))", 
+       0.001, 1.485, 2.173, 0.485 );
+  }
+  
   public void testSquare() {
     checkCircle("POLYGON ((100 200, 200 200, 200 100, 100 100, 100 200))", 
        0.001, 150, 150, 50 );
@@ -65,7 +75,7 @@ public class MaximumInscribedCircleTest extends GeometryTestCase {
   }
 
   /**
-   * Invalid polygon collapsed to a point
+   * Invalid triangle polygon collapsed to a point
    */
   public void testCollapsedPoint() {
     checkCircle("POLYGON ((100 100, 100 100, 100 100, 100 100))", 
