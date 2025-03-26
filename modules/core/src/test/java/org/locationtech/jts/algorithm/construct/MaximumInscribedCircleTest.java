@@ -30,9 +30,24 @@ public class MaximumInscribedCircleTest extends GeometryTestCase {
        0.001, 150, 150, 50 );
   }
 
+  public void testThinQuad() {
+    checkCircle("POLYGON ((1 2, 9 3, 9 1, 1 1, 1 2))", 
+       0.001, 8.0623, 1.9377, 0.93774 );
+  }
+
   public void testDiamond() {
     checkCircle("POLYGON ((150 250, 50 150, 150 50, 250 150, 150 250))", 
        0.001, 150, 150, 70.71 );
+  }
+
+  public void testChevron() {
+    checkCircle("POLYGON ((1 1, 6 9, 3.7 2.5, 9 1, 1 1))", 
+       0.001, 2.82, 2.008, 1.008 );
+  }
+
+  public void testChevronFat() {
+    checkCircle("POLYGON ((1 1, 6 9, 5.9 5, 9 1, 1 1))", 
+       0.001, 4.7545, 3.0809, 2.081 );
   }
 
   public void testCircle() {

@@ -13,7 +13,6 @@ package org.locationtech.jts.algorithm.construct;
 
 import java.util.PriorityQueue;
 
-import org.locationtech.jts.algorithm.Angle;
 import org.locationtech.jts.algorithm.Centroid;
 import org.locationtech.jts.algorithm.InteriorPoint;
 import org.locationtech.jts.algorithm.locate.IndexedPointInAreaLocator;
@@ -21,13 +20,11 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.LineSegment;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Location;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
-import org.locationtech.jts.geom.Triangle;
 import org.locationtech.jts.operation.distance.IndexedFacetDistance;
 
 /**
@@ -213,87 +210,25 @@ public class MaximumInscribedCircle {
     // check if already computed
     if (centerPt != null) return;
     
+    /**
+     * Handle empty or flat geometries.
+     */
     if (inputGeom.getArea() == 0.0) {
       Coordinate c = inputGeom.getCoordinate().copy();
       createResult(c, c.copy());
       return;
     }
     
-    if (isSimplePolygon(inputGeom)) {
-      if (isTriangle(inputGeom)) {
-        computeTriangle();
-        return;
-      }
-      else if (isQuadrilateral(inputGeom)) {
-        computeQuadrilateral();
-        return;
-      }
+    /**
+     * Optimization for small simple convex polygons 
+     */
+    if (ExactMaxInscribedCircle.isSupported(inputGeom)) {
+      Coordinate[] centreRadius = ExactMaxInscribedCircle.computeRadius((Polygon) inputGeom);
+      createResult(centreRadius[0], centreRadius[1]);
+      return;
     }
+    
     computeApproximation();
-  }
-
-  private static boolean isSimplePolygon(Geometry geom) {
-    return geom.getNumGeometries() == 1 
-        && ((Polygon) geom).getNumInteriorRing() == 0; 
-  }
-
-  private static boolean isTriangle(Geometry geom) {
-    return geom.getNumPoints() == 4;
-  }
-  
-  private static boolean isQuadrilateral(Geometry geom) {
-    return geom.getNumPoints() == 5;
-  }
-
-  private void computeTriangle() {
-    Coordinate[] pts = inputGeom.getCoordinates();
-    centerPt = Triangle.inCentre(pts[0], pts[1], pts[2]);
-    LineSegment seg = new LineSegment(pts[0], pts[1]);
-    radiusPt = seg.project(centerPt);
-    
-    centerPoint = factory.createPoint(centerPt);
-    radiusPoint = factory.createPoint(radiusPt);
-  }
-
-  private void computeQuadrilateral() {
-    Coordinate[] pts = inputGeom.getCoordinates();
-    double diameter = inputGeom.getEnvelopeInternal().getDiameter();
-    
-    //-- compute all bisectors (for convex angles)
-    LineSegment[] bisector = new LineSegment[4];
-    for (int i = 0; i < 4; i++) {
-      bisector[i] = computeConcaveBisector(pts, i, diameter);
-    }
-    //-- compute nodes and find farthest one
-    double maxDist = -1;
-    Coordinate centre = null;
-    Coordinate radius = null;
-    for (int i = 0; i < 4; i++) {
-      LineSegment b1 = bisector[i];
-      int i2 = i < 3 ? i + 1 : 0;
-      LineSegment b2 = bisector[i2];
-      if (b1 == null || b2 == null)
-        continue;
-      Coordinate nodePt = b1.intersection(b2);
-      LineSegment side = new LineSegment(pts[i], pts[i + 1]);
-      Coordinate r = side.project(nodePt);
-      double dist = nodePt.distance(r);
-      if (maxDist < 0 || dist > maxDist) {
-        centre = nodePt;
-        radius = r;
-        maxDist = dist;
-      }
-    }
-    createResult(centre, radius);
-  }
-
-  private LineSegment computeConcaveBisector(Coordinate[] pts, int index, double len) {
-    Coordinate basePt = pts[index];
-    int iPrev = index == 0 ? pts.length - 2 : index - 1;
-    int iNext = index >= pts.length ? 0 : index + 1;
-    double bisectAng = Angle.bisector(pts[iPrev], basePt, pts[iNext]);
-    Coordinate endPt = Angle.project(basePt, bisectAng, len);
-    return new LineSegment(basePt.copy(), endPt);
   }
 
   private void createResult(Coordinate c, Coordinate r) {
