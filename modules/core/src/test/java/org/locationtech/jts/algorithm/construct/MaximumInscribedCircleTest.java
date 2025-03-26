@@ -15,14 +15,39 @@ public class MaximumInscribedCircleTest extends GeometryTestCase {
 
   public MaximumInscribedCircleTest(String name) { super(name); }
   
+  public void testTriangleRight() {
+    checkCircle("POLYGON ((1 1, 1 9, 9 1, 1 1))", 
+       0.001, 3.343, 3.343, 2.343 );
+  }
+
+  public void testTriangleObtuse() {
+    checkCircle("POLYGON ((1 1, 1 9, 2 2, 1 1))", 
+       0.001, 1.485, 2.173, 0.485 );
+  }
+  
   public void testSquare() {
     checkCircle("POLYGON ((100 200, 200 200, 200 100, 100 100, 100 200))", 
        0.001, 150, 150, 50 );
   }
 
+  public void testThinQuad() {
+    checkCircle("POLYGON ((1 2, 9 3, 9 1, 1 1, 1 2))", 
+       0.001, 8.0623, 1.9377, 0.93774 );
+  }
+
   public void testDiamond() {
     checkCircle("POLYGON ((150 250, 50 150, 150 50, 250 150, 150 250))", 
        0.001, 150, 150, 70.71 );
+  }
+
+  public void testChevron() {
+    checkCircle("POLYGON ((1 1, 6 9, 3.7 2.5, 9 1, 1 1))", 
+       0.001, 2.82, 2.008, 1.008 );
+  }
+
+  public void testChevronFat() {
+    checkCircle("POLYGON ((1 1, 6 9, 5.9 5, 9 1, 1 1))", 
+       0.001, 4.7545, 3.0809, 2.081 );
   }
 
   public void testCircle() {
@@ -65,7 +90,7 @@ public class MaximumInscribedCircleTest extends GeometryTestCase {
   }
 
   /**
-   * Invalid polygon collapsed to a point
+   * Invalid triangle polygon collapsed to a point
    */
   public void testCollapsedPoint() {
     checkCircle("POLYGON ((100 100, 100 100, 100 100, 100 100))", 
