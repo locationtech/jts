@@ -261,7 +261,8 @@ public class Triangle
    * the point which is equidistant from the sides of the triangle. It is also
    * the point at which the bisectors of the triangle's angles meet. It is the
    * centre of the triangle's <i>incircle</i>, which is the unique circle that
-   * is tangent to each of the triangle's three sides.
+   * is tangent to each of the triangle's three sides
+   * (and hence the maximum inscribed circle).
    * <p>
    * The incentre always lies within the triangle.
    * 

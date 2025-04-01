@@ -144,8 +144,6 @@ public class MaximumInscribedCircle {
     this.inputGeom = polygonal;
     this.factory = polygonal.getFactory();
     this.tolerance = tolerance;
-    ptLocater = new IndexedPointInAreaLocator(polygonal);
-    indexedDistance = new IndexedFacetDistance( polygonal.getBoundary() );
   }
 
   /**
@@ -210,7 +208,39 @@ public class MaximumInscribedCircle {
   
   private void compute() {
     // check if already computed
-    if (centerCell != null) return;
+    if (centerPt != null) return;
+    
+    /**
+     * Handle empty or flat geometries.
+     */
+    if (inputGeom.getArea() == 0.0) {
+      Coordinate c = inputGeom.getCoordinate().copy();
+      createResult(c, c.copy());
+      return;
+    }
+    
+    /**
+     * Optimization for small simple convex polygons 
+     */
+    if (ExactMaxInscribedCircle.isSupported(inputGeom)) {
+      Coordinate[] centreRadius = ExactMaxInscribedCircle.computeRadius((Polygon) inputGeom);
+      createResult(centreRadius[0], centreRadius[1]);
+      return;
+    }
+    
+    computeApproximation();
+  }
+
+  private void createResult(Coordinate c, Coordinate r) {
+    centerPt = c;
+    radiusPt = r;
+    centerPoint = factory.createPoint(centerPt);
+    radiusPoint = factory.createPoint(radiusPt);
+  }
+
+  private void computeApproximation() {  
+    ptLocater = new IndexedPointInAreaLocator(inputGeom);
+    indexedDistance = new IndexedFacetDistance( inputGeom.getBoundary() );
     
     // Priority queue of cells, ordered by maximum distance from boundary
     PriorityQueue<Cell> cellQueue = new PriorityQueue<>();
