@@ -15,10 +15,12 @@ package org.locationtech.jtstest.function;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.locationtech.jts.algorithm.construct.MaximumInscribedCircle;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.prep.PreparedGeometry;
 import org.locationtech.jts.geom.prep.PreparedGeometryFactory;
 import org.locationtech.jts.operation.distance.IndexedFacetDistance;
+import org.locationtech.jtstest.geomfunction.Metadata;
 
 public class SelectionFunctions 
 {
@@ -227,6 +229,17 @@ public class SelectionFunctions
     });
   }
 
+  public static Geometry maxInCircleRadiusWithin(Geometry a, 
+      @Metadata(title="Max Radius Length")
+      double maximumRadius)
+  {
+    return select(a, new GeometryPredicate() {
+      public boolean isTrue(Geometry g) {
+        return MaximumInscribedCircle.isRadiusWithin(g, maximumRadius);
+      }
+    });
+  }
+  
   public static Geometry select(Geometry geom, GeometryPredicate pred)
   {
     List selected = new ArrayList();

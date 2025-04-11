@@ -43,6 +43,14 @@ import org.locationtech.jts.operation.distance.IndexedFacetDistance;
  * measure of how "narrow" a polygon is. It is the 
  * distance at which the negative buffer becomes empty.
  * <p>
+ * The class supports testing whether a polygon is "narrower"
+ * than a specified distance via 
+ * {@link #isRadiusWithin(Geometry, double)} or
+ * {@link #isRadiusWithin(double)}.
+ * Testing for the maximum radius is generally much faster
+ * than computing the actual radius value, since short-circuiting
+ * is used to limit the approximation iterations.
+ * <p>
  * The class supports polygons with holes and multipolygons.
  * <p>
  * The implementation uses a successive-approximation technique
@@ -50,13 +58,16 @@ import org.locationtech.jts.operation.distance.IndexedFacetDistance;
  * The grid is refined using a branch-and-bound algorithm. 
  * Point containment and distance are computed in a performant
  * way by using spatial indexes.
- * 
+ *
  * <h3>Future Enhancements</h3>
  * <ul>
- * <li>Support a polygonal constraint on placement of center
+ * <li>Support a polygonal constraint on placement of center point,
+ *     for example to produce circle-packing constructions,
+ *     or support multiple labels.
  * </ul>
  * 
  * @author Martin Davis
+ * 
  * @see LargestEmptyCircle
  * @see InteriorPoint
  * @see Centroid
@@ -83,11 +94,26 @@ public class MaximumInscribedCircle {
    * 
    * @param polygonal a polygonal geometry
    * @param tolerance the distance tolerance for computing the center point
-   * @return a line from the center to a point on the circle
+   * @return a 2-point line from the center to a point on the circle
    */
   public static LineString getRadiusLine(Geometry polygonal, double tolerance) {
     MaximumInscribedCircle mic = new MaximumInscribedCircle(polygonal, tolerance);
     return mic.getRadiusLine();
+  }
+  
+  /**
+   * Tests if the radius of the maximum inscribed circle 
+   * is no longer than the specified distance.
+   * This method determines the distance tolerance automatically
+   * as a fraction of the maxRadius value.
+   * 
+   * @param polygonal a polygonal geometry
+   * @param maxRadius the radius value to test
+   * @return true if the max in-circle radius is no longer than the max radius
+   */
+  public static boolean isRadiusWithin(Geometry polygonal, double maxRadius) {
+    MaximumInscribedCircle mic = new MaximumInscribedCircle(polygonal, -1);
+    return mic.isRadiusWithin(maxRadius);
   }
   
   /**
@@ -122,6 +148,7 @@ public class MaximumInscribedCircle {
   private Coordinate radiusPt;
   private Point centerPoint;
   private Point radiusPoint;
+  private double maximumRadius = -1;;
 
   /**
    * Creates a new instance of a Maximum Inscribed Circle computation.
@@ -131,9 +158,6 @@ public class MaximumInscribedCircle {
    * @throws IllegalArgumentException if the tolerance is non-positive, or the input geometry is non-polygonal or empty.
    */
   public MaximumInscribedCircle(Geometry polygonal, double tolerance) {
-    if (tolerance <= 0) {
-      throw new IllegalArgumentException("Tolerance must be positive");
-    }
     if (! (polygonal instanceof Polygon || polygonal instanceof MultiPolygon)) {
       throw new IllegalArgumentException("Input geometry must be a Polygon or MultiPolygon");
     }
@@ -146,6 +170,35 @@ public class MaximumInscribedCircle {
     this.tolerance = tolerance;
   }
 
+  private static final double MAX_RADIUS_FRACTION = 0.0001;
+
+  /**
+   * Tests if the radius of the maximum inscribed circle 
+   * is no longer than the specified distance.
+   * This method determines the distance tolerance automatically
+   * as a fraction of the maxRadius value.
+   * After this method is called the center and radius
+   * points provide locations demonstrating where
+   * the radius exceeds the specified maximum.
+   * 
+   * @param maxRadius the (non-negative) radius value to test
+   * @return true if the max in-circle radius is no longer than the max radius
+   */
+  public boolean isRadiusWithin(double maxRadius) {
+    if (maxRadius < 0) {
+      throw new IllegalArgumentException("Radius length must be non-negative");
+    }
+    //-- handle 0 corner case, to provide maximum domain
+    if (maxRadius == 0) {
+      return false;
+    }
+    maximumRadius  = maxRadius;
+    tolerance = maxRadius * MAX_RADIUS_FRACTION;
+    compute();
+    double radius = centerPt.distance(radiusPt);
+    return radius <= maximumRadius;
+  }
+  
   /**
    * Gets the center point of the maximum inscribed circle
    * (up to the tolerance distance).
@@ -228,6 +281,10 @@ public class MaximumInscribedCircle {
       return;
     }
     
+    //-- only needed for approximation
+    if (tolerance <= 0) {
+      throw new IllegalArgumentException("Tolerance must be positive");
+    }
     computeApproximation();
   }
 
@@ -266,7 +323,7 @@ public class MaximumInscribedCircle {
       //System.out.println(iter + "] Dist: " + cell.getDistance() + " Max D: " + cell.getMaxDistance() + " size: " + cell.getHSide());
       //TestBuilderProxy.showIndicator(inputGeom.getFactory().toGeometry(cell.getEnvelope()));
       
-      //-- if cell must be closer than furthest, terminate since all remaining cells in queue are even closer. 
+      //-- if cell must be closer than farthest, terminate since all remaining cells in queue are even closer. 
       if (cell.getMaxDistance() < farthestCell.getDistance())
         break;
       
@@ -274,6 +331,17 @@ public class MaximumInscribedCircle {
       if (cell.getDistance() > farthestCell.getDistance()) {
         farthestCell = cell;
       }
+      
+      //-- search termination when checking max radius predicate
+      if (maximumRadius >= 0) {
+        //-- found a inside point further than max radius
+        if (farthestCell.getDistance() > maximumRadius)
+          break;
+        //-- no cells can have larger radius
+        if (cell.getMaxDistance() < maximumRadius)
+          break;
+      }
+      
       /**
        * Refine this cell if the potential distance improvement
        * is greater than the required tolerance.
