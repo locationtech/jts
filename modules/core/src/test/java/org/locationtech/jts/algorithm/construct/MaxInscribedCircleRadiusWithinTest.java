@@ -25,7 +25,13 @@ public class MaxInscribedCircleRadiusWithinTest extends GeometryTestCase {
     checkRadiusWithin(wkt, 0.1, false);
     checkRadiusWithin(wkt, 0.2, true);
   }
-
+  
+  public void testThinQuad() {
+    String wkt = "POLYGON ((1158415.1 6142668.8001, 1158415.0999843003 6142668.800147668, 1158416.4403733865 6142679.523159596, 1158416.4404 6142679.5232, 1158415.1 6142668.8001))";
+    checkRadiusWithin(wkt, 1.0e-5, false);
+    checkRadiusWithin(wkt, 1.0e-3, true);
+  }
+  
   private void checkRadiusWithin(String wkt, double maxRadius, boolean expected) {
     Geometry geom = read(wkt);
     boolean actual = MaximumInscribedCircle.isRadiusWithin(geom, maxRadius);

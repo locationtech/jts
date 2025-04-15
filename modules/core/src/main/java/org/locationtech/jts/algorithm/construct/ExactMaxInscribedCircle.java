@@ -96,9 +96,11 @@ class ExactMaxInscribedCircle {
     Coordinate[] ringCW = CoordinateArrays.orient(ring, true);
     
     double diameter = CoordinateArrays.envelope(ringCW).getDiameter();
+    //-- expand diameter for robustness
+    double diamWithTolerance = 2 * diameter;
     
     //-- compute corner bisectors
-    LineSegment[] bisector = computeBisectors(ringCW, diameter);
+    LineSegment[] bisector = computeBisectors(ringCW, diamWithTolerance);
     //-- compute nodes and find interior one farthest from sides
     double maxDist = -1;
     Coordinate center = null;
@@ -109,6 +111,10 @@ class ExactMaxInscribedCircle {
       LineSegment b2 = bisector[i2];
 
       Coordinate nodePt = b1.intersection(b2);
+      //-- if bisector segments don't intersect node is outside polygon
+      if (nodePt == null) {
+        continue;
+      }
       
       //-- only interior nodes are considered
       if (! isPointInConvexRing(ringCW, nodePt)) {
