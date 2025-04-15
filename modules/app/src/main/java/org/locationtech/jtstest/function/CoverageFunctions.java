@@ -144,6 +144,12 @@ public class CoverageFunctions {
     return coverage.getFactory().createGeometryCollection(result);
   }
   
+  public static Geometry cleanGapWidth(Geometry coverage, double maxGapWidth) {
+    Geometry[] cov = toGeometryArray(coverage);
+    Geometry[] result =  CoverageCleaner.cleanWithGapWidth(cov, maxGapWidth);
+    return coverage.getFactory().createGeometryCollection(result);
+  }
+  
   public static Geometry cleanOverlaps(Geometry coverage, double tolerance) {
     Geometry[] cov = toGeometryArray(coverage);
     Geometry[] overlaps = GeometryFactory.toGeometryArray(
