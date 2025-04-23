@@ -24,6 +24,97 @@ import org.locationtech.jts.operation.relateng.RelateNG;
 import org.locationtech.jts.util.IntArrayList;
 
 class CleanCoverage {
+  public static interface MergeStrategy {
+
+    public CleanArea getTarget();
+
+    public void checkMergeTarget(int areaIndex, CleanArea cleanArea, Polygon poly);
+    
+    public class MaxBorderMergeStrategy implements MergeStrategy {
+
+      private CleanArea target;
+      private double targetBorderLen;
+
+      @Override
+      public CleanArea getTarget() {
+        return target;
+      }
+
+      @Override
+      public void checkMergeTarget(int areaIndex, CleanArea area, Polygon poly) {
+        if (area == null)
+          return;
+
+        double borderLen = area.getBorderLength(poly);
+        if (target == null || borderLen > targetBorderLen) {
+          target = area;
+          targetBorderLen = borderLen;
+        }
+      }
+      
+    }
+    public class MaxMinAreaMergeStrategy implements MergeStrategy {
+
+      private CleanArea target;
+      private double targetArea;
+      private boolean isMax;
+
+      MaxMinAreaMergeStrategy(boolean isMax) {
+        this.isMax = isMax;
+      }
+      
+      @Override
+      public CleanArea getTarget() {
+        return target;
+      }
+
+      @Override
+      public void checkMergeTarget(int areaIndex, CleanArea area, Polygon poly) {
+        if (area == null)
+          return;
+        double areaVal = area.getArea();
+        boolean isBetter = isMax 
+            ? areaVal > targetArea 
+            : areaVal < targetArea;
+        if (target == null || isBetter) {
+          target = area;
+          targetArea = areaVal;
+        }
+      }
+      
+    }
+    public class MaxMinIdMergeStrategy implements MergeStrategy {
+
+      private CleanArea target;
+      private int targetIndex;
+      private boolean isMax;
+
+      MaxMinIdMergeStrategy(boolean isMax) {
+        this.isMax = isMax;
+      }
+      
+      @Override
+      public CleanArea getTarget() {
+        return target;
+      }
+
+      @Override
+      public void checkMergeTarget(int areaIndex, CleanArea area, Polygon poly) {
+        if (area == null)
+          return;
+        boolean isBetter = isMax 
+            ? areaIndex > targetIndex 
+            : areaIndex < targetIndex;
+        if (target == null || isBetter) {
+          target = area;
+          targetIndex = areaIndex;
+        }
+      }
+      
+    }
+
+  }
+  
   private CleanArea[] cov;
 
   public CleanCoverage(int size) {
@@ -43,45 +134,17 @@ class CleanCoverage {
     }
   }
   
-  public void mergeOverlap(Polygon poly, IntArrayList parentIndexes) {
-    List<CleanArea> parents = getAreas(parentIndexes);
-
-    //CleanArea mergeTarget = findOverlapMergeTargeet(poly, adjacent);
-    CleanArea mergeTarget = findMaxBorderLength(poly, parents);
-    mergeTarget.add(poly);
+  public void mergeOverlap(Polygon overlap, MergeStrategy mergeStrategy, IntArrayList parentIndexes) {
+    CleanArea mergeTarget = findMergeTarget(overlap, mergeStrategy, parentIndexes, cov);
+    mergeTarget.add(overlap);
   }
 
-  private List<CleanArea> getAreas(IntArrayList parentIndexes) {
-    List<CleanArea> areas = new ArrayList<CleanArea>();
-    for (int i : parentIndexes.toArray()) {
-      if (cov[i] != null) {
-        areas.add(cov[i]);
-      }
+  public static CleanArea findMergeTarget(Polygon poly, MergeStrategy strat, IntArrayList parentIndexes, CleanArea[] cov) {
+    for (int i = 0; i < parentIndexes.size(); i++) {
+      int index = parentIndexes.get(i);
+      strat.checkMergeTarget(index, cov[index], poly);
     }
-    return areas;
-  }
-
-  private CleanArea findOverlapMergeTargeet(Polygon poly, List<CleanArea> adjacent) {
-    //TODO: other strategies here
-    //TODO: max adj len - prob produces best result
-    //TODO: max/min id ?
-    return findMaxArea(adjacent);
-  }
-
-  private static CleanArea findMaxArea(List<CleanArea> areas) {
-    CleanArea result = areas.get(0);
-    double maxArea = result.getArea();
-    
-    for (CleanArea a : areas) {
-      if (a == result)
-        continue;
-      double area = a.getArea();
-      if (area > maxArea) {
-        maxArea = area;
-        result = a;
-      }
-    }
-    return result;
+    return strat.getTarget();
   }
 
   private void mergeGap(Polygon poly) {

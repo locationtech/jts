@@ -55,32 +55,55 @@ import org.locationtech.jts.util.Stopwatch;
  * @author mdavis
  *
  */
-public class CoverageCleaner {  
+public class CoverageCleaner { 
+  public static final int MERGE_MAX_BORDER = 1;
+  public static final int MERGE_MAX_AREA = 2;
+  public static final int MERGE_MIN_AREA = 3;
+  public static final int MERGE_MAX_ID = 4;
+  public static final int MERGE_MIN_ID = 5;
+  
   private static final double DEFAULT_SNAPPING_FACTOR = 1.0e8;
 
-  public static Geometry[] clean(Geometry[] coverage, double snappingDistance) {
+  public static Geometry[] cleanSnap(Geometry[] coverage, double snappingDistance) {
     CoverageCleaner cc = new CoverageCleaner(coverage);
     cc.setSnappingDistance(snappingDistance);
     cc.clean();
     return cc.getResult();
   }
 
-  public static Geometry[] cleanWithGapWidth(Geometry[] coverage, double maxGapWidth) {
+  public static Geometry[] clean(Geometry[] coverage, double snappingDistance, 
+      double maxGapWidth) {
     CoverageCleaner cc = new CoverageCleaner(coverage);
-    //cc.setSnappingDistance(snappingDistance);
+    cc.setSnappingDistance(snappingDistance);
     cc.setGapMaximumWidth(maxGapWidth);
     cc.clean();
     return cc.getResult();
   }
 
-  public static List<Polygon> getOverlaps(Geometry[] coverage, double tolerance) {
+  public static Geometry[] cleanGapWidth(Geometry[] coverage, double maxGapWidth) {
     CoverageCleaner cc = new CoverageCleaner(coverage);
+    cc.setGapMaximumWidth(maxGapWidth);
+    cc.clean();
+    return cc.getResult();
+  }
+
+  public static Geometry[] cleanOverlapMerge(Geometry[] coverage, int mergeStrategy) {
+    CoverageCleaner cc = new CoverageCleaner(coverage);
+    cc.setOverlapMergeStrategy(mergeStrategy);
+    cc.clean();
+    return cc.getResult();
+  }
+
+  public static List<Polygon> getOverlaps(Geometry[] coverage, double snappingDistance) {
+    CoverageCleaner cc = new CoverageCleaner(coverage);
+    cc.setSnappingDistance(snappingDistance);
     cc.clean();
     return cc.getOverlaps();
   }
 
-  public static List<Polygon> getMergedGaps(Geometry[] coverage, double tolerance) {
+  public static List<Polygon> getMergedGaps(Geometry[] coverage, double maxGapWidth) {
     CoverageCleaner cc = new CoverageCleaner(coverage);
+    cc.setGapMaximumWidth(maxGapWidth);
     cc.clean();
     return cc.getMergedGaps();
   }
@@ -95,10 +118,8 @@ public class CoverageCleaner {
   private List<Polygon> mergableGaps;
   private STRtree covIndex;
   private double snappingDistance;
-
-  private double gapMaximumWidth;
-
-  private double gapMaxiumumRadius = 0;
+  private double gapMaximumWidth = 0;
+  private int overlapMergeStrategy = MERGE_MAX_BORDER;
   
   public CoverageCleaner(Geometry[] coverage) {
     this.coverage = coverage;
@@ -107,12 +128,12 @@ public class CoverageCleaner {
   }
 
   private static double computeDefaultSnappingDistance(Geometry[] geoms) {
-    Envelope covEnv = envelope(geoms);
+    Envelope covEnv = extent(geoms);
     double diameter = covEnv.getDiameter();
     return diameter / DEFAULT_SNAPPING_FACTOR;
   }
 
-  private static Envelope envelope(Geometry[] geoms) {
+  private static Envelope extent(Geometry[] geoms) {
     Envelope env = new Envelope();
     for (Geometry geom : geoms) {
       env.expandToInclude(geom.getEnvelopeInternal());
@@ -126,11 +147,14 @@ public class CoverageCleaner {
   
   public void setGapMaximumWidth(double maxWidth) {
     this.gapMaximumWidth = maxWidth;
-    gapMaxiumumRadius  = maxWidth;
+  }
+  
+  public void setOverlapMergeStrategy(int mergeStrategy) {
+    this.overlapMergeStrategy = mergeStrategy;
   }
   
   //TODO: allow snap distance = 0 -> non-snapping noder
-  //TODO: allow snap-rounding noder for precision reduction
+  //TODO: support snap-rounding noder for precision reduction
   //TODO: add overlap merge strategies
   //TODO: add merge gaps by: area / diameter / no merge
   
@@ -152,18 +176,29 @@ public class CoverageCleaner {
   
     Stopwatch sw = new Stopwatch();
     mergeOverlaps(overlapParentMap);
-    System.out.println("Merging Overlaps: " + sw.getTimeString());
+    System.out.println("Merge Overlaps: " + sw.getTimeString());
     sw.reset();
     cleanCov.mergeGaps(mergableGaps);
-    System.out.println("Merging Gaps: " + sw.getTimeString());
+    System.out.println("Merge Gaps: " + sw.getTimeString());
   }
 
   private void mergeOverlaps(HashMap<Integer, IntArrayList> overlapParentMap) {
     for (int resIndex : overlapParentMap.keySet()) {
-      cleanCov.mergeOverlap(resultants[resIndex], overlapParentMap.get(resIndex));
+      cleanCov.mergeOverlap(resultants[resIndex], mergeStrategy(overlapMergeStrategy), overlapParentMap.get(resIndex));
     }
   }
   
+  private CleanCoverage.MergeStrategy mergeStrategy(int mergeStrategyId) {
+    switch (mergeStrategyId) {
+    case MERGE_MAX_BORDER: return new CleanCoverage.MergeStrategy.MaxBorderMergeStrategy();
+    case MERGE_MAX_AREA: return new CleanCoverage.MergeStrategy.MaxMinAreaMergeStrategy(true);
+    case MERGE_MIN_AREA: return new CleanCoverage.MergeStrategy.MaxMinAreaMergeStrategy(false);
+    case MERGE_MAX_ID: return new CleanCoverage.MergeStrategy.MaxMinIdMergeStrategy(true);
+    case MERGE_MIN_ID: return new CleanCoverage.MergeStrategy.MaxMinIdMergeStrategy(false);
+    }
+    throw new IllegalArgumentException("Unknown merge strategy: " + mergeStrategyId);
+  }
+
   private void computeResultants(double tolerance) {
     Stopwatch sw = new Stopwatch();
     sw.start();
@@ -199,11 +234,11 @@ public class CoverageCleaner {
   private void classifyResult(Polygon[] resultants) {
     for (int i = 0; i < resultants.length; i++) {
       Polygon res = resultants[i];
-      classifyResult(i, res);
+      classifyResultant(i, res);
     }
   }
 
-  private void classifyResult(int resultIndex, Polygon resPoly) {
+  private void classifyResultant(int resultIndex, Polygon resPoly) {
     Point intPt = resPoly.getInteriorPoint();
     int parentIndex = -1;
     IntArrayList overlapIndexes = null;
@@ -255,8 +290,8 @@ public class CoverageCleaner {
   }
   
   private boolean isMergableGap(Polygon gap) {
-    if (gapMaxiumumRadius > 0) {
-      return MaximumInscribedCircle.isRadiusWithin(gap, gapMaxiumumRadius);
+    if (gapMaximumWidth > 0) {
+      return MaximumInscribedCircle.isRadiusWithin(gap, gapMaximumWidth / 2.0);
     }
     return false;
   }
@@ -276,7 +311,6 @@ public class CoverageCleaner {
       return true;
     return compactness(poly) < SLIVER_COMPACTNESS_RATIO;
   }
-  */
 
   private static double compactness(Geometry poly) {
     double perimeter = poly.getLength();
@@ -284,7 +318,8 @@ public class CoverageCleaner {
     if (perimeter <= 0) return 0;
     return Math.abs(area) * Math.PI * 4 / (perimeter * perimeter);
   }
-
+  */
+  
   private static Polygon[] polygonize(Geometry cleanEdges) {
     Polygonizer polygonizer = new Polygonizer();
     polygonizer.add(cleanEdges);

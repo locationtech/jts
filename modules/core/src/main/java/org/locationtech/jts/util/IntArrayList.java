@@ -40,6 +40,16 @@ public class IntArrayList {
   }
 
   /**
+   * Gets the value of the entry at a given index.
+   * 
+   * @param index the index to retrieve
+   * @return the value in the array
+   */
+  public int get(int index) {
+    return data[index];
+  }
+  
+  /**
    * Returns the number of values in this list.
    * 
    * @return the number of values in the list
