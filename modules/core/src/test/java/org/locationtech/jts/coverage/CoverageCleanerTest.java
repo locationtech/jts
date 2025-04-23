@@ -111,14 +111,14 @@ public class CoverageCleanerTest extends GeometryTestCase {
 
   public void testMergeOverlapMinId() {
     checkCleanOverlapMerge(covWithOverlap,
-        CoverageCleaner.MERGE_MIN_ID,
+        CoverageCleaner.MERGE_MIN_INDEX,
         "GEOMETRYCOLLECTION (POLYGON ((5 3, 4 1, 1 1, 1 3, 4 3, 5 3)), POLYGON ((1 9, 4 9, 4 3, 1 3, 1 9)))"
         );
   }
 
   public void testMergeOverlapMaxId() {
     checkCleanOverlapMerge(covWithOverlap,
-        CoverageCleaner.MERGE_MAX_ID,
+        CoverageCleaner.MERGE_MAX_INDEX,
         "GEOMETRYCOLLECTION (POLYGON ((1 1, 1 3, 3 1.9, 4 3, 5 3, 4 1, 1 1)), POLYGON ((1 3, 1 9, 4 9, 4 3, 3 1.9, 1 3)))"
         );
   }

@@ -30,7 +30,7 @@ class CleanCoverage {
 
     public void checkMergeTarget(int areaIndex, CleanArea cleanArea, Polygon poly);
     
-    public class MaxBorderMergeStrategy implements MergeStrategy {
+    public class BorderMergeStrategy implements MergeStrategy {
 
       private CleanArea target;
       private double targetBorderLen;
@@ -51,15 +51,15 @@ class CleanCoverage {
           targetBorderLen = borderLen;
         }
       }
-      
     }
-    public class MaxMinAreaMergeStrategy implements MergeStrategy {
+    
+    public class AreaMergeStrategy implements MergeStrategy {
 
       private CleanArea target;
       private double targetArea;
       private boolean isMax;
 
-      MaxMinAreaMergeStrategy(boolean isMax) {
+      AreaMergeStrategy(boolean isMax) {
         this.isMax = isMax;
       }
       
@@ -81,15 +81,15 @@ class CleanCoverage {
           targetArea = areaVal;
         }
       }
-      
     }
-    public class MaxMinIdMergeStrategy implements MergeStrategy {
+    
+    public class IndexMergeStrategy implements MergeStrategy {
 
       private CleanArea target;
       private int targetIndex;
       private boolean isMax;
 
-      MaxMinIdMergeStrategy(boolean isMax) {
+      IndexMergeStrategy(boolean isMax) {
         this.isMax = isMax;
       }
       
@@ -110,9 +110,7 @@ class CleanCoverage {
           targetIndex = areaIndex;
         }
       }
-      
     }
-
   }
   
   private CleanArea[] cov;

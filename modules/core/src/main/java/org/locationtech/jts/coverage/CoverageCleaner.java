@@ -37,20 +37,19 @@ import org.locationtech.jts.util.IntArrayList;
 import org.locationtech.jts.util.Stopwatch;
 
 /**
- * Cleans a polygonal coverage, removing overlaps and gaps smaller than a given tolerance.
- * 
- * Overlaps are merged with an adjacent polygon chosen according to a specified strategy.
- * Strategies:
+ * Cleans the linework of a set of polygons to form a valid polygonal coverage.
+ * Linework is snapped together to eliminate small discrepancies.
+ * Overlaps and gaps narrower than a given tolerance are merged with adjacent polygons.
+ * <p>
+ * Overlaps are merged with an adjacent polygon chosen according to a specified merge strategy.
+ * The available merge strategies are:
  * - Maximum Boundary Length (default)
  * - Parent Area (min/max)
- * - Id (min/max)
- * 
- * Gaps which exceed a specified tolerance are filled 
- * and merged with an adjacent polygon.
- * The tolerance can be:
- * - Max Width (default)
- * - Max Area
- * Merge with adjacent polygon with longest boundary.
+ * - Index (min/max)
+ * <p>
+ * Gaps which are wider than a given distance 
+ * are merged with an adjacent polygon.
+ * Gaps are merged with the adjacent polygon with longest shared border.
  * 
  * @see CoverageValidator
  * @author Martin Davis
@@ -60,8 +59,8 @@ public class CoverageCleaner {
   public static final int MERGE_MAX_BORDER = 1;
   public static final int MERGE_MAX_AREA = 2;
   public static final int MERGE_MIN_AREA = 3;
-  public static final int MERGE_MAX_ID = 4;
-  public static final int MERGE_MIN_ID = 5;
+  public static final int MERGE_MAX_INDEX = 4;
+  public static final int MERGE_MIN_INDEX = 5;
   
   private static final double DEFAULT_SNAPPING_FACTOR = 1.0e8;
 
@@ -191,11 +190,11 @@ public class CoverageCleaner {
   
   private CleanCoverage.MergeStrategy mergeStrategy(int mergeStrategyId) {
     switch (mergeStrategyId) {
-    case MERGE_MAX_BORDER: return new CleanCoverage.MergeStrategy.MaxBorderMergeStrategy();
-    case MERGE_MAX_AREA: return new CleanCoverage.MergeStrategy.MaxMinAreaMergeStrategy(true);
-    case MERGE_MIN_AREA: return new CleanCoverage.MergeStrategy.MaxMinAreaMergeStrategy(false);
-    case MERGE_MAX_ID: return new CleanCoverage.MergeStrategy.MaxMinIdMergeStrategy(true);
-    case MERGE_MIN_ID: return new CleanCoverage.MergeStrategy.MaxMinIdMergeStrategy(false);
+    case MERGE_MAX_BORDER: return new CleanCoverage.MergeStrategy.BorderMergeStrategy();
+    case MERGE_MAX_AREA: return new CleanCoverage.MergeStrategy.AreaMergeStrategy(true);
+    case MERGE_MIN_AREA: return new CleanCoverage.MergeStrategy.AreaMergeStrategy(false);
+    case MERGE_MAX_INDEX: return new CleanCoverage.MergeStrategy.IndexMergeStrategy(true);
+    case MERGE_MIN_INDEX: return new CleanCoverage.MergeStrategy.IndexMergeStrategy(false);
     }
     throw new IllegalArgumentException("Unknown merge strategy: " + mergeStrategyId);
   }
