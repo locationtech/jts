@@ -106,4 +106,15 @@ public class IntArrayList {
     System.arraycopy(data, 0, array, 0, size);
     return array;
   }
+  
+  public String toString() {
+    StringBuilder s = new StringBuilder();
+    s.append('[');
+    for (int i = 0; i < size; i++) {
+      if (i > 0) s.append(", ");
+      s.append(data[i]);
+    }
+    s.append(']');
+    return s.toString();
+  }
 }

@@ -12,6 +12,7 @@
 package org.locationtech.jts.coverage;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.locationtech.jts.geom.Geometry;
@@ -26,28 +27,25 @@ import org.locationtech.jts.util.IntArrayList;
 class CleanCoverage {
   public static interface MergeStrategy {
 
-    public CleanArea getTarget();
+    public int getTarget();
 
     public void checkMergeTarget(int areaIndex, CleanArea cleanArea, Polygon poly);
     
     public class BorderMergeStrategy implements MergeStrategy {
 
-      private CleanArea target;
+      private int targetIndex = -1;
       private double targetBorderLen;
 
       @Override
-      public CleanArea getTarget() {
-        return target;
+      public int getTarget() {
+        return targetIndex;
       }
 
       @Override
       public void checkMergeTarget(int areaIndex, CleanArea area, Polygon poly) {
-        if (area == null)
-          return;
-
-        double borderLen = area.getBorderLength(poly);
-        if (target == null || borderLen > targetBorderLen) {
-          target = area;
+        double borderLen = area == null ? 0 : area.getBorderLength(poly);
+        if (targetIndex < 0 || borderLen > targetBorderLen) {
+          targetIndex = areaIndex;
           targetBorderLen = borderLen;
         }
       }
@@ -55,7 +53,7 @@ class CleanCoverage {
     
     public class AreaMergeStrategy implements MergeStrategy {
 
-      private CleanArea target;
+      private int targetIndex = -1;
       private double targetArea;
       private boolean isMax;
 
@@ -64,20 +62,18 @@ class CleanCoverage {
       }
       
       @Override
-      public CleanArea getTarget() {
-        return target;
+      public int getTarget() {
+        return targetIndex;
       }
 
       @Override
       public void checkMergeTarget(int areaIndex, CleanArea area, Polygon poly) {
-        if (area == null)
-          return;
-        double areaVal = area.getArea();
+        double areaVal = area == null ? 0.0 : area.getArea();
         boolean isBetter = isMax 
             ? areaVal > targetArea 
             : areaVal < targetArea;
-        if (target == null || isBetter) {
-          target = area;
+        if (targetIndex < 0 || isBetter) {
+          targetIndex = areaIndex;
           targetArea = areaVal;
         }
       }
@@ -85,8 +81,7 @@ class CleanCoverage {
     
     public class IndexMergeStrategy implements MergeStrategy {
 
-      private CleanArea target;
-      private int targetIndex;
+      private int targetIndex = -1;
       private boolean isMax;
 
       IndexMergeStrategy(boolean isMax) {
@@ -94,19 +89,16 @@ class CleanCoverage {
       }
       
       @Override
-      public CleanArea getTarget() {
-        return target;
+      public int getTarget() {
+        return targetIndex;
       }
 
       @Override
       public void checkMergeTarget(int areaIndex, CleanArea area, Polygon poly) {
-        if (area == null)
-          return;
         boolean isBetter = isMax 
             ? areaIndex > targetIndex 
             : areaIndex < targetIndex;
-        if (target == null || isBetter) {
-          target = area;
+        if (targetIndex < 0 || isBetter) {
           targetIndex = areaIndex;
         }
       }
@@ -133,13 +125,16 @@ class CleanCoverage {
   }
   
   public void mergeOverlap(Polygon overlap, MergeStrategy mergeStrategy, IntArrayList parentIndexes) {
-    CleanArea mergeTarget = findMergeTarget(overlap, mergeStrategy, parentIndexes, cov);
-    mergeTarget.add(overlap);
+    int mergeTarget = findMergeTarget(overlap, mergeStrategy, parentIndexes, cov);
+    add(mergeTarget, overlap);
   }
 
-  public static CleanArea findMergeTarget(Polygon poly, MergeStrategy strat, IntArrayList parentIndexes, CleanArea[] cov) {
-    for (int i = 0; i < parentIndexes.size(); i++) {
-      int index = parentIndexes.get(i);
+  public static int findMergeTarget(Polygon poly, MergeStrategy strat, IntArrayList parentIndexes, CleanArea[] cov) {
+    //-- sort parent indexes ascending, so that overlaps merge to first parent by default
+    int[] indexesAsc = parentIndexes.toArray();
+    Arrays.sort(indexesAsc);
+    for (int i = 0; i < indexesAsc.length; i++) {
+      int index = indexesAsc[i];
       strat.checkMergeTarget(index, cov[index], poly);
     }
     return strat.getTarget();

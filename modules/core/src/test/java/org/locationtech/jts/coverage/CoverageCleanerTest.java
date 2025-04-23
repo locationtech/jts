@@ -144,9 +144,26 @@ public class CoverageCleanerTest extends GeometryTestCase {
         );
   }
   
+  //-------------------------------------------
+  
+  //-- a duplicate coverage element is assigned to the lowest result index 
+  public void testDuplicatePolygons() {
+    checkClean("GEOMETRYCOLLECTION (POLYGON ((1 9, 9 1, 1 1, 1 9)), POLYGON ((1 9, 9 1, 1 1, 1 9)))",
+        "GEOMETRYCOLLECTION (POLYGON ((1 9, 9 1, 1 1, 1 9)), POLYGON EMPTY)"
+        );
+  }
+  
   //TODO: add test with MultiPolygon that snaps together (so needs merging)
   
   //=========================================================
+ 
+  private void checkClean(String wkt, String wktExpected) {
+    Geometry geom = read(wkt);
+    Geometry[] cov = toArray(geom);
+    Geometry[] actual = CoverageCleaner.cleanGapWidth(cov, 0);
+    Geometry[] covExpected = toArray(read(wktExpected));
+    checkEqual(covExpected, actual);   
+  }
   
   private void checkCleanGapWidth(String wkt, double gapWidth, String wktExpected) {
     Geometry geom = read(wkt);

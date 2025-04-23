@@ -37,9 +37,13 @@ import org.locationtech.jts.util.IntArrayList;
 import org.locationtech.jts.util.Stopwatch;
 
 /**
- * Cleans the linework of a set of polygons to form a valid polygonal coverage.
+ * Cleans the linework of polygonal geometries to form a valid polygonal coverage.
+ * The input is an array of valid polygonal geometries 
+ * which may contain topological errors such as overlaps and gaps.
  * Linework is snapped together to eliminate small discrepancies.
- * Overlaps and gaps narrower than a given tolerance are merged with adjacent polygons.
+ * Overlaps are merged with an adjacent polygon, according to a given merge strategy.
+ * Gaps narrower than a given width are filled and merged with an adjacent polygon.
+ * The output is an array of polygonal geometries forming a valid polygonal coverage.
  * <p>
  * Overlaps are merged with an adjacent polygon chosen according to a specified merge strategy.
  * The available merge strategies are:
@@ -50,7 +54,25 @@ import org.locationtech.jts.util.Stopwatch;
  * Gaps which are wider than a given distance 
  * are merged with an adjacent polygon.
  * Gaps are merged with the adjacent polygon with longest shared border.
+ * Note that empty holes in input polygons may be treated as gaps, and filled in.
+ * <p>
+ * The cleaned result is an array of polygonal geometries 
+ * which match one-to-one with the input array.
+ * If an input polygon is very small the result geometry may be <tt>null</tt>.
+ * The result should be a valid coverage according to {@link CoverageValidator#isValid(Geometry[])}; 
  * 
+ * <h3>Known Issues</h3>
+ * <ul>
+ * <li>Long gaps adjacent to multiple polygons may form spikes when merged with a single polygon. 
+ * </ul>
+ * 
+ * <h3>Future Enhancements</h3>
+ * <ul>
+ * <li>Prevent long gaps from forming spikes by partitioning them before merging.
+ * </ul>
+ * 
+ * 
+ *  
  * @see CoverageValidator
  * @author Martin Davis
  *
@@ -64,18 +86,18 @@ public class CoverageCleaner {
   
   private static final double DEFAULT_SNAPPING_FACTOR = 1.0e8;
 
-  public static Geometry[] cleanSnap(Geometry[] coverage, double snappingDistance) {
-    CoverageCleaner cc = new CoverageCleaner(coverage);
-    cc.setSnappingDistance(snappingDistance);
-    cc.clean();
-    return cc.getResult();
-  }
-
   public static Geometry[] clean(Geometry[] coverage, double snappingDistance, 
       double maxGapWidth) {
     CoverageCleaner cc = new CoverageCleaner(coverage);
     cc.setSnappingDistance(snappingDistance);
     cc.setGapMaximumWidth(maxGapWidth);
+    cc.clean();
+    return cc.getResult();
+  }
+  
+  public static Geometry[] cleanSnap(Geometry[] coverage, double snappingDistance) {
+    CoverageCleaner cc = new CoverageCleaner(coverage);
+    cc.setSnappingDistance(snappingDistance);
     cc.clean();
     return cc.getResult();
   }
@@ -200,6 +222,7 @@ public class CoverageCleaner {
   }
 
   private void computeResultants(double tolerance) {
+    System.out.println("Coverage Cleaner ===> polygons: " + coverage.length);
     Stopwatch sw = new Stopwatch();
     sw.start();
     
