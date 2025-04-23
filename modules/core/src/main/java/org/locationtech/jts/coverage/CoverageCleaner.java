@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.locationtech.jts.algorithm.construct.MaximumInscribedCircle;
+import org.locationtech.jts.algorithm.locate.SimplePointInAreaLocator;
 import org.locationtech.jts.dissolve.LineDissolver;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
@@ -52,7 +53,7 @@ import org.locationtech.jts.util.Stopwatch;
  * Merge with adjacent polygon with longest boundary.
  * 
  * @see CoverageValidator
- * @author mdavis
+ * @author Martin Davis
  *
  */
 public class CoverageCleaner { 
@@ -281,7 +282,8 @@ public class CoverageCleaner {
   }
   
   private static boolean covers(Geometry poly, Point intPt) {
-    return RelateNG.relate(poly, intPt, RelatePredicate.covers());
+    return SimplePointInAreaLocator.isContained(intPt.getCoordinate(), poly);
+    //return RelateNG.relate(poly, intPt, RelatePredicate.covers());
   }
 
   private List<Polygon> findMergableGaps(List<Polygon> gaps2) {
@@ -290,10 +292,10 @@ public class CoverageCleaner {
   }
   
   private boolean isMergableGap(Polygon gap) {
-    if (gapMaximumWidth > 0) {
-      return MaximumInscribedCircle.isRadiusWithin(gap, gapMaximumWidth / 2.0);
+    if (gapMaximumWidth <= 0) {
+      return false;
     }
-    return false;
+    return MaximumInscribedCircle.isRadiusWithin(gap, gapMaximumWidth / 2.0);
   }
 
   /*
