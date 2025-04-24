@@ -27,6 +27,12 @@ public class CoverageCleanerTest extends GeometryTestCase {
     super(name);
   }
   
+  public void testCoverageWithEmpty() {
+    checkClean(
+        "GEOMETRYCOLLECTION (POLYGON ((1 9, 9 9, 9 4, 1 4, 1 9)), POLYGON EMPTY, POLYGON ((2 1, 2 5, 8 5, 8 1, 2 1)))",
+        "GEOMETRYCOLLECTION (POLYGON ((1 4, 1 9, 9 9, 9 4, 8 4, 2 4, 1 4)), POLYGON EMPTY, POLYGON ((8 1, 2 1, 2 4, 8 4, 8 1)))");
+  }
+
   public void testSingleNearMatch() {
     checkCleanSnap(readArray(
         "POLYGON ((1 9, 9 9, 9 4.99, 1 5, 1 9))",

@@ -58,7 +58,9 @@ import org.locationtech.jts.util.Stopwatch;
  * <p>
  * The cleaned result is an array of polygonal geometries 
  * which match one-to-one with the input array.
- * If an input polygon is very small the result geometry may be <tt>null</tt>.
+ * A result array entry may be  <tt>null</tt> 
+ * if an input polygon is so small it is snapped to collapse,
+ * or if the input contains (nearly or exactly) duplicate geometries.
  * The result should be a valid coverage according to {@link CoverageValidator#isValid(Geometry[])}; 
  * 
  * <h3>Known Issues</h3>
@@ -71,8 +73,6 @@ import org.locationtech.jts.util.Stopwatch;
  * <li>Prevent long gaps from forming spikes by partitioning them before merging.
  * </ul>
  * 
- * 
- *  
  * @see CoverageValidator
  * @author Martin Davis
  *
@@ -356,6 +356,8 @@ public class CoverageCleaner {
   {
     List<NodedSegmentString> segs = new ArrayList<NodedSegmentString>();
     for (Geometry geom : coverage) {
+      if (geom.isEmpty())
+        continue;
       extractNodedSegmentStrings(geom, segs);
     }
     Noder noder = new SnappingNoder(snapDistance);
