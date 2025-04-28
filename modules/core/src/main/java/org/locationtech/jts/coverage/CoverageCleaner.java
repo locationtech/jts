@@ -277,14 +277,14 @@ public class CoverageCleaner {
    */
   public void clean() {
     computeResultants(snappingDistance);
-    System.out.format("Overlaps: %d  Gaps: %d\n", overlaps.size(), mergableGaps.size());
+    //System.out.format("Overlaps: %d  Gaps: %d\n", overlaps.size(), mergableGaps.size());
   
-    Stopwatch sw = new Stopwatch();
+    //Stopwatch sw = new Stopwatch();
     mergeOverlaps(overlapParentMap);
-    System.out.println("Merge Overlaps: " + sw.getTimeString());
-    sw.reset();
+    //System.out.println("Merge Overlaps: " + sw.getTimeString());
+    //sw.reset();
     cleanCov.mergeGaps(mergableGaps);
-    System.out.println("Merge Gaps: " + sw.getTimeString());
+    //System.out.println("Merge Gaps: " + sw.getTimeString());
   }
 
   /**
@@ -348,28 +348,28 @@ public class CoverageCleaner {
   }
 
   private void computeResultants(double tolerance) {
-    System.out.println("Coverage Cleaner ===> polygons: " + coverage.length);
-    System.out.format("Snapping distance: %f\n", snappingDistance);
-    Stopwatch sw = new Stopwatch();
-    sw.start();
+    //System.out.println("Coverage Cleaner ===> polygons: " + coverage.length);
+    //System.out.format("Snapping distance: %f\n", snappingDistance);
+    //Stopwatch sw = new Stopwatch();
+    //sw.start();
     
     Geometry nodedEdges = node(coverage, tolerance);
-    System.out.println("Noding: " + sw.getTimeString());
+    //System.out.println("Noding: " + sw.getTimeString());
     
-    sw.reset();
+    //sw.reset();
     Geometry cleanEdges = LineDissolver.dissolve(nodedEdges);
-    System.out.println("Dissolve: " + sw.getTimeString());
+    //System.out.println("Dissolve: " + sw.getTimeString());
     
-    sw.reset();
+    //sw.reset();
     resultants = polygonize(cleanEdges);
-    System.out.println("Polygonize: " + sw.getTimeString());
+    //System.out.println("Polygonize: " + sw.getTimeString());
     
     cleanCov = new CleanCoverage(coverage.length);
     
-    sw.reset();
+    //sw.reset();
     createCoverageIndex();
     classifyResult(resultants);
-    System.out.println("Classify: " + sw.getTimeString());
+    //System.out.println("Classify: " + sw.getTimeString());
     
     mergableGaps = findMergableGaps(gaps);
    }
@@ -446,30 +446,6 @@ public class CoverageCleaner {
     }
     return MaximumInscribedCircle.isRadiusWithin(gap, gapMaximumWidth / 2.0);
   }
-
-  /*
-  private List<Polygon> findSlivers(List<Polygon> gaps) {
-    return gaps.stream().filter(gap -> isSliver(gap))
-        .collect(Collectors.toList());
-  }
-
-  private static final double SLIVER_COMPACTNESS_RATIO = 0.05;
-
-  private boolean isSliver(Geometry poly) {
-    //TODO: add min area cutoff?
-    //TODO: for low vertex count, check polygon width?
-    if (poly.getNumPoints() <= 5)
-      return true;
-    return compactness(poly) < SLIVER_COMPACTNESS_RATIO;
-  }
-
-  private static double compactness(Geometry poly) {
-    double perimeter = poly.getLength();
-    double area = poly.getArea();
-    if (perimeter <= 0) return 0;
-    return Math.abs(area) * Math.PI * 4 / (perimeter * perimeter);
-  }
-  */
   
   private static Polygon[] polygonize(Geometry cleanEdges) {
     Polygonizer polygonizer = new Polygonizer();
