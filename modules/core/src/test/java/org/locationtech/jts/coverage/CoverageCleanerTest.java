@@ -122,13 +122,6 @@ public class CoverageCleanerTest extends GeometryTestCase {
         );
   }
 
-  public void testMergeOverlapMaxId() {
-    checkCleanOverlapMerge(covWithOverlap,
-        CoverageCleaner.MERGE_MAX_INDEX,
-        "GEOMETRYCOLLECTION (POLYGON ((1 1, 1 3, 3 1.9, 4 3, 5 3, 4 1, 1 1)), POLYGON ((1 3, 1 9, 4 9, 4 3, 3 1.9, 1 3)))"
-        );
-  }
-
   public void testMergeOverlap2() {
     checkCleanSnap(readArray(
         "POLYGON ((5 9, 9 9, 9 1, 5 1, 5 9))",
@@ -145,7 +138,7 @@ public class CoverageCleanerTest extends GeometryTestCase {
   
   public void testMergeOverlap() {
     checkCleanOverlapMerge("GEOMETRYCOLLECTION (POLYGON ((5 9, 9 9, 9 1, 5 1, 5 9)), POLYGON ((1 5, 5 5, 5 2, 1 2, 1 5)), POLYGON ((2 7, 5 7, 5 4, 2 4, 2 7)))",
-        CoverageCleaner.MERGE_MAX_BORDER,
+        CoverageCleaner.MERGE_LONGEST_BORDER,
         "GEOMETRYCOLLECTION (POLYGON ((5 7, 5 9, 9 9, 9 1, 5 1, 5 2, 5 4, 5 5, 5 7)), POLYGON ((5 2, 1 2, 1 5, 2 5, 5 5, 5 4, 5 2)), POLYGON ((2 5, 2 7, 5 7, 5 5, 2 5)))"
         );
   }
@@ -153,11 +146,24 @@ public class CoverageCleanerTest extends GeometryTestCase {
   //-------------------------------------------
   
   //-- a duplicate coverage element is assigned to the lowest result index 
-  public void testDuplicatePolygons() {
+  public void testDuplicateItems() {
     checkClean("GEOMETRYCOLLECTION (POLYGON ((1 9, 9 1, 1 1, 1 9)), POLYGON ((1 9, 9 1, 1 1, 1 9)))",
         "GEOMETRYCOLLECTION (POLYGON ((1 9, 9 1, 1 1, 1 9)), POLYGON EMPTY)"
         );
   }
+  
+  public void testCoveredItem() {
+    checkClean("GEOMETRYCOLLECTION (POLYGON ((1 9, 9 9, 9 4, 1 4, 1 9)), POLYGON ((2 5, 2 8, 8 8, 8 5, 2 5)))",
+        "GEOMETRYCOLLECTION (POLYGON ((9 9, 9 4, 1 4, 1 9, 9 9)), POLYGON EMPTY)"
+        );
+  }
+  
+  public void testCoveredItemMultiPolygon() {
+    checkClean("GEOMETRYCOLLECTION (MULTIPOLYGON (((1 1, 1 5, 5 5, 5 1, 1 1)), ((6 5, 6 1, 9 1, 6 5))), POLYGON ((6 1, 6 5, 9 1, 6 1)))",
+        "GEOMETRYCOLLECTION (MULTIPOLYGON (((1 5, 5 5, 5 1, 1 1, 1 5)), ((6 5, 9 1, 6 1, 6 5))), POLYGON EMPTY)"
+        );
+  }
+
   
   //TODO: add test with MultiPolygon that snaps together (so needs merging)
   
@@ -182,7 +188,7 @@ public class CoverageCleanerTest extends GeometryTestCase {
   private void checkCleanOverlapMerge(String wkt, int mergeStrategy, String wktExpected) {
     Geometry geom = read(wkt);
     Geometry[] cov = toArray(geom);
-    Geometry[] actual = CoverageCleaner.cleanOverlapMerge(cov, mergeStrategy);
+    Geometry[] actual = CoverageCleaner.cleanOverlapGap(cov, mergeStrategy, 0);
     Geometry[] covExpected = toArray(read(wktExpected));
     try {
       checkEqual(covExpected, actual);  
@@ -203,12 +209,12 @@ public class CoverageCleanerTest extends GeometryTestCase {
   }
 
   private void checkCleanSnap(Geometry[] cov, double snapDist) {
-    Geometry[] covClean = CoverageCleaner.cleanSnap(cov, snapDist);
+    Geometry[] covClean = CoverageCleaner.clean(cov, snapDist, 0);
     checkValidCoverage(covClean, snapDist);
   }
 
   private void checkCleanSnap(Geometry[] cov, double snapDist, Geometry[] expected) {
-    Geometry[] actual = CoverageCleaner.cleanSnap(cov, snapDist);
+    Geometry[] actual = CoverageCleaner.clean(cov, snapDist, 0);
     checkValidCoverage(actual, snapDist);
     checkEqual(expected, actual);
   }

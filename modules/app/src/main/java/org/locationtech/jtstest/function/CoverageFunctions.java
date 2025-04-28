@@ -154,21 +154,25 @@ public class CoverageFunctions {
       @Metadata(title="Snap Distance")
       double snapDistance) {
     Geometry[] cov = toGeometryArray(coverage);
-    Geometry[] result =  CoverageCleaner.cleanSnap(cov, snapDistance);
+    Geometry[] result =  CoverageCleaner.clean(cov, 0, snapDistance);
     return coverage.getFactory().createGeometryCollection(result);
   }
   
-  public static Geometry cleanMergeMaxArea(Geometry coverage) {
+  public static Geometry cleanMergeMaxArea(Geometry coverage,
+      @Metadata(title="Max Gap Width")
+      double maxGapWidth) {
     Geometry[] cov = toGeometryArray(coverage);
-    Geometry[] result =  CoverageCleaner.cleanOverlapMerge(cov, 
-        CoverageCleaner.MERGE_MAX_AREA);
+    Geometry[] result =  CoverageCleaner.clean(cov, CoverageCleaner.MERGE_MAX_AREA,
+        maxGapWidth);
     return coverage.getFactory().createGeometryCollection(result);
   }
   
-  public static Geometry cleanMergeMinArea(Geometry coverage) {
+  public static Geometry cleanMergeMinArea(Geometry coverage,
+      @Metadata(title="Max Gap Width")
+      double maxGapWidth) {
     Geometry[] cov = toGeometryArray(coverage);
-    Geometry[] result =  CoverageCleaner.cleanOverlapMerge(cov, 
-        CoverageCleaner.MERGE_MIN_AREA);
+    Geometry[] result =  CoverageCleaner.clean(cov, CoverageCleaner.MERGE_MIN_AREA,
+        maxGapWidth);
     return coverage.getFactory().createGeometryCollection(result);
   }
   
@@ -180,21 +184,49 @@ public class CoverageFunctions {
     return coverage.getFactory().createGeometryCollection(result);
   }
   
-  public static Geometry cleanFindOverlaps(Geometry coverage, 
-      @Metadata(title="Snap Distance")
-      double snapDistance) {
+  public static Geometry cleanMergedOverlaps(Geometry coverage) {
     Geometry[] cov = toGeometryArray(coverage);
+    CoverageCleaner cc = new CoverageCleaner(cov);
+    cc.clean();
     Geometry[] overlaps = GeometryFactory.toGeometryArray(
-        CoverageCleaner.getOverlaps(cov, snapDistance));
+        cc.getOverlaps());
     return coverage.getFactory().createGeometryCollection(overlaps);
   }
   
-  public static Geometry cleanFindMergedGaps(Geometry coverage, 
+  public static Geometry cleanMergedOverlapsSnap(Geometry coverage, 
+      @Metadata(title="Snap Distance")
+      double snapDistance) {
+    Geometry[] cov = toGeometryArray(coverage);
+    CoverageCleaner cc = new CoverageCleaner(cov);
+    cc.setSnappingDistance(snapDistance);
+    cc.clean();
+    Geometry[] overlaps = GeometryFactory.toGeometryArray(
+        cc.getOverlaps());
+    return coverage.getFactory().createGeometryCollection(overlaps);
+  }
+  
+  public static Geometry cleandMergedGaps(Geometry coverage, 
       @Metadata(title="Max Gap Width")
       double maxGapWidth) {
     Geometry[] cov = toGeometryArray(coverage);
+    CoverageCleaner cc = new CoverageCleaner(cov);
+    cc.clean();
     Geometry[] gaps = GeometryFactory.toGeometryArray(
-        CoverageCleaner.getMergedGaps(cov, maxGapWidth));
+        cc.getMergedGaps());
+    return coverage.getFactory().createGeometryCollection(gaps);
+  }
+  
+  public static Geometry cleandMergedGapsSnap(Geometry coverage, 
+      @Metadata(title="Snap Distance")
+      double snapDistance,
+      @Metadata(title="Max Gap Width")
+      double maxGapWidth) {
+    Geometry[] cov = toGeometryArray(coverage);
+    CoverageCleaner cc = new CoverageCleaner(cov);
+    cc.setSnappingDistance(snapDistance);
+    cc.clean();
+    Geometry[] gaps = GeometryFactory.toGeometryArray(
+        cc.getMergedGaps());
     return coverage.getFactory().createGeometryCollection(gaps);
   }
   

@@ -23,6 +23,7 @@ import org.locationtech.jts.dissolve.LineDissolver;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.index.strtree.STRtree;
@@ -37,40 +38,75 @@ import org.locationtech.jts.util.IntArrayList;
 import org.locationtech.jts.util.Stopwatch;
 
 /**
- * Cleans the linework of polygonal geometries to form a valid polygonal coverage.
- * The input is an array of valid polygonal geometries 
+ * Cleans the linework of a set of polygonal geometries to form a valid polygonal coverage.
+ * The input is an array of valid {@link Polygon} or {@link MultiPolygon} geometries 
  * which may contain topological errors such as overlaps and gaps.
+ * Empty or non-polygonal inputs are removed.
  * Linework is snapped together to eliminate small discrepancies.
  * Overlaps are merged with an adjacent polygon, according to a given merge strategy.
  * Gaps narrower than a given width are filled and merged with an adjacent polygon.
  * The output is an array of polygonal geometries forming a valid polygonal coverage.
- * <p>
+ * 
+ * <h3>Snapping</h3>
+ * 
+ * Snapping to nearby vertices and line segment snapping is used to improve noding robustness 
+ * and eliminate small errors in an efficient way,  
+ * By default this uses a very small snapping distance based on the extent of the input data.
+ * The snapping distance may be specified explicitly.
+ * This can reduce the number of overlaps and gaps that need to be merged,
+ * and reduce the risk of spikes formed by merging gaps.
+ * However, a large snapping distance may introduce undesirable data alteration.
+ * 
+ * <h3>Overlap Merging</h3>
+ * 
  * Overlaps are merged with an adjacent polygon chosen according to a specified merge strategy.
- * The available merge strategies are:
- * - Maximum Boundary Length (default)
- * - Parent Area (min/max)
- * - Index (min/max)
- * <p>
- * Gaps which are wider than a given distance 
- * are merged with an adjacent polygon.
+ * The supported strategies are:
+ * <ul>
+ * <li><b>Longest Border</b>: (default) merge with the polygon with longest shared border
+ * ({@link #MERGE_LONGEST_BORDER}.)
+ * <li><b>Maximum/Minimum Area</b>: merge with the polygon with largest or smallest area
+ * ({@link #MERGE_MAX_AREA}, {@link #MERGE_MIN_AREA}.)
+ * <li><b>Minimum Index</b>: merge with the polygon with the lowest index in the input array
+ * ({@link #MERGE_MIN_INDEX}.)
+ * This allows sorting the input according to some criteria to provide a priority 
+ * for merging gaps.
+ * </ul>
+ * 
+ * <h3>Gap Merging</h3>
+ * 
+ * Gaps which are wider than a given distance are merged with an adjacent polygon.
+ * Polygon width is determined as twice the radius of the {@link MaximumInscribedCircle}
+ * of the gap polygon.
  * Gaps are merged with the adjacent polygon with longest shared border.
- * Note that empty holes in input polygons may be treated as gaps, and filled in.
+ * Empty holes in input polygons are treated as gaps, and may be filled in.
+ * Gaps which are not fully enclosed ("inlets") are not removed.
  * <p>
- * The cleaned result is an array of polygonal geometries 
+ * Cleaning can be run on a valid coverage to remove gaps.
+ * 
+ * <p>
+ * The clean result is an array of polygonal geometries 
  * which match one-to-one with the input array.
- * A result array entry may be  <tt>null</tt> 
- * if an input polygon is so small it is snapped to collapse,
- * or if the input contains (nearly or exactly) duplicate geometries.
- * The result should be a valid coverage according to {@link CoverageValidator#isValid(Geometry[])}; 
+ * A result item may be <tt>null</tt> if:
+ * <ul>
+ * <li>the input item is non-polygonal or empty
+ * <li>the input item is so small it is snapped to collapse
+ * <li>the input item is covered by another input item 
+ * (which may be a larger or a duplicate (nearly or exactly) geometry)
+ * </ul>
+ * The result is a valid coverage according to {@link CoverageValidator#isValid(Geometry[])}; 
  * 
  * <h3>Known Issues</h3>
  * <ul>
- * <li>Long gaps adjacent to multiple polygons may form spikes when merged with a single polygon. 
+ * <li>Long narrow gaps adjacent to multiple polygons may form spikes when merged with a single polygon. 
  * </ul>
  * 
  * <h3>Future Enhancements</h3>
  * <ul>
- * <li>Prevent long gaps from forming spikes by partitioning them before merging.
+ * <li>Provide an area-based tolerance for gap merging
+ * <li>Prevent long narrow gaps from forming spikes by partitioning them before merging.
+ * <li>Allow merging narrow parts of a gap while leaving wider portions.
+ * <li>Support a priority value for each input polygon to control overlap and gap merging
+ * (this could also allow blocking polygons from being merge targets)
  * </ul>
  * 
  * @see CoverageValidator
@@ -78,14 +114,56 @@ import org.locationtech.jts.util.Stopwatch;
  *
  */
 public class CoverageCleaner { 
-  public static final int MERGE_MAX_BORDER = 1;
-  public static final int MERGE_MAX_AREA = 2;
-  public static final int MERGE_MIN_AREA = 3;
-  public static final int MERGE_MAX_INDEX = 4;
-  public static final int MERGE_MIN_INDEX = 5;
   
-  private static final double DEFAULT_SNAPPING_FACTOR = 1.0e8;
+  /**
+   * Merge strategy that chooses polygon with longest common border
+   */
+  public static final int MERGE_LONGEST_BORDER = 0;
+  
+  /**
+   * Merge strategy that chooses polygon with maximum area
+   */
+  public static final int MERGE_MAX_AREA = 1;
+  
+  /**
+   * Merge strategy that chooses polygon with minimum area
+   */
+  public static final int MERGE_MIN_AREA = 2;
+  
+  /**
+   * Merge strategy that chooses polygon with smallest input index
+   */
+  public static final int MERGE_MIN_INDEX = 3;
+  
+  /**
+   * Cleans a set of polygonal geometries to form a valid coverage,
+   * allowing all cleaning parameters to be specified.
+   * 
+   * @param coverage an array of polygonal geometries to clean
+   * @param snappingDistance the distance tolerance for snapping
+   * @param overlapMergeStrategy the strategy to use for merging overlaps
+   * @param maxGapWidth the maximum width of gaps to merge
+   * @return the clean coverage
+   */
+  public static Geometry[] clean(Geometry[] coverage, double snappingDistance, 
+      int overlapMergeStrategy, double maxGapWidth) {
+    CoverageCleaner cc = new CoverageCleaner(coverage);
+    cc.setSnappingDistance(snappingDistance);
+    cc.setGapMaximumWidth(maxGapWidth);
+    cc.setOverlapMergeStrategy(overlapMergeStrategy);
+    cc.clean();
+    return cc.getResult();
+  }
 
+  /**
+   * Cleans a set of polygonal geometries to form a valid coverage,
+   * using the default overlap merge strategy {@link #MERGE_LONGEST_BORDER}.
+   * 
+   * @param coverage an array of polygonal geometries to clean
+   * @param snappingDistance the distance tolerance for snapping
+   * @param maxGapWidth the maximum width of gaps to merge
+   * @return the clean coverage
+   */
   public static Geometry[] clean(Geometry[] coverage, double snappingDistance, 
       double maxGapWidth) {
     CoverageCleaner cc = new CoverageCleaner(coverage);
@@ -94,104 +172,109 @@ public class CoverageCleaner {
     cc.clean();
     return cc.getResult();
   }
-  
-  public static Geometry[] cleanSnap(Geometry[] coverage, double snappingDistance) {
-    CoverageCleaner cc = new CoverageCleaner(coverage);
-    cc.setSnappingDistance(snappingDistance);
-    cc.clean();
-    return cc.getResult();
+
+  /**
+   * Cleans a set of polygonal geometries to form a valid coverage,
+   * using the default snapping distance tolerance.
+   * 
+   * @param coverage an array of polygonal geometries to clean
+   * @param overlapMergeStrategy the strategy to use for merging overlaps
+   * @param maxGapWidth the maximum width of gaps to merge
+   * @return the clean coverage
+   */
+  public static Geometry[] cleanOverlapGap(Geometry[] coverage, 
+      int overlapMergeStrategy, double maxGapWidth) {
+    return clean(coverage, MERGE_LONGEST_BORDER, overlapMergeStrategy, maxGapWidth);
   }
 
+  /**
+   * Cleans a set of polygonal geometries to form a valid coverage,
+   * with default snapping tolerance and overlap merging,
+   * and merging gaps which are narrower than a specified width.
+   *  
+   * @param coverage an array of polygonal geometries to clean
+   * @param maxGapWidth the maximum width of gaps to merge
+   * @return the clean coverage
+   */
   public static Geometry[] cleanGapWidth(Geometry[] coverage, double maxGapWidth) {
-    CoverageCleaner cc = new CoverageCleaner(coverage);
-    cc.setGapMaximumWidth(maxGapWidth);
-    cc.clean();
-    return cc.getResult();
-  }
-
-  public static Geometry[] cleanOverlapMerge(Geometry[] coverage, int mergeStrategy) {
-    CoverageCleaner cc = new CoverageCleaner(coverage);
-    cc.setOverlapMergeStrategy(mergeStrategy);
-    cc.clean();
-    return cc.getResult();
-  }
-
-  public static List<Polygon> getOverlaps(Geometry[] coverage, double snappingDistance) {
-    CoverageCleaner cc = new CoverageCleaner(coverage);
-    cc.setSnappingDistance(snappingDistance);
-    cc.clean();
-    return cc.getOverlaps();
-  }
-
-  public static List<Polygon> getMergedGaps(Geometry[] coverage, double maxGapWidth) {
-    CoverageCleaner cc = new CoverageCleaner(coverage);
-    cc.setGapMaximumWidth(maxGapWidth);
-    cc.clean();
-    return cc.getMergedGaps();
+    return clean(coverage, MERGE_LONGEST_BORDER, maxGapWidth);
   }
 
   private Geometry[] coverage;
+  private double snappingDistance;  // set to compute default
+  private double gapMaximumWidth = 0.0;
+  private int overlapMergeStrategy = MERGE_LONGEST_BORDER;
+
   private GeometryFactory geomFactory;
+  private STRtree covIndex;
   private Polygon[] resultants = null;  
   private CleanCoverage cleanCov;
   private HashMap<Integer, IntArrayList> overlapParentMap = new HashMap<Integer, IntArrayList>();
   private List<Polygon> overlaps = new ArrayList<Polygon>();
   private List<Polygon> gaps = new ArrayList<Polygon>();
   private List<Polygon> mergableGaps;
-  private STRtree covIndex;
-  private double snappingDistance;
-  private double gapMaximumWidth = 0;
-  private int overlapMergeStrategy = MERGE_MAX_BORDER;
   
+  private static final double DEFAULT_SNAPPING_FACTOR = 1.0e8;
+
+  /**
+   * Create a new cleaner instance for a set of polygonal geometries.
+   * 
+   * @param coverage an array of polygonal geometries to clean
+   */
   public CoverageCleaner(Geometry[] coverage) {
     this.coverage = coverage;
     this.geomFactory = coverage[0].getFactory();
     snappingDistance = computeDefaultSnappingDistance(coverage);
   }
 
-  private static double computeDefaultSnappingDistance(Geometry[] geoms) {
-    Envelope covEnv = extent(geoms);
-    double diameter = covEnv.getDiameter();
-    return diameter / DEFAULT_SNAPPING_FACTOR;
-  }
-
-  private static Envelope extent(Geometry[] geoms) {
-    Envelope env = new Envelope();
-    for (Geometry geom : geoms) {
-      env.expandToInclude(geom.getEnvelopeInternal());
-    }
-    return env;
-  }
-
+  /**
+   * Sets the snapping distance tolerance.
+   * The default is to use a small fraction of the input extent diameter.
+   * A distance of zero prevents snapping from being used.
+   * 
+   * @param snappingDistance the snapping distance tolerance
+   */
   public void setSnappingDistance(double snappingDistance) {
+    //-- use default distance if invalid argument
+    if (snappingDistance < 0)
+      return;
     this.snappingDistance = snappingDistance;
   }
   
+  /**
+   * Sets the overlap merge strategy to use.
+   * The default is {@link #MERGE_LONGEST_BORDER}.
+   * 
+   * @param mergeStrategy the merge strategy code
+   */
+  public void setOverlapMergeStrategy(int mergeStrategy) {
+    if (mergeStrategy < MERGE_LONGEST_BORDER 
+        || mergeStrategy > MERGE_MIN_INDEX)
+      throw new IllegalArgumentException("Invalid merge strategy code: " + mergeStrategy);
+    
+    this.overlapMergeStrategy = mergeStrategy;
+  } 
+  
+  /**
+   * Sets the maximum width of the gaps that will be filled and merged.
+   * The width of a gap is twice the radius of the Maximum Inscribed Circle in the gap polygon,
+   * A width of zero prevents gaps from being merged. 
+   * 
+   * @param maxWidth the maximum gap width to merge
+   */
   public void setGapMaximumWidth(double maxWidth) {
+    if (maxWidth < 0)
+      return;
     this.gapMaximumWidth = maxWidth;
   }
   
-  public void setOverlapMergeStrategy(int mergeStrategy) {
-    this.overlapMergeStrategy = mergeStrategy;
-  }
-  
-  //TODO: allow snap distance = 0 -> non-snapping noder
   //TODO: support snap-rounding noder for precision reduction
-  //TODO: add overlap merge strategies
-  //TODO: add merge gaps by: area / diameter / no merge
-  
-  public List<Polygon> getOverlaps() {
-    return overlaps;
-  }
-  
-  public List<Polygon> getMergedGaps() {
-    return mergableGaps;
-  }
-  
-  public Geometry[] getResult() {
-    return cleanCov.toCoverage(geomFactory);
-  }
-  
+  //TODO: add merge gaps by: area?
+
+  /**
+   * Cleans the coverage.
+   * 
+   */
   public void clean() {
     computeResultants(snappingDistance);
     System.out.format("Overlaps: %d  Gaps: %d\n", overlaps.size(), mergableGaps.size());
@@ -204,6 +287,50 @@ public class CoverageCleaner {
     System.out.println("Merge Gaps: " + sw.getTimeString());
   }
 
+  /**
+   * Gets the cleaned coverage.
+   * 
+   * @return the clean coverage
+   */
+  public Geometry[] getResult() {
+    return cleanCov.toCoverage(geomFactory);
+  }  
+  
+  /**
+   * Gets polygons representing the overlaps in the input,
+   * which have been merged.
+   * 
+   * @return a list of overlap polygons
+   */
+  public List<Polygon> getOverlaps() {
+    return overlaps;
+  }
+  
+  /**
+   * Gets polygons representing the gaps in the input
+   * which have been merged.
+   *  
+   * @return a list of gap polygons
+   */
+  public List<Polygon> getMergedGaps() {
+    return mergableGaps;
+  }
+  
+  //-------------------------------------------------
+  
+  private static double computeDefaultSnappingDistance(Geometry[] geoms) {
+    double diameter = extent(geoms).getDiameter();
+    return diameter / DEFAULT_SNAPPING_FACTOR;
+  }
+
+  private static Envelope extent(Geometry[] geoms) {
+    Envelope env = new Envelope();
+    for (Geometry geom : geoms) {
+      env.expandToInclude(geom.getEnvelopeInternal());
+    }
+    return env;
+  }
+  
   private void mergeOverlaps(HashMap<Integer, IntArrayList> overlapParentMap) {
     for (int resIndex : overlapParentMap.keySet()) {
       cleanCov.mergeOverlap(resultants[resIndex], mergeStrategy(overlapMergeStrategy), overlapParentMap.get(resIndex));
@@ -212,10 +339,9 @@ public class CoverageCleaner {
   
   private CleanCoverage.MergeStrategy mergeStrategy(int mergeStrategyId) {
     switch (mergeStrategyId) {
-    case MERGE_MAX_BORDER: return new CleanCoverage.MergeStrategy.BorderMergeStrategy();
+    case MERGE_LONGEST_BORDER: return new CleanCoverage.MergeStrategy.BorderMergeStrategy();
     case MERGE_MAX_AREA: return new CleanCoverage.MergeStrategy.AreaMergeStrategy(true);
     case MERGE_MIN_AREA: return new CleanCoverage.MergeStrategy.AreaMergeStrategy(false);
-    case MERGE_MAX_INDEX: return new CleanCoverage.MergeStrategy.IndexMergeStrategy(true);
     case MERGE_MIN_INDEX: return new CleanCoverage.MergeStrategy.IndexMergeStrategy(false);
     }
     throw new IllegalArgumentException("Unknown merge strategy: " + mergeStrategyId);
@@ -223,6 +349,7 @@ public class CoverageCleaner {
 
   private void computeResultants(double tolerance) {
     System.out.println("Coverage Cleaner ===> polygons: " + coverage.length);
+    System.out.format("Snapping distance: %f\n", snappingDistance);
     Stopwatch sw = new Stopwatch();
     sw.start();
     
@@ -356,6 +483,9 @@ public class CoverageCleaner {
   {
     List<NodedSegmentString> segs = new ArrayList<NodedSegmentString>();
     for (Geometry geom : coverage) {
+      //-- skip non-polygonal and empty elements
+      if (! isPolygonal(geom))
+        continue;
       if (geom.isEmpty())
         continue;
       extractNodedSegmentStrings(geom, segs);
@@ -366,6 +496,10 @@ public class CoverageCleaner {
     return SegmentStringUtil.toGeometry(nodedSegStrings, coverage[0].getFactory());
   }
   
+  private static boolean isPolygonal(Geometry geom) {
+    return geom instanceof Polygon || geom instanceof MultiPolygon;
+  }
+
   private static void extractNodedSegmentStrings(Geometry geom, List<NodedSegmentString> segs) {
     //TODO: do more efficiently by adding directly to list
     @SuppressWarnings("unchecked")
