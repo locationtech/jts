@@ -154,7 +154,7 @@ public class CoverageFunctions {
       @Metadata(title="Snap Distance")
       double snapDistance) {
     Geometry[] cov = toGeometryArray(coverage);
-    Geometry[] result =  CoverageCleaner.clean(cov, 0, snapDistance);
+    Geometry[] result =  CoverageCleaner.clean(cov, snapDistance, 0);
     return coverage.getFactory().createGeometryCollection(result);
   }
   
@@ -162,7 +162,7 @@ public class CoverageFunctions {
       @Metadata(title="Max Gap Width")
       double maxGapWidth) {
     Geometry[] cov = toGeometryArray(coverage);
-    Geometry[] result =  CoverageCleaner.clean(cov, CoverageCleaner.MERGE_MAX_AREA,
+    Geometry[] result =  CoverageCleaner.cleanOverlapGap(cov, CoverageCleaner.MERGE_MAX_AREA,
         maxGapWidth);
     return coverage.getFactory().createGeometryCollection(result);
   }
@@ -171,7 +171,7 @@ public class CoverageFunctions {
       @Metadata(title="Max Gap Width")
       double maxGapWidth) {
     Geometry[] cov = toGeometryArray(coverage);
-    Geometry[] result =  CoverageCleaner.clean(cov, CoverageCleaner.MERGE_MIN_AREA,
+    Geometry[] result =  CoverageCleaner.cleanOverlapGap(cov, CoverageCleaner.MERGE_MIN_AREA,
         maxGapWidth);
     return coverage.getFactory().createGeometryCollection(result);
   }
