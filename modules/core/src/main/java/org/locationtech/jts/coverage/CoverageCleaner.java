@@ -184,7 +184,7 @@ public class CoverageCleaner {
    */
   public static Geometry[] cleanOverlapGap(Geometry[] coverage, 
       int overlapMergeStrategy, double maxGapWidth) {
-    return clean(coverage, MERGE_LONGEST_BORDER, overlapMergeStrategy, maxGapWidth);
+    return clean(coverage, -1, overlapMergeStrategy, maxGapWidth);
   }
 
   /**
@@ -197,7 +197,7 @@ public class CoverageCleaner {
    * @return the clean coverage
    */
   public static Geometry[] cleanGapWidth(Geometry[] coverage, double maxGapWidth) {
-    return clean(coverage, MERGE_LONGEST_BORDER, maxGapWidth);
+    return clean(coverage, -1, maxGapWidth);
   }
 
   private Geometry[] coverage;
