@@ -27,8 +27,9 @@ Distributions for older JTS versions can be obtained at the
 
 * Improve `DouglasPeuckerSimplifier` to preserve XYZM coordinates (#1045)
 * Improve `OffsetCurve` to support miter joins for polygonal input (#1109)
-* Add MaximumInscribedCircle fast exact calculation for simple shapes (#1123)
-* Add MaximumInscribedCircle.isRadiusWithin function (#1125)
+* Add `MaximumInscribedCircle` fast exact calculation for simple shapes (#1123)
+* Add `MaximumInscribedCircle.isRadiusWithin` function (#1125)
+* Add `CoverageCleaner` (#1126)
 
 ### Bug Fixes
 
