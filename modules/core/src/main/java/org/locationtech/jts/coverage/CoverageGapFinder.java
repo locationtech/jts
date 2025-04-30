@@ -91,17 +91,15 @@ public class CoverageGapFinder {
     return hole.getFactory().createLineString(pts);
   }
 
-  private boolean isGap(LinearRing hole, double gapWidth) {
+  private boolean isGap(LinearRing hole, double maxGapWidth) {
     Geometry holePoly = hole.getFactory().createPolygon(hole);
     //-- guard against bad input
-    if (gapWidth <= 0.0)
+    if (maxGapWidth <= 0.0)
       return false;
     
-    double tolerance = gapWidth / 100;
+    double tolerance = maxGapWidth / 100;
     //TODO: improve MIC class to allow short-circuiting when radius is larger than a value
-    LineString line = MaximumInscribedCircle.getRadiusLine(holePoly, tolerance);
-    double width = line.getLength() * 2;
-    return width <= gapWidth;
+    return MaximumInscribedCircle.isRadiusWithin(holePoly, 0.5 * maxGapWidth);
   }
 
 }
