@@ -159,10 +159,10 @@ public class MaximumInscribedCircle {
    */
   public MaximumInscribedCircle(Geometry polygonal, double tolerance) {
     if (! (polygonal instanceof Polygon || polygonal instanceof MultiPolygon)) {
-      throw new IllegalArgumentException("Input geometry must be a Polygon or MultiPolygon");
+      throw new IllegalArgumentException("Input must be a Polygon or MultiPolygon");
     }
     if (polygonal.isEmpty()) {
-      throw new IllegalArgumentException("Empty input geometry is not supported");
+      throw new IllegalArgumentException("Empty input is not supported");
     }
     
     this.inputGeom = polygonal;
@@ -192,7 +192,17 @@ public class MaximumInscribedCircle {
     if (maxRadius == 0) {
       return false;
     }
-    maximumRadius  = maxRadius;
+    maximumRadius = maxRadius;
+    
+    /**
+     * Check if envelope dimension is smaller than diameter
+     */
+    Envelope env = inputGeom.getEnvelopeInternal();
+    double maxDiam = 2 * maximumRadius;
+    if (env.getWidth() < maxDiam || env.getHeight() < maxDiam) {
+      return true;
+    }
+    
     tolerance = maxRadius * MAX_RADIUS_FRACTION;
     compute();
     double radius = centerPt.distance(radiusPt);
@@ -264,7 +274,7 @@ public class MaximumInscribedCircle {
     if (centerPt != null) return;
     
     /**
-     * Handle empty or flat geometries.
+     * Handle flat geometries.
      */
     if (inputGeom.getArea() == 0.0) {
       Coordinate c = inputGeom.getCoordinate().copy();
