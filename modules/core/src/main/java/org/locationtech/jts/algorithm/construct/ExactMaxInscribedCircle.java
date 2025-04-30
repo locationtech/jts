@@ -163,8 +163,11 @@ class ExactMaxInscribedCircle {
     int iNext = index >= pts.length ? 0 : index + 1;
     Coordinate pPrev = pts[iPrev];
     Coordinate pNext = pts[iNext];
-    if (! isConvex(pPrev, basePt, pNext))
-      throw new IllegalArgumentException("Input is not convex");
+    
+    //-- this should never happen, since only convex quads are handled
+    if (isConcave(pPrev, basePt, pNext)) 
+      throw new IllegalStateException("Input is not convex");
+    
     double bisectAng = Angle.bisector(pPrev, basePt, pNext);
     Coordinate endPt = Angle.project(basePt, bisectAng, len);
     return new LineSegment(basePt.copy(), endPt);
@@ -201,8 +204,8 @@ class ExactMaxInscribedCircle {
     return true;
   }
 
-  private static boolean isConvex(Coordinate p0, Coordinate p1, Coordinate p2) {
-    return Orientation.CLOCKWISE == Orientation.index(p0, p1, p2);
+  private static boolean isConcave(Coordinate p0, Coordinate p1, Coordinate p2) {
+    return Orientation.COUNTERCLOCKWISE == Orientation.index(p0, p1, p2);
   }
 
   private static boolean isPointInConvexRing(Coordinate[] ringCW, Coordinate p) {

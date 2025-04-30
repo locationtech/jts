@@ -112,6 +112,11 @@ public class MaximumInscribedCircleTest extends GeometryTestCase {
        0.01 );
   }
   
+  public void testQuadWithCollinearVertex() {
+    checkCircle("POLYGON ((1 5, 5 5, 9 5, 5 1, 1 5))", 
+       0.001, 5.0, 3.3431,  1.65685 );
+  }
+  
   /**
    * A coarse distance check, mainly testing 
    * that there is not a huge number of iterations.

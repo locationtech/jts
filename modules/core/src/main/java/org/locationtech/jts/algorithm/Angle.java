@@ -185,6 +185,7 @@ import org.locationtech.jts.geom.Coordinate;
    * Computes the angle of the unoriented bisector 
    * of the smallest angle between two vectors.
    * The computed angle will be in the range (-Pi, Pi].
+   * Collinear inputs are handled.
    * 
    * @param tip1 the tip of v1
    * @param tail the tail of each vector
