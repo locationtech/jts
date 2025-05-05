@@ -16,13 +16,13 @@ public class MaximumInscribedCircleTest extends GeometryTestCase {
   public MaximumInscribedCircleTest(String name) { super(name); }
   
   public void testTriangleRight() {
-    checkCircle("POLYGON ((1 1, 1 9, 9 1, 1 1))", 
-       0.001, 3.343, 3.343, 2.343 );
+    checkCircle("POLYGON ((1 1, 1 7, 9 1, 1 1))", 
+       0.001, 3.0, 3.0, 2.0 );
   }
 
   public void testTriangleObtuse() {
     checkCircle("POLYGON ((1 1, 1 9, 2 2, 1 1))", 
-       0.001, 1.485, 2.173, 0.485 );
+       0.001, 1.4852813742385702, 2.17157287525381, 0.4852813742385702 );
   }
   
   public void testSquare() {
@@ -32,7 +32,7 @@ public class MaximumInscribedCircleTest extends GeometryTestCase {
 
   public void testThinQuad() {
     checkCircle("POLYGON ((1 2, 9 3, 9 1, 1 1, 1 2))", 
-       0.001, 8.0623, 1.9377, 0.93774 );
+       0.001, 8.06225774829855, 1.9377422517014502, 0.937742251701450 );
   }
 
   public void testDiamond() {
@@ -59,7 +59,7 @@ public class MaximumInscribedCircleTest extends GeometryTestCase {
 
   public void testKite() {
     checkCircle("POLYGON ((100 0, 200 200, 300 200, 300 100, 100 0))", 
-       0.01, 238.19, 138.19, 61.80 );
+       0.01, 238.19660112501052, 138.19660112501052, 61.803398874989476 );
   }
 
   public void testKiteWithHole() {
@@ -114,7 +114,7 @@ public class MaximumInscribedCircleTest extends GeometryTestCase {
   
   public void testQuadWithCollinearVertex() {
     checkCircle("POLYGON ((1 5, 5 5, 9 5, 5 1, 1 5))", 
-       0.001, 5.0, 3.3431,  1.65685 );
+       0.001, 5.0, 3.34314575050762, 1.6568542494923801 );
   }
   
   /**
