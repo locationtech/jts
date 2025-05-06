@@ -30,6 +30,7 @@ Distributions for older JTS versions can be obtained at the
 * Add `MaximumInscribedCircle` fast exact calculation for simple shapes (#1123)
 * Add `MaximumInscribedCircle.isRadiusWithin` function (#1125)
 * Add `CoverageCleaner` (#1126)
+* Add auto-tolerance to `MaximumInscribedCircle` and `LargestEmptyCircle` (#1128)
 
 ### Bug Fixes
 
