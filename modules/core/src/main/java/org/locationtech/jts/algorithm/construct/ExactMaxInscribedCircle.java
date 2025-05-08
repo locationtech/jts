@@ -85,7 +85,7 @@ class ExactMaxInscribedCircle {
    * The Voronoi nodes of a convex polygon occur at the intersection point
    * of two bisectors of each triplet of edges.
    * The Maximum Inscribed Circle center is the node
-   * is the farthest distance from the generating edges.
+   * with the farthest distance from the generating edges.
    * For a quadrilateral there are 4 distinct edge triplets, 
    * at each edge with its adjacent edges. 
    * 
@@ -186,6 +186,10 @@ class ExactMaxInscribedCircle {
     int n = ring.size();
     if (n < 4) 
       return false;
+    //-- triangles must be convex
+    if (n == 4)
+      return true;
+    //-- check for all convex or collinear angles
     int ringOrient = 0;
     for (int i = 0; i < n - 1; i++) {
       int i1 = i + 1;
