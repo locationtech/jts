@@ -367,36 +367,39 @@ public class LineSegment
    * equal the vector for the projection of <tt>p</tt> on the line
    * defined by this segment.
    * <p>
-   * The projection factor will lie in the range <tt>(-inf, +inf)</tt>,
-   * or be <code>NaN</code> if the line segment has zero length..
+   * The projection factor lies in the range <tt>(-inf, +inf)</tt>.
+   * It is <code>NaN</code> if the line segment has zero length..
    * 
    * @param p the point to compute the factor for
-   * @return the projection factor for the point
+   * @return the projection factor for the point, or NaN
    */
   public double projectionFactor(Coordinate p)
   {
     if (p.equals(p0)) return 0.0;
     if (p.equals(p1)) return 1.0;
-    // Otherwise, use comp.graphics.algorithms Frequently Asked Questions method
-    /*     	      AC dot AB
+    /**
+     * Use comp.graphics.algorithms Frequently Asked Questions method
+     * 
+                	      AC dot AB
                    r = ---------
                          ||AB||^2
+                         
                 r has the following meaning:
-                r=0 P = A
-                r=1 P = B
-                r<0 P is on the backward extension of AB
-                r>1 P is on the forward extension of AB
+                r=0 : P = A
+                r=1 : P = B
+                r<0 : P is on the backward extension of AB
+                r>1 : P is on the forward extension of AB
                 0<r<1 P is interior to AB
         */
     double dx = p1.x - p0.x;
     double dy = p1.y - p0.y;
-    double len = dx * dx + dy * dy;
+    double lenSq = dx * dx + dy * dy;
     
     // handle zero-length segments
-    if (len <= 0.0) return Double.NaN;
+    if (lenSq <= 0.0) return Double.NaN;
     
     double r = ( (p.x - p0.x) * dx + (p.y - p0.y) * dy )
-              / len;
+              / lenSq;
     return r;
   }
 
