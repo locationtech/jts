@@ -12,6 +12,8 @@
 package org.locationtech.jts.geom;
 
 
+import org.locationtech.jts.algorithm.Orientation;
+
 import junit.textui.TestRunner;
 import test.jts.GeometryTestCase;
 
@@ -172,6 +174,31 @@ public class CoordinateArraysTest extends GeometryTestCase {
     assertTrue( fixed != array); // copied into new array
     assertTrue( array[0] != fixed[0] ); // processing needed to CoordinateXYZM
     assertTrue( array[1] != fixed[1] ); // processing needed to CoordinateXYZM
+  }
+
+  public void testOrientCW() {
+    checkOrient("POLYGON ((1 1, 9 9, 9 1, 1 1))");
+  }
+  
+  public void testOrientCCW() {
+    checkOrient("POLYGON ((9 7, 5 9, 1 4, 5 4, 4 1, 8 1, 9 7))");
+  }
+  
+  private void checkOrient(String wkt) {
+    Coordinate[] pts = read(wkt).getCoordinates();
+    //-- orient CW
+    Coordinate[] ptsCW = CoordinateArrays.orient(pts, true);
+    assertEquals(false, Orientation.isCCW(ptsCW));
+    Coordinate[] ptsCCW = CoordinateArrays.orient(pts, false);
+    assertEquals(true, Orientation.isCCW(ptsCCW));
+    //-- check that original is unchanged for same orientation
+    boolean isCCW = Orientation.isCCW(pts);
+    if (isCCW) {
+      assertTrue(pts == ptsCCW);
+    }
+    else {
+      assertTrue(pts == ptsCW);      
+    }
   }
 
   private static void checkCoordinateAt(Coordinate[] seq1, int pos1,

@@ -40,6 +40,16 @@ public class IntArrayList {
   }
 
   /**
+   * Gets the value of the entry at a given index.
+   * 
+   * @param index the index to retrieve
+   * @return the value in the array
+   */
+  public int get(int index) {
+    return data[index];
+  }
+  
+  /**
    * Returns the number of values in this list.
    * 
    * @return the number of values in the list
@@ -95,5 +105,16 @@ public class IntArrayList {
     int[] array = new int[size];
     System.arraycopy(data, 0, array, 0, size);
     return array;
+  }
+  
+  public String toString() {
+    StringBuilder s = new StringBuilder();
+    s.append('[');
+    for (int i = 0; i < size; i++) {
+      if (i > 0) s.append(", ");
+      s.append(data[i]);
+    }
+    s.append(']');
+    return s.toString();
   }
 }

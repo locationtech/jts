@@ -51,13 +51,24 @@ public class AngleTest extends TestCase {
   
   public void testIsAcute()
   {
-  	assertEquals(Angle.isAcute(p(10,0), p(0,0), p(5,10)), true);
-  	assertEquals(Angle.isAcute(p(10,0), p(0,0), p(5,-10)), true);
-  	// angle of 0
-  	assertEquals(Angle.isAcute(p(10,0), p(0,0), p(10,0)), true);
-  	
-  	assertEquals(Angle.isAcute(p(10,0), p(0,0), p(-5,10)), false);
-  	assertEquals(Angle.isAcute(p(10,0), p(0,0), p(-5,-10)), false);
+    assertEquals(Angle.isAcute(p(10,0), p(0,0), p(5,10)), true);
+    assertEquals(Angle.isAcute(p(10,0), p(0,0), p(5,-10)), true);
+    // angle of 0
+    assertEquals(Angle.isAcute(p(10,0), p(0,0), p(10,0)), true);
+    
+    assertEquals(Angle.isAcute(p(10,0), p(0,0), p(-5,10)), false);
+    assertEquals(Angle.isAcute(p(10,0), p(0,0), p(-5,-10)), false);
+  }
+  
+  public void testIsObtuse()
+  {
+    assertEquals(Angle.isObtuse(p(10,0), p(0,0), p(5,10)), false);
+    assertEquals(Angle.isObtuse(p(10,0), p(0,0), p(5,-10)), false);
+    // angle of 0
+    assertEquals(Angle.isObtuse(p(10,0), p(0,0), p(10,0)), false);
+    
+    assertEquals(Angle.isObtuse(p(10,0), p(0,0), p(-5,10)), true);
+    assertEquals(Angle.isObtuse(p(10,0), p(0,0), p(-5,-10)), true);
   }
   
   public void testNormalizePositive()

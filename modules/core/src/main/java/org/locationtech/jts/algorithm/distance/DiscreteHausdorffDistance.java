@@ -32,14 +32,14 @@ import org.locationtech.jts.geom.LineString;
 * <p>
  * This algorithm is an approximation to the standard Hausdorff distance.
  * Specifically, 
- * <pre>
- *    for all geometries a, b:    DHD(a, b) &lt;= HD(a, b)
- * </pre>
+ * <blockquote>
+ *    <i>for all geometries A, B:    DHD(A, B) &lt;= HD(A, B)</i>
+ * </blockquote>
  * The approximation can be made as close as needed by densifying the input geometries.  
  * In the limit, this value will approach the true Hausdorff distance:
- * <pre>
- *    DHD(A, B, densifyFactor) -&gt; HD(A, B) as densifyFactor -&gt; 0.0
- * </pre>
+ * <blockquote>
+ *    <i>DHD(A, B, densifyFactor) &rarr; HD(A, B) as densifyFactor &rarr; 0.0</i>
+ * </blockquote>
  * The default approximation is exact or close enough for a large subset of useful cases.
  * Examples of these are:
  * <ul>
@@ -57,9 +57,16 @@ import org.locationtech.jts.geom.LineString;
  * </pre>
  * The class can compute the oriented Hausdorff distance from A to B.
  * This computes the distance to the farthest point on A from B.
+ * <blockquote>
+ *   <i>OHD(A, B) = max<sub>a &isin; A</sub>( Distance(a, B) )</i>
+ *   <br>
+ *   with
+ *   <br>
+ *   <i>HD(A, B) = max( OHD(A, B), OHD(B, A) )</i>
+ * </blockquote>
  * A use case is to test whether a geometry A lies completely within a given 
  * distance of another one B.
- * This is more efficient than testing inclusion in a buffer of B.
+ * This is more efficient than testing whether A is covered by a buffer of B.
  * 
  * @see DiscreteFrechetDistance
  * 
@@ -81,11 +88,11 @@ public class DiscreteHausdorffDistance
 
   /**
    * Computes the Hausdorff distance between two geometries,
-   * densified by the given fraction.
+   * with each segment densified by the given fraction.
    * 
    * @param g0 the first input
    * @param g1 the second input
-   * @param densifyFrac the densification fraction
+   * @param densifyFrac the densification fraction (in [0, 1])
    * @return the Hausdorff distance between g0 and g1
    */
   public static double distance(Geometry g0, Geometry g1, double densifyFrac)
@@ -113,11 +120,11 @@ public class DiscreteHausdorffDistance
   /**
    * Computes a line containing points indicating 
    * the Hausdorff distance between two geometries,
-   * densified by the given fraction.
+   * with each segment densified by the given fraction.
    * 
    * @param g0 the first input
    * @param g1 the second input
-   * @param densifyFrac the densification fraction
+   * @param densifyFrac the densification fraction (in [0, 1])
    * @return a 2-point line indicating the distance
    */
   public static LineString distanceLine(Geometry g0, Geometry g1, double densifyFrac)
@@ -143,11 +150,11 @@ public class DiscreteHausdorffDistance
 
   /**
    * Computes the oriented Hausdorff distance from one geometry to another,
-   * densified by the given fraction.
+   * with each segment densified by the given fraction.
    * 
    * @param g0 the first input
    * @param g1 the second input
-   * @param densifyFrac the densification fraction
+   * @param densifyFrac the densification fraction (in [0, 1])
    * @return the oriented Hausdorff distance from g0 to g1
    */
   public static double orientedDistance(Geometry g0, Geometry g1, double densifyFrac)
@@ -175,11 +182,11 @@ public class DiscreteHausdorffDistance
   /**
    * Computes a line containing points indicating 
    * the computed oriented Hausdorff distance from one geometry to another,
-   * densified by the given fraction.
+   * with each segment densified by the given fraction.
    *
    * @param g0 the first input
    * @param g1 the second input
-   * @param densifyFrac the densification fraction
+   * @param densifyFrac the densification fraction (in [0, 1])
    * @return a 2-point line indicating the distance
    */
   public static LineString orientedDistanceLine(Geometry g0, Geometry g1, double densifyFrac)
@@ -266,7 +273,7 @@ public class DiscreteHausdorffDistance
     }
   }
 
-  public static class MaxPointDistanceFilter
+  private static class MaxPointDistanceFilter
       implements CoordinateFilter
   {
     private PointPairDistance maxPtDist = new PointPairDistance();
@@ -288,52 +295,52 @@ public class DiscreteHausdorffDistance
     public PointPairDistance getMaxPointDistance() { return maxPtDist; }
   }
   
-  public static class MaxDensifiedByFractionDistanceFilter 
+  private static class MaxDensifiedByFractionDistanceFilter 
   implements CoordinateSequenceFilter 
   {
-  private PointPairDistance maxPtDist = new PointPairDistance();
-  private PointPairDistance minPtDist = new PointPairDistance();
-  private Geometry geom;
-  private int numSubSegs = 0;
-
-  public MaxDensifiedByFractionDistanceFilter(Geometry geom, double fraction) {
-    this.geom = geom;
-    numSubSegs = (int) Math.rint(1.0/fraction);
-  }
-
-  public void filter(CoordinateSequence seq, int index) 
-  {
-    /**
-     * This logic also handles skipping Point geometries
-     */
-    if (index == 0)
-      return;
-    
-    Coordinate p0 = seq.getCoordinate(index - 1);
-    Coordinate p1 = seq.getCoordinate(index);
-    
-    double delx = (p1.x - p0.x)/numSubSegs;
-    double dely = (p1.y - p0.y)/numSubSegs;
-
-    for (int i = 0; i < numSubSegs; i++) {
-      double x = p0.x + i*delx;
-      double y = p0.y + i*dely;
-      Coordinate pt = new Coordinate(x, y);
-      minPtDist.initialize();
-      DistanceToPoint.computeDistance(geom, pt, minPtDist);
-      maxPtDist.setMaximum(minPtDist);  
+    private PointPairDistance maxPtDist = new PointPairDistance();
+    private PointPairDistance minPtDist = new PointPairDistance();
+    private Geometry geom;
+    private int numSubSegs = 0;
+  
+    public MaxDensifiedByFractionDistanceFilter(Geometry geom, double fraction) {
+      this.geom = geom;
+      numSubSegs = (int) Math.rint(1.0/fraction);
     }
-    
-    
-  }
-
-  public boolean isGeometryChanged() { return false; }
   
-  public boolean isDone() { return false; }
+    public void filter(CoordinateSequence seq, int index) 
+    {
+      /**
+       * This logic also handles skipping Point geometries
+       */
+      if (index == 0)
+        return;
+      
+      Coordinate p0 = seq.getCoordinate(index - 1);
+      Coordinate p1 = seq.getCoordinate(index);
+      
+      double delx = (p1.x - p0.x)/numSubSegs;
+      double dely = (p1.y - p0.y)/numSubSegs;
   
-  public PointPairDistance getMaxPointDistance() {
-    return maxPtDist;
+      for (int i = 0; i < numSubSegs; i++) {
+        double x = p0.x + i*delx;
+        double y = p0.y + i*dely;
+        Coordinate pt = new Coordinate(x, y);
+        minPtDist.initialize();
+        DistanceToPoint.computeDistance(geom, pt, minPtDist);
+        maxPtDist.setMaximum(minPtDist);  
+      }
+      
+      
+    }
+  
+    public boolean isGeometryChanged() { return false; }
+    
+    public boolean isDone() { return false; }
+    
+    public PointPairDistance getMaxPointDistance() {
+      return maxPtDist;
+    }
   }
-}
 
 }

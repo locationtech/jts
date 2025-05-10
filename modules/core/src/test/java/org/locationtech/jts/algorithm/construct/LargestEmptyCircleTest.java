@@ -50,13 +50,15 @@ public class LargestEmptyCircleTest extends GeometryTestCase {
   }
 
   public void testLinesZigzag() {
-    checkCircle("MULTILINESTRING ((100 100, 200 150, 100 200, 250 250, 100 300, 300 350, 100 400), (70 380, 0 350, 50 300, 0 250, 50 200, 0 150, 50 120))", 
-       0.01, 77.52, 249.99, 54.81 );
+    String wkt = "MULTILINESTRING ((100 100, 200 150, 100 200, 250 250, 100 300, 300 350, 100 400), (70 380, 0 350, 50 300, 0 250, 50 200, 0 150, 50 120))";
+    checkCircle(wkt, 0.01, 77.52, 249.99, 54.81 );
+    checkCircleAutoTol(wkt, 0.1, 77.5255128974095, 250, 54.81881578 );
   }
 
   public void testLinePointTriangle() {
-    checkCircle("GEOMETRYCOLLECTION (LINESTRING (100 100, 300 100), POINT (250 200))", 
-       0.01, 196.49, 164.31, 64.31 );
+    String wkt = "GEOMETRYCOLLECTION (LINESTRING (100 100, 300 100), POINT (250 200))";
+    checkCircle(wkt, 0.01, 196.49, 164.31, 64.31 );
+    checkCircleAutoTol(wkt, 0.1, 196.49, 164.31, 64.31 );
   }
 
   public void testLineFlat() {
@@ -146,17 +148,28 @@ public class LargestEmptyCircleTest extends GeometryTestCase {
   
   private void checkCircle(String wktObstacles, double tolerance, 
       double x, double y, double expectedRadius) {
-    checkCircle(read(wktObstacles), null, tolerance, x, y, expectedRadius);
+    Geometry obstacles = read(wktObstacles);
+    LargestEmptyCircle lec = new LargestEmptyCircle(obstacles, null, tolerance); 
+    checkCircle(lec, tolerance, x, y, expectedRadius);
+  }
+  
+  private void checkCircleAutoTol(String wktObstacles, double tolerance, 
+      double x, double y, double expectedRadius) {
+    Geometry obstacles = read(wktObstacles);
+    LargestEmptyCircle lec = new LargestEmptyCircle(obstacles, null); 
+    checkCircle(lec, tolerance, x, y, expectedRadius);
   }
   
   private void checkCircle(String wktObstacles, String wktBoundary, double tolerance, 
       double x, double y, double expectedRadius) {
-    checkCircle(read(wktObstacles), read(wktBoundary), tolerance, x, y, expectedRadius);
+    Geometry obstacles = read(wktObstacles);
+    Geometry boundary = read(wktBoundary);
+    LargestEmptyCircle lec = new LargestEmptyCircle(obstacles, boundary, tolerance); 
+    checkCircle(lec, tolerance, x, y, expectedRadius);
   }
   
-  private void checkCircle(Geometry obstacles, Geometry boundary, double tolerance, 
+  private void checkCircle(LargestEmptyCircle lec, double tolerance, 
       double x, double y, double expectedRadius) {
-    LargestEmptyCircle lec = new LargestEmptyCircle(obstacles, boundary, tolerance); 
     Geometry centerPoint = lec.getCenter();
     Coordinate centerPt = centerPoint.getCoordinate();
     Coordinate expectedCenter = new Coordinate(x, y);

@@ -111,6 +111,18 @@ public class AffineTransformationFunctions
     return trans.transform(g);    
   }
   
+  public static Geometry scaleXY(Geometry g, 
+      @Metadata(title="X Scale factor")
+      double scaleX,
+      @Metadata(title="X Scale factor")
+      double scaleY
+      )
+  {
+    Coordinate centre = envelopeCentre(g);
+    AffineTransformation trans = AffineTransformation.scaleInstance(scaleX, scaleY, centre.x, centre.y);
+    return trans.transform(g);    
+  }
+  
   public static Geometry reflectInX(Geometry g)
   {
     Coordinate centre = envelopeCentre(g);

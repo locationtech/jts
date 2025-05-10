@@ -172,26 +172,26 @@ public class GeometryLocationsWriter
   public String writeFacetLocation(Geometry geom, Coordinate p, double tolerance)
   {
     FacetLocater locater = new FacetLocater(geom);
-    List locs = locater.getLocations(p, tolerance);
-    List vertexLocs = FacetLocater.filterVertexLocations(locs);
+    List<GeometryLocation> locs = locater.getLocations(p, tolerance);
+    /*
+    List<GeometryLocation> vertexLocs = FacetLocater.filterVertexLocations(locs);
     
     // only show vertices if some are present, to avoid confusing with segments
     if (! vertexLocs.isEmpty()) 
       return writeFacetLocations(vertexLocs);
-    
+    */
     // write 'em all
     return writeFacetLocations(locs);
   }
     
-  private String writeFacetLocations(List locs)
+  private String writeFacetLocations(List<GeometryLocation> locs)
   {
     if (locs.size() <= 0) return null;
     
     StringBuffer buf = new StringBuffer();
     boolean isFirst = true;
     int count = 0;
-    for (Iterator i = locs.iterator(); i.hasNext(); ) {
-    	GeometryLocation loc = (GeometryLocation) i.next();
+    for (GeometryLocation loc : locs) {
 
     	if (! isFirst) {
     		buf.append(eol);

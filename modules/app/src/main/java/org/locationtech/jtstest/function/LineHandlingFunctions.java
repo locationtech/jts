@@ -23,6 +23,7 @@ import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.util.LinearComponentExtracter;
 import org.locationtech.jts.operation.linemerge.LineMerger;
 import org.locationtech.jts.operation.linemerge.LineSequencer;
+import org.locationtech.jtstest.geomfunction.Metadata;
 
 public class LineHandlingFunctions {
 	
@@ -88,6 +89,19 @@ public class LineHandlingFunctions {
   public static Geometry dissolve(Geometry geom)
   {
     return LineDissolver.dissolve(geom);
+  }
+
+  /**
+   * Trims line A to geometry B.
+   * Equivalent to the projection of B onto A.
+   * 
+   * @param a line to trim
+   * @param b trimming geometry
+   * @return line A trimmed to B
+   */
+  @Metadata(description="Trim line A to geometry B")
+  public static Geometry trim(Geometry a, Geometry b) {
+    return LinearReferencingFunctions.project(a, b);
   }
 
 }

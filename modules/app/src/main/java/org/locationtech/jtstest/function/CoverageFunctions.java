@@ -12,15 +12,16 @@
 package org.locationtech.jtstest.function;
 
 import java.util.Arrays;
-import java.util.List;
 
+import org.locationtech.jts.algorithm.distance.DiscreteHausdorffDistance;
+import org.locationtech.jts.coverage.CoverageCleaner;
 import org.locationtech.jts.coverage.CoverageGapFinder;
 import org.locationtech.jts.coverage.CoveragePolygonValidator;
 import org.locationtech.jts.coverage.CoverageSimplifier;
 import org.locationtech.jts.coverage.CoverageUnion;
 import org.locationtech.jts.coverage.CoverageValidator;
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.util.PolygonExtracter;
+import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jtstest.geomfunction.Metadata;
 
 public class CoverageFunctions {
@@ -48,9 +49,9 @@ public class CoverageFunctions {
   }
 
   public static Geometry findGaps(Geometry geom, 
-      @Metadata(title="Gap width")
-      double gapWidth) {
-    return CoverageGapFinder.findGaps(toGeometryArray(geom),gapWidth);
+      @Metadata(title="Max Gap Width")
+      double maxGapWidth) {
+    return CoverageGapFinder.findGaps(toGeometryArray(geom), maxGapWidth);
   }
 
   @Metadata(description="Fast Union of a coverage")
@@ -125,7 +126,7 @@ public class CoverageFunctions {
     Geometry[] cov = toGeometryArray(coverage);
     double[] tolerances = tolerances(tolerancesCSV, cov.length);
     Geometry[] result =  CoverageSimplifier.simplify(cov, tolerances);
-    return FunctionsUtil.buildGeometry(result);
+    return coverage.getFactory().createGeometryCollection(result);
   }
   
   private static double[] tolerances(String csvList, int len) {
@@ -136,6 +137,117 @@ public class CoverageFunctions {
     }
     return tols;
   }  
+  
+  //-------------------------------------------------------
+  
+  public static Geometry clean(Geometry coverage, 
+      @Metadata(title="Snap Distance")
+      double snapDistance, 
+      @Metadata(title="Max Gap Width")
+      double maxGapWidth) {
+    Geometry[] cov = toGeometryArray(coverage);
+    Geometry[] result =  CoverageCleaner.clean(cov, snapDistance, maxGapWidth);
+    return coverage.getFactory().createGeometryCollection(result);
+  }
+  
+  public static Geometry cleanSnap(Geometry coverage, 
+      @Metadata(title="Snap Distance")
+      double snapDistance) {
+    Geometry[] cov = toGeometryArray(coverage);
+    Geometry[] result =  CoverageCleaner.clean(cov, snapDistance, 0);
+    return coverage.getFactory().createGeometryCollection(result);
+  }
+  
+  public static Geometry cleanMergeMaxArea(Geometry coverage,
+      @Metadata(title="Max Gap Width")
+      double maxGapWidth) {
+    Geometry[] cov = toGeometryArray(coverage);
+    Geometry[] result =  CoverageCleaner.cleanOverlapGap(cov, CoverageCleaner.MERGE_MAX_AREA,
+        maxGapWidth);
+    return coverage.getFactory().createGeometryCollection(result);
+  }
+  
+  public static Geometry cleanMergeMinArea(Geometry coverage,
+      @Metadata(title="Max Gap Width")
+      double maxGapWidth) {
+    Geometry[] cov = toGeometryArray(coverage);
+    Geometry[] result =  CoverageCleaner.cleanOverlapGap(cov, CoverageCleaner.MERGE_MIN_AREA,
+        maxGapWidth);
+    return coverage.getFactory().createGeometryCollection(result);
+  }
+  
+  public static Geometry cleanGapWidth(Geometry coverage, 
+      @Metadata(title="Max Gap Width")
+      double maxGapWidth) {
+    Geometry[] cov = toGeometryArray(coverage);
+    Geometry[] result =  CoverageCleaner.cleanGapWidth(cov, maxGapWidth);
+    return coverage.getFactory().createGeometryCollection(result);
+  }
+  
+  public static Geometry cleanedOverlaps(Geometry coverage) {
+    Geometry[] cov = toGeometryArray(coverage);
+    CoverageCleaner cc = new CoverageCleaner(cov);
+    cc.clean();
+    Geometry[] overlaps = GeometryFactory.toGeometryArray(
+        cc.getOverlaps());
+    return coverage.getFactory().createGeometryCollection(overlaps);
+  }
+  
+  public static Geometry cleanedOverlapsSnap(Geometry coverage, 
+      @Metadata(title="Snap Distance")
+      double snapDistance) {
+    Geometry[] cov = toGeometryArray(coverage);
+    CoverageCleaner cc = new CoverageCleaner(cov);
+    cc.setSnappingDistance(snapDistance);
+    cc.clean();
+    Geometry[] overlaps = GeometryFactory.toGeometryArray(
+        cc.getOverlaps());
+    return coverage.getFactory().createGeometryCollection(overlaps);
+  }
+  
+  public static Geometry cleanedGaps(Geometry coverage, 
+      @Metadata(title="Max Gap Width")
+      double maxGapWidth) {
+    Geometry[] cov = toGeometryArray(coverage);
+    CoverageCleaner cc = new CoverageCleaner(cov);
+    cc.setGapMaximumWidth(maxGapWidth);
+    cc.clean();
+    Geometry[] gaps = GeometryFactory.toGeometryArray(
+        cc.getMergedGaps());
+    return coverage.getFactory().createGeometryCollection(gaps);
+  }
+  
+  public static Geometry cleanedGapsSnap(Geometry coverage, 
+      @Metadata(title="Snap Distance")
+      double snapDistance,
+      @Metadata(title="Max Gap Width")
+      double maxGapWidth) {
+    Geometry[] cov = toGeometryArray(coverage);
+    CoverageCleaner cc = new CoverageCleaner(cov);
+    cc.setSnappingDistance(snapDistance);
+    cc.setGapMaximumWidth(maxGapWidth);
+    cc.clean();
+    Geometry[] gaps = GeometryFactory.toGeometryArray(
+        cc.getMergedGaps());
+    return coverage.getFactory().createGeometryCollection(gaps);
+  }
+  
+  //--------------------------------------------------
+  
+  public static Geometry maxDistances(Geometry coverage1, Geometry coverage2) {
+    if (coverage1.getNumGeometries() != coverage2.getNumGeometries()) {
+      throw new IllegalArgumentException("Coverages must have same number of elements");
+    }
+    Geometry[] hd = new Geometry[coverage1.getNumGeometries()];
+    for (int i = 0; i < coverage1.getNumGeometries(); i++) {
+      Geometry e1 = coverage1.getGeometryN(i);
+      Geometry e2 = coverage2.getGeometryN(i);
+      hd[i] = DiscreteHausdorffDistance.distanceLine(e1, e2);
+    }
+    return coverage1.getFactory().createGeometryCollection(hd);
+  }
+  
+  //====================================================================
   
   private static Double[] toDoubleArray(String csvList) {
     return Arrays.stream(csvList.split(",")).map(Double::parseDouble).toArray(Double[]::new);

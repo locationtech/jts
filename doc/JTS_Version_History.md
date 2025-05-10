@@ -27,6 +27,10 @@ Distributions for older JTS versions can be obtained at the
 
 * Improve `DouglasPeuckerSimplifier` to preserve XYZM coordinates (#1045)
 * Improve `OffsetCurve` to support miter joins for polygonal input (#1109)
+* Add `MaximumInscribedCircle` fast exact calculation for simple shapes (#1123)
+* Add `MaximumInscribedCircle.isRadiusWithin` function (#1125)
+* Add `CoverageCleaner` (#1126)
+* Add auto-tolerance to `MaximumInscribedCircle` and `LargestEmptyCircle` (#1128)
 
 ### Bug Fixes
 
@@ -34,10 +38,13 @@ Distributions for older JTS versions can be obtained at the
 * Fix `ConvexHull` to avoid modifying input (#1083)
 * Fix `TopologyPreservingSimplifier` to avoid jumping components (#1096)
 * Fix `VWSimplifier` coordinate aliasing (#1107)
+* Add `BufferOp` hole erosion heuristic for rings (#1117)
+* Fix `BufferOp` element erosion for negative distance (#1119)
+* Fix writing XYM geometries as WKB (#1092)
 
 ### Performance Improvements
 
-* Fix RelateNG to cache in prepared A-L cases (#1099)
+* Fix `RelateNG` to cache in prepared A-L cases (#1099)
 * Add `GeometryCollection` dimension cache (#1103)
 * Add `MathUtil.hypot` function and use it for length calculations (#1112)
 * Improve `LineStringSnapper` performance by using squared distance (#1111)

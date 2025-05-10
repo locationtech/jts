@@ -66,8 +66,8 @@ public class JTSOpRunner {
   private boolean captureGeometry = false;
   private List<Geometry> resultGeoms = new ArrayList<Geometry>();
   
-  private CommandOutput out = new CommandOutput();
-  private GeometryOutput geomOut = new GeometryOutput(out);
+  private CommandOutput out;
+  private GeometryOutput geomOut;
   private String symGeom2 = SYM_B;
 
   private IndexedGeometry geomIndexB;
@@ -109,6 +109,8 @@ public class JTSOpRunner {
     public boolean isFilter = false;
     public int filterOp;
     public double filterVal = 0;
+    
+    public String outputFile;
     
     String operation;
     public String[] argList;
@@ -159,8 +161,20 @@ public class JTSOpRunner {
   public String getOutput() {
     return out.getOutput();
   }
+  
   void execute(OpParams param) {
     this.param = param;
+    
+    //-- init output to file or console
+    if (out == null) {
+      if (param.outputFile != null) {
+        out = new CommandOutput(param.outputFile);
+      }
+      else {
+        out = new CommandOutput();
+      }
+      geomOut = new GeometryOutput(out);
+    }
     
     geomFactory = createGeometryFactory(param.srid);
     geomA = null;
@@ -269,7 +283,7 @@ public class JTSOpRunner {
     executeFunctionOverA(fun);
     
     if (isVerbose || isTime) {
-      out.println("\nOperation " + func.getCategory() + "." + func.getName() + ": " + opCount
+      out.logln("\nOperation " + func.getCategory() + "." + func.getName() + ": " + opCount
         + " invocations - Total Time: " + Stopwatch.getTimeString( totalTime ));
     }
   }
@@ -314,7 +328,7 @@ public class JTSOpRunner {
       
       String opDesc = "[" + (opCount+1) + "] -- " + opSummary(func, arg) + " : ";
       if (isVerbose) {
-        out.println(opDesc + hdr);
+        out.logln(opDesc + hdr);
       }
       else {
         hdrSave = hdr + "\n" + opDesc;
@@ -388,8 +402,8 @@ public class JTSOpRunner {
   
   private void logError(String msg) {
     // this will be blank if already printed in verbose mode
-    out.println(hdrSave);
-    out.println(msg);
+    out.logln(hdrSave);
+    out.logln(msg);
   }
 
   private void validate(Object result) {
@@ -512,7 +526,7 @@ public class JTSOpRunner {
   
   private void printlnInfo(String s) {
     if (! isVerbose) return;
-    out.println(s);
+    out.logln(s);
   }
   
   private void printGeometrySummary(String label, List<Geometry> geom, String source) {
