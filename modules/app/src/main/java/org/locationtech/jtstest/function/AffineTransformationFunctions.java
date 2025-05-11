@@ -112,9 +112,9 @@ public class AffineTransformationFunctions
   }
   
   public static Geometry scaleXY(Geometry g, 
-      @Metadata(title="X Scale factor")
+      @Metadata(title="X scaling")
       double scaleX,
-      @Metadata(title="X Scale factor")
+      @Metadata(title="Y scaling")
       double scaleY
       )
   {
