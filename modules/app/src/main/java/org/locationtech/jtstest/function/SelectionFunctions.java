@@ -100,16 +100,13 @@ public class SelectionFunctions
     });
   }
   
-  public static Geometry disjoint(Geometry a, Geometry mask)
+  public static Geometry disjoint(Geometry a, final Geometry mask)
   {
-    List selected = new ArrayList();
-    for (int i = 0; i < a.getNumGeometries(); i++ ) {
-      Geometry g = a.getGeometryN(i);
-      if (mask.disjoint(g)) {
-        selected.add(g);
+    return select(a, new GeometryPredicate() {
+      public boolean isTrue(Geometry g) {
+        return mask.disjoint(g);
       }
-    }
-    return a.getFactory().buildGeometry(selected);
+    });
   }
   
   public static Geometry relatePattern(Geometry a, final Geometry mask, String pattern)
@@ -123,25 +120,35 @@ public class SelectionFunctions
   
   public static Geometry valid(Geometry a)
   {
-    List selected = new ArrayList();
-    for (int i = 0; i < a.getNumGeometries(); i++ ) {
-      Geometry g = a.getGeometryN(i);
-      if (g.isValid()) {
-        selected.add(g);
+    return select(a, new GeometryPredicate() {
+      public boolean isTrue(Geometry g) {
+        return g.isValid();
       }
-    }
-    return a.getFactory().buildGeometry(selected);
+    });
   }
   public static Geometry invalid(Geometry a)
   {
-    List selected = new ArrayList();
-    for (int i = 0; i < a.getNumGeometries(); i++ ) {
-      Geometry g = a.getGeometryN(i);
-      if (! g.isValid()) {
-        selected.add(g);
+    return select(a, new GeometryPredicate() {
+      public boolean isTrue(Geometry g) {
+        return ! g.isValid();
       }
-    }
-    return a.getFactory().buildGeometry(selected);
+    });
+  }
+  public static Geometry pointsGE(Geometry a, final int minPts)
+  {
+    return select(a, new GeometryPredicate() {
+      public boolean isTrue(Geometry g) {
+        return g.getNumPoints() >= minPts;
+      }
+    });
+  }
+  public static Geometry pointsLE(Geometry a, final int maxPts)
+  {
+    return select(a, new GeometryPredicate() {
+      public boolean isTrue(Geometry g) {
+        return g.getNumPoints() <= maxPts;
+      }
+    });
   }
   public static Geometry lengthGreaterThan(Geometry a, final double minLen)
   {
@@ -240,9 +247,20 @@ public class SelectionFunctions
     });
   }
   
+  public static Geometry firstNElements(Geometry g, int n)
+  {
+    List<Geometry> comp = new ArrayList<Geometry>();
+    for (int i = 0; i < g.getNumGeometries() && i < n; i++) {
+      comp.add(g.getGeometryN(i));
+    }
+    return g.getFactory().buildGeometry(comp);
+  }
+  
+  //=========================================================
+  
   public static Geometry select(Geometry geom, GeometryPredicate pred)
   {
-    List selected = new ArrayList();
+    List<Geometry> selected = new ArrayList<Geometry>();
     for (int i = 0; i < geom.getNumGeometries(); i++ ) {
       Geometry g = geom.getGeometryN(i);
       if (pred.isTrue(g)) {
@@ -253,14 +271,6 @@ public class SelectionFunctions
 
   }
   
-  public static Geometry firstNComponents(Geometry g, int n)
-  {
-    List comp = new ArrayList();
-    for (int i = 0; i < g.getNumGeometries() && i < n; i++) {
-      comp.add(g.getGeometryN(i));
-    }
-    return g.getFactory().buildGeometry(comp);
-  }
 }
 
 interface GeometryPredicate
