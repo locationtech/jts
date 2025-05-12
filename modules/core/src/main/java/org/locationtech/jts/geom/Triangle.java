@@ -113,13 +113,13 @@ public class Triangle
    * @return the circumradius of the triangle
    */
   public static double circumradius(Coordinate a, Coordinate b, Coordinate c) {
-    double A = a.distance(b);
-    double B = b.distance(c);
-    double C = c.distance(a);
+    double lenAB = a.distance(b);
+    double lenBC = b.distance(c);
+    double lenCA = c.distance(a);
     double area = area(a, b, c);
     if (area == 0.0)
       return Double.POSITIVE_INFINITY;
-    return (A * B * C) / (4 * area);
+    return (lenAB * lenBC * lenCA) / (4 * area);
   }
   
   /**
@@ -262,7 +262,7 @@ public class Triangle
    * the point at which the bisectors of the triangle's angles meet. It is the
    * centre of the triangle's <i>incircle</i>, which is the unique circle that
    * is tangent to each of the triangle's three sides
-   * (and hence the maximum inscribed circle).
+   * (and hence the Maximum Inscribed Circle).
    * <p>
    * The incentre always lies within the triangle.
    * 
@@ -276,14 +276,13 @@ public class Triangle
    */
   public static Coordinate inCentre(Coordinate a, Coordinate b, Coordinate c)
   {
-    // the lengths of the sides, labelled by their opposite vertex
-    double len0 = b.distance(c);
-    double len1 = a.distance(c);
-    double len2 = a.distance(b);
-    double circum = len0 + len1 + len2;
+    double lenAB = a.distance(b);
+    double lenBC = b.distance(c);
+    double lenCA = c.distance(a);
+    double circum = lenBC + lenCA + lenAB;
 
-    double inCentreX = (len0 * a.x + len1 * b.x + len2 * c.x) / circum;
-    double inCentreY = (len0 * a.y + len1 * b.y + len2 * c.y) / circum;
+    double inCentreX = (lenBC * a.x + lenCA * b.x + lenAB * c.x) / circum;
+    double inCentreY = (lenBC * a.y + lenCA * b.y + lenAB * c.y) / circum;
     return new Coordinate(inCentreX, inCentreY);
   }
 
@@ -368,9 +367,9 @@ public class Triangle
      * Uses the fact that the lengths of the parts of the split segment are
      * proportional to the lengths of the adjacent triangle sides
      */
-    double len0 = b.distance(a);
-    double len2 = b.distance(c);
-    double frac = len0 / (len0 + len2);
+    double lenBA = b.distance(a);
+    double lenBC = b.distance(c);
+    double frac = lenBA / (lenBA + lenBC);
     double dx = c.x - a.x;
     double dy = c.y - a.y;
 
@@ -393,8 +392,7 @@ public class Triangle
    */
   public static double area(Coordinate a, Coordinate b, Coordinate c)
   {
-    return Math
-        .abs(((c.x - a.x) * (b.y - a.y) - (b.x - a.x) * (c.y - a.y)) / 2);
+    return Math.abs(((c.x - a.x) * (b.y - a.y) - (b.x - a.x) * (c.y - a.y)) / 2);
   }
 
   /**
