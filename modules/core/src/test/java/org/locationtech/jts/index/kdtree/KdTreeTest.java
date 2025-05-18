@@ -15,6 +15,7 @@ package org.locationtech.jts.index.kdtree;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -47,7 +48,7 @@ public class KdTreeTest extends TestCase {
 
     Envelope queryEnv = new Envelope(0, 10, 0, 10);
 
-    List result = index.query(queryEnv);
+    List<KdNode> result = index.query(queryEnv);
     assertTrue(result.size() == 1);
 
     KdNode node = (KdNode) result.get(0);
@@ -160,7 +161,33 @@ public class KdTreeTest extends TestCase {
       }
   }
   
+  public void testRangeQuery() {
+      final int n = 2500;
+      final int numTrials = 50;
+      final Random rand = new Random(0);
 
+      for (int trial = 0; trial < numTrials; trial++) {
+          KdTree tree = new KdTree();
+          for (int i = 0; i < n; i++) {
+              tree.insert(new Coordinate(rand.nextDouble(), rand.nextDouble()));
+          }
+
+          double x1 = rand.nextDouble();
+          double x2 = rand.nextDouble();
+          double y1 = rand.nextDouble();
+          double y2 = rand.nextDouble();
+          Envelope env = new Envelope(Math.min(x1, x2), Math.max(x1, x2),
+                                      Math.min(y1, y2), Math.max(y1, y2));
+
+          List<Coordinate> kdResult = new ArrayList<>();
+          tree.query(env, node -> kdResult.add(node.getCoordinate()));
+
+          List<Coordinate> bruteResult = bruteForceInEnvelope(tree, env);
+
+          assertEquals(bruteResult.size(), kdResult.size());
+          assertEquals(new HashSet<>(bruteResult), new HashSet<>(kdResult));
+      }
+  }
   
   public void testCollectNodes() {
       int n = 1000;
@@ -254,6 +281,18 @@ public class KdTreeTest extends TestCase {
 
       // Return the first k points (ordered closest first)
       return allPoints.subList(0, Math.min(k, allPoints.size()));
+  }
+  
+  private List<Coordinate> bruteForceInEnvelope(KdTree tree, Envelope queryEnv) {
+      List<Coordinate> allPoints = getAllPoints(tree);
+
+      List<Coordinate> inEnvelope = new ArrayList<>();
+      for (Coordinate p : allPoints) {
+          if (queryEnv.contains(p)) {
+              inEnvelope.add(p);
+          }
+      }
+      return inEnvelope;
   }
   
   private List<Coordinate> getAllPoints(KdTree tree) {

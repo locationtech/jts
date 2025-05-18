@@ -448,80 +448,55 @@ public class KdTree {
 		return leaf;
 	}
 
-  /**
-   * Performs a range search of the points in the index and visits all nodes found.
-   * 
-   * @param queryEnv the range rectangle to query
-   * @param visitor a visitor to visit all nodes found by the search
-   */
-  public void query(Envelope queryEnv, KdNodeVisitor visitor) {
-    //-- Deque is faster than Stack
-    Deque<QueryStackFrame> queryStack = new ArrayDeque<QueryStackFrame>();
-    KdNode currentNode = root;
-    boolean isXLevel = true;
+	/**
+	 * Performs a range search of the points in the index and visits all nodes
+	 * found.
+	 * 
+	 * @param queryEnv the range rectangle to query
+	 * @param visitor  a visitor to visit all nodes found by the search
+	 */
+	public void query(final Envelope queryEnv, final KdNodeVisitor visitor) {
+		if (root == null)
+			return;
 
-    // search is computed via in-order traversal
-    while (true) {
-      if ( currentNode != null ) {
-        queryStack.push(new QueryStackFrame(currentNode, isXLevel));
+		final double minX = queryEnv.getMinX();
+		final double maxX = queryEnv.getMaxX();
+		final double minY = queryEnv.getMinY();
+		final double maxY = queryEnv.getMaxY();
 
-        boolean searchLeft = currentNode.isRangeOverLeft(isXLevel, queryEnv);
-        if ( searchLeft ) {
-          currentNode = currentNode.getLeft();
-          if ( currentNode != null ) {
-            isXLevel = ! isXLevel;
-          }
-        } 
-        else {
-          currentNode = null;
-        }
-      } 
-      else if ( ! queryStack.isEmpty() ) {
-        // currentNode is empty, so pop stack
-        QueryStackFrame frame = queryStack.pop();
-        currentNode = frame.getNode();
-        isXLevel = frame.isXLevel();
+		// dfs with stack
+		final Deque<KdNode> stack = new ArrayDeque<>();
+		stack.push(root);
 
-        //-- check if search matches current node
-        if ( queryEnv.contains(currentNode.getCoordinate()) ) {
-          visitor.visit(currentNode);
-        }
+		while (!stack.isEmpty()) {
+			KdNode node = stack.pop();
+			if (node == null)
+				continue;
 
-        boolean searchRight = currentNode.isRangeOverRight(isXLevel, queryEnv);
-        if ( searchRight ) {
-          currentNode = currentNode.getRight();
-          if ( currentNode != null ) {
-            isXLevel = ! isXLevel;
-          }
-        } 
-        else {
-          currentNode = null;
-        }
-      } else {
-        //-- stack is empty and no current node
-        return;
-      }
-    }
-  }
+			Coordinate pt = node.getCoordinate();
+			double x = pt.x;
+			double y = pt.y;
 
-  private static class QueryStackFrame {
-    private KdNode node;
-    private boolean isXLevel = false;
-    
-    public QueryStackFrame(KdNode node, boolean isXLevel) {
-      this.node = node;
-      this.isXLevel = isXLevel;
-    }
-    
-    public KdNode getNode() {
-      return node;
-    }
-    
-    public boolean isXLevel() {
-      return isXLevel;
-    }
-  }
-  
+			if (x >= minX && x <= maxX && y >= minY && y <= maxY) {
+				visitor.visit(node);
+			}
+
+			boolean axisIsX = node.isAxisX();
+
+			if (axisIsX) { // node splits on X
+				if (minX <= x && node.getLeft() != null)
+					stack.push(node.getLeft());
+				if (maxX >= x && node.getRight() != null)
+					stack.push(node.getRight());
+			} else { // node splits on Y
+				if (minY <= y && node.getLeft() != null)
+					stack.push(node.getLeft());
+				if (maxY >= y && node.getRight() != null)
+					stack.push(node.getRight());
+			}
+		}
+	}
+
   /**
    * Performs a range search of the points in the index.
    * 
