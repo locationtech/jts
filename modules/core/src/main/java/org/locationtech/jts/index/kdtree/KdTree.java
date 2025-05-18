@@ -161,7 +161,7 @@ public class KdTree {
    */
   public KdNode insert(Coordinate p, Object data) {
     if (root == null) {
-      root = new KdNode(p, data);
+      root = new KdNode(p, data, true);
       return root;
     }
     
@@ -187,173 +187,158 @@ public class KdTree {
    * @param query the query point
    * @return the nearest node, or null if the tree is empty
    */
-  public KdNode nearestNeighbor(final Coordinate query) {
-    if (root == null) {
-      return null;
-    }
+	public KdNode nearestNeighbor(final Coordinate query) {
+		if (root == null)
+			return null;
 
-    KdNode bestNode = null;
-    double bestDistance = Double.POSITIVE_INFINITY;
-    Deque<NNStackFrame> stack = new ArrayDeque<>();
-    KdNode currentNode = root;
-    boolean isXLevel = true;
+		KdNode bestNode = null;
+		double bestDistSq = Double.POSITIVE_INFINITY;
 
-    while (currentNode != null || !stack.isEmpty()) {
-      if (currentNode != null) {
-        double currentDist = query.distanceSq(currentNode.getCoordinate());
-        if (currentDist < bestDistance) {
-          bestNode = currentNode;
-          bestDistance = currentDist;
-          if (bestDistance == 0) {
-              return bestNode; // Early termination
-          }
-        }
+		Deque<KdNode> stack = new ArrayDeque<>();
+		stack.push(root);
 
-        boolean currentIsXLevel = isXLevel;
-        double splitValue = currentNode.splitValue(currentIsXLevel);
-        KdNode nextNode;
-        KdNode otherNode;
+		while (!stack.isEmpty()) {
+			KdNode node = stack.pop();
+			if (node == null)
+				continue;
 
-        if (currentIsXLevel) {
-          if (query.x < splitValue) {
-            nextNode = currentNode.getLeft();
-            otherNode = currentNode.getRight();
-          } else {
-            nextNode = currentNode.getRight();
-            otherNode = currentNode.getLeft();
-          }
-        } else {
-          if (query.y < splitValue) {
-            nextNode = currentNode.getLeft();
-            otherNode = currentNode.getRight();
-          } else {
-            nextNode = currentNode.getRight();
-            otherNode = currentNode.getLeft();
-          }
-        }
+			// 1. visit this node
+			double dSq = query.distanceSq(node.getCoordinate());
+			if (dSq < bestDistSq) {
+				bestDistSq = dSq;
+				bestNode = node;
+				if (dSq == 0)
+					break; // perfect hit
+			}
 
-        stack.push(new NNStackFrame(otherNode, currentIsXLevel, splitValue));
-        currentNode = nextNode;
-        isXLevel = !currentIsXLevel;
-      } else {
-        NNStackFrame frame = stack.pop();
-        KdNode otherNode = frame.node;
-        boolean parentSplitAxis = frame.parentSplitAxis;
-        double parentSplitValue = frame.parentSplitValue;
+			// 2. decide which child to explore first
+			boolean axisIsX = node.isAxisX();
+			double diff = axisIsX ? query.x - node.getCoordinate().x : query.y - node.getCoordinate().y;
 
-        double diff = parentSplitAxis 
-        	    ? query.x - parentSplitValue
-        	    : query.y - parentSplitValue;
-        double distanceToSplitSq = diff * diff;
+			KdNode nearChild = (diff < 0) ? node.getLeft() : node.getRight();
+			KdNode farChild = (diff < 0) ? node.getRight() : node.getLeft();
 
-        if (distanceToSplitSq < bestDistance) {
-          currentNode = otherNode;
-          isXLevel = !parentSplitAxis;
-        } else {
-          currentNode = null;
-        }
-      }
-    }
+			// 3. depth-first: push far side only if it can still win
+			if (farChild != null && diff * diff < bestDistSq) {
+				stack.push(farChild);
+			}
+			if (nearChild != null)
+				stack.push(nearChild);
+		}
+		return bestNode;
+	}
 
-    return bestNode;
-  }
-  
-  /**
-   * Finds the nearest N nodes in the tree to the given query point.
-   * 
-   * @param query the query point
-   * @param n the number of nearest nodes to find
-   * @return a list of the nearest nodes, sorted by distance (closest first), or an empty list if the tree is empty.
-   */
-  public List<KdNode> nearestNeighbors(final Coordinate query, final int n) {
-	    if (root == null || n <= 0) {
-	      return Collections.emptyList();
-	    }
+	/**
+	 * Finds the nearest N nodes in the tree to the given query point.
+	 * 
+	 * @param query the query point
+	 * @param n     the number of nearest nodes to find
+	 * @return a list of the nearest nodes, sorted by distance (closest first), or
+	 *         an empty list if the tree is empty.
+	 */
+	public List<KdNode> nearestNeighbors(final Coordinate query, final int k) {
+		if (root == null || k <= 0) {
+			return Collections.emptyList();
+		}
 
-	    PriorityQueue<KdNode> heap = new PriorityQueue<>(n, (n1, n2) -> 
-	        Double.compare(query.distanceSq(n2.getCoordinate()), query.distanceSq(n1.getCoordinate()))
-	    );
+		final PriorityQueue<Neighbor> heap = new PriorityQueue<>(k);
+		double worstDistSq = Double.POSITIVE_INFINITY; // updated when heap full
 
-	    Deque<NNStackFrame> stack = new ArrayDeque<>();
-	    KdNode currentNode = root;
-	    boolean isXLevel = true;
+		// depth-first search with an explicit stack
+		final Deque<NNStackFrame> stack = new ArrayDeque<>();
+		KdNode node = root; // the subtree we are about to visit
 
-	    while (currentNode != null || !stack.isEmpty()) {
-	      if (currentNode != null) {
-	        double currentDist = query.distanceSq(currentNode.getCoordinate());
-            if (heap.size() < n || currentDist < query.distanceSq(heap.peek().getCoordinate())) {
-                if (heap.size() == n) {
-                    heap.poll();
-                }
-                heap.offer(currentNode);
-            }
+		while (node != null || !stack.isEmpty()) {
 
-	        boolean currentIsXLevel = isXLevel;
-	        double splitValue = currentNode.splitValue(currentIsXLevel);
-	        KdNode nextNode;
-	        KdNode otherNode;
+			// a) descend
+			if (node != null) {
 
-	        if (currentIsXLevel) {
-	          if (query.x < splitValue) {
-	            nextNode = currentNode.getLeft();
-	            otherNode = currentNode.getRight();
-	          } else {
-	            nextNode = currentNode.getRight();
-	            otherNode = currentNode.getLeft();
-	          }
-	        } else {
-	          if (query.y < splitValue) {
-	            nextNode = currentNode.getLeft();
-	            otherNode = currentNode.getRight();
-	          } else {
-	            nextNode = currentNode.getRight();
-	            otherNode = currentNode.getLeft();
-	          }
-	        }
+				// visit the current node
+				double distSq = query.distanceSq(node.getCoordinate());
 
-	        stack.push(new NNStackFrame(otherNode, currentIsXLevel, splitValue));
-	        currentNode = nextNode;
-	        isXLevel = !currentIsXLevel;
-	      } else {
-	        NNStackFrame frame = stack.pop();
-	        KdNode otherNode = frame.node;
-	        boolean parentSplitAxis = frame.parentSplitAxis;
-	        double parentSplitValue = frame.parentSplitValue;
+				if (heap.size() < k) { // not full yet
+					heap.offer(new Neighbor(node, distSq));
+					if (heap.size() == k)
+						worstDistSq = heap.peek().distSq;
+				} else if (distSq < worstDistSq) { // better than worst
+					heap.poll(); // discard worst
+					heap.offer(new Neighbor(node, distSq));
+					worstDistSq = heap.peek().distSq; // new worst
+				}
 
-	        double diff = parentSplitAxis 
-	        	    ? query.x - parentSplitValue
-	        	    : query.y - parentSplitValue;
-	        double distanceToSplitSq = diff * diff;
+				// choose near / far child
+				boolean axisIsX = node.isAxisX();
+				double split = axisIsX ? node.getCoordinate().x : node.getCoordinate().y;
+				double diff = axisIsX ? query.x - split : query.y - split;
 
-	        double currentMaxDist = heap.isEmpty() ? Double.POSITIVE_INFINITY : query.distanceSq(heap.peek().getCoordinate());
+				KdNode nearChild = (diff < 0) ? node.getLeft() : node.getRight();
+				KdNode farChild = (diff < 0) ? node.getRight() : node.getLeft();
 
-	        if (distanceToSplitSq < currentMaxDist || heap.size() < n) {
-	          currentNode = otherNode;
-	          isXLevel = !parentSplitAxis;
-	        } else {
-	          currentNode = null;
-	        }
-	      }
-	    }
+				// push the far branch (if it exists) together with split info
+				if (farChild != null) {
+					stack.push(new NNStackFrame(farChild, axisIsX, split));
+				}
 
-	    List<KdNode> result = new ArrayList<>(heap);
-	    Collections.sort(result, (n1, n2) -> 
-	    	Double.compare(query.distanceSq(n1.getCoordinate()), query.distanceSq(n2.getCoordinate()))
-	    );
-	    return result;
-	  }
-  
-  private static class NNStackFrame {
-	    KdNode node;
-	    boolean parentSplitAxis;
-	    double parentSplitValue;
+				// tail-recurse into the near branch
+				node = nearChild;
+			}
 
-	    NNStackFrame(KdNode node, boolean parentSplitAxis, double parentSplitValue) {
-	      this.node = node;
-	      this.parentSplitAxis = parentSplitAxis;
-	      this.parentSplitValue = parentSplitValue;
-	    }
-	  }
+			// b) backtrack
+			else { // stack not empty
+				NNStackFrame sf = stack.pop();
+
+				double diff = sf.parentSplitAxis ? query.x - sf.parentSplitValue : query.y - sf.parentSplitValue;
+				double diffSq = diff * diff;
+
+				if (heap.size() < k || diffSq < worstDistSq) {
+					node = sf.node; // explore that side
+				} else {
+					node = null; // prune whole subtree
+				}
+			}
+		}
+
+		List<KdNode> result = new ArrayList<>(heap.size());
+		while (!heap.isEmpty())
+			result.add(heap.poll().node); // worst -> best
+		Collections.reverse(result); // best -> worst
+		return result;
+	}
+
+	/**
+	 * Internal helper used by nearest-neighbour search.
+	 */
+	private static final class Neighbor implements Comparable<Neighbor> {
+		final KdNode node;
+		final double distSq; // pre-computed once
+
+		Neighbor(KdNode node, double distSq) {
+			this.node = node;
+			this.distSq = distSq;
+		}
+
+		// “Reverse” ordering -> max-heap (peek == farthest of the N kept so far).
+		@Override
+		public int compareTo(Neighbor o) {
+			return Double.compare(o.distSq, this.distSq);
+		}
+	}
+
+	/**
+	 * One entry of the explicit depth-first-search stack used by the query
+	 * algorithm.
+	 */
+	private static class NNStackFrame {
+		KdNode node;
+		boolean parentSplitAxis;
+		double parentSplitValue;
+
+		NNStackFrame(KdNode node, boolean parentSplitAxis, double parentSplitValue) {
+			this.node = node;
+			this.parentSplitAxis = parentSplitAxis;
+			this.parentSplitValue = parentSplitValue;
+		}
+	}
     
   /**
    * Finds the node in the tree which is the best match for a point
@@ -422,52 +407,46 @@ public class KdTree {
    * @param data the data for the point
    * @return the created node
    */
-  private KdNode insertExact(Coordinate p, Object data) {
-    KdNode currentNode = root;
-    KdNode leafNode = root;
-    boolean isXLevel = true;
-    boolean isLessThan = true;
+	private KdNode insertExact(Coordinate p, Object data) {
+		// 1. empty tree: create root (splits on X by convention)
+		if (root == null) {
+			numberOfNodes = 1;
+			return root = new KdNode(p, data, true);
+		}
 
-    /**
-     * Traverse the tree, first cutting the plane left-right (by X ordinate)
-     * then top-bottom (by Y ordinate)
-     */
-    while (currentNode != null) {
-      boolean isInTolerance = p.distanceSq(currentNode.getCoordinate()) <= toleranceSq;
+		// 2. walk down until we hit a null child
+		KdNode parent = null;
+		KdNode curr = root;
+		boolean goLeft = true; // will stay tied to ‘parent’ once we exit loop
 
-      // check if point is already in tree (up to tolerance) and if so simply
-      // return existing node
-      if (isInTolerance) {
-        currentNode.increment();
-        return currentNode;
-      }
+		while (curr != null) {
 
-      double splitValue = currentNode.splitValue(isXLevel);
-      if (isXLevel) {
-        isLessThan = p.x < splitValue;
-      } else {
-        isLessThan = p.y < splitValue;
-      }
-      leafNode = currentNode;
-      if (isLessThan) {
-        currentNode = currentNode.getLeft();
-      } else {
-        currentNode = currentNode.getRight();
-      }
+			final double distSq = p.distanceSq(curr.getCoordinate());
+			if (distSq <= toleranceSq) { // duplicate (within tol)
+				curr.increment();
+				return curr;
+			}
 
-      isXLevel = ! isXLevel;
-    }
-    //System.out.println("<<");
-    // no node found, add new leaf node to tree
-    numberOfNodes = numberOfNodes + 1;
-    KdNode node = new KdNode(p, data);
-    if (isLessThan) {
-      leafNode.setLeft(node);
-    } else {
-      leafNode.setRight(node);
-    }
-    return node;
-  }
+			parent = curr;
+			if (curr.isAxisX()) { // node splits on X
+				goLeft = p.x < curr.getCoordinate().x;
+			} else { // node splits on Y
+				goLeft = p.y < curr.getCoordinate().y;
+			}
+			curr = goLeft ? curr.getLeft() : curr.getRight();
+		}
+
+		// 3. Insert new leaf (child axis is the opposite one)
+		final boolean childAxisIsX = !parent.isAxisX();
+		KdNode leaf = new KdNode(p, data, childAxisIsX);
+		if (goLeft)
+			parent.setLeft(leaf);
+		else
+			parent.setRight(leaf);
+
+		++numberOfNodes;
+		return leaf;
+	}
 
   /**
    * Performs a range search of the points in the index and visits all nodes found.
