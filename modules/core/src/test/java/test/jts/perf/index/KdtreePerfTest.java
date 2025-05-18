@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Random;
 
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.index.kdtree.KdNode;
 import org.locationtech.jts.index.kdtree.KdTree;
 
@@ -62,5 +63,13 @@ public class KdtreePerfTest extends PerformanceTestCase {
 		copy.sort(Comparator.comparingDouble(query::distance));
 		@SuppressWarnings("unused")
 		List<Coordinate> nearest = copy.subList(0, Math.min(k, copy.size()));
+	}
+	
+	public void runKdTreeEnvelope() {
+		tree.query(new Envelope(0.25, 0.75, 0.25, 0.75));
+	}
+	
+	public void runKdTreeEnvelopeAll() {
+		tree.query(new Envelope(0, 1, 0, 1));
 	}
 }
