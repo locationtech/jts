@@ -149,6 +149,18 @@ public class KdNode {
     public boolean isRepeated() {
         return count > 1;
     }
+    
+    @Override
+    public String toString() {
+        return String.format(
+            "KdNode[p=%s, data=%s, count=%d, left=%s, right=%s]",
+            p, 
+            data,
+            count,
+            left  != null ? left.p  : "null",
+            right != null ? right.p : "null"
+        );
+    }
 
     // Sets left node value
     void setLeft(KdNode _left) {
