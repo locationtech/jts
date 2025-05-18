@@ -39,12 +39,7 @@ public class KdtreePerfTest extends PerformanceTestCase {
 		tree = new KdTree(); // empty tree
 		query = new Coordinate(rnd.nextDouble(), rnd.nextDouble());
 		k = Math.max(1, size / 100);
-	}
-
-	/**
-	 * Insert all points into the tree. Framework will time this method.
-	 */
-	public void runInsertPoints() {
+		
 		for (Coordinate pt : points) {
 			tree.insert(pt);
 		}
