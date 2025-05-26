@@ -67,18 +67,22 @@ public class DepthSegmentStressTest
       double queryYOrd = i;
       List<DepthSegment> result = query(segSet, queryYOrd);
       
-      //-- check all triplets of segments
-      for (int i1 = 0; i1 < result.size(); i1++) {
-        for (int i2 = i1 + 1; i2 < result.size(); i2++) {
-          for (int i3 = i2 + 1; i3 < result.size(); i3++) {
-            checkSegs(result.get(i1), result.get(i2), result.get(i3));
-          }
+      
+      checkTriplets(result);
+    }
+  }
+
+  private void checkTriplets(List<DepthSegment> result) {
+    for (int i1 = 0; i1 < result.size(); i1++) {
+      for (int i2 = i1 + 1; i2 < result.size(); i2++) {
+        for (int i3 = i2 + 1; i3 < result.size(); i3++) {
+          checkCompareContract(result.get(i1), result.get(i2), result.get(i3));
         }
       }
     }
   }
   
-  public void checkSegs(DepthSegment seg1, DepthSegment seg2, DepthSegment seg3)
+  public void checkCompareContract(DepthSegment seg1, DepthSegment seg2, DepthSegment seg3)
   {
     if (! isSymmetric(seg1, seg2)) {
       isSymmetric(seg1, seg2);
@@ -162,13 +166,13 @@ public class DepthSegmentStressTest
   {
     return Math.round(x * scale) / scale;
   }
-
-
 }
 
 /**
  * A segment from a directed edge which has been assigned a depth value
  * for its sides.
+ * 
+ * A copy of ubgraphDepthLocater.DepthSegment, which is private.
  */
 class DepthSegment
     implements Comparable
