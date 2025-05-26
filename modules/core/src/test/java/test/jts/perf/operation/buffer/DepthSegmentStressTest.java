@@ -26,6 +26,9 @@ import org.locationtech.jts.operation.overlayng.UnaryUnionNG;
 
 /**
  * Stress tests DepthSegment to determine if the compare contract is maintained.
+ * Generates sets of random non-crossing segments, extracts lists 
+ * of segments along stabbing lines, and checks the DepthSegment compare
+ * method for if it is antisymmetric and transitive.
  * 
  * @author Martin Davis
  *

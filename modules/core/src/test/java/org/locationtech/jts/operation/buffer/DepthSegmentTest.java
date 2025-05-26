@@ -115,7 +115,7 @@ public class DepthSegmentTest extends TestCase {
     int compAC = dsA.compareTo(dsC);
     
     assertEquals("BC not equal to AB", compAB, compBC);
-    assertEquals("AC is not transitive", compAB, compAC);
+    assertEquals("Comparison is not transitive", compAB, compAC);
   }
 
   private void checkCompare(
@@ -130,7 +130,7 @@ public class DepthSegmentTest extends TestCase {
     int comp0 = ds0.compareTo(ds1);
     int comp1 = ds1.compareTo(ds0);
     assertEquals("Comparator result", expectedComp, comp0);
-    assertTrue("Antisymmetric check", comp0 == -comp1);
+    assertTrue("Symmetric check", comp0 == -comp1);
   }
 
   private SubgraphDepthLocater.DepthSegment depthSeg(double x0, double y0, double x1, double y1) {
