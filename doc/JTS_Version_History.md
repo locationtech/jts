@@ -41,6 +41,7 @@ Distributions for older JTS versions can be obtained at the
 * Add `BufferOp` hole erosion heuristic for rings (#1117)
 * Fix `BufferOp` element erosion for negative distance (#1119)
 * Fix writing XYM geometries as WKB (#1092)
+* Fix `DepthSegment` comparator (#1132)
 
 ### Performance Improvements
 
