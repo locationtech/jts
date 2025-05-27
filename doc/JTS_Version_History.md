@@ -31,6 +31,7 @@ Distributions for older JTS versions can be obtained at the
 * Add `MaximumInscribedCircle.isRadiusWithin` function (#1125)
 * Add `CoverageCleaner` (#1126)
 * Add auto-tolerance to `MaximumInscribedCircle` and `LargestEmptyCircle` (#1128)
+* Add `KdTree` methods `nearestNeighbor` and `nearestNeighbors` #1114
 
 ### Bug Fixes
 
