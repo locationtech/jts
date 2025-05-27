@@ -22,40 +22,54 @@ import org.locationtech.jts.geom.Envelope;
  */
 public class KdNode {
 
-    private Coordinate p = null;
-    private Object     data;
-    private KdNode     left;
-    private KdNode     right;
-    private int        count;
+	private final Coordinate p;
+	private final Object data;
+	private KdNode left;
+	private KdNode right;
+	private int count;
+	private final boolean axisIsX; // whether node splits along X (true) or Y (false)
 
-    /**
-     * Creates a new KdNode.
-     * 
-     * @param _x coordinate of point
-     * @param _y coordinate of point
-     * @param data a data objects to associate with this node
-     */
-    public KdNode(double _x, double _y, Object data) {
-        p = new Coordinate(_x, _y);
-        left = null;
-        right = null;
-        count = 1;
-        this.data = data;
-    }
+	/**
+	 * Creates a new {@code KdNode}.
+	 *
+	 * @param x       x–coordinate of the point represented by this node
+	 * @param y       y–coordinate of the point represented by this node
+	 * @param data    arbitrary user data to associate with the node
+	 * @param axisIsX {@code true} if this node partitions the space with a vertical
+	 *                line (i.e. it compares <em>x</em>–coordinates and its children
+	 *                lie to the “left” and “right” of that line); {@code false} if
+	 *                it partitions with a horizontal line (it compares
+	 *                <em>y</em>–coordinates and its children lie “below” and
+	 *                “above” that line). By convention the root uses an X-axis
+	 *                split, so the very first node inserted into an empty tree
+	 *                should be created with {@code axisIsX == true}. Thereafter the
+	 *                axis alternates naturally as each level of the tree is filled.
+	 */
+	public KdNode(double x, double y, Object data, boolean axisIsX) {
+		this(new Coordinate(x, y), data, axisIsX);
+	}
 
-    /**
-     * Creates a new KdNode.
-     * 
-     * @param p point location of new node
-     * @param data a data objects to associate with this node
-     */
-    public KdNode(Coordinate p, Object data) {
-        this.p = new Coordinate(p);
-        left = null;
-        right = null;
-        count = 1;
-        this.data = data;
-    }
+	/**
+	 * Creates a new KdNode.
+	 * 
+	 * @param p       point location of new node
+	 * @param data    a data objects to associate with this node.
+	 * @param axisIsX {@code true} if this node partitions the space with a vertical
+	 *                line (i.e. it compares <em>x</em>–coordinates and its children
+	 *                lie to the “left” and “right” of that line); {@code false} if
+	 *                it partitions with a horizontal line (it compares
+	 *                <em>y</em>–coordinates and its children lie “below” and
+	 *                “above” that line). By convention the root uses an X-axis
+	 *                split, so the very first node inserted into an empty tree
+	 *                should be created with {@code axisIsX == true}. Thereafter the
+	 *                axis alternates naturally as each level of the tree is filled.
+	 */
+	public KdNode(Coordinate p, Object data, boolean axisIsX) {
+		this.p = new Coordinate(p);
+		this.data = data;
+		this.axisIsX = axisIsX;
+		this.count = 1;
+	}
 
     /**
      * Returns the X coordinate of the node
@@ -141,6 +155,14 @@ public class KdNode {
         return count;
     }
 
+	/**
+	 * {@code true} if this node splits along the X axis, {@code false} if it splits
+	 * along the Y axis.
+	 */
+	public boolean isAxisX() {
+		return axisIsX;
+	}
+
     /**
      * Tests whether more than one point with this value have been inserted (up to the tolerance)
      * 
@@ -148,6 +170,18 @@ public class KdNode {
      */
     public boolean isRepeated() {
         return count > 1;
+    }
+    
+    @Override
+    public String toString() {
+        return String.format(
+            "KdNode[p=%s, data=%s, count=%d, left=%s, right=%s]",
+            p, 
+            data,
+            count,
+            left  != null ? left.p  : "null",
+            right != null ? right.p : "null"
+        );
     }
 
     // Sets left node value
