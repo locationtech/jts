@@ -242,6 +242,8 @@ public class SelectionFunctions
   {
     return select(a, new GeometryPredicate() {
       public boolean isTrue(Geometry g) {
+        if (g.isEmpty())
+          return false;
         return MaximumInscribedCircle.isRadiusWithin(g, maximumRadius);
       }
     });
