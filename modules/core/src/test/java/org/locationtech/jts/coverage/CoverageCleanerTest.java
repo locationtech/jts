@@ -67,6 +67,21 @@ public class CoverageCleanerTest extends GeometryTestCase {
             "POLYGON ((0 0, 0 2, 5 2, 5.01 0, 0 0))",
             "POLYGON ((0 8, 5 8, 5 2, 0 2, 0 8))"
             ));
+  }  
+  
+  // Tests that a collapsed polygon due to snapping is returned as EMPTY
+  public void testPolygonsSnappedCollapse() {
+    checkCleanSnap(readArray(
+        "POLYGON ((1 1, 1 9, 6 5, 9 1, 1 1))",
+        "POLYGON ((9 1, 6 5.1, 1 9, 9 9, 9 1))",
+        "POLYGON ((9 1, 6 5, 1 9, 6 5.1, 9 1))"
+        ),
+        1,
+        readArray(
+            "POLYGON ((6 5, 9 1, 1 1, 1 9, 6 5))",
+            "POLYGON ((9 9, 9 1, 6 5, 1 9, 9 9))",
+            "POLYGON EMPTY"
+            ));
   }
   
   public void testMergeGapToLongestBorder() {
