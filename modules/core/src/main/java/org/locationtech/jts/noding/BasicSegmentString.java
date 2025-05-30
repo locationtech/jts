@@ -29,6 +29,15 @@ import org.locationtech.jts.io.WKTWriter;
 public class BasicSegmentString
 	implements SegmentString 
 {
+  public static BasicSegmentString substring(SegmentString segString, int start, int end) {
+    Coordinate[] pts = new Coordinate[end - start + 1];
+    int ipts = 0;
+    for (int i = start; i < end + 1; i++) {
+      pts[ipts++] = segString.getCoordinate(i).copy();
+    }
+    return new BasicSegmentString(pts, segString.getData());
+  }
+  
   private Coordinate[] pts;
   private Object data;
 

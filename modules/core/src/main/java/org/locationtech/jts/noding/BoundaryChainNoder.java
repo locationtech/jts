@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.LineSegment;
@@ -50,11 +51,17 @@ public class BoundaryChainNoder implements Noder {
 
   @Override
   public void computeNodes(Collection segStrings) {
-    HashSet<Segment> segSet = new HashSet<Segment>();
+    HashSet<Segment> boundarySegSet = new HashSet<Segment>();
     BoundaryChainMap[] boundaryChains = new BoundaryChainMap[segStrings.size()];
-    addSegments(segStrings, segSet, boundaryChains);
-    markBoundarySegments(segSet);
+    addSegments(segStrings, boundarySegSet, boundaryChains);
+    markBoundarySegments(boundarySegSet);
     chainList = extractChains(boundaryChains);
+    
+    //-- check for self-touching nodes and split chains at those nodes
+    Set<Coordinate> nodePts = findNodePts(chainList); 
+    if (nodePts.size() > 0) {
+      chainList = nodeChains(chainList, nodePts);
+    }
   }
 
   private static void addSegments(Collection<SegmentString> segStrings, HashSet<Segment> segSet, 
@@ -93,6 +100,56 @@ public class BoundaryChainNoder implements Noder {
       chainMap.createChains(chainList);
     }
     return chainList;
+  }
+
+  private Set<Coordinate> findNodePts(List<SegmentString> segStrings) {
+    Set<Coordinate> interorVertices = new HashSet<Coordinate>();
+    Set<Coordinate> nodes = new HashSet<Coordinate>();
+    for (SegmentString ss : segStrings) {
+      //-- endpoints are nodes
+      nodes.add(ss.getCoordinate(0));
+      nodes.add(ss.getCoordinate(ss.size() - 1));
+      
+      //-- check for duplicate interior points
+      for (int i = 1; i < ss.size() - 1; i++) {
+        Coordinate p = ss.getCoordinate(i);
+        if (interorVertices.contains(p)) {
+          nodes.add(p);
+        }
+        interorVertices.add(p);
+      }
+    }
+    return nodes;
+  }
+  
+  private List<SegmentString> nodeChains(List<SegmentString> chains, Set<Coordinate> nodePts) {
+    List<SegmentString> nodedChains = new ArrayList<SegmentString>();
+    for (SegmentString chain : chains) {
+      nodeChain(chain, nodePts, nodedChains);
+    }
+    return nodedChains;
+  }
+  
+  private void nodeChain(SegmentString chain, Set<Coordinate> nodePts, List<SegmentString> nodedChains) {
+    int start = 0;
+    while (start < chain.size() - 1) {
+      int end = findNodeIndex(chain, start, nodePts);
+      //-- if no interior nodes found, keep original chain
+      if (start == 0 && end == chain.size() - 1) {
+        nodedChains.add(chain);
+        return;
+      }
+      nodedChains.add(BasicSegmentString.substring(chain, start, end));
+      start = end;
+    }
+  }
+
+  private int findNodeIndex(SegmentString chain, int start, Set<Coordinate> nodePts) {
+    for (int i = start + 1; i < chain.size(); i++) {
+      if (nodePts.contains(chain.getCoordinate(i)))
+        return i;
+    }
+    return chain.size() - 1;
   }
 
   @Override

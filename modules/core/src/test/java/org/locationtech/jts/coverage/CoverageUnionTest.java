@@ -40,6 +40,27 @@ public class CoverageUnionTest extends GeometryTestCase
             );
   }
 
+  public void testHoleTouchingSide() {
+    checkUnion(
+        "GEOMETRYCOLLECTION (POLYGON ((1 9, 9 9, 9 6, 2 6, 1 9)), POLYGON ((1 1, 1 9, 2 6, 5 3, 9 6, 9 1, 1 1)))",
+        "POLYGON ((9 6, 9 1, 1 1, 1 9, 9 9, 9 6), (9 6, 2 6, 5 3, 9 6))"
+            );
+  }
+  
+  public void testHolesTouchingSide() {
+    checkUnion(
+        "GEOMETRYCOLLECTION (POLYGON ((1 9, 9 9, 9 6, 5 7, 2 6, 1 9)), POLYGON ((1 1, 1 9, 2 6, 4 3, 5 7, 7 3, 9 6, 9 1, 1 1)))",
+        "POLYGON ((9 9, 9 6, 9 1, 1 1, 1 9, 9 9), (5 7, 7 3, 9 6, 5 7), (2 6, 4 3, 5 7, 2 6))"
+            );
+  }
+  
+  public void testHolesTouching() {
+    checkUnion(
+        "GEOMETRYCOLLECTION (POLYGON ((1 9, 9 9, 9 6, 7 7, 5 7, 2 6, 1 9)), POLYGON ((1 1, 1 9, 2 6, 4 3, 5 7, 7 3, 7 7, 9 6, 9 1, 1 1)))",
+        "POLYGON ((9 9, 9 6, 9 1, 1 1, 1 9, 9 9), (5 7, 7 3, 7 7, 5 7), (2 6, 4 3, 5 7, 2 6))"
+            );
+  }
+  
   private void checkUnion(String wktCoverage, String wktExpected) {
     Geometry covGeom = read(wktCoverage);
     Geometry[] coverage = toArray(covGeom);
