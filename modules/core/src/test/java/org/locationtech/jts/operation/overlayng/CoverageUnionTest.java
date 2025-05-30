@@ -30,9 +30,25 @@ public class CoverageUnionTest extends GeometryTestCase
         "MULTIPOLYGON (((1 9, 6 9, 9 9, 9 1, 6 1, 1 1, 1 9), (2 8, 2 2, 6 2, 8 2, 8 8, 6 8, 2 8)), ((5 3, 3 3, 3 7, 5 7, 7 7, 7 3, 5 3), (5 4, 6 4, 6 6, 5 6, 4 6, 4 4, 5 4)))");
   }
 
-  public void testPolygonsNested( ) {
-    checkUnion("GEOMETRYCOLLECTION (POLYGON ((1 9, 9 9, 9 1, 1 1, 1 9), (3 7, 3 3, 7 3, 7 7, 3 7)), POLYGON ((3 7, 7 7, 7 3, 3 3, 3 7)))",
-        "POLYGON ((1 1, 1 9, 9 9, 9 1, 1 1))");
+  public void testHoleTouchingSide() {
+    checkUnion(
+        "GEOMETRYCOLLECTION (POLYGON ((1 9, 9 9, 9 6, 2 6, 1 9)), POLYGON ((1 1, 1 9, 2 6, 5 3, 9 6, 9 1, 1 1)))",
+        "POLYGON ((9 6, 9 1, 1 1, 1 9, 9 9, 9 6), (9 6, 2 6, 5 3, 9 6))"
+            );
+  }
+  
+  public void testHolesTouchingSide() {
+    checkUnion(
+        "GEOMETRYCOLLECTION (POLYGON ((1 9, 9 9, 9 6, 5 7, 2 6, 1 9)), POLYGON ((1 1, 1 9, 2 6, 4 3, 5 7, 7 3, 9 6, 9 1, 1 1)))",
+        "POLYGON ((9 9, 9 6, 9 1, 1 1, 1 9, 9 9), (5 7, 7 3, 9 6, 5 7), (2 6, 4 3, 5 7, 2 6))"
+            );
+  }
+  
+  public void testHolesTouching() {
+    checkUnion(
+        "GEOMETRYCOLLECTION (POLYGON ((1 9, 9 9, 9 6, 7 7, 5 7, 2 6, 1 9)), POLYGON ((1 1, 1 9, 2 6, 4 3, 5 7, 7 3, 7 7, 9 6, 9 1, 1 1)))",
+        "POLYGON ((9 9, 9 6, 9 1, 1 1, 1 9, 9 9), (5 7, 7 3, 7 7, 5 7), (2 6, 4 3, 5 7, 2 6))"
+            );
   }
 
   public void testPolygonsFormingHole( ) {
@@ -45,6 +61,13 @@ public class CoverageUnionTest extends GeometryTestCase
         "POLYGON ((0 25, 0 50, 0 75, 0 100, 25 100, 50 100, 75 100, 100 100, 100 75, 100 50, 100 25, 100 0, 75 0, 50 0, 25 0, 0 0, 0 25))");
   }
 
+  public void testPolygonsNested( ) {
+    checkUnion("GEOMETRYCOLLECTION (POLYGON ((1 9, 9 9, 9 1, 1 1, 1 9), (3 7, 3 3, 7 3, 7 7, 3 7)), POLYGON ((3 7, 7 7, 7 3, 3 3, 3 7)))",
+        "POLYGON ((1 1, 1 9, 9 9, 9 1, 1 1))");
+  }
+
+  //------------------------------------------------------------
+  
   /**
    * Sequential lines are still noded
    */
@@ -69,6 +92,8 @@ public class CoverageUnionTest extends GeometryTestCase
         "MULTILINESTRING ((1 9, 3.1 8), (2 3, 4 3), (3.1 8, 5 7), (4 3, 5 3), (5 3, 5 7), (5 3, 7 4), (5 3, 8 1), (5 7, 7 8), (7 4, 9 5), (7 8, 9 9))");
   }
 
+  //=======================================================
+  
   private void checkUnion(String wkt, String wktExpected) {
     Geometry coverage = read(wkt);
     Geometry expected = read(wktExpected);
