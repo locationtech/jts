@@ -98,8 +98,6 @@ public class CoverageGapFinder {
     if (maxGapWidth <= 0.0)
       return false;
     
-    double tolerance = maxGapWidth / 100;
-    //TODO: improve MIC class to allow short-circuiting when radius is larger than a value
     return MaximumInscribedCircle.isRadiusWithin(holePoly, 0.5 * maxGapWidth);
   }
 
