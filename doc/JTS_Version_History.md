@@ -43,6 +43,7 @@ Distributions for older JTS versions can be obtained at the
 * Fix `BufferOp` element erosion for negative distance (#1119)
 * Fix writing XYM geometries as WKB (#1092)
 * Fix `DepthSegment` comparator (#1132)
+* Fix `BoundaryChainNoder` to split chains at self-touch nodes (also fixes `CoverageUnion`) (#1134)
 
 ### Performance Improvements
 
