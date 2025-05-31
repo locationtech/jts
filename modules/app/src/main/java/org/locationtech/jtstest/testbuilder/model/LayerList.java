@@ -103,12 +103,13 @@ public class LayerList
         comp[i] = SegmentExtracter.extract(geom, aoi);
       }
       else {
-        comp[i] = extractElements(geom, aoi);
+        comp[i] = GeometryElementLocater.extractElements(geom, aoi);
       }
     }
     return comp;
   }
   
+  /*
   private Geometry extractElements(Geometry parentGeom, Geometry aoi)
   {
     GeometryElementLocater locater = new GeometryElementLocater(parentGeom);
@@ -134,6 +135,7 @@ public class LayerList
     }
     return geoms;
   }
+  */
 
   public Layer add(Layer lyr, boolean atTop) {
     if (atTop) {

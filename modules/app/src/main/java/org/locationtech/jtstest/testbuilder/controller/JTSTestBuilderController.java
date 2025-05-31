@@ -29,6 +29,7 @@ import org.locationtech.jtstest.testbuilder.JTSTestBuilderFrame;
 import org.locationtech.jtstest.testbuilder.JTSTestBuilderToolBar;
 import org.locationtech.jtstest.testbuilder.SpatialFunctionPanel;
 import org.locationtech.jtstest.testbuilder.TestBuilderDialogs;
+import org.locationtech.jtstest.testbuilder.geom.GeometryElementLocater;
 import org.locationtech.jtstest.testbuilder.model.GeometryEditModel;
 import org.locationtech.jtstest.testbuilder.model.LayerList;
 import org.locationtech.jtstest.testbuilder.model.TestBuilderModel;
@@ -165,21 +166,17 @@ public class JTSTestBuilderController
   
   public void selectElements(Geometry aoi)
   {
-    LayerList lyrList = model().getLayers();
-    Geometry[] comp;
-    comp = lyrList.getElements(aoi);
+    Geometry geom = model().getGeometryEditModel().getGeometry();
+    Geometry comp = null;
+    if (geom != null) {
+      comp = GeometryElementLocater.extractElements(geom, aoi);
+    }
     if (comp == null) {
       model().clearSelection();
     } 
     else {
       model().getLayerSelect().setEnabled(true);
-      //TODO: allow selecting from A or B when enabled
-      if (comp[0] != null) {
-        model().setSelection(comp[0]);
-      }
-      else {
-        model().setSelection(comp[1]);
-      }
+      model().setSelection(comp);
     }
     geometryViewChanged();
     layerListRefresh();
@@ -212,7 +209,7 @@ public class JTSTestBuilderController
 
   public void inspectGeometryDialogForCurrentCase()
   {
-    int geomIndex = JTSTestBuilder.model().getGeometryEditModel().getGeomIndex();
+    int geomIndex = model().getGeometryEditModel().getGeomIndex();
     Geometry geometry = model().getCurrentCase().getGeometry(geomIndex);
     TestBuilderDialogs.inspectGeometry(frame(), geomIndex, geometry);
   }
