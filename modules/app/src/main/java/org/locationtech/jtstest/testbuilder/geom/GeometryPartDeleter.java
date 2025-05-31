@@ -36,7 +36,7 @@ import org.locationtech.jts.geom.util.GeometryEditor;
  * @author Martin Davis
  *
  */
-public class GeometryBoxDeleter 
+public class GeometryPartDeleter 
 {
   public static Geometry deleteComponentsAndVertices(Geometry geom, 
       Envelope env)

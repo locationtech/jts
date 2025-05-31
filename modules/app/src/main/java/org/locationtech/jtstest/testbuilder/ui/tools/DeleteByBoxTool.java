@@ -13,7 +13,7 @@ package org.locationtech.jtstest.testbuilder.ui.tools;
 
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jtstest.testbuilder.geom.GeometryBoxDeleter;
+import org.locationtech.jtstest.testbuilder.geom.GeometryPartDeleter;
 
 
 /**
@@ -41,13 +41,13 @@ public class DeleteByBoxTool extends BoxBandTool {
     Geometry edit = null;
     
     if (isRightButton()) {
-      edit = GeometryBoxDeleter.deleteVertices(g, env);
+      edit = GeometryPartDeleter.deleteVertices(g, env);
     }
     else if (isControlKeyDown()) {
-      edit = GeometryBoxDeleter.deleteComponents(g, env, true);
+      edit = GeometryPartDeleter.deleteComponents(g, env, true);
     }
     else {
-      edit = GeometryBoxDeleter.deleteComponents(g, env, false);
+      edit = GeometryPartDeleter.deleteComponents(g, env, false);
     }
     
     geomModel().setGeometry(edit);
