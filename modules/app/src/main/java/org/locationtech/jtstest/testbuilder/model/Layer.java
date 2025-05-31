@@ -23,12 +23,18 @@ public class Layer
   private String name = "";
   private GeometryContainer geomCont;
   private boolean isEnabled = true;
+  private boolean isModifiable = true;
   
   private LayerStyle layerStyle;
   private BasicStyle initStyle = null;
     
   public Layer(String name) {
     this.name = name;
+  }
+
+  public Layer(String name, boolean isModifiable) {
+    this.name = name;
+    this.isModifiable = isModifiable;
   }
 
   public Layer(String name, GeometryContainer source, BasicStyle style) {
@@ -48,6 +54,10 @@ public class Layer
   
   public void setName(String name) { 
     this.name = name; 
+  }
+  
+  public boolean isModifiable() {
+    return isModifiable;
   }
   
   public String getNameInfo() {

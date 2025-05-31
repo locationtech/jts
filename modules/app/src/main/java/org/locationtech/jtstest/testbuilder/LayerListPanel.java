@@ -210,15 +210,14 @@ public class LayerListPanel extends JPanel {
     }
     layerItem.setFocusLayer(true);
     Layer layer = layerItem.getLayer();
-    boolean isModifiable = ! JTSTestBuilder.model().isLayerFixed(layer);
     showTabLayerStyle(layer.getName());
-    lyrStylePanel.setLayer(layer, isModifiable);
+    lyrStylePanel.setLayer(layer, layer.isModifiable());
     focusLayer = layer;
     updateButtons(focusLayer);
   }
 
   private void updateButtons(Layer lyr) {
-    boolean isModifiable = ! JTSTestBuilder.model().isLayerFixed(lyr);
+    boolean isModifiable = lyr.isModifiable();
 
     // every layer is copyable
     btnCopy.setEnabled(true);
@@ -338,6 +337,7 @@ class LayerItemPanel extends JPanel {
   public void update() {
     LayerStyleSwatchControl.update(swatch, layer);
     lblName.setText( layer.getName());
+    lblName.setForeground(layer.hasGeometry() ? Color.BLACK : Color.GRAY);
   }
   
   private void uiInit() throws Exception {
@@ -392,6 +392,8 @@ class LayerItemPanel extends JPanel {
     namePanel.addMouseListener(new HighlightMouseListener(this));
     
     namePanel.add(lblName);
+    
+    update();
   }
 
   private void layerVisAction() {

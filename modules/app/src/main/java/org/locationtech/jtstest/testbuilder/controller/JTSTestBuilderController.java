@@ -44,6 +44,7 @@ import org.locationtech.jtstest.testbuilder.ui.tools.MoveTool;
 import org.locationtech.jtstest.testbuilder.ui.tools.PanTool;
 import org.locationtech.jtstest.testbuilder.ui.tools.PointTool;
 import org.locationtech.jtstest.testbuilder.ui.tools.RectangleTool;
+import org.locationtech.jtstest.testbuilder.ui.tools.SelectComponentTool;
 import org.locationtech.jtstest.testbuilder.ui.tools.StreamPolygonTool;
 import org.locationtech.jtstest.testbuilder.ui.tools.Tool;
 import org.locationtech.jtstest.testbuilder.ui.tools.ZoomTool;
@@ -147,6 +148,7 @@ public class JTSTestBuilderController
     if (comp == null) 
       return;
     model().addCase(comp);
+    model().setSelection(comp[0]);
     JTSTestBuilderFrame.instance().updateTestCases();
     toolbar().selectZoomButton();
     modeZoomIn();
@@ -162,6 +164,27 @@ public class JTSTestBuilderController
     SwingUtil.copyToClipboard(comp, false);
   }
   
+  public void selectComponents(Geometry aoi)
+  {
+    LayerList lyrList = model().getLayers();
+    Geometry[] comp;
+    comp = lyrList.getComponents(aoi);
+    if (comp == null) {
+      model().clearSelection();
+    } 
+    else {
+      //TODO: allow selecting from A or B when enabled
+      if (comp[0] != null) {
+        model().setSelection(comp[0]);
+      }
+      else {
+        model().setSelection(comp[1]);
+      }
+    }
+    geometryViewChanged();
+  }
+
+
   public void setFocusGeometry(int index) {
     model().getGeometryEditModel().setEditGeomIndex(index);
     toolbar().setFocusGeometry(index);    
@@ -272,6 +295,10 @@ public class JTSTestBuilderController
 
   public void modeExtractComponent() {
     setTool(ExtractComponentTool.getInstance());
+  }
+
+  public void modeSelectComponent() {
+    setTool(SelectComponentTool.getInstance());
   }
 
   public void modeDeleteVertex() {

@@ -159,6 +159,7 @@ public class TestBuilderModel
   	
     layerList.getLayer(LayerList.LYR_A).setSource(geomCont0);
     layerList.getLayer(LayerList.LYR_B).setSource(geomCont1);
+    //layerList.getLayer(LayerList.LYR_SELECT).setSource(new ListGeometryContainer());
     
     if (geomEditModel != null)
       layerList.getLayer(LayerList.LYR_RESULT).setSource(
@@ -175,6 +176,10 @@ public class TestBuilderModel
     Layer lyrR = layerList.getLayer(LayerList.LYR_RESULT);
     lyrR.setGeometryStyle(new BasicStyle(AppColors.GEOM_RESULT_LINE_CLR,
         AppColors.GEOM_RESULT_FILL_CLR));
+    
+    Layer lyrSel = layerList.getLayer(LayerList.LYR_SELECT);
+    lyrSel.setGeometryStyle(new BasicStyle(AppColors.GEOM_SELECT_LINE_CLR,
+        AppColors.GEOM_SELECT_FILL_CLR));
   }
 
   public void pasteGeometry(int geomIndex) throws Exception {
@@ -600,11 +605,22 @@ public class TestBuilderModel
       }
       layerListTop.moveDown(lyr);
     } 
-    
   }
 
-  public boolean isLayerFixed(Layer lyr) {
-    return layerList.contains(lyr);
+  public void setSelection(Geometry geometry) {
+    Layer lyr = layerList.getLayer(LayerList.LYR_SELECT);
+    lyr.setGeometry(geometry);
+  }
+
+  public void addSelection(Geometry geometry) {
+    Layer lyr = layerList.getLayer(LayerList.LYR_SELECT);
+    ListGeometryContainer src = (ListGeometryContainer) lyr.getSource();
+    src.add(geometry);
+  }
+
+  public void clearSelection() {
+    Layer lyr = layerList.getLayer(LayerList.LYR_SELECT);
+    lyr.getSource().clear();
   }
 
 

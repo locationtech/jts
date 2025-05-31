@@ -95,6 +95,10 @@ public class AppStrings {
 
   public static final String LYR_INDICATORS = "Indicators";
 
+  public static final String LYR_LABEL_SELECTION = "Selection";
+
+  public static final String TIP_SELECT_ELEMENTS = "Select Elements";
+
 
 
 

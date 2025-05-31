@@ -44,6 +44,7 @@ public class LayerList
   public static final int LYR_A = 0;
   public static final int LYR_B = 1;
   public static final int LYR_RESULT = 2;
+  public static final int LYR_SELECT = 3;
   
   private List<Layer> layers = new ArrayList<Layer>();
   
@@ -52,9 +53,10 @@ public class LayerList
   }
 
   void initFixed() {
-    layers.add(new Layer(AppStrings.GEOM_LABEL_A));
-    layers.add(new Layer(AppStrings.GEOM_LABEL_B));
-    layers.add(new Layer(AppStrings.GEOM_LABEL_RESULT));
+    layers.add(new Layer(AppStrings.GEOM_LABEL_A, false));
+    layers.add(new Layer(AppStrings.GEOM_LABEL_B, false));
+    layers.add(new Layer(AppStrings.GEOM_LABEL_RESULT, false));
+    layers.add(new Layer(AppStrings.LYR_LABEL_SELECTION, false));
   }
   
   public int size() { return layers.size(); }
@@ -85,6 +87,11 @@ public class LayerList
       }
     }
     return null;
+  }
+  
+  public Geometry[] getComponents(Geometry aoi)
+  {
+    return getComponents(aoi, false);
   }
   
   public Geometry[] getComponents(Geometry aoi, boolean isSegments)

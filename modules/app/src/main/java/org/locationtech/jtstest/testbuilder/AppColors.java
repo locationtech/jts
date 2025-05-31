@@ -41,6 +41,9 @@ public class AppColors {
   public static final Color BACKGROUND_ERROR = Color.PINK;
   public static final Color TAB_FOCUS = UIManager.getColor ("TabbedPane.highlight" );
   
+  public static final Color GEOM_SELECT_LINE_CLR = new Color(0, 204, 204, 200);
+  public static final Color GEOM_SELECT_FILL_CLR = new Color(150, 255, 255, 100);
+  
   
 
 }
