@@ -52,6 +52,7 @@ public class TestBuilderModel
   private LayerList layerList = LayerList.createFixed();
   private LayerList layerListTop = new LayerList();
   private LayerList layerListBase = new LayerList();
+  private Layer layerSelect = new Layer(AppStrings.LYR_LABEL_SELECTION, false);
   
   private WKTWriter writer = new WKTWriter();
   private Object currResult = null;
@@ -91,13 +92,30 @@ public class TestBuilderModel
 		return writer.writeFormatted(g);
 	}
 	
+  public Layer getLayer(int i) { return layerList.getLayer(i); }
   public LayerList getLayers() { return layerList; }
-  public LayerList getLayersAll() { return LayerList.create(layerListTop,layerList,layerListBase) ; }
-  
   public LayerList getLayersTop() { return layerListTop; }
   public LayerList getLayersBase() { return layerListBase; }
-  
-  
+  public LayerList getLayersAll() { 
+    LayerList layers = LayerList.create(
+        layerListTop,
+        layerList,
+        getLayersFloating(),
+        layerListBase
+        );
+    return layers;
+  }
+  public Layer getLayerSelect() {
+    return layerSelect;
+  }
+
+  public LayerList getLayersFloating() {
+    LayerList list = new LayerList();
+    if (layerSelect.hasGeometry())
+      list.addBottom(layerSelect);
+    return list;
+  }
+
   public List<Layer> getLayersLegend() {
     List<Layer> layers = new ArrayList<Layer>();
     addLegendLayers(layerList, layers);
@@ -177,8 +195,7 @@ public class TestBuilderModel
     lyrR.setGeometryStyle(new BasicStyle(AppColors.GEOM_RESULT_LINE_CLR,
         AppColors.GEOM_RESULT_FILL_CLR));
     
-    Layer lyrSel = layerList.getLayer(LayerList.LYR_SELECT);
-    lyrSel.setGeometryStyle(new BasicStyle(AppColors.GEOM_SELECT_LINE_CLR,
+    layerSelect.setGeometryStyle(new BasicStyle(AppColors.GEOM_SELECT_LINE_CLR,
         AppColors.GEOM_SELECT_FILL_CLR));
   }
 
@@ -608,21 +625,19 @@ public class TestBuilderModel
   }
 
   public void setSelection(Geometry geometry) {
-    Layer lyr = layerList.getLayer(LayerList.LYR_SELECT);
-    lyr.setGeometry(geometry);
+    layerSelect.setGeometry(geometry);
   }
 
+  /*
   public void addSelection(Geometry geometry) {
-    Layer lyr = layerList.getLayer(LayerList.LYR_SELECT);
-    ListGeometryContainer src = (ListGeometryContainer) lyr.getSource();
+    ListGeometryContainer src = (ListGeometryContainer) layerSelect.getSource();
     src.add(geometry);
   }
-
+*/
+  
   public void clearSelection() {
-    Layer lyr = layerList.getLayer(LayerList.LYR_SELECT);
-    lyr.getSource().clear();
+    layerSelect.getSource().clear();
   }
-
 
 }
 

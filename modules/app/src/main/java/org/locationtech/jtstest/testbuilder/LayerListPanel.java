@@ -186,6 +186,7 @@ public class LayerListPanel extends JPanel {
     addLayers(JTSTestBuilder.model().getLayersTop());
     addLayers(JTSTestBuilder.model().getLayers());
     addLayers(JTSTestBuilder.model().getLayersBase());
+    addLayers(JTSTestBuilder.model().getLayersFloating());
     setLayerFocus(layerItems.get(0));
   }
 
@@ -338,6 +339,7 @@ class LayerItemPanel extends JPanel {
     LayerStyleSwatchControl.update(swatch, layer);
     lblName.setText( layer.getName());
     lblName.setForeground(layer.hasGeometry() ? Color.BLACK : Color.GRAY);
+    checkbox.setSelected(layer.isEnabled());
   }
   
   private void uiInit() throws Exception {

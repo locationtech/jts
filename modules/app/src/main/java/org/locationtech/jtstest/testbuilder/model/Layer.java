@@ -132,6 +132,5 @@ public class Layer
     if (initStyle == null) return;
     setGeometryStyle(initStyle.copy());
   }
-  
 
 }

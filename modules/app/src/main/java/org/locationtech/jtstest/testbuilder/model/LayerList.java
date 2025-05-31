@@ -33,18 +33,17 @@ public class LayerList
     return list;
   }
   
-  public static LayerList create(LayerList l1, LayerList l2, LayerList l3) {
+  public static LayerList create(LayerList... lists) {
     LayerList list = new LayerList();
-    list.add(l1);
-    list.add(l2);
-    list.add(l3);
+    for (LayerList ll : lists) {
+      list.add(ll);
+    }
     return list;
   }
   
   public static final int LYR_A = 0;
   public static final int LYR_B = 1;
   public static final int LYR_RESULT = 2;
-  public static final int LYR_SELECT = 3;
   
   private List<Layer> layers = new ArrayList<Layer>();
   
@@ -56,7 +55,6 @@ public class LayerList
     layers.add(new Layer(AppStrings.GEOM_LABEL_A, false));
     layers.add(new Layer(AppStrings.GEOM_LABEL_B, false));
     layers.add(new Layer(AppStrings.GEOM_LABEL_RESULT, false));
-    layers.add(new Layer(AppStrings.LYR_LABEL_SELECTION, false));
   }
   
   public int size() { return layers.size(); }

@@ -623,6 +623,7 @@ public class GeometryEditPanel extends JPanel
       renderLayersTheme(tbModel.getLayersBase(), g2);
       renderLayersCore(getLayerList(), g2);
       renderLayersTheme(tbModel.getLayersTop(), g2);
+      renderLayersTheme(tbModel.getLayersFloating(), g2);
       
       if (isRevealingTopology && isRenderingStretchVertices) {
       	renderMagnifiedVertices(g2);

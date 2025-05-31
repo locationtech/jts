@@ -131,7 +131,7 @@ public class LayerStylePanel extends JPanel {
     lineWidthModel.setValue((double) geomStyle().getStrokeWidth());
     setPaletteType(comboPalette, layer.getLayerStyle().getFillType());
 
-    JTSTestBuilder.controller().updateLayerList();
+    JTSTestBuilder.controller().layerListUpdate();
   }
   
   private void uiInit() throws Exception {
@@ -210,7 +210,7 @@ public class LayerStylePanel extends JPanel {
       public void update() {
         String name = txtName.getText();
         layer.setName(name);
-        JTSTestBuilder.controller().updateLayerList();
+        JTSTestBuilder.controller().layerListUpdate();
       }
     });
 
@@ -294,7 +294,7 @@ public class LayerStylePanel extends JPanel {
             geomStyle().setLineColor(clr);
             layer.getLayerStyle().setColor(clr);
             JTSTestBuilder.controller().geometryViewChanged();
-            JTSTestBuilder.controller().updateLayerList();
+            JTSTestBuilder.controller().layerListUpdate();
           }
         }
        );
@@ -321,7 +321,7 @@ public class LayerStylePanel extends JPanel {
         float width = lineWidthModel.getNumber().floatValue();
         geomStyle().setStrokeWidth(width);
         JTSTestBuilder.controller().geometryViewChanged();
-        JTSTestBuilder.controller().updateLayerList();
+        JTSTestBuilder.controller().layerListUpdate();
       }
     });
 
@@ -332,7 +332,7 @@ public class LayerStylePanel extends JPanel {
           int alpha = (int)source.getValue();
           geomStyle().setLineAlpha(alpha);
           JTSTestBuilder.controller().geometryViewChanged();
-          JTSTestBuilder.controller().updateLayerList();
+          JTSTestBuilder.controller().layerListUpdate();
         }
       }
     });
@@ -431,7 +431,7 @@ public class LayerStylePanel extends JPanel {
       public void actionPerformed(ActionEvent e) {
         geomStyle().setFilled(cbFilled.isSelected());
         JTSTestBuilder.controller().geometryViewChanged();
-        JTSTestBuilder.controller().updateLayerList();
+        JTSTestBuilder.controller().layerListUpdate();
       }
     });
    
@@ -442,7 +442,7 @@ public class LayerStylePanel extends JPanel {
           int alpha = (int)source.getValue();
           geomStyle().setFillAlpha(alpha);
           JTSTestBuilder.controller().geometryViewChanged();
-          JTSTestBuilder.controller().updateLayerList();
+          JTSTestBuilder.controller().layerListUpdate();
         }
       }
     });
@@ -454,7 +454,7 @@ public class LayerStylePanel extends JPanel {
             geomStyle().setFillColor(clr);
             updateStyleControls();
             JTSTestBuilder.controller().geometryViewChanged();
-            JTSTestBuilder.controller().updateLayerList();
+            JTSTestBuilder.controller().layerListUpdate();
           }
         }
        );

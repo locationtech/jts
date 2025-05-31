@@ -148,7 +148,6 @@ public class JTSTestBuilderController
     if (comp == null) 
       return;
     model().addCase(comp);
-    model().setSelection(comp[0]);
     JTSTestBuilderFrame.instance().updateTestCases();
     toolbar().selectZoomButton();
     modeZoomIn();
@@ -173,6 +172,7 @@ public class JTSTestBuilderController
       model().clearSelection();
     } 
     else {
+      model().getLayerSelect().setEnabled(true);
       //TODO: allow selecting from A or B when enabled
       if (comp[0] != null) {
         model().setSelection(comp[0]);
@@ -182,6 +182,8 @@ public class JTSTestBuilderController
       }
     }
     geometryViewChanged();
+    layerListRefresh();
+    layerListUpdate();
   }
 
 
@@ -260,11 +262,16 @@ public class JTSTestBuilderController
       reportException(x);
     }
   }
+
+  //==================================
   
-  public void updateLayerList() {
+  public void layerListUpdate() {
     JTSTestBuilderFrame.instance().updateLayerList();
   }
   
+  public void layerListRefresh() {
+    JTSTestBuilderFrame.instance().refreshLayerList();
+  }
   
   //================================
       
