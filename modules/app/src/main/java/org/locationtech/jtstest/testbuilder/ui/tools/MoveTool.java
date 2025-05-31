@@ -52,9 +52,9 @@ extends IndicatorTool
   }
 
   private Geometry getComponent(Coordinate pt, double tolerance) {
-    List<GeometryLocation> geoms = geomModel().getComponents(pt, tolerance);
+    List<GeometryLocation> geoms = geomModel().getElements(pt, tolerance);
     if (geoms.size() <= 0) return null;
-    return geoms.get(0).getComponent();
+    return geoms.get(0).getElement();
   }
   
   public void mousePressed(MouseEvent e) {

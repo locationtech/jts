@@ -44,7 +44,7 @@ import org.locationtech.jtstest.testbuilder.ui.tools.MoveTool;
 import org.locationtech.jtstest.testbuilder.ui.tools.PanTool;
 import org.locationtech.jtstest.testbuilder.ui.tools.PointTool;
 import org.locationtech.jtstest.testbuilder.ui.tools.RectangleTool;
-import org.locationtech.jtstest.testbuilder.ui.tools.SelectComponentTool;
+import org.locationtech.jtstest.testbuilder.ui.tools.SelectElementTool;
 import org.locationtech.jtstest.testbuilder.ui.tools.StreamPolygonTool;
 import org.locationtech.jtstest.testbuilder.ui.tools.Tool;
 import org.locationtech.jtstest.testbuilder.ui.tools.ZoomTool;
@@ -128,23 +128,23 @@ public class JTSTestBuilderController
     JTSTestBuilderFrame.instance().showGeomsTab();
   }
   
-  public void extractComponentsToTestCase(Coordinate pt)
+  public void extractElementsToTestCase(Coordinate pt)
   {
     double toleranceInModel = editPanel().getToleranceInModel();
     LayerList lyrList = model().getLayers();
-    Geometry comp = lyrList.getComponent(pt, toleranceInModel);
+    Geometry comp = lyrList.getElement(pt, toleranceInModel);
     if (comp == null) 
       return;
     model().addCase(new Geometry[] { comp, null });
     JTSTestBuilderFrame.instance().updateTestCases();
   }
   
-  public void extractComponentsToTestCase(Geometry aoi, boolean isSegments)
+  public void extractElementsToTestCase(Geometry aoi, boolean isSegments)
   {
     //double toleranceInModel = JTSTestBuilderFrame.getGeometryEditPanel().getToleranceInModel();
     LayerList lyrList = model().getLayers();
     Geometry[] comp;
-    comp = lyrList.getComponents(aoi, isSegments);
+    comp = lyrList.getElements(aoi, isSegments);
     if (comp == null) 
       return;
     model().addCase(comp);
@@ -153,21 +153,21 @@ public class JTSTestBuilderController
     modeZoomIn();
   }
 
-  public void copyComponentToClipboard(Coordinate pt)
+  public void copyElementToClipboard(Coordinate pt)
   {
     double toleranceInModel = editPanel().getToleranceInModel();
     LayerList lyrList = model().getLayers();
-    Geometry comp = lyrList.getComponent(pt, toleranceInModel);
+    Geometry comp = lyrList.getElement(pt, toleranceInModel);
     if (comp == null) 
       return;
     SwingUtil.copyToClipboard(comp, false);
   }
   
-  public void selectComponents(Geometry aoi)
+  public void selectElements(Geometry aoi)
   {
     LayerList lyrList = model().getLayers();
     Geometry[] comp;
-    comp = lyrList.getComponents(aoi);
+    comp = lyrList.getElements(aoi);
     if (comp == null) {
       model().clearSelection();
     } 
@@ -183,7 +183,6 @@ public class JTSTestBuilderController
     }
     geometryViewChanged();
     layerListRefresh();
-    layerListUpdate();
   }
 
 
@@ -305,7 +304,7 @@ public class JTSTestBuilderController
   }
 
   public void modeSelectComponent() {
-    setTool(SelectComponentTool.getInstance());
+    setTool(SelectElementTool.getInstance());
   }
 
   public void modeDeleteVertex() {

@@ -90,7 +90,7 @@ public class GeometryLocation
     this.pt = pt;
   }
 
-  public Geometry getComponent() 
+  public Geometry getElement() 
   {
   	return component;
   }

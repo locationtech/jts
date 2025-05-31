@@ -23,25 +23,25 @@ import org.locationtech.jts.geom.GeometryCollection;
 
 
 /**
- * Locates the components of a Geometry
+ * Locates the elements of a Geometry
  * which lie in a target area.
  * 
  * @author Martin Davis
  * @see FacetLocater
  */
-public class ComponentLocater {
+public class GeometryElementLocater {
 
-  public static List<GeometryLocation> getComponents(Geometry parentGeom, Coordinate queryPt, double tolerance) {
-    ComponentLocater locater = new ComponentLocater(parentGeom);
-    return locater.getComponents(queryPt, tolerance);
+  public static List<GeometryLocation> getElements(Geometry parentGeom, Coordinate queryPt, double tolerance) {
+    GeometryElementLocater locater = new GeometryElementLocater(parentGeom);
+    return locater.getElements(queryPt, tolerance);
   }
 
   
   private Geometry parentGeom;
-  private List<GeometryLocation> components = new ArrayList();
+  private List<GeometryLocation> elements = new ArrayList();
   private Geometry aoi;
 
-  public ComponentLocater(Geometry parentGeom) {
+  public GeometryElementLocater(Geometry parentGeom) {
     this.parentGeom = parentGeom;
   }
   
@@ -49,23 +49,23 @@ public class ComponentLocater {
    * 
    * @param queryPt
    * @param tolerance
-   * @return a List of the component Geometrys
+   * @return a List of the element Geometrys
    */
-  public List<GeometryLocation> getComponents(Coordinate queryPt, double tolerance)
+  public List<GeometryLocation> getElements(Coordinate queryPt, double tolerance)
   {
     //Coordinate queryPt = queryPt;
     //this.tolerance = tolerance;
     aoi = createAOI(queryPt, tolerance);
-    return getComponents(aoi);
+    return getElements(aoi);
   }
 
-  public List<GeometryLocation> getComponents(Geometry aoi)
+  public List<GeometryLocation> getElements(Geometry aoi)
   {
     //Coordinate queryPt = queryPt;
     //this.tolerance = tolerance;
     this.aoi = aoi;
-    findComponents(new Stack(), parentGeom, components);
-    return components;
+    findElements(new Stack(), parentGeom, elements);
+    return elements;
   }
 
   private Geometry createAOI(Coordinate queryPt, double tolerance)
@@ -75,21 +75,21 @@ public class ComponentLocater {
     return parentGeom.getFactory().toGeometry(env);
   }
   
-  private void findComponents(Stack path, Geometry geom, List components)
+  private void findElements(Stack path, Geometry geom, List elements)
   {
     if (geom instanceof GeometryCollection) {
       for (int i = 0; i < geom.getNumGeometries(); i++ ) {
         Geometry subGeom = geom.getGeometryN(i);
   			path.push(i);
-        findComponents(path, subGeom, components);
+        findElements(path, subGeom, elements);
         path.pop();
       }
       return;
     }
     // TODO: make this robust - do not use Geometry.intersects()
-    // atomic component - check for match
+    // atomic element - check for match
     if (aoi.intersects(geom))
-      components.add(new GeometryLocation(parentGeom, geom, 
+      elements.add(new GeometryLocation(parentGeom, geom, 
       		FacetLocater.toIntArray(path)));
   }
 

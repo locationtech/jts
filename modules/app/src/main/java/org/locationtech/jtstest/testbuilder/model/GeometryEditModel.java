@@ -24,7 +24,7 @@ import org.locationtech.jts.io.WKTWriter;
 import org.locationtech.jts.util.Assert;
 import org.locationtech.jtstest.testbuilder.JTSTestBuilder;
 import org.locationtech.jtstest.testbuilder.geom.AdjacentVertexFinder;
-import org.locationtech.jtstest.testbuilder.geom.ComponentLocater;
+import org.locationtech.jtstest.testbuilder.geom.GeometryElementLocater;
 import org.locationtech.jtstest.testbuilder.geom.GeometryCombiner;
 import org.locationtech.jtstest.testbuilder.geom.GeometryLocation;
 import org.locationtech.jtstest.testbuilder.geom.GeometryPointLocater;
@@ -336,11 +336,11 @@ public class GeometryEditModel
     return GeometryPointLocater.locateVertex(getGeometry(), testPt, tolerance);
   }
   
-  public List<GeometryLocation> getComponents(Coordinate testPt, double tolerance)
+  public List<GeometryLocation> getElements(Coordinate testPt, double tolerance)
   {
     Geometry geom = getGeometry();
     if (geom == null) return null;
-    return ComponentLocater.getComponents(getGeometry(), testPt, tolerance);
+    return GeometryElementLocater.getElements(getGeometry(), testPt, tolerance);
   }
   
   public Coordinate locateVertexPt(Coordinate testPt, double tolerance)

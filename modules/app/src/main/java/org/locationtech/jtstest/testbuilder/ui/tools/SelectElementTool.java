@@ -20,30 +20,30 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jtstest.testbuilder.JTSTestBuilder;
 
 /**
- * Selects components of a geometry
+ * Selects elements of a geometry
  * @version 1.7
  */
-public class SelectComponentTool extends BoxBandTool {
-  private static SelectComponentTool singleton = null;
+public class SelectElementTool extends BoxBandTool {
+  private static SelectElementTool singleton = null;
 
-  public static SelectComponentTool getInstance() {
+  public static SelectElementTool getInstance() {
     if (singleton == null)
-      singleton = new SelectComponentTool();
+      singleton = new SelectElementTool();
     return singleton;
   }
 
-  private SelectComponentTool() {
+  private SelectElementTool() {
     super(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
   }
 
   protected void gestureFinished() 
   {  
-    JTSTestBuilder.controller().selectComponents(getBox());
+    JTSTestBuilder.controller().selectElements(getBox());
   }
   
   public void mouseClicked(MouseEvent e) {
     Geometry box = getBox(e);
-    JTSTestBuilder.controller().selectComponents(box);
+    JTSTestBuilder.controller().selectElements(box);
   }
 
   private Geometry getBox(MouseEvent e) {
