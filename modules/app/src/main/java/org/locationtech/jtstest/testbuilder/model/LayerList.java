@@ -87,11 +87,6 @@ public class LayerList
     return null;
   }
   
-  public Geometry[] getElements(Geometry aoi)
-  {
-    return getElements(aoi, false);
-  }
-  
   public Geometry[] getElements(Geometry aoi, boolean isSegments)
   {
     Geometry comp[] = new Geometry[2];
@@ -108,34 +103,6 @@ public class LayerList
     }
     return comp;
   }
-  
-  /*
-  private Geometry extractElements(Geometry parentGeom, Geometry aoi)
-  {
-    GeometryElementLocater locater = new GeometryElementLocater(parentGeom);
-    List locs = locater.getElements(aoi);
-    List geoms = extractLocationGeometry(locs);
-    if (geoms.size() <= 0)
-      return null;
-    if (geoms.size() == 1) 
-      return (Geometry) geoms.get(0);
-    // if parent was a GC, ensure returning a GC
-    if (parentGeom.getGeometryType().equals("GeometryCollection"))
-      return parentGeom.getFactory().createGeometryCollection(GeometryFactory.toGeometryArray(geoms));
-    // otherwise return MultiGeom
-    return parentGeom.getFactory().buildGeometry(geoms);
-  }
-  
-  private List extractLocationGeometry(List locs)
-  {
-    List geoms = new ArrayList();
-    for (Iterator i = locs.iterator(); i.hasNext();) {
-      GeometryLocation loc = (GeometryLocation) i.next();
-      geoms.add(loc.getElement());
-    }
-    return geoms;
-  }
-  */
 
   public Layer add(Layer lyr, boolean atTop) {
     if (atTop) {
