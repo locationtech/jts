@@ -168,7 +168,7 @@ public class ResultController
         Object result = getValue();
         if (createNew) {
           String desc = "Result of " + functionInvoc.getSignature();
-          JTSTestBuilder.controller().addTestCase(new Geometry[] { (Geometry) result, null }, desc);          
+          JTSTestBuilder.controller().caseAdd(new Geometry[] { (Geometry) result, null }, desc);          
         } else {
           updateResult(functionInvoc, result, timer);
         }

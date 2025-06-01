@@ -90,7 +90,7 @@ extends JPanel
     JButton btnClearResult = SwingUtil.createButton(AppIcons.CUT, "Clear Result",         
         new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        JTSTestBuilder.controller().clearResult();
+        JTSTestBuilder.controller().resultClear();
       }
     });
 
