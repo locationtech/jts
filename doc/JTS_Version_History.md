@@ -52,6 +52,13 @@ Distributions for older JTS versions can be obtained at the
 * Add `MathUtil.hypot` function and use it for length calculations (#1112)
 * Improve `LineStringSnapper` performance by using squared distance (#1111)
 
+## JTS TestBuilder
+
+### Functionality Improvements
+
+* Add Select Elements tool with virtual layer
+* Add Layer style presets
+
 # Version 1.20.0
 
 *Release Date: 09/18/2024*
