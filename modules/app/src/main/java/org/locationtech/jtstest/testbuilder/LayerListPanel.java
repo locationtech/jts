@@ -31,6 +31,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.border.Border;
 
 import org.locationtech.jts.geom.Geometry;
@@ -39,6 +40,7 @@ import org.locationtech.jtstest.testbuilder.model.LayerList;
 import org.locationtech.jtstest.testbuilder.model.StaticGeometryContainer;
 import org.locationtech.jtstest.testbuilder.ui.ColorUtil;
 import org.locationtech.jtstest.testbuilder.ui.SwingUtil;
+import org.locationtech.jtstest.testbuilder.ui.style.BasicStyle;
 
 /**
  * @version 1.7
@@ -85,13 +87,14 @@ public class LayerListPanel extends JPanel {
     listPanel.setBackground(AppColors.BACKGROUND);
     listPanel.setBorder(BorderFactory.createEmptyBorder(2,2,2,0));
 
-    JScrollPane jScrollPane1 = new JScrollPane();
-    jScrollPane1.setBackground(AppColors.BACKGROUND);
-    jScrollPane1.setOpaque(true);
-    jScrollPane1.getViewport().add(listPanel, null);
-    jScrollPane1.setPreferredSize(new Dimension(150, 250));
+    JScrollPane scrollPane1 = new JScrollPane();
+    scrollPane1.setBackground(AppColors.BACKGROUND);
+    scrollPane1.setOpaque(true);
+    scrollPane1.getViewport().add(listPanel, null);
+    scrollPane1.setPreferredSize(new Dimension(150, 250));
+    scrollPane1.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
-    panelLeft.add(jScrollPane1, BorderLayout.CENTER);
+    panelLeft.add(scrollPane1, BorderLayout.CENTER);
     panelLeft.add(buttonPanel, BorderLayout.EAST);
 
     btnCopy = SwingUtil.createButton(AppIcons.ADD, 
@@ -160,6 +163,7 @@ public class LayerListPanel extends JPanel {
 
     //tabFunctions.setBackground(jTabbedPane1.getBackground());
     JScrollPane scrollPane = new JScrollPane();
+    scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
     scrollPane.getViewport().add(lyrStylePanel, null);
     tabPane.add(scrollPane,  LBL_LAYER);
     tabPane.add(viewStylePanel,   LBL_VIEW);
@@ -485,5 +489,33 @@ class LayerStyleSwatchControl extends JPanel {
 */
     ctl.setBackground( fillClr );  
     ctl.setBorder(BorderFactory.createLineBorder(layer.getGeometryStyle().getLineColor(), lineWidth));
+  }
+}
+
+class StyleSwatchPanel extends JPanel {
+
+  private BasicStyle style;
+
+  public StyleSwatchPanel(BasicStyle style) {
+    this.style = style;
+    
+    Dimension dim = new Dimension(16,16);
+    setMinimumSize(dim);
+    setPreferredSize(dim);
+    setMaximumSize(dim);
+    setOpaque(true);
+    update(style);
+  }
+  
+  public void update(BasicStyle style) {
+    
+    Color fillClr = style.getFillColor() == null ? style.getFillColor() :Color.WHITE;
+    setBackground( fillClr );  
+
+    int lineWidth = 1;
+    if (style.getStrokeWidth() > 1)
+      lineWidth = 2;
+
+    setBorder(BorderFactory.createLineBorder(style.getLineColor(), lineWidth));
   }
 }

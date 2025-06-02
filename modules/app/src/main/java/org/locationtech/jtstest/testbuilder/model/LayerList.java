@@ -13,12 +13,10 @@
 package org.locationtech.jtstest.testbuilder.model;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jtstest.testbuilder.AppStrings;
 import org.locationtech.jtstest.testbuilder.geom.GeometryElementLocater;
 import org.locationtech.jtstest.testbuilder.geom.GeometryLocation;
