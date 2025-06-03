@@ -206,10 +206,15 @@ public class JTSTestBuilderController
     JTSTestBuilderFrame.instance().inspectResult();
   }
 
-  public void inspectGeometry(String tag, Geometry geometry) {
-    JTSTestBuilderFrame.instance().inspectGeometry(tag, geometry);
+  public void inspectGeometry(String name, Geometry geometry) {
+    JTSTestBuilderFrame.instance().inspectGeometry(name, geometry);
   }
 
+  public void inspectGeometryDialog(String name, Geometry geometry)
+  {
+    TestBuilderDialogs.inspectGeometry(frame(), name, geometry);
+  }
+  
   public void inspectGeometryDialogForCurrentCase()
   {
     int geomIndex = model().getGeometryEditModel().getGeomIndex();
@@ -376,6 +381,19 @@ public class JTSTestBuilderController
     model().cases().deleteCase();
     frame().updateTestCases();
     selectClear();
+  }
+  
+  //========================================
+
+  public void resultCopyToTest() 
+  {
+    Object currResult = model().getResult();
+    if (! (currResult instanceof Geometry))
+      return;
+    model().addCase(
+        new Geometry[] { (Geometry) currResult, null }, 
+        "Result of " + model().getOpName());
+    frame().updateTestCases(); 
   }
   
   //========================================

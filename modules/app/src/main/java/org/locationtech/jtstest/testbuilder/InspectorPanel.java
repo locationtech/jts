@@ -45,7 +45,9 @@ public class InspectorPanel extends TestBuilderPanel  {
   private int source;
 
   private Geometry geometry;
-
+  private boolean isEditable;
+  private String name;
+  
   private Comparator<GeometricObjectNode> sorterArea;
   private Comparator<GeometricObjectNode> sorterLen;
   private Comparator<GeometricObjectNode> sorterNumPoints;
@@ -159,9 +161,16 @@ public class InspectorPanel extends TestBuilderPanel  {
     btn2Panel.add(btnSortNone);
     this.add(btn2Panel, BorderLayout.EAST);
   }
+  
   private void btnExpand_actionPerformed() {
-    JTSTestBuilder.controller().inspectGeometryDialogForCurrentCase();
+    if (isEditable) {
+      JTSTestBuilder.controller().inspectGeometryDialogForCurrentCase();
+    }
+    else {
+      JTSTestBuilder.controller().inspectGeometryDialog(name, geometry);      
+    }
   }
+  
   private void actionZoom(ActionEvent e) {
     Geometry geom = geomTreePanel.getSelectedGeometry();
     JTSTestBuilderFrame.getGeometryEditPanel().zoom(geom);
@@ -197,14 +206,16 @@ public class InspectorPanel extends TestBuilderPanel  {
     updateGeometry(geomEdit);
   }
 
-  public void setGeometry(String tag, Geometry geom, int source, boolean isEditable)
+  public void setGeometry(String name, Geometry geom, int source, boolean isEditable)
   {
     this.source = source;
     this.geometry = geom;
+    this.name = name;
+    this.isEditable = isEditable;
 
     btnDelete.setEnabled(isEditable);
-    lblGeom.setText(tag);
-    lblGeom.setToolTipText(tag);
+    lblGeom.setText(name);
+    lblGeom.setToolTipText(name);
     lblGeom.setForeground(source == 0 ? AppColors.GEOM_A : AppColors.GEOM_B);
     
     sortNone();

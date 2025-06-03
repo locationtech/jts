@@ -181,6 +181,14 @@ public class TestBuilderDialogs {
     geomInspectorDlg.setVisible(true);
   }
   
+  public static void inspectGeometry(JTSTestBuilderFrame tbFrame, String tag, Geometry geometry) {
+    if (geomInspectorDlg == null) {
+      geomInspectorDlg = new GeometryInspectorDialog(tbFrame);
+    }
+    geomInspectorDlg.setGeometry(tag, geometry, 0, false);
+    geomInspectorDlg.setVisible(true);
+  }
+  
   private static TestCaseTextDialog testCaseTextDlg;
   
   public static void viewCaseText(JTSTestBuilderFrame tbFrame) {

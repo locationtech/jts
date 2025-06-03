@@ -59,4 +59,8 @@ public class GeometryInspectorDialog extends JDialog
     inspectPanel.setGeometry(tag, geometry, geomIndex, false);
   }
 
+  public void setGeometry(String tag, Geometry geom, int index, boolean isEditable) {
+    inspectPanel.setGeometry(tag, geom, index, false);
+  }
+
 }

@@ -84,7 +84,7 @@ extends JPanel
     JButton copyToTestButton = SwingUtil.createButton(AppIcons.COPY_TO_TEST, "Copy Result to new Test",
         new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        JTSTestBuilderFrame.instance().copyResultToTest();
+        JTSTestBuilder.controller().resultCopyToTest();
       }
     });
     JButton btnClearResult = SwingUtil.createButton(AppIcons.CUT, "Clear Result",         
@@ -223,7 +223,8 @@ extends JPanel
   }
   
   void copyToTestButton_actionPerformed(ActionEvent e) {
-    JTSTestBuilderFrame.instance().copyResultToTest();
+    JTSTestBuilder.controller().resultCopyToTest();
+    //JTSTestBuilderFrame.instance().copyResultToTest();
   }
   
 }

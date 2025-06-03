@@ -307,21 +307,11 @@ public class JTSTestBuilderFrame extends JFrame
   TestCaseEdit currentCase() {
     return tbModel.cases().getCurrentCase();
   }
+  
   public void updateTestCases()
   {
     testListPanel.populateList();    
     updateTestCaseView();
-  }
-  
-  public void copyResultToTest() 
-  {
-    Object currResult = tbModel.getResult();
-    if (! (currResult instanceof Geometry))
-      return;
-    tbModel.addCase(new Geometry[] { (Geometry) currResult, null }, 
-        "Result of " + tbModel.getOpName());
-    updateTestCaseView();
-    testListPanel.populateList();  
   }
   
   public void inspectResult() 
@@ -329,7 +319,7 @@ public class JTSTestBuilderFrame extends JFrame
     Object currResult = tbModel.getResult();
     if (! (currResult instanceof Geometry))
       return;
-    inspectGeometry((Geometry) currResult, 0, "R", false);
+    inspectGeometry("R", (Geometry) currResult);
   }
 
   public void inspectGeometry() {
