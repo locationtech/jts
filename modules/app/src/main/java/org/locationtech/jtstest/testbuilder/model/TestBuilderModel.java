@@ -636,7 +636,8 @@ public class TestBuilderModel
 */
   
   public void clearSelection() {
-    layerSelect.getSource().clear();
+    if (layerSelect.getSource() != null)
+      layerSelect.getSource().clear();
   }
 
 }
