@@ -221,7 +221,9 @@ public class UnaryUnionOp
 		
     /**
      * Performing two unions is somewhat inefficient,
-     * but is mitigated by unioning lines and points first
+     * but is mitigated by unioning lines and polygons first
+     * (since point union can be done efficiently 
+     * against a collection of lines and polygons)
      */
 		Geometry unionLA = unionWithNull(unionLines, unionPolygons);
 		Geometry union = null;
