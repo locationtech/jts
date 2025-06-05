@@ -51,9 +51,7 @@ class VertexRingCounter implements CoordinateSequenceFilter {
     if (CoordinateSequences.isRing(seq) && i == 0)
       return;
     Coordinate v = seq.getCoordinate(i);
-    int count = vertexRingCount.containsKey(v) ? vertexRingCount.get(v) : 0;
-    count++;
-    vertexRingCount.put(v, count);
+    vertexRingCount.compute(v, (key,  val) -> val == null ? 1 : val + 1);
   }
 
   @Override

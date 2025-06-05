@@ -320,8 +320,8 @@ class CoverageRingEdges {
   private Set<Coordinate> findBoundaryNodes(Set<LineSegment> boundarySegments) {
     Map<Coordinate, Integer> counter = new HashMap<>();
     for (LineSegment seg : boundarySegments) {
-      counter.put(seg.p0, counter.getOrDefault(seg.p0, 0) + 1);
-      counter.put(seg.p1, counter.getOrDefault(seg.p1, 0) + 1);
+      counter.compute(seg.p0, (key, value) -> value == null ? 1 : value + 1);
+      counter.compute(seg.p1, (key, value) -> value == null ? 1 : value + 1);
     }
     return counter.entrySet().stream()
         .filter(e->e.getValue() > 2)
