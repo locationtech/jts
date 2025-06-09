@@ -38,7 +38,8 @@ JTS artifacts are available on maven central.
 
 ### Using JTS Snapshots
 
-Our [build server](https://ci.eclipse.org/jts/) publishes to the LocationTech Maven repository. To include JTS in a project, add the following repositories to the pom:
+Our [build server](https://ci.eclipse.org/jts/) publishes [snapshots](https://repo.eclipse.org/content/repositories/jts-snapshots/org/locationtech/jts) to the LocationTech Maven repository. 
+To include JTS in a project, add the following repositories to the pom:
 
 ```xml
 <repositories>
