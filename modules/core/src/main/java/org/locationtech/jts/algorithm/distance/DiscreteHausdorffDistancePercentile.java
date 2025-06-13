@@ -19,7 +19,6 @@ import org.locationtech.jts.geom.CoordinateSequenceFilter;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.LineString;
 
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.PriorityQueue;
 
@@ -66,9 +65,9 @@ public class DiscreteHausdorffDistancePercentile
    * @param percentile the percentile level (in [0, 1])
    * @return the percentile Hausdorff distance between g0 and g1
    */
-  public static double distancePercentile(Geometry g0, Geometry g1, double percentile)
+  public static double distance(Geometry g0, Geometry g1, double percentile)
   {
-    return distancePercentile(g0, g1, percentile, 0.0);
+    return distance(g0, g1, percentile, 0.0);
   }
 
   /**
@@ -81,11 +80,11 @@ public class DiscreteHausdorffDistancePercentile
    * @param densifyOffset the distance between densification points
    * @return the percentile Hausdorff distance between g0 and g1
    */
-  public static double distancePercentile(Geometry g0, Geometry g1, double percentile, double densifyOffset)
+  public static double distance(Geometry g0, Geometry g1, double percentile, double densifyOffset)
   {
     DiscreteHausdorffDistancePercentile dist = new DiscreteHausdorffDistancePercentile(g0, g1, percentile);
     dist.setDensifyOffset(densifyOffset);
-    return dist.distancePercentile();
+    return dist.distance();
   }
 
   /**
@@ -97,9 +96,9 @@ public class DiscreteHausdorffDistancePercentile
    * @param percentile the percentile level (in [0, 1])
    * @return a 2-point line indicating the distance
    */
-  public static LineString distanceLinePercentile(Geometry g0, Geometry g1, double percentile)
+  public static LineString distanceLine(Geometry g0, Geometry g1, double percentile)
   {
-    return distanceLinePercentile(g0, g1, percentile, 0.0);
+    return distanceLine(g0, g1, percentile, 0.0);
   }
 
   /**
@@ -113,11 +112,11 @@ public class DiscreteHausdorffDistancePercentile
    * @param densifyOffset the distance between densification points
    * @return a 2-point line indicating the distance
    */
-  public static LineString distanceLinePercentile(Geometry g0, Geometry g1, double percentile, double densifyOffset)
+  public static LineString distanceLine(Geometry g0, Geometry g1, double percentile, double densifyOffset)
   {
     DiscreteHausdorffDistancePercentile dist = new DiscreteHausdorffDistancePercentile(g0, g1, percentile);
     dist.setDensifyOffset(densifyOffset);
-    dist.distancePercentile();
+    dist.distance();
     return g0.getFactory().createLineString(dist.getCoordinates());
   }
 
@@ -130,9 +129,9 @@ public class DiscreteHausdorffDistancePercentile
    * @param percentile the percentile level (in [0, 1])
    * @return the oriented Hausdorff distance from g0 to g1
    */
-  public static double orientedDistancePercentile(Geometry g0, Geometry g1, double percentile)
+  public static double orientedDistance(Geometry g0, Geometry g1, double percentile)
   {
-    return orientedDistancePercentile(g0, g1, percentile, 0.0);
+    return orientedDistance(g0, g1, percentile, 0.0);
   }
 
   /**
@@ -145,11 +144,11 @@ public class DiscreteHausdorffDistancePercentile
    * @param densifyOffset the distance between densification points
    * @return the oriented Hausdorff distance from g0 to g1
    */
-  public static double orientedDistancePercentile(Geometry g0, Geometry g1, double percentile, double densifyOffset)
+  public static double orientedDistance(Geometry g0, Geometry g1, double percentile, double densifyOffset)
   {
     DiscreteHausdorffDistancePercentile dist = new DiscreteHausdorffDistancePercentile(g0, g1, percentile);
     dist.setDensifyOffset(densifyOffset);
-    return dist.orientedDistancePercentile(densifyOffset);
+    return dist.orientedDistance(densifyOffset);
   }
 
   /**
@@ -161,9 +160,9 @@ public class DiscreteHausdorffDistancePercentile
    * @param percentile the percentile level (in [0, 1])
    * @return a 2-point line indicating the distance
    */
-  public static LineString orientedDistanceLinePercentile(Geometry g0, Geometry g1, double percentile)
+  public static LineString orientedDistanceLine(Geometry g0, Geometry g1, double percentile)
   {
-    return orientedDistanceLinePercentile(g0, g1, percentile, 0.0);
+    return orientedDistanceLine(g0, g1, percentile, 0.0);
   }
 
   /**
@@ -177,10 +176,10 @@ public class DiscreteHausdorffDistancePercentile
    * @param densifyOffset the distance between densification points
    * @return a 2-point line indicating the distance
    */
-  public static LineString orientedDistanceLinePercentile(Geometry g0, Geometry g1, double percentile, double densifyOffset)
+  public static LineString orientedDistanceLine(Geometry g0, Geometry g1, double percentile, double densifyOffset)
   {
     DiscreteHausdorffDistancePercentile dist = new DiscreteHausdorffDistancePercentile(g0, g1, percentile);
-    dist.orientedDistancePercentile(densifyOffset);
+    dist.orientedDistance(densifyOffset);
     return g0.getFactory().createLineString(dist.getCoordinates());
   }
 
@@ -243,10 +242,10 @@ public class DiscreteHausdorffDistancePercentile
    * @param densifyOffset the distance between densification points
    * @return the percentile Hausdorff distance
    */
-  public double distancePercentile(double densifyOffset)
+  public double distance(double densifyOffset)
   {
     setDensifyOffset(densifyOffset);
-    return distancePercentile();
+    return distance();
   }
 
   /**
@@ -254,9 +253,9 @@ public class DiscreteHausdorffDistancePercentile
    *
    * @return the percentile Hausdorff distance
    */
-  public double distancePercentile()
+  public double distance()
   {
-    computePercentile(g0, g1);
+    compute(g0, g1);
     return ptDistPerc.getDistance();
   }
 
@@ -265,22 +264,23 @@ public class DiscreteHausdorffDistancePercentile
    * @param densifyOffset the distance between densification points
    * @return the oriented Hausdorff distance
    */
-  public double orientedDistancePercentile(double densifyOffset)
+  public double orientedDistance(double densifyOffset)
   {
     setDensifyOffset(densifyOffset);
-    return orientedDistancePercentile();
+    return orientedDistance();
   }
 
   /**
    * Computes the oriented percentile Hausdorff distance from A to B.
    * @return the oriented Hausdorff distance
    */
-  public double orientedDistancePercentile()
+  public double orientedDistance()
   {
-    PriorityQueue<PointPairDistance> percentilePointDistancesPQ = new PriorityQueue<>(Comparator.comparingDouble(PointPairDistance::getDistance));
+    PriorityQueue<PointPairDistance> percentilePointDistancesPQ =
+            new PriorityQueue<>(Comparator.comparingDouble(PointPairDistance::getDistance));
     int maxSize = maxPriorityQueueSize(g0);
     nbOfPoints = 0;
-    computeOrientedDistancePercentile(g0, g1, percentilePointDistancesPQ, maxSize);
+    computeOrientedDistance(g0, g1, percentilePointDistancesPQ, maxSize);
     findPercentileDistance(percentilePointDistancesPQ);
     return ptDistPerc.getDistance();
   }
@@ -289,13 +289,14 @@ public class DiscreteHausdorffDistancePercentile
     return ptDistPerc.getCoordinates();
   }
 
-  private void computePercentile(Geometry g0, Geometry g1)
+  private void compute(Geometry g0, Geometry g1)
   {
-    PriorityQueue<PointPairDistance> percentilePointDistancesPQ = new PriorityQueue<>(Comparator.comparingDouble(PointPairDistance::getDistance));
+    PriorityQueue<PointPairDistance> percentilePointDistancesPQ =
+            new PriorityQueue<>(Comparator.comparingDouble(PointPairDistance::getDistance));
     int maxSize = maxPriorityQueueSize(g0, g1);
     nbOfPoints = 0;
-    computeOrientedDistancePercentile(g0, g1, percentilePointDistancesPQ, maxSize);
-    computeOrientedDistancePercentile(g1, g0, percentilePointDistancesPQ, maxSize);
+    computeOrientedDistance(g0, g1, percentilePointDistancesPQ, maxSize);
+    computeOrientedDistance(g1, g0, percentilePointDistancesPQ, maxSize);
     findPercentileDistance(percentilePointDistancesPQ);
   }
 
@@ -304,23 +305,26 @@ public class DiscreteHausdorffDistancePercentile
   }
 
   private int maxPriorityQueueSize(Geometry g0, Geometry g1) {
-    int numPointsGeometry = g0.getNumPoints() + g1.getNumPoints();
-    int numPointsLength = (int) Math.ceil(g0.getLength() / this.densifyOffset) + 1 + (int) Math.ceil(g1.getLength() / this.densifyOffset) + 1;
-    int maxNbOfPoints = Math.max(numPointsGeometry, numPointsLength);
+    int maxNbOfPoints = g0.getNumPoints() + g1.getNumPoints();
+    if (this.densifyOffset > 0.0){
+      int numPointsLength = (int) Math.ceil(g0.getLength() / this.densifyOffset) + 1
+              + (int) Math.ceil(g1.getLength() / this.densifyOffset) + 1;
+      maxNbOfPoints = Math.max(maxNbOfPoints, numPointsLength);
+    }
     return (int) Math.ceil(maxNbOfPoints * (1 - percentile)) + 1;
   }
 
-  private void computeOrientedDistancePercentile(Geometry discreteGeom, Geometry geom,
-                                                 PriorityQueue<PointPairDistance> percentilePointDistancesPQ,
-                                                 int maxSize)
+  private void computeOrientedDistance(Geometry discreteGeom, Geometry geom,
+                                       PriorityQueue<PointPairDistance> percentilePointDistancesPQ,
+                                       int maxSize)
   {
-    PercentilePointDistanceFilter distFilter = new PercentilePointDistanceFilter(geom, maxSize);
+    PointDistanceFilter distFilter = new PointDistanceFilter(geom, maxSize);
     distFilter.setPtDistsPQ(percentilePointDistancesPQ);
     discreteGeom.apply(distFilter);
     nbOfPoints += distFilter.getNbOfPoints();
 
     if (densifyOffset > 0) {
-      PercentileDensifiedByOffsetFilter fracFilter = new PercentileDensifiedByOffsetFilter(geom, densifyOffset, maxSize);
+      DensificationPointsFilter fracFilter = new DensificationPointsFilter(geom, densifyOffset, maxSize);
       fracFilter.setPtDistsPQ(percentilePointDistancesPQ);
       discreteGeom.apply(fracFilter);
       nbOfPoints += fracFilter.getNbOfPoints();
@@ -337,16 +341,17 @@ public class DiscreteHausdorffDistancePercentile
     ptDistPerc = percentilePointDistancesPQ.poll();
   }
 
-  private static class PercentilePointDistanceFilter
+  private static class PointDistanceFilter
           implements CoordinateFilter
   {
     private PointPairDistance minPtDist = new PointPairDistance();
-    private PriorityQueue<PointPairDistance> ptDistsPQ = new PriorityQueue<>(Comparator.comparingDouble(PointPairDistance::getDistance));
+    private PriorityQueue<PointPairDistance> ptDistsPQ =
+            new PriorityQueue<>(Comparator.comparingDouble(PointPairDistance::getDistance));
     private int maxSize;
     private int nbOfPoints = 0;
     private Geometry geom;
 
-    public PercentilePointDistanceFilter(Geometry geom, int maxSize)
+    public PointDistanceFilter(Geometry geom, int maxSize)
     {
       this.geom = geom;
       this.maxSize = maxSize;
@@ -374,17 +379,18 @@ public class DiscreteHausdorffDistancePercentile
     }
   }
 
-  private static class PercentileDensifiedByOffsetFilter
+  private static class DensificationPointsFilter
           implements CoordinateSequenceFilter
   {
     private PointPairDistance minPtDist = new PointPairDistance();
-    private PriorityQueue<PointPairDistance> ptDistsPQ = new PriorityQueue<>(Comparator.comparingDouble(PointPairDistance::getDistance));
+    private PriorityQueue<PointPairDistance> ptDistsPQ =
+            new PriorityQueue<>(Comparator.comparingDouble(PointPairDistance::getDistance));
     private int maxSize;
     private int nbOfPoints = 0;
     private Geometry geom;
     private double offset;
 
-    public PercentileDensifiedByOffsetFilter(Geometry geom, double offset, int maxSize) {
+    public DensificationPointsFilter(Geometry geom, double offset, int maxSize) {
       this.geom = geom;
       this.offset = offset;
       this.maxSize = maxSize;
