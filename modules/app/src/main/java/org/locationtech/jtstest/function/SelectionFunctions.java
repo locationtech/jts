@@ -109,7 +109,9 @@ public class SelectionFunctions
     });
   }
   
-  public static Geometry relatePattern(Geometry a, final Geometry mask, String pattern)
+  public static Geometry relatePattern(Geometry a, final Geometry mask, 
+      @Metadata(title="DE-9IM Pattern")
+      String pattern)
   {
     return select(a, new GeometryPredicate() {
       public boolean isTrue(Geometry g) {

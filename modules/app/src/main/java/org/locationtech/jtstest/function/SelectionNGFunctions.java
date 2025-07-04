@@ -17,6 +17,7 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.operation.relateng.IntersectionMatrixPattern;
 import org.locationtech.jts.operation.relateng.RelateNG;
 import org.locationtech.jts.operation.relateng.RelatePredicate;
+import org.locationtech.jtstest.geomfunction.Metadata;
 
 public class SelectionNGFunctions 
 {
@@ -127,7 +128,9 @@ public class SelectionNGFunctions
     });
   }
   
-  public static Geometry relatePattern(Geometry a, final Geometry mask, String pattern)
+  public static Geometry relatePattern(Geometry a, final Geometry mask, 
+      @Metadata(title="DE-9IM Pattern")
+      String pattern)
   {
     return SelectionFunctions.select(a, new GeometryPredicate() {
       public boolean isTrue(Geometry g) {
@@ -136,7 +139,9 @@ public class SelectionNGFunctions
     });
   }
   
-  public static Geometry relatePatternPrep(Geometry a, final Geometry mask, String pattern)
+  public static Geometry relatePatternPrep(Geometry a, final Geometry mask, 
+      @Metadata(title="DE-9IM Pattern")
+      String pattern)
   {
     RelateNG relateNG = RelateNG.prepare(mask);
     return SelectionFunctions.select(a, new GeometryPredicate() {
