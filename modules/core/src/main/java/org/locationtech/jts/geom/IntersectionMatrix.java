@@ -55,6 +55,29 @@ package org.locationtech.jts.geom;
  *@version 1.7
  */
 public class IntersectionMatrix implements Cloneable {
+  
+  /**
+   * Transposes a string representation of an Intersection matrix.
+   * 
+   * @param im an intersection matrix string value or pattern.
+   * @return the transpose of the matrix
+   */
+  public static String transpose(String im) {
+    char[] trans = new char[9];
+    trans[0] = im.charAt(0);
+    trans[1] = im.charAt(3);
+    trans[2] = im.charAt(6);
+    
+    trans[3] = im.charAt(1);
+    trans[4] = im.charAt(4);
+    trans[5] = im.charAt(7);
+    
+    trans[6] = im.charAt(2);
+    trans[7] = im.charAt(5);
+    trans[8] = im.charAt(8);
+    return new String(trans);
+  }
+  
   /**
    *  Internal representation of this <code>IntersectionMatrix</code>.
    */

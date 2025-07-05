@@ -52,6 +52,16 @@ public class IntersectionMatrixTest extends TestCase {
     assertEquals("012*TF012", x.toString());
   }
 
+  public void testTransposeString() {
+    checkTranspose("T*****FF*", "T*F**F***");
+    checkTranspose("012*TF012", "0*01T12F2");
+  }
+  
+  private void checkTranspose(String im, String imTrans) {
+    assertEquals(IntersectionMatrix.transpose(im), imTrans);
+    assertEquals(IntersectionMatrix.transpose(imTrans), im);
+  }
+
   public void testIsDisjoint() {
     assertTrue((new IntersectionMatrix("FF*FF****")).isDisjoint());
     assertTrue((new IntersectionMatrix("FF1FF2T*0")).isDisjoint());
