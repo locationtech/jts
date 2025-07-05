@@ -11,6 +11,8 @@
  */
 package org.locationtech.jts.operation.relateng;
 
+import org.locationtech.jts.geom.IntersectionMatrix;
+
 import junit.textui.TestRunner;
 
 public class RelateNGTest extends RelateNGTestCase {
@@ -668,5 +670,17 @@ public class RelateNGTest extends RelateNGTestCase {
     checkPrepared(a, b);
   }
 
-  
+  public void testPreparedPA() {
+    String a = "POINT (5 5)";
+    String b = "POLYGON ((1 9, 9 9, 9 1, 1 1, 1 9))";
+    checkPrepared(a, b);
+    checkPrepared(b, a);
+    
+    //-- see https://github.com/libgeos/geos/issues/1275 (not a bug, but a good test to have)
+    String pattern = "T*****FF*";
+    String patternTrans = IntersectionMatrix.transpose(pattern);  // T*F**F***
+    checkPreparedMatches(a, b, pattern);
+    checkPreparedMatches(b, a, patternTrans); //
+  }
+
 }

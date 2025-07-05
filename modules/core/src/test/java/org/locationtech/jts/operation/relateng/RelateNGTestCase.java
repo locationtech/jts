@@ -113,6 +113,16 @@ public abstract class RelateNGTestCase extends GeometryTestCase {
                             RelateNG.relate(a, b).toString());
   }
   
+  void checkPreparedMatches(String wkta, String wktb, String pattern) {
+    Geometry a = read(wkta);
+    Geometry b = read(wktb);
+    RelateNG prep_a = RelateNG.prepare(a);
+
+    assertEquals("matches " + pattern,  prep_a.evaluate(b, RelatePredicate.matches(pattern) ),
+              RelateNG.relate(a, b, RelatePredicate.matches(pattern) )
+        );
+  }
+
   TopologyPredicate trace(TopologyPredicate pred) {
     if (! isTrace)
       return pred;
