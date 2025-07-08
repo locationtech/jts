@@ -1,176 +1,168 @@
-:::: header
-![](jts_logo.png)
+# JTS Topology Suite - Features
 
-::: header-text
-JTS Topology Suite - Features
-:::
-::::
-
-::: content
 A description of the features and functions provided by JTS, linked to
-the relevant [Javadoc](javadoc/index.html){.javadoc} for the current
+the relevant [Javadoc](https://locationtech.github.io/jts/javadoc/index.html){.javadoc} for the current
 version.
 
-### Geometry Model
+## Geometry Model
 
 - Support for all
-  [Geometry](javadoc/org/locationtech/jts/geom/Geometry.html){.javadoc}
+  [Geometry](https://locationtech.github.io/jts/javadoc/org/locationtech/jts/geom/Geometry.html){.javadoc}
   types defined in the OGC *Simple Features for SQL* specification,
   including:
-  - [Point](javadoc/org/locationtech/jts/geom/Point.html){.javadoc} and
-    [MultiPoint](javadoc/org/locationtech/jts/geom/MultiPoint.html){.javadoc}
-  - [LineString](javadoc/org/locationtech/jts/geom/LineString.html){.javadoc}
+  - [Point](https://locationtech.github.io/jts/javadoc/org/locationtech/jts/geom/Point.html){.javadoc} and
+    [MultiPoint](https://locationtech.github.io/jts/javadoc/org/locationtech/jts/geom/MultiPoint.html){.javadoc}
+  - [LineString](https://locationtech.github.io/jts/javadoc/org/locationtech/jts/geom/LineString.html){.javadoc}
     and
-    [MultiLineString](javadoc/org/locationtech/jts/geom/MultiLineString.html){.javadoc}
-  - [Polygon](javadoc/org/locationtech/jts/geom/Polygon.html){.javadoc}
+    [MultiLineString](https://locationtech.github.io/jts/javadoc/org/locationtech/jts/geom/MultiLineString.html){.javadoc}
+  - [Polygon](https://locationtech.github.io/jts/javadoc/org/locationtech/jts/geom/Polygon.html){.javadoc}
     and
-    [MultiPolygon](javadoc/org/locationtech/jts/geom/MultiPolygon.html){.javadoc}
+    [MultiPolygon](https://locationtech.github.io/jts/javadoc/org/locationtech/jts/geom/MultiPolygon.html){.javadoc}
   - heterogeneous
-    [GeometryCollection](javadoc/org/locationtech/jts/geom/GeometryCollection.html){.javadoc}
+    [GeometryCollection](https://locationtech.github.io/jts/javadoc/org/locationtech/jts/geom/GeometryCollection.html){.javadoc}
 
-### Geometry Operations
+## Geometry Operations
 
 - Topological
-  [validity](javadoc/org/locationtech/jts/geom/Geometry.html#isValid())
+  [validity](https://locationtech.github.io/jts/javadoc/org/locationtech/jts/geom/Geometry.html#isValid())
   checking
-- [Area](javadoc/org/locationtech/jts/geom/Geometry.html#getArea()) and
-  [Length/Perimeter](javadoc/org/locationtech/jts/geom/Geometry.html#getLength())
+- [Area](https://locationtech.github.io/jts/javadoc/org/locationtech/jts/geom/Geometry.html#getArea()) and
+  [Length/Perimeter](https://locationtech.github.io/jts/javadoc/org/locationtech/jts/geom/Geometry.html#getLength())
 - [Distance between
-  geometries](javadoc/org/locationtech/jts/geom/Geometry.html#distance(org.locationtech.jts.geom.Geometry))
+  geometries](https://locationtech.github.io/jts/javadoc/org/locationtech/jts/geom/Geometry.html#distance(org.locationtech.jts.geom.Geometry))
   and
-  [isWithinDistance](javadoc/org/locationtech/jts/geom/Geometry.html#isWithinDistance(org.locationtech.jts.geom.Geometry,%20double)){.javadoc}
+  [isWithinDistance](https://locationtech.github.io/jts/javadoc/org/locationtech/jts/geom/Geometry.html#isWithinDistance(org.locationtech.jts.geom.Geometry,%20double)){.javadoc}
   predicate
 - Spatial Predicates based on the Egenhofer DE-9IM model, including the
   named predicates:
-  - [contains](javadoc/org/locationtech/jts/geom/Geometry.html#contains(org.locationtech.jts.geom.Geometry)){.javadoc},
-    [within](javadoc/org/locationtech/jts/geom/Geometry.html#within(org.locationtech.jts.geom.Geometry)){.javadoc}
-  - [covers](javadoc/org/locationtech/jts/geom/Geometry.html#covers(org.locationtech.jts.geom.Geometry)){.javadoc},
-    [coveredBy](javadoc/org/locationtech/jts/geom/Geometry.html#coveredBy(org.locationtech.jts.geom.Geometry)){.javadoc}
-  - [intersects](javadoc/org/locationtech/jts/geom/Geometry.html#intersects(org.locationtech.jts.geom.Geometry)){.javadoc},
-    [disjoint](javadoc/org/locationtech/jts/geom/Geometry.html#disjoint(org.locationtech.jts.geom.Geometry)){.javadoc}
-  - [crosses](javadoc/org/locationtech/jts/geom/Geometry.html#crosses(org.locationtech.jts.geom.Geometry)){.javadoc}
-  - [overlaps](javadoc/org/locationtech/jts/geom/Geometry.html#overlaps(org.locationtech.jts.geom.Geometry)){.javadoc}
-  - [touches](javadoc/org/locationtech/jts/geom/Geometry.html#touches(org.locationtech.jts.geom.Geometry)){.javadoc}
-  - [equals](javadoc/org/locationtech/jts/geom/Geometry.html#equals(org.locationtech.jts.geom.Geometry)){.javadoc}
+  - [contains](https://locationtech.github.io/jts/javadoc/org/locationtech/jts/geom/Geometry.html#contains(org.locationtech.jts.geom.Geometry)){.javadoc},
+    [within](https://locationtech.github.io/jts/javadoc/org/locationtech/jts/geom/Geometry.html#within(org.locationtech.jts.geom.Geometry)){.javadoc}
+  - [covers](https://locationtech.github.io/jts/javadoc/org/locationtech/jts/geom/Geometry.html#covers(org.locationtech.jts.geom.Geometry)){.javadoc},
+    [coveredBy](https://locationtech.github.io/jts/javadoc/org/locationtech/jts/geom/Geometry.html#coveredBy(org.locationtech.jts.geom.Geometry)){.javadoc}
+  - [intersects](https://locationtech.github.io/jts/javadoc/org/locationtech/jts/geom/Geometry.html#intersects(org.locationtech.jts.geom.Geometry)){.javadoc},
+    [disjoint](https://locationtech.github.io/jts/javadoc/org/locationtech/jts/geom/Geometry.html#disjoint(org.locationtech.jts.geom.Geometry)){.javadoc}
+  - [crosses](https://locationtech.github.io/jts/javadoc/org/locationtech/jts/geom/Geometry.html#crosses(org.locationtech.jts.geom.Geometry)){.javadoc}
+  - [overlaps](https://locationtech.github.io/jts/javadoc/org/locationtech/jts/geom/Geometry.html#overlaps(org.locationtech.jts.geom.Geometry)){.javadoc}
+  - [touches](https://locationtech.github.io/jts/javadoc/org/locationtech/jts/geom/Geometry.html#touches(org.locationtech.jts.geom.Geometry)){.javadoc}
+  - [equals](https://locationtech.github.io/jts/javadoc/org/locationtech/jts/geom/Geometry.html#equals(org.locationtech.jts.geom.Geometry)){.javadoc}
 
   and the general
-  [relate](javadoc/org/locationtech/jts/geom/Geometry.html#relate(org.locationtech.jts.geom.Geometry)){.javadoc}
+  [relate](https://locationtech.github.io/jts/javadoc/org/locationtech/jts/geom/Geometry.html#relate(org.locationtech.jts.geom.Geometry)){.javadoc}
   operation returning the DE-9IM [intersection
-  matrix](javadoc/org/locationtech/jts/geom/IntersectionMatrix.html).
+  matrix](https://locationtech.github.io/jts/javadoc/org/locationtech/jts/geom/IntersectionMatrix.html).
 - Overlay functions including
-  - [intersection](javadoc/org/locationtech/jts/geom/Geometry.html#intersection(org.locationtech.jts.geom.Geometry)){.javadoc},
-  - [difference](javadoc/org/locationtech/jts/geom/Geometry.html#difference(org.locationtech.jts.geom.Geometry)){.javadoc},
-  - [union](javadoc/org/locationtech/jts/geom/Geometry.html#union(org.locationtech.jts.geom.Geometry)){.javadoc},
+  - [intersection](https://locationtech.github.io/jts/javadoc/org/locationtech/jts/geom/Geometry.html#intersection(org.locationtech.jts.geom.Geometry)){.javadoc},
+  - [difference](https://locationtech.github.io/jts/javadoc/org/locationtech/jts/geom/Geometry.html#difference(org.locationtech.jts.geom.Geometry)){.javadoc},
+  - [union](https://locationtech.github.io/jts/javadoc/org/locationtech/jts/geom/Geometry.html#union(org.locationtech.jts.geom.Geometry)){.javadoc},
   - [symmetric
-    difference](javadoc/org/locationtech/jts/geom/Geometry.html#symDifference(org.locationtech.jts.geom.Geometry)){.javadoc}
+    difference](https://locationtech.github.io/jts/javadoc/org/locationtech/jts/geom/Geometry.html#symDifference(org.locationtech.jts.geom.Geometry)){.javadoc}
   - [unary
-    union](javadoc/org/locationtech/jts/geom/Geometry.html#union()){.javadoc},
+    union](https://locationtech.github.io/jts/javadoc/org/locationtech/jts/geom/Geometry.html#union()){.javadoc},
     providing fast union of geometry collections
-- [Buffer](javadoc/org/locationtech/jts/geom/Geometry.html#buffer(double))
+- [Buffer](https://locationtech.github.io/jts/javadoc/org/locationtech/jts/geom/Geometry.html#buffer(double))
   computation (also known as Minkowski sum with a circle)
   - selection of different [end-cap and
-    join](javadoc/org/locationtech/jts/geom/Geometry.html#buffer(double,%20int,%20int))
+    join](https://locationtech.github.io/jts/javadoc/org/locationtech/jts/geom/Geometry.html#buffer(double,%20int,%20int))
     styles.
 - [Convex
-  hull](javadoc/org/locationtech/jts/geom/Geometry.html#convexHull())
+  hull](https://locationtech.github.io/jts/javadoc/org/locationtech/jts/geom/Geometry.html#convexHull())
 - [Geometric
-  simplification](javadoc/org/locationtech/jts/simplify/package-summary.html)
+  simplification](https://locationtech.github.io/jts/javadoc/org/locationtech/jts/simplify/package-summary.html)
   including the
-  [Douglas-Peucker](javadoc/org/locationtech/jts/simplify/DouglasPeuckerSimplifier.html)
+  [Douglas-Peucker](https://locationtech.github.io/jts/javadoc/org/locationtech/jts/simplify/DouglasPeuckerSimplifier.html)
   algorithm and [topology-preserving
-  simplification](javadoc/org/locationtech/jts/simplify/TopologyPreservingSimplifier.html)
+  simplification](https://locationtech.github.io/jts/javadoc/org/locationtech/jts/simplify/TopologyPreservingSimplifier.html)
 - Geometric
-  [densification](javadoc/org/locationtech/jts/densify/Densifier.html)
+  [densification](https://locationtech.github.io/jts/javadoc/org/locationtech/jts/densify/Densifier.html)
 - [Linear
-  referencing](javadoc/org/locationtech/jts/linearref/package-summary.html)
+  referencing](https://locationtech.github.io/jts/javadoc/org/locationtech/jts/linearref/package-summary.html)
 
-### Precision Handling
+## Precision Handling
 
 - Explicit coordinate [Precision
-  Model](javadoc/org/locationtech/jts/geom/PrecisionModel.html)
+  Model](https://locationtech.github.io/jts/javadoc/org/locationtech/jts/geom/PrecisionModel.html)
 - Geometry precision reduction
 
-### Geometric Constructions
+## Geometric Constructions
 
 - [Delaunay
-  triangulation](javadoc/org/locationtech/jts/triangulate/DelaunayTriangulationBuilder.html)
+  triangulation](https://locationtech.github.io/jts/javadoc/org/locationtech/jts/triangulate/DelaunayTriangulationBuilder.html)
   and [Conforming Delaunay
-  triangulation](javadoc/org/locationtech/jts/triangulate/ConformingDelaunayTriangulationBuilder.html)
+  triangulation](https://locationtech.github.io/jts/javadoc/org/locationtech/jts/triangulate/ConformingDelaunayTriangulationBuilder.html)
 - [Voronoi diagram
-  generation](javadoc/org/locationtech/jts/triangulate/VoronoiDiagramBuilder.html)
+  generation](https://locationtech.github.io/jts/javadoc/org/locationtech/jts/triangulate/VoronoiDiagramBuilder.html)
 - [Minimum
-  Diameter](javadoc/org/locationtech/jts/algorithm/MinimumDiameter.html)
+  Diameter](https://locationtech.github.io/jts/javadoc/org/locationtech/jts/algorithm/MinimumDiameter.html)
   of a geometry
 - [Minimum Enclosing
-  Rectangle](javadoc/org/locationtech/jts/algorithm/MinimumDiameter.html#getMinimumRectangle())
+  Rectangle](https://locationtech.github.io/jts/javadoc/org/locationtech/jts/algorithm/MinimumDiameter.html#getMinimumRectangle())
 - [Minimum Bounding
-  Circle](javadoc/org/locationtech/jts/algorithm/MinimumBoundingCircle.html)
+  Circle](https://locationtech.github.io/jts/javadoc/org/locationtech/jts/algorithm/MinimumBoundingCircle.html)
 
-### Metric Functions
+## Metric Functions
 
 - [Distance between
-  geometries](javadoc/org/locationtech/jts/operation/distance/DistanceOp.html),
+  geometries](https://locationtech.github.io/jts/javadoc/org/locationtech/jts/operation/distance/DistanceOp.html),
   with supporting points
 - [Discrete
-  Hausdorff](javadoc/org/locationtech/jts/algorithm/distance/DiscreteHausdorffDistance.html)
+  Hausdorff](https://locationtech.github.io/jts/javadoc/org/locationtech/jts/algorithm/distance/DiscreteHausdorffDistance.html)
   distance
-- [Area](javadoc/org/locationtech/jts/algorithm/match/AreaSimilarityMeasure.html)
+- [Area](https://locationtech.github.io/jts/javadoc/org/locationtech/jts/algorithm/match/AreaSimilarityMeasure.html)
   and
-  [Hausdorff](javadoc/org/locationtech/jts/algorithm/match/HausdorffSimilarityMeasure.html)
+  [Hausdorff](https://locationtech.github.io/jts/javadoc/org/locationtech/jts/algorithm/match/HausdorffSimilarityMeasure.html)
   similarity measures
 
-### Spatial algorithms
+## Spatial algorithms
 
 - [Robust line segment
-  intersection](javadoc/org/locationtech/jts/algorithm/RobustLineIntersector.html)
+  intersection](https://locationtech.github.io/jts/javadoc/org/locationtech/jts/algorithm/RobustLineIntersector.html)
 - Efficient line arrangement [intersection and
-  noding](javadoc/org/locationtech/jts/noding/package-summary.html)
-- [Snap-rounding](javadoc/org/locationtech/jts/noding/snapround/package-summary.html)
+  noding](https://locationtech.github.io/jts/javadoc/org/locationtech/jts/noding/package-summary.html)
+- [Snap-rounding](https://locationtech.github.io/jts/javadoc/org/locationtech/jts/noding/snapround/package-summary.html)
   for noding line arrangements
 - Efficient
-  [Point-in-Polygon](javadoc/org/locationtech/jts/algorithm/locate/package-summary.html)
+  [Point-in-Polygon](https://locationtech.github.io/jts/javadoc/org/locationtech/jts/algorithm/locate/package-summary.html)
   testing
 
-### Mathematical Functions
+## Mathematical Functions
 
-- [Angle](javadoc/org/locationtech/jts/algorithm/Angle.html){.javadoc}
+- [Angle](https://locationtech.github.io/jts/javadoc/org/locationtech/jts/algorithm/Angle.html){.javadoc}
   computation
-- [Vector](javadoc/org/locationtech/jts/algorithm/VectorMath.html)
+- [Vector](https://locationtech.github.io/jts/javadoc/org/locationtech/jts/algorithm/VectorMath.html)
   arithmetic
 
-### Spatial structures
+## Spatial structures
 
 - Spatial index structures including:
-  - [Quadtree](javadoc/org/locationtech/jts/index/quadtree/Quadtree.html){.javadoc}
-  - [STR-tree](javadoc/org/locationtech/jts/index/strtree/STRtree.html)
-  - [KD-tree](javadoc/org/locationtech/jts/index/kdtree/KdTree.html)
+  - [Quadtree](https://locationtech.github.io/jts/javadoc/org/locationtech/jts/index/quadtree/Quadtree.html){.javadoc}
+  - [STR-tree](https://locationtech.github.io/jts/javadoc/org/locationtech/jts/index/strtree/STRtree.html)
+  - [KD-tree](https://locationtech.github.io/jts/javadoc/org/locationtech/jts/index/kdtree/KdTree.html)
   - [Interval
-    R-tree](javadoc/org/locationtech/jts/index/intervalrtree/package-summary.html)
+    R-tree](https://locationtech.github.io/jts/javadoc/org/locationtech/jts/index/intervalrtree/package-summary.html)
   - [Monotone
-    Chains](javadoc/org/locationtech/jts/index/chain/package-summary.html)
+    Chains](https://locationtech.github.io/jts/javadoc/org/locationtech/jts/index/chain/package-summary.html)
 - [Planar
-  graphs](javadoc/org/locationtech/jts/planargraph/PlanarGraph.html) and
+  graphs](https://locationtech.github.io/jts/javadoc/org/locationtech/jts/planargraph/PlanarGraph.html) and
   [graph
-  algorithms](javadoc/org/locationtech/jts/planargraph/algorithm/package-summary.html)
+  algorithms](https://locationtech.github.io/jts/javadoc/org/locationtech/jts/planargraph/algorithm/package-summary.html)
 
-### Input/Output
+## Input/Output
 
 - WKT (Well-Known Text)
-  [reading](javadoc/org/locationtech/jts/io/WKTReader.html) and
-  [writing](javadoc/org/locationtech/jts/io/WKTWriter.html)
+  [reading](https://locationtech.github.io/jts/javadoc/org/locationtech/jts/io/WKTReader.html) and
+  [writing](https://locationtech.github.io/jts/javadoc/org/locationtech/jts/io/WKTWriter.html)
 - WKB (Well-Known Binary)
-  [reading](javadoc/org/locationtech/jts/io/WKBReader.html) and
-  [writing](javadoc/org/locationtech/jts/io/WKBWriter.html)
+  [reading](https://locationtech.github.io/jts/javadoc/org/locationtech/jts/io/WKBReader.html) and
+  [writing](https://locationtech.github.io/jts/javadoc/org/locationtech/jts/io/WKBWriter.html)
 - GML(Geography Markup Language) Version 2
-  [reading](javadoc/org/locationtech/jts/io/gml2/GMLReader.html) and
-  [writing](javadoc/org/locationtech/jts/io/gml2/GMLWriter.html)
+  [reading](https://locationtech.github.io/jts/javadoc/org/locationtech/jts/io/gml2/GMLReader.html) and
+  [writing](https://locationtech.github.io/jts/javadoc/org/locationtech/jts/io/gml2/GMLWriter.html)
 - Java Swing/AWT Shape
-  [writing](javadoc/org/locationtech/jts/awt/package-summary.html)
+  [writing](https://locationtech.github.io/jts/javadoc/org/locationtech/jts/awt/package-summary.html)
 
-### High-Precision Arithmetic
+## High-Precision Arithmetic
 
 - [Robust evaluation of 2x2 double-precision
-  determinants](javadoc/org/locationtech/jts/algorithm/RobustDeterminant.html)
-- [DoubleDouble](javadoc/org/locationtech/jts/math/DD.html)
+  determinants](https://locationtech.github.io/jts/javadoc/org/locationtech/jts/algorithm/RobustDeterminant.html)
+- [DoubleDouble](https://locationtech.github.io/jts/javadoc/org/locationtech/jts/math/DD.html)
   extended-precision arithmetic
-:::

@@ -43,6 +43,7 @@ theme:
     - navigation.tracking
     - navigation.top
     - navigation.tabs
+    - navigation.tabs.sticky
     - navigation.prune
     - navigation.indexes
     - navigation.footer
@@ -114,5 +115,7 @@ markdown_extensions:
 nav:
   - 'Home':
     - index.md
-    - features.md
+    - 'Features': features.md
     - 'FAQ': faq.md
+    - 'Developer': developer/index.md
+    - 'Technical': technical/index.md
