@@ -14,13 +14,20 @@ package org.locationtech.jts.coverage;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryCollection;
 import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.TopologyException;
 
 /**
- * Unions a polygonal coverage in an efficient way.
+ * Unions a valid polygonal coverage in an efficient way.
  * <p>
- * Valid polygonal coverage topology allows merging polygons in a very efficient way.
+ * No checking is done to determine whether the input is a valid coverage.
+ * If the input is not a valid coverage 
+ * then in <i>some</i> cases this will be detected during processing 
+ * and a {@link org.locationtech.jts.geom.TopologyException} is thrown.
+ * Otherwise, the computation will produce output, but it will be invalid.
  * 
  * @author Martin Davis
+ * 
+ * @see CoverageValidator
  *
  */
 public class CoverageUnion {
@@ -29,6 +36,8 @@ public class CoverageUnion {
    * 
    * @param coverage the polygons in the coverage
    * @return the union of the coverage polygons
+   *
+   * @throws TopologyException in some cases if the coverage is invalid
    */
   public static Geometry union(Geometry[] coverage) {
     // union of an empty coverage is null, since no factory is available
