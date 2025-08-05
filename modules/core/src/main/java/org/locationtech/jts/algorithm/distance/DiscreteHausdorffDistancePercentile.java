@@ -30,15 +30,15 @@ import java.util.PriorityQueue;
  * of the highest distances, treating the furthest points as outliers.
  * <p>For example:
  * <br>for percentile = 0.95: the 5% of furthest points are ignored
- * <br>for percentile = 1.0: The distance HD100 is equal to the
+ * <br>for percentile = 1.0: The calculated distance (HD100) is equal to the
  * standard Hausdorff Distance.<br>
- * for percentile = 0.0: The distance HD0 is the shortest distance between the geometries.
+ * for percentile = 0.0: The calculated distance (HD0) is the shortest distance between the geometries.
  * <p> The algorithm is an approximation based on the discretization of the input
  * {@link Geometry}. The calculated distances are restricted to discrete points for one
  * of the geometries. These points can be: vertices of the geometries (default) only,
  * or the geometries densified by a given offset.
  * <p>The offset is a minimum distance in geometry units for which densification points
- * are added to the segments. The number of points added to each of segments is
+ * are added to the geometry's segments. The number of points added to each of segments is
  * given by formula:
  ** <blockquote>
  *    <i>segNbOfPoints = (int) Math.floor(segmentLength / offset)</i>
@@ -48,7 +48,7 @@ import java.util.PriorityQueue;
  *    <i>d = segmentLength / segNbOfPoints</i>
  * </blockquote>
  * The smaller the offset is, the more equal distribution of the densification points
- * accross the whole geometry and therefore the better approximation of THE real value
+ * accross the whole geometry and therefore the better approximation of the real value
  * of percentile Hausdorff distance.
  *
  * @see DiscreteHausdorffDistance
@@ -221,15 +221,23 @@ public class DiscreteHausdorffDistancePercentile
   /**
    * Sets the minimum offset by which each segment is densified.
    * Each segment will be (virtually) split into a number of equal-length
-   * subsegments, whose fraction of the total length is closest
-   * to the given fraction.
-   * The number of subsegments for each segment is calculated by
-   * formula:
+   * subsegments. For each segment the number of subsegments is given by:
    * <blockquote>
-   * <i>(int) Math.floor(p0.distance(p1) / offset)</i>
+   * <i>numSubSegs = (int) Math.floor(segmentLength / offset)</i>
    * </blockquote>
    *
-   * @param densifyOffset the minimum distance between densification points
+   * The final distance between densification points for each of the segments is
+   * calculated by a formula:
+   * <blockquote>
+   * <i>d = segmentLength / numSubSegs</i>
+   * </blockquote>
+   *
+   * Note that:
+   * <blockquote>
+   * <i>d >= densifyOffset</i>
+   * </blockquote>
+   *
+   * @param densifyOffset the minimum distance between the densification points
    */
   private void setDensifyOffset(double densifyOffset) {
     if (densifyOffset < 0.0)
