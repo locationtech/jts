@@ -77,7 +77,12 @@ public class CoverageUnion
     }
     
     // a precision model is not needed since no noding is done
-    return OverlayNG.union(coverage, null, noder );
+    try {
+      return OverlayNG.union(coverage, null, noder );
+    } 
+    catch (TopologyException ex) {
+      throw new TopologyException("Input coverage is invalid due to incorrect noding");
+    }
   }
 
   private CoverageUnion() {
