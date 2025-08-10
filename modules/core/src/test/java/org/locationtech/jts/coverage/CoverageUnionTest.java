@@ -12,6 +12,7 @@
 package org.locationtech.jts.coverage;
 
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.TopologyException;
 
 import junit.textui.TestRunner;
 import test.jts.GeometryTestCase;
@@ -61,6 +62,24 @@ public class CoverageUnionTest extends GeometryTestCase
             );
   }
   
+  public void testInvalidNodingError() {
+    checkError(
+        "GEOMETRYCOLLECTION (POLYGON ((0 0, 0 1, 1 1, 1 0, 0 0)), POLYGON ((1 0, 0.9 1, 2 1, 2 0, 1 0)))" );
+  }
+  
+  private void checkError(String wktCoverage) {
+    Geometry covGeom = read(wktCoverage);
+    Geometry[] coverage = toArray(covGeom);
+    try {
+      Geometry actual = CoverageUnion.union(coverage);
+    }
+    catch (TopologyException ex) {
+      // executes with no error
+      return;
+    }
+    fail("No error thrown for invalid input coverage");
+  }
+
   private void checkUnion(String wktCoverage, String wktExpected) {
     Geometry covGeom = read(wktCoverage);
     Geometry[] coverage = toArray(covGeom);
