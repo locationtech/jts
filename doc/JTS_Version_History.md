@@ -44,6 +44,7 @@ Distributions for older JTS versions can be obtained at the
 * Fix writing XYM geometries as WKB (#1092)
 * Fix `DepthSegment` comparator (#1132)
 * Fix `BoundaryChainNoder` to split chains at self-touch nodes (also fixes `CoverageUnion`) (#1134)
+* Fix `OffsetCurve` `simplifyFactor` parameter handling (#1151)
 
 ### Performance Improvements
 
