@@ -182,6 +182,7 @@ public class OffsetCurve {
       bufferParams.setQuadrantSegments(quadSegs);
       bufferParams.setJoinStyle(bufParams.getJoinStyle());
       bufferParams.setMitreLimit(bufParams.getMitreLimit());
+      bufferParams.setSimplifyFactor(bufParams.getSimplifyFactor());
     }
   }
   
