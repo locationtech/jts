@@ -69,6 +69,14 @@ public class OffsetCurveFunctions {
     return GeometryCombiner.combine(curve1, curve2);
   }
 
+  public static Geometry offsetCurveSimplify(Geometry geom, double distance, double simplifyFactor)
+  {
+    BufferParameters params = new BufferParameters();
+    params.setSimplifyFactor(simplifyFactor);
+    OffsetCurve oc = new OffsetCurve(geom, distance, params);
+    return oc.getCurve();
+  }
+  
   public static Geometry rawCurve(Geometry geom, double distance)
   {
     Coordinate[] pts = OffsetCurve.rawOffset((LineString) geom, distance);
