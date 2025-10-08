@@ -434,10 +434,10 @@ public class CoordinateArrays {
    * @see Coordinate#isValid()
    */
   public static boolean hasRepeatedOrInvalidPoints(Coordinate[] coord) {
-    for (int i = 1; i < coord.length; i++) {
+    for (int i = 0; i < coord.length; i++) {
       if (! coord[i].isValid())
         return true;
-      if (coord[i - 1].equals(coord[i])) {
+      if (i > 0 && coord[i - 1].equals(coord[i])) {
         return true;
       }
     }

@@ -184,6 +184,18 @@ public class CoordinateArraysTest extends GeometryTestCase {
     checkOrient("POLYGON ((9 7, 5 9, 1 4, 5 4, 4 1, 8 1, 9 7))");
   }
   
+  public void testRemoveInvalidStartPoint() {
+    checkRemoveInvalidPoints("LINESTRING (NaN 0, 1 1, 2 2)", 
+        "LINESTRING (1 1, 2 2)");
+  }
+
+  public void testRemoveInvalidPoints() {
+    checkRemoveInvalidPoints("LINESTRING (Nan 0, 1 1, Nan Nan, 2 2, 3 NaN)", 
+        "LINESTRING (1 1, 2 2)");
+  }
+
+  //================================================
+  
   private void checkOrient(String wkt) {
     Coordinate[] pts = read(wkt).getCoordinates();
     //-- orient CW
@@ -240,4 +252,14 @@ public class CoordinateArraysTest extends GeometryTestCase {
     return sequence;
   }
 
+  private void checkRemoveInvalidPoints(String wkt, String wktExpected) {
+    Coordinate[] pts = read(wkt).getCoordinates();
+    
+    assertTrue(CoordinateArrays.hasRepeatedOrInvalidPoints(pts));
+    
+    Coordinate[] ptsFix = CoordinateArrays.removeRepeatedOrInvalidPoints(pts);
+    Coordinate[] ptsExpected = read(wktExpected).getCoordinates();
+    assertTrue(CoordinateArrays.equals(ptsFix, ptsExpected));
+  }
+  
 }
