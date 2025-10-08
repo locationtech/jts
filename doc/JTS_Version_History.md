@@ -45,6 +45,7 @@ Distributions for older JTS versions can be obtained at the
 * Fix `DepthSegment` comparator (#1132)
 * Fix `BoundaryChainNoder` to split chains at self-touch nodes (also fixes `CoverageUnion`) (#1134)
 * Fix `OffsetCurve` `simplifyFactor` parameter handling (#1151)
+* Fix `CoordinateArrays.hasRepeatedOrInvalidPoints` to check first point (#1157)
 
 ### Performance Improvements
 
