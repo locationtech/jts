@@ -17,8 +17,8 @@ import org.locationtech.jts.geom.impl.PackedCoordinateSequenceFactory;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
 
-import junit.framework.TestCase;
 import junit.textui.TestRunner;
+import test.jts.GeometryTestCase;
 
 
 /**
@@ -26,7 +26,7 @@ import junit.textui.TestRunner;
  *
  * @version 1.13
  */
-public class GeometryFactoryTest extends TestCase {
+public class GeometryFactoryTest extends GeometryTestCase {
 
   PrecisionModel precisionModel = new PrecisionModel();
   GeometryFactory geometryFactory = new GeometryFactory(precisionModel, 0);
@@ -38,16 +38,25 @@ public class GeometryFactoryTest extends TestCase {
 
   public GeometryFactoryTest(String name) { super(name); }
 
-  public void testCreateGeometry() throws ParseException
+  public void testCreateGeometry()
   {
-    checkCreateGeometryExact("POINT EMPTY");
     checkCreateGeometryExact("POINT ( 10 20 )");
-    checkCreateGeometryExact("LINESTRING EMPTY");
+    checkCreateGeometryExact("MULTIPOINT ( (10 20), (30 40) )");
     checkCreateGeometryExact("LINESTRING(0 0, 10 10)");
     checkCreateGeometryExact("MULTILINESTRING ((50 100, 100 200), (100 100, 150 200))");
     checkCreateGeometryExact("POLYGON ((100 200, 200 200, 200 100, 100 100, 100 200))");
     checkCreateGeometryExact("MULTIPOLYGON (((100 200, 200 200, 200 100, 100 100, 100 200)), ((300 200, 400 200, 400 100, 300 100, 300 200)))");
     checkCreateGeometryExact("GEOMETRYCOLLECTION (POLYGON ((100 200, 200 200, 200 100, 100 100, 100 200)), LINESTRING (250 100, 350 200), POINT (350 150))");
+  }
+  
+  public void testCreateGeometryEmpty() {
+    checkCreateGeometryExact("POINT EMPTY");
+    checkCreateGeometryExact("LINESTRING EMPTY");
+    checkCreateGeometryExact("POLYGON EMPTY");
+    checkCreateGeometryExact("MULTIPOINT EMPTY");
+    checkCreateGeometryExact("MULTILINESTRING EMPTY");
+    checkCreateGeometryExact("MULTIPOLYGON EMPTY");
+    checkCreateGeometryExact("GEOMETRYCOLLECTION EMPTY");
   }
   
   public void testCreateEmpty() {
@@ -70,7 +79,7 @@ public class GeometryFactoryTest extends TestCase {
     assertTrue( geom.getClass() == clz );
   }
 
-  public void testDeepCopy() throws ParseException
+  public void testDeepCopy() 
   {
     Point g = (Point) read("POINT ( 10 10) ");
     Geometry g2 = geometryFactory.createGeometry(g);
@@ -100,7 +109,7 @@ public class GeometryFactoryTest extends TestCase {
    * 
    * @throws ParseException
    */
-  public void testCopyGeometryWithNonDefaultDimension() throws ParseException
+  public void testCopyGeometryWithNonDefaultDimension() 
   {
     GeometryFactory gf = new GeometryFactory(CoordinateArraySequenceFactory.instance());
     CoordinateSequence mpSeq = gf.getCoordinateSequenceFactory().create(1, 2);
@@ -116,15 +125,13 @@ public class GeometryFactoryTest extends TestCase {
 
   }
   
-  private void checkCreateGeometryExact(String wkt) throws ParseException
+  private void checkCreateGeometryExact(String wkt) 
   {
     Geometry g = read(wkt);
     Geometry g2 = geometryFactory.createGeometry(g);
     assertTrue(g.equalsExact(g2));
+    // check a copy has been made
+    assertTrue(g != g2);
   }
   
-  private Geometry read(String wkt) throws ParseException
-  {
-    return reader.read(wkt);
-  }
 }

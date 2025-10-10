@@ -165,18 +165,21 @@ public class GeometryEditor
 
   private Polygon editPolygon(Polygon polygon,
                               GeometryEditorOperation operation) {
+    //-- ensure empty polygons are copied
+    if (polygon.isEmpty()) {
+      return factory.createPolygon();
+    }
+
     Polygon newPolygon = (Polygon) operation.edit(polygon, factory);
     // create one if needed
     if (newPolygon == null)
       newPolygon = factory.createPolygon();
     if (newPolygon.isEmpty()) {
-      //RemoveSelectedPlugIn relies on this behaviour. [Jon Aquino]
       return newPolygon;
     }
 
     LinearRing shell = (LinearRing) edit(newPolygon.getExteriorRing(), operation);
     if (shell == null || shell.isEmpty()) {
-      //RemoveSelectedPlugIn relies on this behaviour. [Jon Aquino]
       return factory.createPolygon();
     }
 
