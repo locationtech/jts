@@ -165,16 +165,16 @@ public class GeometryEditor
 
   private Polygon editPolygon(Polygon polygon,
                               GeometryEditorOperation operation) {
-    //-- ensure empty polygons are copied
-    if (polygon.isEmpty()) {
-      return factory.createPolygon();
-    }
 
     Polygon newPolygon = (Polygon) operation.edit(polygon, factory);
-    // create one if needed
+    // create an empty polygon if needed (which will be removed subsequently if a multi-component)
     if (newPolygon == null)
       newPolygon = factory.createPolygon();
     if (newPolygon.isEmpty()) {
+      //-- ensure empty polygons are copied
+      if (newPolygon == polygon) {
+        newPolygon = factory.createPolygon();
+      }
       return newPolygon;
     }
 
