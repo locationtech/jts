@@ -167,7 +167,7 @@ public class GeometryEditor
                               GeometryEditorOperation operation) {
 
     Polygon newPolygon = (Polygon) operation.edit(polygon, factory);
-    // create an empty polygon if needed (which will be removed subsequently if a multi-component)
+    // create empty polygon if needed (will be removed subsequently if a multi component)
     if (newPolygon == null)
       newPolygon = factory.createPolygon();
     if (newPolygon.isEmpty()) {
