@@ -32,18 +32,15 @@ import org.locationtech.jts.noding.Noder;
 import org.locationtech.jts.noding.SegmentStringUtil;
 import org.locationtech.jts.noding.snap.SnappingNoder;
 import org.locationtech.jts.operation.polygonize.Polygonizer;
-import org.locationtech.jts.operation.relateng.RelateNG;
-import org.locationtech.jts.operation.relateng.RelatePredicate;
 import org.locationtech.jts.util.IntArrayList;
-import org.locationtech.jts.util.Stopwatch;
 
 /**
- * Cleans the linework of a set of polygonal geometries to form a valid polygonal coverage.
+ * Cleans the linework of a set of valid polygonal geometries to form a valid polygonal coverage.
  * The input is an array of valid {@link Polygon} or {@link MultiPolygon} geometries 
  * which may contain topological errors such as overlaps and gaps.
  * Empty or non-polygonal inputs are removed.
  * Linework is snapped together to eliminate small discrepancies.
- * Overlaps are merged with an adjacent polygon, according to a given merge strategy.
+ * Overlaps are merged with a parent polygon, according to a given merge strategy.
  * Gaps narrower than a given width are filled and merged with an adjacent polygon.
  * The output is an array of polygonal geometries forming a valid polygonal coverage.
  * 
@@ -51,15 +48,17 @@ import org.locationtech.jts.util.Stopwatch;
  * 
  * Snapping to nearby vertices and line segment snapping is used to improve noding robustness 
  * and eliminate small errors in an efficient way,  
- * By default this uses a very small snapping distance based on the extent of the input data.
+ * By default this uses a small snapping distance based on the extent of the input data.
  * The snapping distance may be specified explicitly.
  * This can reduce the number of overlaps and gaps that need to be merged,
- * and reduce the risk of spikes formed by merging gaps.
+ * and reduce the risk of spikes formed by merged gaps.
  * However, a large snapping distance may introduce undesirable data alteration.
+ * Snapping is disabled if a zero snapping distance is specified.
+ * (Note that disabling snapping may prevent collinear linework from being noded correctly.)
  * 
  * <h3>Overlap Merging</h3>
  * 
- * Overlaps are merged with an adjacent polygon chosen according to a specified merge strategy.
+ * Overlaps are merged into a parent polygon chosen according to a specified merge strategy.
  * The supported strategies are:
  * <ul>
  * <li><b>Longest Border</b>: (default) merge with the polygon with longest shared border
@@ -69,7 +68,7 @@ import org.locationtech.jts.util.Stopwatch;
  * <li><b>Minimum Index</b>: merge with the polygon with the lowest index in the input array
  * ({@link #MERGE_MIN_INDEX}.)
  * This allows sorting the input according to some criteria to provide a priority 
- * for merging gaps.
+ * for merging overlaps.
  * </ul>
  * 
  * <h3>Gap Merging</h3>
