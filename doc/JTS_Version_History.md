@@ -23,13 +23,15 @@ Distributions for older JTS versions can be obtained at the
 
 ### New Features
 
+* Add `CoverageCleaner` (#1126)
+* Add `MinimumBoundingTriangle` (#1160)
+
 ### Functionality Improvements
 
 * Improve `DouglasPeuckerSimplifier` to preserve XYZM coordinates (#1045)
 * Improve `OffsetCurve` to support miter joins for polygonal input (#1109)
 * Add `MaximumInscribedCircle` fast exact calculation for simple shapes (#1123)
 * Add `MaximumInscribedCircle.isRadiusWithin` function (#1125)
-* Add `CoverageCleaner` (#1126)
 * Add auto-tolerance to `MaximumInscribedCircle` and `LargestEmptyCircle` (#1128)
 * Add `KdTree` methods `nearestNeighbor` and `nearestNeighbors` #1114
 
