@@ -13,6 +13,7 @@ package org.locationtech.jtstest.function;
 
 import org.locationtech.jts.algorithm.Angle;
 import org.locationtech.jts.algorithm.MinimumBoundingCircle;
+import org.locationtech.jts.algorithm.MinimumBoundingTriangle;
 import org.locationtech.jts.algorithm.MinimumDiameter;
 import org.locationtech.jts.algorithm.MinimumAreaRectangle;
 import org.locationtech.jts.algorithm.construct.LargestEmptyCircle;
@@ -36,6 +37,8 @@ public class ConstructionFunctions {
     
   public static Geometry minimumBoundingCircle(Geometry g) { return (new MinimumBoundingCircle(g)).getCircle();  }
   public static double minimumBoundingCircleDiameterLen(Geometry g) {      return 2 * (new MinimumBoundingCircle(g)).getRadius();  }
+
+  public static Geometry minimumBoundingTriangle(Geometry g) { return (new MinimumBoundingTriangle(g)).getTriangle();  }
 
   public static Geometry maximumDiameter(Geometry g) {      return (new MinimumBoundingCircle(g)).getMaximumDiameter();  }
   public static double maximumDiameterLength(Geometry g) {  
