@@ -39,7 +39,7 @@ import org.locationtech.jts.util.IntArrayList;
  * The input is an array of valid {@link Polygon} or {@link MultiPolygon} geometries 
  * which may contain topological errors such as overlaps and gaps.
  * Empty or non-polygonal inputs are removed.
- * Linework is snapped together to eliminate small discrepancies.
+ * Linework is snapped together to eliminate small discrepancies and ensure common edges are identically noded.
  * Overlaps are merged with a parent polygon, according to a given merge strategy.
  * Gaps narrower than a given width are filled and merged with an adjacent polygon.
  * The output is an array of polygonal geometries forming a valid polygonal coverage.
