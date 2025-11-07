@@ -27,6 +27,7 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Location;
+import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.Position;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.geom.TopologyException;
@@ -176,8 +177,40 @@ class BufferBuilder
       return createEmptyResultGeometry();
     }
 
+    /**
+     *  Heuristic to remove artifacts caused by topology robustness problems
+     *  or buffer curve generation anomalies.
+     *  Uses fact that for distance > 0 single-element inputs must create single element buffers.
+     *  This does not hold if distance <= 0;
+     *  distance = 0 can create multipolygon results due to topology collapse,
+     *  and distance < 0 may erode polygons so they are disconnected.
+     */
+    if (distance > 0 && g.getNumGeometries() == 1 && resultPolyList.size() > 1) {
+      resultPolyList = keepLargestArea(resultPolyList);
+    }
+    
     Geometry resultGeom = geomFact.buildGeometry(resultPolyList);
     return resultGeom;
+  }
+
+  private static List<Polygon> keepLargestArea(List<Polygon> polyList) {
+    Polygon largest = findLargestArea(polyList);
+    List<Polygon> largestPolyList = new ArrayList<Polygon>();
+    largestPolyList.add(largest);
+    return largestPolyList;
+  }
+
+  private static Polygon findLargestArea(List<Polygon> polyList) {
+    double largestArea = 0;
+    Polygon largest = null;
+    for (Polygon poly : polyList) {
+      double polyArea = poly.getArea();
+      if (largest == null || polyArea > largestArea) {
+        largest = poly;
+        largestArea = polyArea;
+      }
+    }
+    return largest;
   }
 
   private Noder getNoder(PrecisionModel precisionModel)
