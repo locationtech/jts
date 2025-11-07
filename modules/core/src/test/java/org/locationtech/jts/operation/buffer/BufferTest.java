@@ -668,12 +668,32 @@ public class BufferTest extends GeometryTestCase {
 "MULTIPOLYGON (((24 95.239, 24 96, 24 99, 24.816 99, 24 95.239)), ((3 90, 3 93, 3 96, 3 99, 21 99, 21 96, 21 93, 21 90, 3 90)))");    
   }
   
+  //-- see https://github.com/libgeos/geos/issues/1321
+  public void testArtifactsRemovedFromLineBuffer() {
+    String wkt = "LINESTRING (640734.77510795 216861.236982439, 640733.832969266 216862.938074642, 640732.814325629 216865.039674844, 640731.225095251 216869.012141189, 640729.979984761 216871.879095724, 640729.445974092 216873.02148841, 640729.002794006 216873.679857725, 640728.952197105 216873.745389857, 640728.676962154 216874.089814544)";
+    checkBufferNumGeometries(wkt, 100, 1);
+  }
+  
+  //-- see https://github.com/r-spatial/sf/issues/2552
+  public void testArtifactsRemovedFromLineBufferFlatEnd() {
+    String wkt = "LINESTRING (245184.6 6045650, 245193.3 6045649, 245201.7 6045651, 245204.3 6045653)";
+    Geometry geom = read(wkt);
+    Geometry buf = BufferOp.bufferOp(geom, 50, bufParamEndCapFlat());
+    assertEquals(1, buf.getNumGeometries());
+  }
+  
   //===================================================
   
   private static BufferParameters bufParamRoundMitre(double mitreLimit) {
     BufferParameters param = new BufferParameters();
     param.setJoinStyle(BufferParameters.JOIN_MITRE);
     param.setMitreLimit(mitreLimit);
+    return param;
+  }
+  
+  private static BufferParameters bufParamEndCapFlat() {
+    BufferParameters param = new BufferParameters();
+    param.setEndCapStyle(BufferParameters.CAP_FLAT);
     return param;
   }
   
@@ -706,7 +726,7 @@ public class BufferTest extends GeometryTestCase {
   private void checkBufferNumGeometries(String wkt, double dist, int numExpected) {
     Geometry a = read(wkt);
     Geometry result = a.buffer(dist);
-    assertTrue(numExpected == result.getNumGeometries());
+    assertEquals(numExpected, result.getNumGeometries());
   }
 
   private boolean hasHole(Geometry geom) {
