@@ -36,7 +36,7 @@ in comparison.
 ### 2. Why does JTS allow geometries to be constructed with invalid topology?
 
 JTS intentionally allows topologically invalid geometries to be
-constructed for the following reasons:\
+constructed for the following reasons:
 
 1.  It allows a wider set of geometry to be read, stored and written
     from external data sources
@@ -54,7 +54,7 @@ Cartesian plane (optionally with an associated height value).
 [Coordinate](https://locationtech.github.io/jts/javadoc/org/locationtech/jts/geom/Coordinate.html)s
 are usually treated as mutable objects, in order to simplify certain
 algorithms.
-\
+
 A [Point](https://locationtech.github.io/jts/javadoc/org/locationtech/jts/geom/Point.html) is a
 subclass of 
 [Geometry](https://locationtech.github.io/jts/javadoc/org/locationtech/jts/geom/Geometry.html)
@@ -109,13 +109,13 @@ the end of this process the IM has been completely determined.
 <a name="C2"></a>
 ### 2. Why does relate(POINT(20 20), POINT(20 30), "FF0FFF0F2") = true?
 
-According to the SFS 1.1, section 2.1.3:\
-\
-        *The boundary of a Point is the empty set*\
-\
+According to the SFS 1.1, section 2.1.3:
+
+        *The boundary of a Point is the empty set*
+
 Since points do not have boundaries, all the intersection matrix entries
 relating to the geometry boundaries are "F".
-\
+
 In some situations it is desirable to use a different definition for
 determining whether geometry endpoints are on their boundary. To support
 this, JTS provides the ability to specify a custom
@@ -133,7 +133,7 @@ Other geometry engines sometimes compute in lower precision, or round
 input coordinates, or use a tolerance when determining whether two lines
 intersect or cross.
 
-As a specific example, in the following case:\
+As a specific example, in the following case:
 
 
 ```
@@ -152,8 +152,8 @@ reports false. The
 [Overlaps](https://locationtech.github.io/jts/javadoc/org/locationtech/jts/geom/Geometry.html#overlaps%28org.locationtech.jts.geom.Geometry%29)
 result is correct - the bottom right point in the triangle B lies
 outside the quadrilateral A. This is demonstrated by intersecting the
-bottom edge of A\
-\
+bottom edge of A
+
 
 ```
 LINESTRING (-5846 9287.5, 7453 8380)
@@ -178,7 +178,7 @@ which shows that B crosses the boundary of A, and thus overlaps A.
 are thrown when JTS encounters an inconsistency in the internal topology
 structures it creates to compute certain spatial operations (in
 particular, **spatial predicates** and **overlay operations**). These
-inconsistencies can happen for two reasons:\
+inconsistencies can happen for two reasons:
 
 1.  **Invalid input geometry**. If input geometry is invalid according
     to the JTS (and OGC SFS) model, the results of operations is
@@ -219,7 +219,7 @@ class to do a simple reduction in coordinate precision, although this
 class is not guaranteed to maintain correct geometry topology.
 
 <a name="D2"></a>
-### 2. Why does the coordinate given in a TopologyException not appear in the input data?[ ]{#D2}
+### 2. Why does the coordinate given in a `TopologyException` not appear in the input data?
 
 In order to reduce robustness problems during overlay operations,
 JTS/[GEOS](https://trac.osgeo.org/geos/) sometimes transforms
@@ -237,7 +237,7 @@ produces an incorrect answer. This situation is usually caused by the
 unavoidable internal finite-precision arithmetic causing round-off
 error, which in turn causes invalid geometric topology to be created at
 some point during the evaluation of the algorithm.
-\
+
 The operations which are notably susceptible to robustness errors are
 the overlay operations (intersection, union, difference and
 symDifference). The input geometries which are most likely to trigger
@@ -249,7 +249,7 @@ segments which are nearly, but not exactly, coincident.
 ### 4. What is a "topology collapse"?
 
 A **topology collapse** is a situation in which the finite-precision
-numerical representation used in JTS (Java\'s IEEE-754 double-precision
+numerical representation used in JTS (Java's IEEE-754 double-precision
 floating point) is unable to accurately represent a particular geometric
 configuration exactly. This causes vertices to be slightly shifted from
 their mathematically exact position. In certain geometric
@@ -261,27 +261,27 @@ close to other line segments. If the vertex is shifted slightly it may
 cross the line segment, resulting in a ring which self-intersects.
 
 <a name="D5"></a>
-### 5. What is the PrecisionModel for?
+### 5. What is the `PrecisionModel` for?
 
-The PrecisionModel specifies the precision of the coordinates used to
+The `PrecisionModel` specifies the precision of the coordinates used to
 define geometries. Note that JTS expects that coordinates are supplied
 already rounded to the desired precision model; it does not perform this
 automatically during geometry creation.
 For some operations the Precision Model also specifies the precision in
 which computation is performed, and in which computed results are
 constructed. However, this is not uniform across all operations. For
-instance, the the overlay and buffer operations **do** obey the
+instance, the overlay and buffer operations **do** obey the
 precision model, but the spatial predicates do not.
 
 <a name="D6"></a>
-### 6. Why does JTS not enforce the specified PrecisionModel when creating new geometry?
+### 6. Why does JTS not enforce the specified `PrecisionModel` when creating new geometry?
 
-The PrecisionModel specified in a GeometryFactory is not applied to the
-coordinates supplied when creating geomtries with the factory. This is
+The `PrecisionModel` specified in a `GeometryFactory` is not applied to the
+coordinates supplied when creating geometries with the factory. This is
 because:
 
 1.  Changing the precision of coordinates is in general a non-trivial
-    operation, since it can cause topology collapse (see [D4](#D4).
+    operation, since it can cause topology collapse (see [D4](#D4)).
 2.  Changing coordinate values adds significant overhead, since
     `CoordinateSequence`s may not be mutable, and thus would require a
     full copy being made
@@ -303,7 +303,7 @@ originals?"
 or: "Why does `A union (B difference A) != A `"
 
 The axioms of geometric set theory apply in a theoretical world in which
-all arithmetic is carried out exactly with infite precision real
+all arithmetic is carried out exactly with infinite precision real
 numbers. In this world operations such as union and intersection are
 exact, which in turn means that they are commutative and associative.
 This allows equations such as `A union (B difference A) = A `{.wkt} to
@@ -314,7 +314,7 @@ floating point arithmetic. JTS uses double-precision floating point
 numbers to represent the coordinates of geometries (specifically,
 IEEE-754 double-precision floating point, which provides 56 bits of
 precision). This provides the illusion of computing using real numbers -
-but it\'s only an illusion. The finite representation of real numbers
+but it's only an illusion. The finite representation of real numbers
 forces rounding to take place during arithmetic computation. This means
 that operations are not commutative or associative. This in turn has the
 effect that geometric axioms are not maintained. (For the same reason,
@@ -371,28 +371,28 @@ overlay operations.
 and incorrect results encountered during overlay computations are
 symptoms of robustness issues. Robustness issues are caused by the
 limitations of using finite-precision numerics in geometric algorithms.
-\
+
 Currently the surest way to prevent robustness issues is to limit the
 numerical precision of the input geometries to something less than the
 available 16 digits. To be safe, the precision of the input geometry
 coordinates should be no more than 14 decimal digits (and possibly as
 few as 10 or 12). This is still plenty of precision to represent the
 accuracy of real-world data.
-\
+
 Reducing the precision of the input data means that result vertices will
 not perfectly match the input ones. Thus this technique is particularly
 useful in situations where it is not necessary to perfectly preserve
 vertex-to-vertex faithfulness to the source geometry. Example use cases
-are:\
+are:
 
 - the result is only used to obtain derived quantities such as area or
   length
 - the result is only used for visualization purposes
 - the result vertices do not need to fully match the input
 
-\
+
 [Coordinate](https://locationtech.github.io/jts/javadoc/org/locationtech/jts/geom/Coordinate.html)
-precision can be controlled in several ways:\
+precision can be controlled in several ways:
 
 - the best way is to ensure that the original source of the input
   geometries provides only as much precision as is really required. If
@@ -418,7 +418,7 @@ performance and robustness) are unique to JTS. However, the general
 design of the algorithms for computing spatial predicates and spatial
 overlay follow a generally accepted strategy for computing with
 2-dimensional planar linear topological structures. Some papers which
-present similar approaches are:\
+present similar approaches are:
 
 - E. Chan, J. Ng. **A General and Efficient Implementation of Geometric
   Operators and Predicates**; *Proceedings of the 5th International
@@ -434,7 +434,7 @@ present similar approaches are:\
 
 ### 2. Is there a skeletonization algorithm which works with JTS?
 
-Yes. See the Refractions Research Skeletonizer\
+Yes. See the Refractions Research Skeletonizer
 
 ### 3. How can JTS split a polygon with a linestring?
 
@@ -455,7 +455,7 @@ No. JTS currently assumes that geometries are defined in a Cartesian,
 planar, 2-dimensional space. Thus it cannot be used to compute accurate
 metrics, predicates or constructions on the geodetic ellipsoid which is
 usually used to model the surface of the Earth.
-\
+
 It is hoped to provide geodetic operations in a future version.
 
 ### 2. Can JTS be used to compute a geographically accurate range circle?
