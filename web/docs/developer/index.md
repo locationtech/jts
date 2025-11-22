@@ -25,33 +25,38 @@ This document is intended for developers who would like to use JTS to accomplish
 
 The most common JTS tasks involve creating and using Geometry objects. The easiest way  to create a Geometry by hand is to use a WKTReader to generate one from a Well-Known  Text (WKT) string. For example: 
 
+```java
 Geometry g1 = new WKTReader().read("LINESTRING (0 0, 10 10, 20 20)"); 
+```
 
 A precise specification for WKT is given in the *JTS Technical Specifications*. And many  examples of WKT may be found in the files in the *test* directory. 
 
 In a real program, it’s easier to use a GeometryFactory, because you don’t need to build up  a WKT string; rather, you work with the objects directly: 
 
 ```java
-Coordinate\[\] coordinates = new Coordinate\[\] {   
-    new Coordinate(0, 0), new Coordinate(10, 10),    
-    new Coordinate(20, 20\) };   
-Geometry g1 = new GeometryFactory().createLineString(coordinates); 
+Coordinate[] coordinates = new Coordinate[] {
+  new Coordinate(0, 0), new Coordinate(10, 10), new Coordinate(20, 20) };
+Geometry g1 = new GeometryFactory().createLineString(coordinates);
 ```
 
 Once you’ve made your Geometry, there are many things you can do with it. You can easily  find the intersection of two Geometries: 
 
+```java
 Geometry g3 = g1.intersection(g2); 
+```
 
-Other computations built into Geometries include: area, envelope, centroid, and buffer. For  more information about what a Geometry can do, see the JavaDoc for Geometry in the  com.vividsolutions.jts.geom package, as well as subsequent sections in this document. 
+Other computations built into Geometries include: area, envelope, centroid, and buffer. For  more information 
+about what a Geometry can do, see the JavaDoc for Geometry in the  `org.loctiontech.jts.geom`
+package, as well as subsequent sections in this document. 
 
 # **3. COMPUTING SPATIAL RELATIONSHIPS**
 
 An important application of JTS is computing the spatial relationships between Geometries. Various methods of computing relationships are provided. JTS follows the **Dimensionally Extended 9 Intersection Matrix** model specified by the OGC. To compute the DE-9IM for  two Geometries, use the relate method: 
 
 ```java
-Geometry a = . . .   
-Geometry b = . . .   
-IntersectionMatrix m = a.relate(b); 
+Geometry a = ...
+Geometry b = ...
+IntersectionMatrix m = a.relate(b);
 ```
 
 Most relationships of interest can be specified as a pattern which matches a set of  intersection matrices. JTS also provides a set of boolean predicates which compute  common spatial relationships directly. These are: 
@@ -99,9 +104,18 @@ As with the spatial relationships described in the previous section, these overl
 
 In GIS, buffering is an operation which in GIS is used to compute the area containing all  points within a given distance of a Geometry. In mathematical terms, this is called  computing the **Minkowski sum** of the Geometry with a disc of radius equal to the buffer  distance. Finding positive and negative buffers is sometimes referred to as the operations  of **erosion** and **dilation**. In CAD/CAM buffer curves are called **offset curves**. 
 
-You can use JTS to compute the **buffer** of a Geometry using the Geometry buffer method  or the BufferOp class. The input Geometry to the buffer operation may be of any type  (including arbitrary GeometryCollections). The result of a buffer operation is always an area  type (Polygon or MultiPolygon). The result may be empty (for example, a negative buffer  of a LineString). 
+You can use JTS to compute the **buffer** of a Geometry using the
+Geometry buffer method  or the `BufferOp` class. The input Geometry
+to the buffer operation may be of any type  (including arbitrary
+`GeometryCollection`s). The result of a buffer operation is always an area
+type (`Polygon` or `MultiPolygon`). The result may be empty (for example,
+a negative buffer  of a `LineString`).
 
-You can compute buffers with both positive and negative buffer distances. Buffers with a  positive buffer distance always contain the input Geometry. Buffers with a negative buffer  distance are always contained within the input Geometry. A negative buffer of a  LineString or a Point results in an empty Geometry. 
+You can compute buffers with both positive and negative buffer
+distances. Buffers with a  positive buffer distance always contain the
+input `Geometry`. Buffers with a negative buffer  distance are always
+contained within the input `Geometry`. A negative buffer of a  `LineString`
+or a `Point` results in an empty `Geometry`.
 
 ![](img/buffer.png) ![](img/negative_buffer.png)
 
@@ -111,16 +125,19 @@ Buffer distances of 0 are also supported. You can use this to perform an efficie
 
 ## **5.1 BASIC BUFFERING** 
 
-To compute a buffer for a given distance, call the buffer() method on the Geometry: 
+To compute a buffer for a given distance, call the `buffer()` method on the `Geometry`: 
 
 ```java
-Geometry g = . . .   
-Geometry buffer = g.buffer(100.0); 
+Geometry g = ...
+Geometry buffer = g.buffer(100.0);
 ```
 
 ## **5.2 END CAP STYLES** 
 
-Buffer polygons can be computed with different line **end cap styles**. The end cap style  determines how the linework for the buffer polygon is constructed at the ends of linestrings.  The following different kinds of end cap styles are supported:
+Buffer polygons can be computed with different line **end cap
+styles**. The end cap style  determines how the line work for the buffer
+polygon is constructed at the ends of `lineString`s.  The following
+different kinds of end cap styles are supported:
 
 | *Style Name*  | *Description* |
 | :---- | :---- |
@@ -136,26 +153,32 @@ The following diagrams illustrate the effects of specifying different end cap st
 
 **Figure 5-2 \- Different End Cap Styles** 
 
-To specify the buffer end cap style, the BufferOp class in the package  
+To specify the buffer end cap style, the `BufferOp` class in the package  
 
-com.vividsolutions.jts.operation.buffer is used directly: 
+`org.locationtech.jts.operation.buffer` is used directly: 
 
 ```java
-Geometry g = . . .    
-BufferOp bufOp = new BufferOp(g);   
-bufOp.setEndCapStyle(BufferOp.CAP_BUTT);   
-Geometry buffer = bufOp.getResultGeometry(distance); 
+Geometry g = ...
+BufferOp bufOp = new BufferOp(g);
+bufOp.setEndCapStyle(BufferOp.CAP_BUTT);
+Geometry buffer = bufOp.getResultGeometry(distance);
 ```
 
 ## **5.3 SPECIFYING THE APPROXIMATION QUANTIZATION** 
 
-Since the exact buffer outline of a Geometry usually contains circular sections, the buffer  must be approximated by the linear Geometry supported by JTS. The degree of  approximation may be controlled by the user. In JTS this is done by specifying the number  of quadrant segments used to approximate a quarter-circle. Specifying a larger number of  segments results in a better approximation to the actual area, but also results in a larger  number of line segments in the computed polygon.  
+Since the exact buffer outline of a Geometry usually contains circular
+sections, the buffer  must be approximated by the linear Geometry
+supported by JTS. The degree of  approximation may be controlled by the
+user. In JTS this is done by specifying the number  of quadrant segments
+used to approximate a quarter-circle. Specifying a larger number of
+segments results in a better approximation to the actual area, but also
+results in a larger  number of line segments in the computed polygon.
 
 To specify a value for the quadrant segments, use the Geometry buffer method with a  second argument: 
 
 ```java
-Geometry g = . . .   
-Geometry buffer = g.buffer(100.0, 16); 
+Geometry g = ...
+Geometry buffer = g.buffer(100.0, 16);
 ```
 
 The default number of segments is 8. This gives less than a 2% maximum error in the  distance of the computed curve approximation to the actual buffer curve. This error can be  reduced to less than 1% by using a value of 12. The diagram below shows the effect of  increasing the number of approximation curve segments. 
@@ -170,12 +193,16 @@ The default number of segments is 8. This gives less than a 2% maximum error in 
 
 Polygonization is the process of forming polygons from linework which encloses areas.  Linework to be formed into polygons must be fully noded – that is, linestrings must not  cross and must touch only at endpoints.  
 
-JTS provides the Polygonizer class to perform Polygonization. The Polygonizer takes a set  of fully noded LineStrings and forms all the polygons which are enclosed by the lines.  Polygonization errors such as dangling lines or cut lines can be identified and reported.  
+JTS provides the `Polygonizer` class to perform polygonization. The `Polygonizer` takes a set  of fully noded 
+LineStrings and forms all the polygons which are enclosed by the lines.  Polygonization errors such as 
+dangling lines or cut lines can be identified and reported.  
 
 ```java
 Collection lines = new ArrayList(); 
 
-lines.add(read("LINESTRING (0 0 , 10 10)")); // isolated edge lines.add(read("LINESTRING (185 221, 100 100)")); //dangling edge lines.add(read("LINESTRING (185 221, 88 275, 180 316)")); 
+lines.add(read("LINESTRING (0 0 , 10 10)"));
+// isolated edge lines.add(read("LINESTRING (185 221, 100 100)"));
+//dangling edge lines.add(read("LINESTRING (185 221, 88 275, 180 316)")); 
 
 lines.add(read("LINESTRING (185 221, 292 281, 180 316)"));   
 lines.add(read("LINESTRING (189 98, 83 187, 185 221)"));   
@@ -205,11 +232,17 @@ Sometimes a spatial operation such as \#union will produce chains of small LineS
 
 **Figure 7-1 – The Line-Merging Operation** 
 
-The LineMerger assumes that the input LineStrings are *noded* (i.e. they do not cross;  only their endpoints can touch. See *9.1 Noding A Set Of LineStrings* on page 11). Note that  the output LineStrings are also noded. 
+The `LineMerger` assumes that the input `LineStrings` are *noded* (i.e. they do not cross;  only their 
 
-If LineStrings to be merged do not have the same direction, the direction of the resulting  LineString will be that of the majority. 
+**TODO** fix this link
 
-The LineMerger is used as follows: 
+endpoints can touch. See *9.1 Noding A Set Of `LineStrings`* on page 11). Note that  the output `LineStrings` 
+are also noded.
+
+If `LineStrings` to be merged do not have the same direction, the direction of the resulting  `LineString` 
+will be that of the majority. 
+
+The `LineMerger` is used as follows: 
 
 ```java
 LineMerger lineMerger = new LineMerger();   
@@ -222,27 +255,33 @@ Collection mergedLineStrings = lineMerger.getMergedLineStrings();
 
 By default JTS uses arrays of Coordinates to represent the points and lines of Geometries.  There are some cases in which you might want Geometries to store their points using some  other implementation. For example, to save memory you may want to use a more  compact sequence implementation, such as an array of x’s and an array of y’s. Another  possibility is to use a custom coordinate class to store extra information on each coordinate,  such as measures for linear referencing. 
 
-You can do this by implementing the CoordinateSequence and  
-
-CoordinateSequenceFactory interfaces. You would then create a GeometryFactory parameterized by your CoordinateSequenceFactory, and use this GeometryFactory to create  new Geometries. All of these new Geometries will use your CoordinateSequence  implementation. 
+You can do this by implementing the `CoordinateSequence` and
+`CoordinateSequenceFactory` interfaces. You would then create a `GeometryFactory` parameterized by your 
+`CoordinateSequenceFactory`, and use this `GeometryFactory` to create  new `Geometries`. All of these new 
+`Geometries` will use your `CoordinateSequence`  implementation. 
 
 For an example, see the following sample programs in the  
 
-com.vividsolutions.jtsexample.geom package: 
+org.locationtech.jtsexample.geom package: 
 
 | ExtendedCoordinateExample  | An example of using adding information to the  basic coordinate representation |
 | :---- | :---- |
 | TwoArrayCoordinateSequenceExample  | An example of using a more memory-efficient  sequence implementation |
 
-A note on performance: If your CoordinateSequence is not based on an array of the  standard JTS Coordinates (or a subclass of Coordinate), it may incur a small performance  penalty. This is due to the marshalling and unmarshalling required for JTS to convert the  user coordinates into arrays of JTS coordinates. 
+A note on performance: If your `CoordinateSequence` is not based on an array of the  standard JTS 
+`Coordinates` (or a subclass of Coordinate), it may incur a small performance  penalty. This is due to the 
+marshalling and unmarshalling required for JTS to convert the  user coordinates into arrays of JTS 
+coordinates. 
 
 # **9. TIPS & TECHNIQUES** 
 
 ## **9.1 NODING A SET OF LINESTRINGS** 
 
-Many spatial operations assume that their input data is **noded**, meaning that LineStrings never cross. For example, the JTS Polygonizer and the JTS LineMerger described earlier  assume that their input is noded. 
+Many spatial operations assume that their input data is **noded**, meaning that `LineStrings` never cross. For 
+example, the JTS `Polygonizer` and the JTS `LineMerger` described earlier  assume that their input is noded. 
 
-The noding process splits LineStrings that cross into smaller LineStrings that meet at a  point, or **node**, as illustrated below. 
+The noding process splits `LineStrings` that cross into smaller `LineStrings` that meet at a  point, or 
+**node**, as illustrated below. 
 
 | ![](img/noded_3.png) | ![](img/noded_9.png) |
 | :---: | :---: |
@@ -250,7 +289,9 @@ The noding process splits LineStrings that cross into smaller LineStrings that m
 
 **Figure 9-1 – Before and After Noding** 
 
-A simple trick for noding a group of LineStrings is to union them together. It turns out  that the unioning process will node the LineStrings for us. For example, the following  code will node a collection of LineStrings: 
+A simple trick for noding a group of `LineStrings` is to union them together. It turns out  that the unioning 
+process will node the `LineStrings` for us. For example, the following  code will node a collection of 
+`LineStrings`: 
 
 ```java
 Collection lineStrings = . . .   
@@ -262,11 +303,14 @@ for (int i = 1; i \< lineStrings.size(); i++) {
 
 # **10. UNIONING MANY POLYGONS EFFICIENTLY** 
 
-Calling Polygon\#union repeatedly is one way to union several Polygons together. But here’s  a trick that can be significantly faster (seconds rather than minutes) – add the Polygons to a  GeometryCollection, then apply a buffer with zero distance: 
+Calling `Polygon.union` repeatedly is one way to union several `Polygons`
+together. But here’s  a trick that can be significantly faster (seconds
+rather than minutes) – add the `Polygons` to a  `GeometryCollection`,
+then apply a buffer with zero distance:
 
 ```java
-Polygon\[\] polygons = . . .   
-GeometryCollection polygonCollection =    
-geometryFactory.createGeometryCollection(polygons);   
-Geometry union = polygonCollection.buffer(0);   
-```
+Polygon[] polygons = ...
+GeometryCollection polygonCollection =
+  geometryFactory.createGeometryCollection(polygons);
+  Geometry union = polygonCollection.buffer(0);
+ ```
