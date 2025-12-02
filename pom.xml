@@ -306,7 +306,6 @@
                     <quiet>true</quiet>
                     <show>public</show>
                     <header>${project.name} ${project.version}</header>
-                    <footer>${project.name} ${project.version}</footer>
                     <overview>${basedir}/modules/core/src/main/javadoc/overview.html</overview>
 
                     <excludePackageNames>org.locationtech.jtsexample.*,org.locationtech.jtstest,org.locationtech.jtstest.*</excludePackageNames>
