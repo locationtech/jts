@@ -15,6 +15,8 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryCollection;
 import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.PrecisionModel;
 
@@ -533,18 +535,18 @@ public class BufferTest extends GeometryTestCase {
 
   public void testPolygon4NegBufferEmpty() {
     String wkt = "POLYGON ((666360.09 429614.71, 666344.4 429597.12, 666358.47 429584.52, 666374.5 429602.33, 666360.09 429614.71))";
-    checkBufferEmpty(wkt, -9, false);
-    checkBufferEmpty(wkt, -10, true);
-    checkBufferEmpty(wkt, -15, true);
-    checkBufferEmpty(wkt, -18, true);
+    checkBufferPolygonEmpty(wkt, -9, false);
+    checkBufferPolygonEmpty(wkt, -10, true);
+    checkBufferPolygonEmpty(wkt, -15, true);
+    checkBufferPolygonEmpty(wkt, -18, true);
   }
 
   public void testPolygon5NegBufferEmpty() {
     String wkt = "POLYGON ((6 20, 16 20, 21 9, 9 0, 0 10, 6 20))";
-    checkBufferEmpty(wkt, -8, false);
-    checkBufferEmpty(wkt, -8.6, true);
-    checkBufferEmpty(wkt, -9.6, true);
-    checkBufferEmpty(wkt, -11, true);
+    checkBufferPolygonEmpty(wkt, -8, false);
+    checkBufferPolygonEmpty(wkt, -8.6, true);
+    checkBufferPolygonEmpty(wkt, -9.6, true);
+    checkBufferPolygonEmpty(wkt, -11, true);
   }
 
   public void testPolygonHole5BufferNoHole() {
@@ -682,7 +684,53 @@ public class BufferTest extends GeometryTestCase {
     assertEquals(1, buf.getNumGeometries());
   }
   
+  //--------------------------------
+  
+  public void testInvalidCoordPoint() {
+    // works for Inf ordinates as well
+    Geometry geom = read("POINT (NaN NaN)");
+    checkBufferPolygonEmpty(geom, 1, true);
+  }
+
+  public void testInvalidCoordsLine() {
+    // works for Inf ordinates as well
+    Geometry geom = read("LINESTRING (NaN NaN, NaN NaN)");
+    checkBufferPolygonEmpty(geom, 1, true);
+  }
+
+  public void testInvalidCoordShell() {
+    // using Inf ordinates creates a valid ring with equal endpoints
+    // this would be simpler if JTS WKT supported Inf
+    Geometry geom = getGeometryFactory().createPolygon( infCoords(5) );
+    checkBufferPolygonEmpty(geom, 1, true);
+  }
+  
+  public void testInvalidCoordHole() {
+    // using Inf ordinates creates a valid ring with equal endpoints
+    // this would be simpler if JTS WKT supported Inf
+    Polygon poly = (Polygon) read("POLYGON ((1 9, 9 9, 9 1, 1 1, 1 9), (3 7, 7 7, 7 3, 3 3, 3 7))");
+
+    LinearRing shell = poly.getExteriorRing();
+    LinearRing hole =  poly.getInteriorRingN(0);
+    LinearRing infHole = getGeometryFactory().createLinearRing( infCoords(5) );
+    Geometry polyInfHole = getGeometryFactory().createPolygon( 
+        shell, new LinearRing[] { hole, infHole } );
+
+    Geometry bufferOrig = poly.buffer(1);
+    Geometry bufferInf = polyInfHole.buffer(1);
+    // buffers should be same since inf hole is skipped
+    checkEqual(bufferOrig, bufferInf);
+  }
+  
   //===================================================
+  
+  private static Coordinate[] infCoords(int size) {
+    Coordinate[] coords = new Coordinate[size];
+    for (int i = 0; i < size; i++) {
+      coords[i] = new Coordinate(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
+    }
+    return coords;
+  }
   
   private static BufferParameters bufParamRoundMitre(double mitreLimit) {
     BufferParameters param = new BufferParameters();
@@ -711,9 +759,14 @@ public class BufferTest extends GeometryTestCase {
     checkEqual(expected, result, 0.01);
   }
   
-  private void checkBufferEmpty(String wkt, double dist, boolean isEmptyExpected) {
+  private void checkBufferPolygonEmpty(String wkt, double dist, boolean isEmptyExpected) {
     Geometry a = read(wkt);
-    Geometry result = a.buffer(dist);
+    checkBufferPolygonEmpty(a, dist, isEmptyExpected);
+  }
+
+  private void checkBufferPolygonEmpty(Geometry geom, double dist, boolean isEmptyExpected) {
+    Geometry result = geom.buffer(dist);
+    assertTrue(result instanceof Polygon);
     assertTrue(isEmptyExpected == result.isEmpty());
   }
 
