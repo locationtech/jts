@@ -33,7 +33,8 @@ Distributions for older JTS versions can be obtained at the
 * Add `MaximumInscribedCircle` fast exact calculation for simple shapes (#1123)
 * Add `MaximumInscribedCircle.isRadiusWithin` function (#1125)
 * Add auto-tolerance to `MaximumInscribedCircle` and `LargestEmptyCircle` (#1128)
-* Add `KdTree` methods `nearestNeighbor` and `nearestNeighbors` #1114
+* Add `KdTree` methods `nearestNeighbor` and `nearestNeighbors` (#1114)
+* * Allow `WKTReader` to read `Inf` ordinates (#1166)
 
 ### Bug Fixes
 
