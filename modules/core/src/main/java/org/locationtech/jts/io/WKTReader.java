@@ -80,8 +80,8 @@ import org.locationtech.jts.util.AssertionFailedException;
  * <li>The reader uses <tt>Double.parseDouble</tt> to perform the conversion of ASCII
  * numbers to floating point.  This means it supports the Java
  * syntax for floating point literals (including scientific notation).
- * <li><tt>NaN</tt> and <tt>Inf</tt> symbols are supported, 
- * converting to the corresponding IEE-754 value
+ * <li><tt>NaN</tt> and <tt>Inf</tt> ordinate symbols are supported (case-insensitive), 
+ * which convert to the corresponding IEE-754 value
  * </ul>
  * <h3>Syntax</h3>
  * The following syntax specification describes the version of Well-Known Text
