@@ -175,6 +175,10 @@ public class BufferCurveSetBuilder {
     
     Coordinate[] coord = clean(line.getCoordinates());
     
+    //-- skip if no valid coordinates
+    if (coord.length == 0)
+      return;
+    
     /**
      * Rings (closed lines) are generated with a continuous curve, 
      * with no end arcs. This produces better quality linework, 
@@ -215,17 +219,23 @@ public class BufferCurveSetBuilder {
     }
 
     LinearRing shell = p.getExteriorRing();
-    Coordinate[] shellCoord = clean(shell.getCoordinates());
     // optimization - don't compute buffer
     // if the polygon would be completely eroded
     if (distance < 0.0 && isRingFullyEroded(shell, false, distance))
         return;
+    
+    Coordinate[] shellCoords = clean(shell.getCoordinates());
+    
+    //-- skip if no valid coordinates
+    if (shellCoords.length == 0)
+      return;
+    
     // don't attempt to buffer a polygon with too few distinct vertices
-    if (distance <= 0.0 && shellCoord.length < 3)
+    if (distance <= 0.0 && shellCoords.length < 3)
     	return;
 
     addPolygonRingSide(
-            shellCoord,
+            shellCoords,
             offsetDistance,
             offsetSide,
             Location.EXTERIOR,
@@ -234,18 +244,23 @@ public class BufferCurveSetBuilder {
     for (int i = 0; i < p.getNumInteriorRing(); i++) {
 
       LinearRing hole = p.getInteriorRingN(i);
-      Coordinate[] holeCoord = clean(hole.getCoordinates());
-
+      
       // optimization - don't compute buffer for this hole
       // if the hole would be completely covered
       if (distance > 0.0 && isRingFullyEroded(hole, true, distance))
           continue;
 
+      Coordinate[] holeCoords = clean(hole.getCoordinates());
+
+      //-- skip if no valid coordinates
+      if (holeCoords.length == 0)
+        continue;
+
       // Holes are topologically labelled opposite to the shell, since
       // the interior of the polygon lies on their opposite side
       // (on the left, if the hole is oriented CCW)
       addPolygonRingSide(
-            holeCoord,
+            holeCoords,
             offsetDistance,
             Position.opposite(offsetSide),
             Location.INTERIOR,
