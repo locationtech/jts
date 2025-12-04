@@ -694,31 +694,24 @@ public class BufferTest extends GeometryTestCase {
 
   public void testInvalidCoordsLine() {
     // works for Inf ordinates as well
-    Geometry geom = read("LINESTRING (NaN NaN, NaN NaN)");
+    Geometry geom = read("LINESTRING (Inf Inf, NaN NaN)");
     checkBufferPolygonEmpty(geom, 1, true);
   }
-
+  
   public void testInvalidCoordShell() {
     // using Inf ordinates creates a valid ring with equal endpoints
-    // this would be simpler if JTS WKT supported Inf
-    Geometry geom = getGeometryFactory().createPolygon( infCoords(5) );
+    Geometry geom = (Polygon) read("POLYGON ((Inf Inf, Inf Inf, Inf Inf, Inf Inf, Inf Inf))");
     checkBufferPolygonEmpty(geom, 1, true);
   }
   
   public void testInvalidCoordHole() {
     // using Inf ordinates creates a valid ring with equal endpoints
-    // this would be simpler if JTS WKT supported Inf
     Polygon poly = (Polygon) read("POLYGON ((1 9, 9 9, 9 1, 1 1, 1 9), (3 7, 7 7, 7 3, 3 3, 3 7))");
-
-    LinearRing shell = poly.getExteriorRing();
-    LinearRing hole =  poly.getInteriorRingN(0);
-    LinearRing infHole = getGeometryFactory().createLinearRing( infCoords(5) );
-    Geometry polyInfHole = getGeometryFactory().createPolygon( 
-        shell, new LinearRing[] { hole, infHole } );
+    Polygon polyInfHole = (Polygon) read("POLYGON ((1 9, 9 9, 9 1, 1 1, 1 9), (3 7, 7 7, 7 3, 3 3, 3 7), (Inf Inf, Inf Inf, Inf Inf, Inf Inf, Inf Inf))");
 
     Geometry bufferOrig = poly.buffer(1);
     Geometry bufferInf = polyInfHole.buffer(1);
-    // buffers should be same since inf hole is skipped
+    // buffers should be same since inf hole is dropped
     checkEqual(bufferOrig, bufferInf);
   }
   

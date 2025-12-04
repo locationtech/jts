@@ -170,6 +170,7 @@ public class WKTReader
   private static final String L_PAREN = "(";
   private static final String R_PAREN = ")";
   private static final String NAN_SYMBOL = "NaN";
+  private static final String INF_SYMBOL = "Inf";
 
   private GeometryFactory geometryFactory;
   private CoordinateSequenceFactory csFactory;
@@ -517,6 +518,10 @@ S  */
         if (tokenizer.sval.equalsIgnoreCase(NAN_SYMBOL)) {
           return Double.NaN;
         }
+        if (tokenizer.sval.equalsIgnoreCase(INF_SYMBOL)) {
+          return Double.POSITIVE_INFINITY;
+        }
+        //TODO: handle -Inf ?
         else {
           try {
             return Double.parseDouble(tokenizer.sval);
