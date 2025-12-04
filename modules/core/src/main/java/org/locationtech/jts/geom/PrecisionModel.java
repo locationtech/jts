@@ -412,7 +412,7 @@ public class PrecisionModel implements Serializable, Comparable
    * uniform rounding behaviour no matter where the number is
    * on the number line.
    * <p>
-   * This method has no effect on NaN values.
+   * This method has no effect on NaN and infinite values.
    * <p>
    * <b>Note:</b> Java's <code>Math#rint</code> uses the "Banker's Rounding" algorithm,
    * which is not suitable for precision operations elsewhere in JTS.
@@ -420,7 +420,7 @@ public class PrecisionModel implements Serializable, Comparable
   public double makePrecise(double val) 
   {
   	// don't change NaN values
-  	if (Double.isNaN(val)) return val;
+  	if (Double.isNaN(val) || Double.isInfinite(val)) return val;
   	
   	if (modelType == FLOATING_SINGLE) {
   		float floatSingleVal = (float) val;

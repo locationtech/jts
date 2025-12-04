@@ -464,6 +464,13 @@ public class WKTReaderTest extends GeometryTestCase {
     assertTrue(isEqual(seq, pt3.getCoordinateSequence()));
   }
 
+  public void testInf() throws ParseException {
+    Point pt = (Point) readerXY.read("POINT ( Inf INF )");
+    CoordinateSequence cs = pt.getCoordinateSequence();
+    assertEquals(Double.POSITIVE_INFINITY, cs.getOrdinate(0, Coordinate.X));
+    assertEquals(Double.POSITIVE_INFINITY, cs.getOrdinate(0, Coordinate.Y));
+  }
+  
   public void testLargeNumbers() throws Exception {
     PrecisionModel precisionModel = new PrecisionModel(1E9);
     GeometryFactory geometryFactory = new GeometryFactory(precisionModel, 0);

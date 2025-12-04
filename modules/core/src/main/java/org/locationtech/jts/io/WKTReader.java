@@ -80,6 +80,8 @@ import org.locationtech.jts.util.AssertionFailedException;
  * <li>The reader uses <tt>Double.parseDouble</tt> to perform the conversion of ASCII
  * numbers to floating point.  This means it supports the Java
  * syntax for floating point literals (including scientific notation).
+ * <li><tt>NaN</tt> and <tt>Inf</tt> ordinate symbols are supported (case-insensitive), 
+ * which convert to the corresponding IEE-754 value
  * </ul>
  * <h3>Syntax</h3>
  * The following syntax specification describes the version of Well-Known Text
@@ -131,7 +133,7 @@ import org.locationtech.jts.util.AssertionFailedException;
  * <i>Coordinate:
  *         Number Number Number<sub>opt</sub> Number<sub>opt</sub></i>
  *
- * <i>Number:</i> A Java-style floating-point number (including <tt>NaN</tt>, with arbitrary case)
+ * <i>Number:</i> A Java-style floating-point number (including <tt>NaN</tt> and <tt>Inf</tt>, with arbitrary case)
  *
  * <i>Dimension:</i>
  *         <b>Z</b>|<b> Z</b>|<b>M</b>|<b> M</b>|<b>ZM</b>|<b> ZM</b>
@@ -159,6 +161,8 @@ import org.locationtech.jts.util.AssertionFailedException;
  * POINT M (0 0 0)
  * POINTZM (0 0 0 0)
  * POINT ZM (0 0 0 0)
+ * 
+ * POINT (Inf Nan)
  * </pre>
  *
  *@version 1.7
@@ -170,6 +174,7 @@ public class WKTReader
   private static final String L_PAREN = "(";
   private static final String R_PAREN = ")";
   private static final String NAN_SYMBOL = "NaN";
+  private static final String INF_SYMBOL = "Inf";
 
   private GeometryFactory geometryFactory;
   private CoordinateSequenceFactory csFactory;
@@ -517,6 +522,10 @@ S  */
         if (tokenizer.sval.equalsIgnoreCase(NAN_SYMBOL)) {
           return Double.NaN;
         }
+        if (tokenizer.sval.equalsIgnoreCase(INF_SYMBOL)) {
+          return Double.POSITIVE_INFINITY;
+        }
+        //TODO: handle -Inf ?
         else {
           try {
             return Double.parseDouble(tokenizer.sval);
