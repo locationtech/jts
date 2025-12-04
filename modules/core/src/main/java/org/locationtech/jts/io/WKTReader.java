@@ -80,6 +80,8 @@ import org.locationtech.jts.util.AssertionFailedException;
  * <li>The reader uses <tt>Double.parseDouble</tt> to perform the conversion of ASCII
  * numbers to floating point.  This means it supports the Java
  * syntax for floating point literals (including scientific notation).
+ * <li><tt>NaN</tt> and <tt>Inf</tt> symbols are supported, 
+ * converting to the corresponding IEE-754 value
  * </ul>
  * <h3>Syntax</h3>
  * The following syntax specification describes the version of Well-Known Text
@@ -131,7 +133,7 @@ import org.locationtech.jts.util.AssertionFailedException;
  * <i>Coordinate:
  *         Number Number Number<sub>opt</sub> Number<sub>opt</sub></i>
  *
- * <i>Number:</i> A Java-style floating-point number (including <tt>NaN</tt>, with arbitrary case)
+ * <i>Number:</i> A Java-style floating-point number (including <tt>NaN</tt> and <tt>Inf</tt>, with arbitrary case)
  *
  * <i>Dimension:</i>
  *         <b>Z</b>|<b> Z</b>|<b>M</b>|<b> M</b>|<b>ZM</b>|<b> ZM</b>
@@ -159,6 +161,8 @@ import org.locationtech.jts.util.AssertionFailedException;
  * POINT M (0 0 0)
  * POINTZM (0 0 0 0)
  * POINT ZM (0 0 0 0)
+ * 
+ * POINT (Inf Nan)
  * </pre>
  *
  *@version 1.7
