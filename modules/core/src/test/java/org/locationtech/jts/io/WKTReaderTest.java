@@ -465,7 +465,7 @@ public class WKTReaderTest extends GeometryTestCase {
   }
 
   public void testInf() throws ParseException {
-    Point pt = (Point) readerXY.read("POINT ( Inf Inf )");
+    Point pt = (Point) readerXY.read("POINT ( Inf INF )");
     CoordinateSequence cs = pt.getCoordinateSequence();
     assertEquals(Double.POSITIVE_INFINITY, cs.getOrdinate(0, Coordinate.X));
     assertEquals(Double.POSITIVE_INFINITY, cs.getOrdinate(0, Coordinate.Y));
