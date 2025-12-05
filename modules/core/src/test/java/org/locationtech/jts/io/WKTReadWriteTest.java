@@ -38,6 +38,11 @@ public class WKTReadWriteTest extends TestCase {
     assertEquals(pt, writer.write(reader.read("POINT (10 10 NAN)")));
   }
 
+  public void testReadInf() throws Exception {
+    final String pt = "POINT (Inf -Inf)";
+    assertEquals(pt, writer.write(reader.read("POINT (Inf -Inf)")));
+  }
+
   public void testReadPoint() throws Exception {
     assertEquals("POINT (10 10)", writer.write(reader.read("POINT (10 10)")));
     assertEquals("POINT EMPTY", writer.write(reader.read("POINT EMPTY")));
