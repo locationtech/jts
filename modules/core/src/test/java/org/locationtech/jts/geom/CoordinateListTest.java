@@ -24,9 +24,16 @@ public class CoordinateListTest extends TestCase {
     checkValue(coordList().toCoordinateArray(false) );
   }
 
+  public void testClone() {
+    CoordinateList clone = (CoordinateList) coordList(0,0,1,1,2,2).clone();
+    checkValue(clone.toCoordinateArray(true), 0,0,1,1,2,2);    
+  }
+  
+  //======================================
+  
   private void checkValue(Coordinate[] coordArray, double ... ords) {
     
-    assertEquals( coordArray.length * 2, ords.length);
+    assertEquals( "list has wrong length", coordArray.length, ords.length / 2);
     
     for (int i = 0 ; i < coordArray.length; i += 2) {
       Coordinate pt = coordArray[i];
