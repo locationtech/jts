@@ -52,6 +52,7 @@ Distributions for older JTS versions can be obtained at the
 * Fix `GeometryFactory.create` to deep-copy polygonal geometry (#1158)
 * Add buffer artifact removal heuristic for single-element inputs (#1161)
 * Fix `BufferOp` to handle geometries with all-invalid coordinate lists (#1165)
+* Fix CoordinateList.clone() to copy correctly (#1168)
 
 ### Performance Improvements
 
