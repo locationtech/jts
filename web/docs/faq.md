@@ -1,7 +1,5 @@
 # JTS Frequently Asked Questions
 
-Last Update: September 8, 2020
-
 <a name="general"></a>
 ## A. General
 
