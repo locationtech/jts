@@ -1,28 +1,28 @@
 # JTS Topology Suite Developer’s Guide
 
-# OVERVIEW
+## Overview
 
 The JTS Topology Suite is a Java API that implements a core set of spatial data operations  using an explicit precision model and robust geometric algorithms. It provides a complete  model for specifying 2-D linear Geometry. Many common operations in computational  geometry and spatial data processing are exposed in a clear, consistent and integrated API.  JTS is intended to be used in the development of applications that support the validation,  cleaning, integration and querying of spatial datasets.  
 
 This document is intended for developers who would like to use JTS to accomplish their  spatial data processing requirements. It describes common uses of the JTS API and gives  code examples. 
 
-## RESOURCES
+### Resources
 
 * *OpenGIS Simple Features Specification For SQL Revision 1.1* (referred to as SFS in this  document). The reference specification for the spatial data model and the spatial  predicates and functions implemented by JTS.   
 * *JTS Technical Specifications*. The design specification for the classes, methods and  algorithms implemented in the JTS Topology Suite.   
 * *JTS JavaDoc*. Documentation for all of the packages, classes and methods in JTS. 
 
-# GETTING STARTED
+## Getting Started
 
-The most common JTS tasks involve creating and using Geometry objects. The easiest way  to create a Geometry by hand is to use a WKTReader to generate one from a Well-Known  Text (WKT) string. For example: 
+The most common JTS tasks involve creating and using `Geometry` objects. The easiest way  to create a `Geometry` by hand is to use a `WKTReader` to generate one from a Well-Known  Text (WKT) string. For example: 
 
 ```java
 Geometry g1 = new WKTReader().read("LINESTRING (0 0, 10 10, 20 20)"); 
 ```
 
-A precise specification for WKT is given in the *JTS Technical Specifications*. And many  examples of WKT may be found in the files in the *test* directory. 
+A specification for WKT is given in the *JTS Technical Specifications*. Many examples of WKT may be found in the files in the *test* directory. 
 
-In a real program, it’s easier to use a GeometryFactory, because you don’t need to build up  a WKT string; rather, you work with the objects directly: 
+In a real program, it’s better to use a `GeometryFactory`, because you don’t need to build up  a WKT string; rather, you work with the objects directly: 
 
 ```java
 Coordinate[] coordinates = new Coordinate[] {
@@ -30,7 +30,7 @@ Coordinate[] coordinates = new Coordinate[] {
 Geometry g1 = new GeometryFactory().createLineString(coordinates);
 ```
 
-Once you’ve made your Geometry, there are many things you can do with it. You can easily  find the intersection of two Geometries: 
+Once you’ve made a Geometry, there are many things you can do with it. You can easily  find the intersection of two geometries: 
 
 ```java
 Geometry g3 = g1.intersection(g2); 
@@ -40,7 +40,7 @@ Other computations built into Geometries include: area, envelope, centroid, and 
 about what a Geometry can do, see the JavaDoc for Geometry in the  `org.loctiontech.jts.geom`
 package, as well as subsequent sections in this document. 
 
-# COMPUTING SPATIAL RELATIONSHIPS
+## Spatial Relationships
 
 An important application of JTS is computing the spatial relationships between Geometries. Various methods of computing relationships are provided. JTS follows the **Dimensionally Extended 9 Intersection Matrix** model specified by the OGC. To compute the DE-9IM for  two Geometries, use the relate method: 
 
@@ -65,7 +65,7 @@ Most relationships of interest can be specified as a pattern which matches a set
 
 In some cases the precise definition of the predicates is subtle. You should refer to the JTS  Technical Specifications to determine exactly what will be returned in any given case. 
 
-# COMPUTING OVERLAY OPERATIONS
+## Overlay Operations
 
 The previous section discussed functions that return true or false, like Intersects and  Contains. We will now present the JTS **overlay operations**, some of which are illustrated  in Figure 4-1 below.  
 
@@ -91,7 +91,7 @@ Descriptions for the overlay operations are tabulated below.
 
 As with the spatial relationships described in the previous section, these overlay operations  have precise definitions given in the JTS Technical Specifications. 
 
-# COMPUTING BUFFERS
+## Buffering
 
 In GIS, buffering is an operation which in GIS is used to compute the area containing all  points within a given distance of a Geometry. In mathematical terms, this is called  computing the **Minkowski sum** of the Geometry with a disc of radius equal to the buffer  distance. Finding positive and negative buffers is sometimes referred to as the operations  of **erosion** and **dilation**. In CAD/CAM buffer curves are called **offset curves**. 
 
@@ -114,7 +114,7 @@ or a `Point` results in an empty `Geometry`.
 
 Buffer distances of 0 are also supported. You can use this to perform an efficient union of  multiple polygons. 
 
-## BASIC BUFFERING
+### Basic Buffers
 
 To compute a buffer for a given distance, call the `buffer()` method on the `Geometry`: 
 
@@ -123,7 +123,7 @@ Geometry g = ...
 Geometry buffer = g.buffer(100.0);
 ```
 
-## END CAP STYLES
+### End Cap Styles
 
 Buffer polygons can be computed with different line **end cap
 styles**. The end cap style  determines how the line work for the buffer
@@ -155,10 +155,10 @@ bufOp.setEndCapStyle(BufferOp.CAP_BUTT);
 Geometry buffer = bufOp.getResultGeometry(distance);
 ```
 
-## SPECIFYING THE APPROXIMATION QUANTIZATION
+### Quantization Approximation 
 
 Since the exact buffer outline of a Geometry usually contains circular
-sections, the buffer  must be approximated by the linear Geometry
+sections, the buffer must be approximated by the linear Geometry
 supported by JTS. The degree of  approximation may be controlled by the
 user. In JTS this is done by specifying the number  of quadrant segments
 used to approximate a quarter-circle. Specifying a larger number of
@@ -180,7 +180,7 @@ The default number of segments is 8. This gives less than a 2% maximum error in 
 
 **Figure 5-3 \- Using Different Curve Approximation Levels** 
 
-# POLYGONIZATION
+## Polygonization
 
 Polygonization is the process of forming polygons from linework which encloses areas.  Linework to be formed into polygons must be fully noded – that is, linestrings must not  cross and must touch only at endpoints.  
 
@@ -213,7 +213,7 @@ If the set of lines is not correctly noded the Polygonizer will still operate on
 
 **Figure 6-1 \- The Polygonization Operation** 
 
-# **7. MERGING A SET OF LINESTRINGS** 
+## Merging Lines
 
 Sometimes a spatial operation such as \#union will produce chains of small LineStrings.  The JTS LineMerger is a simple utility to sew these small LineStrings together, as shown  below. 
 
@@ -238,7 +238,7 @@ lineMerger.add(lineStrings);
 Collection mergedLineStrings = lineMerger.getMergedLineStrings(); 
 ```
 
-# USING CUSTOM COORDINATE SEQUENCES
+## Custom Coordinate Sequences
 
 By default JTS uses arrays of Coordinates to represent the points and lines of Geometries.  There are some cases in which you might want Geometries to store their points using some  other implementation. For example, to save memory you may want to use a more  compact sequence implementation, such as an array of x’s and an array of y’s. Another  possibility is to use a custom coordinate class to store extra information on each coordinate,  such as measures for linear referencing. 
 
@@ -260,11 +260,11 @@ A note on performance: If your `CoordinateSequence` is not based on an array of 
 marshalling and unmarshalling required for JTS to convert the  user coordinates into arrays of JTS 
 coordinates. 
 
-# TIPS & TECHNIQUES
+## Tips & Techniques
 
-## NODING A SET OF LINESTRINGS
+### Noding Lines
 
-Many spatial operations assume that their input data is **noded**, meaning that `LineStrings` never cross. For 
+Many spatial operations expect that their input data is **noded**, meaning that `LineStrings` never cross. For 
 example, the JTS `Polygonizer` and the JTS `LineMerger` described earlier  assume that their input is noded. 
 
 The noding process splits `LineStrings` that cross into smaller `LineStrings` that meet at a  point, or 
@@ -288,16 +288,4 @@ for (int i = 1; i \< lineStrings.size(); i++) {
 }
 ```
 
-# UNIONING MANY POLYGONS EFFICIENTLY
 
-Calling `Polygon.union` repeatedly is one way to union several `Polygons`
-together. But here’s  a trick that can be significantly faster (seconds
-rather than minutes) – add the `Polygons` to a  `GeometryCollection`,
-then apply a buffer with zero distance:
-
-```java
-Polygon[] polygons = ...
-GeometryCollection polygonCollection =
-  geometryFactory.createGeometryCollection(polygons);
-  Geometry union = polygonCollection.buffer(0);
- ```
