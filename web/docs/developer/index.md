@@ -1,10 +1,10 @@
-# JTS Topology Suite Developer’s Guide
+# JTS Developer Guide
 
 ## Overview
 
-The JTS Topology Suite is a Java API that implements a core set of spatial data operations  using an explicit precision model and robust geometric algorithms. It provides a complete  model for specifying 2-D linear Geometry. Many common operations in computational  geometry and spatial data processing are exposed in a clear, consistent and integrated API.  JTS is intended to be used in the development of applications that support the validation,  cleaning, integration and querying of spatial datasets.  
+The **JTS Topology Suite** is a Java API that implements a core set of spatial data operations  using an explicit precision model and robust geometric algorithms. It provides a complete  model for specifying 2-D linear Geometry. Many common operations in computational  geometry and spatial data processing are exposed in a clear, consistent and integrated API.  JTS is intended to be used in the development of applications that support the validation,  cleaning, integration and querying of spatial datasets.  
 
-This document is intended for developers who would like to use JTS to accomplish their  spatial data processing requirements. It describes common uses of the JTS API and gives  code examples. 
+This document is intended for developers who would like to use JTS to accomplish their spatial data processing requirements. It describes common uses of the JTS API and gives  code examples. 
 
 ### Resources
 
@@ -157,13 +157,13 @@ Geometry buffer = bufOp.getResultGeometry(distance);
 
 ### Quantization Approximation 
 
-Since the exact buffer outline of a Geometry usually contains circular
-sections, the buffer must be approximated by the linear Geometry
-supported by JTS. The degree of  approximation may be controlled by the
-user. In JTS this is done by specifying the number  of quadrant segments
+The exact buffer outline of a Geometry usually contains circular
+sections.  These must be approximated by the linear geometry
+supported by JTS. The degree of approximation can be controlled by the
+user. This is done by specifying the number of quadrant segments
 used to approximate a quarter-circle. Specifying a larger number of
 segments results in a better approximation to the actual area, but also
-results in a larger  number of line segments in the computed polygon.
+results in a larger number of line segments in the computed buffer geometry.
 
 To specify a value for the quadrant segments, use the Geometry buffer method with a  second argument: 
 
