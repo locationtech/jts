@@ -9,7 +9,7 @@ software such as geographical information systems. It can also be used
 as a general-purpose library providing algorithms in computational
 geometry.
 
-# License
+## License
 
 JTS Topology Suite is open-source software. It is dual-licensed under:
 
@@ -19,12 +19,12 @@ JTS Topology Suite is open-source software. It is dual-licensed under:
   1.0](http://www.eclipse.org/org/documents/edl-v10.php){target="license"}
   (a BSD-style license)
 
-# Documentation
+## Documentation
 
 - [Feature Sheet](features.md)
 - [FAQ](faq.md)
 
-# Resources
+## Resources
 
 - [LocationTech home
   page](https://www.locationtech.org/projects/technology.jts)

@@ -1,4 +1,4 @@
-# JTS Developer Guide
+# JTS User Guide
 
 ## Overview
 
@@ -9,8 +9,8 @@ This document is intended for developers who would like to use JTS to accomplish
 ### Resources
 
 * *OpenGIS Simple Features Specification For SQL Revision 1.1* (referred to as SFS in this  document). The reference specification for the spatial data model and the spatial  predicates and functions implemented by JTS.   
-* *JTS Technical Specifications*. The design specification for the classes, methods and  algorithms implemented in the JTS Topology Suite.   
 * *JTS JavaDoc*. Documentation for all of the packages, classes and methods in JTS. 
+* *JTS Technical Specifications*. The design specification for the classes, methods and  algorithms implemented in the JTS Topology Suite.   
 
 ## Getting Started
 
