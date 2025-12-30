@@ -11,70 +11,59 @@
  */
 package org.locationtech.jts.geom.util;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Collection;
 import java.util.List;
 
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryCollection;
 import org.locationtech.jts.geom.GeometryFilter;
 import org.locationtech.jts.geom.Point;
 
-
 /**
- * Extracts all the 0-dimensional ({@link Point}) components from a {@link Geometry}.
- *
+ * Extracts all the 0-dimensional ({@link Point}) components from a
+ * {@link Geometry}.
+ * 
  * @version 1.7
- * @see GeometryExtracter
+ * @see org.locationtech.jts.geom.util.GeometryExtracter GeometryExtracter
  */
-public class PointExtracter
-  implements GeometryFilter
-{
-  /**
-   * Extracts the {@link Point} elements from a single {@link Geometry}
-   * and adds them to the provided {@link List}.
-   * 
-   * @param geom the geometry from which to extract
-   * @param list the list to add the extracted elements to
-   */
-  public static List getPoints(Geometry geom, List list)
-  {
-  	if (geom instanceof Point) {
-  		list.add(geom);
-  	}
-  	else if (geom instanceof GeometryCollection) {
-  		geom.apply(new PointExtracter(list));
-  	}
-  	// skip non-Polygonal elemental geometries
-  	
-    return list;
-  }
+public final class PointExtracter implements GeometryFilter {
+	/**
+	 * Extracts the {@link Point} elements from a single {@link Geometry} and adds
+	 * them to the provided {@link Collection}.
+	 *
+	 * @param geom the geometry from which to extract (may be {@code null})
+	 * @param out  an optional collection to add the extracted points to (may be
+	 *             {@code null})
+	 * @return a new modifiable {@link List} containing the extracted points
+	 */
+	public static List<Point> getPoints(Geometry geom, Collection<? super Point> out) {
+		return GeometryExtracter.extractByClass(geom, Point.class, out);
+	}
 
-  /**
-   * Extracts the {@link Point} elements from a single {@link Geometry}
-   * and returns them in a {@link List}.
-   * 
-   * @param geom the geometry from which to extract
-   */
-  public static List getPoints(Geometry geom) {
-    if (geom instanceof Point) {
-      return Collections.singletonList(geom);
-    }
-    return getPoints(geom, new ArrayList());
-  }
+	/**
+	 * Extracts the {@link Point} elements from a single {@link Geometry} and
+	 * returns them in a {@link List}.
+	 *
+	 * @param geom the geometry from which to extract (may be {@code null})
+	 * @return a new modifiable {@link List} containing the extracted points
+	 */
+	public static List<Point> getPoints(Geometry geom) {
+		return GeometryExtracter.extractByClass(geom, Point.class);
+	}
 
-  private List pts;
-  /**
-   * Constructs a PointExtracterFilter with a list in which to store Points found.
-   */
-  public PointExtracter(List pts)
-  {
-    this.pts = pts;
-  }
+	private final Collection<? super Point> comps;
 
-  public void filter(Geometry geom)
-  {
-    if (geom instanceof Point) pts.add(geom);
-  }
+	/**
+	 * Constructs a filter with a collection in which to store {@link Point}s found.
+	 *
+	 * @param comps the collection in which to store points found
+	 */
+	public PointExtracter(Collection<? super Point> comps) {
+		this.comps = comps;
+	}
 
+	@Override
+	public void filter(Geometry geom) {
+		if (geom instanceof Point)
+			comps.add((Point) geom);
+	}
 }

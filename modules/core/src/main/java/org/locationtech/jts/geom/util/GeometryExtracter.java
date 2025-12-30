@@ -12,6 +12,7 @@
 package org.locationtech.jts.geom.util;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.locationtech.jts.geom.Geometry;
@@ -33,14 +34,55 @@ import org.locationtech.jts.geom.Polygon;
 public class GeometryExtracter
   implements GeometryFilter
 {
-  /**
-   * Extracts the components of type <tt>clz</tt> from a {@link Geometry}
-   * and adds them to the provided {@link List}.
-   * 
-   * @param geom the geometry from which to extract
-   * @param list the list to add the extracted elements to
-   * @deprecated Use {@link GeometryExtracter#extract(Geometry, String, List)}
-   */
+
+	/**
+	 * Extracts the components of type {@code clz} from a {@link Geometry}, returns
+	 * them in a new {@link List}, and optionally also adds them to {@code out}.
+	 * <p>
+	 * This method is intentionally NOT named {@code extract(...)} to avoid overload
+	 * ambiguity with the legacy JTS {@code extract(Geometry, String, List)} /
+	 * {@code extract(Geometry, Class, List)} methods.
+	 *
+	 * @param geom the geometry from which to extract (may be {@code null})
+	 * @param clz  the class of the components to extract (must not be {@code null})
+	 * @param out  optional collection to also write extracted components into (may
+	 *             be {@code null})
+	 * @param <T>  the component type
+	 * @return a new modifiable list of extracted components
+	 */
+	public static <T extends Geometry> List<T> extractByClass(Geometry geom, Class<T> clz, Collection<? super T> out) {
+		List<T> result = new ArrayList<T>();
+		if (geom == null || geom.isEmpty())
+			return result;
+
+		geom.apply(new GeometryExtracter(clz, result));
+		if (out != null)
+			out.addAll(result);
+
+		return result;
+	}
+
+	/**
+	 * Extracts the components of type {@code clz} from a {@link Geometry} and
+	 * returns them in a new {@link List}.
+	 *
+	 * @param geom the geometry from which to extract (may be {@code null})
+	 * @param clz  the class of the components to extract (must not be {@code null})
+	 * @param <T>  the component type
+	 * @return a new modifiable list of extracted components
+	 */
+	public static <T extends Geometry> List<T> extractByClass(Geometry geom, Class<T> clz) {
+		return extractByClass(geom, clz, null);
+	}
+
+	/**
+	 * Extracts the components of type <tt>clz</tt> from a {@link Geometry} and adds
+	 * them to the provided {@link List}.
+	 * 
+	 * @param geom the geometry from which to extract
+	 * @param list the list to add the extracted elements to
+	 * @deprecated Use {@link GeometryExtracter#extract(Geometry, String, List)}
+	 */
   public static List extract(Geometry geom, Class clz, List list)
   {
   	return extract(geom, toGeometryType(clz), list);
@@ -109,44 +151,50 @@ public class GeometryExtracter
     return extract(geom, geometryType, new ArrayList());
   }
 
-  private String geometryType;
-  private List comps;
-  
-  /**
-   * Constructs a filter with a list in which to store the elements found.
-   * 
-   * @param clz the class of the components to extract (null means all types)
-   * @param comps the list to extract into
-   * @deprecated
-   */
-  public GeometryExtracter(Class clz, List comps)
-  {
-  	this.geometryType = toGeometryType(clz);
-    this.comps = comps;
-  }
-  
-  /**
-   * Constructs a filter with a list in which to store the elements found.
-   * 
-   * @param geometryType Geometry type to extract (null means all types)
-   * @param comps the list to extract into
-   */
+  private final String geometryType; // legacy string-based matching mode
+  private final Class<?> componentClass; // class-based matching mode
+  private final Collection comps;
+
   public GeometryExtracter(String geometryType, List comps)
   {
-  	this.geometryType = geometryType;
+    this.geometryType = geometryType;
+    this.componentClass = null;
     this.comps = comps;
   }
-  
+
+  /**
+   * Constructs a filter matching by component class.
+   *
+   * @param componentClass the class of the components to extract (null means all types)
+   * @param comps the list to extract into
+   */
+  public GeometryExtracter(Class componentClass, List comps)
+  {
+    this.geometryType = null;
+    this.componentClass = componentClass;
+    this.comps = comps;
+  }
+
+  @Override
+  public void filter(Geometry geom)
+  {
+    if (geom == null || geom.isEmpty()) return;
+
+    if (componentClass != null) {
+      if (componentClass.isInstance(geom)) comps.add(geom);
+      return;
+    }
+
+    // legacy string-based behaviour
+    if (geometryType == null || isOfType(geom, geometryType)) {
+      comps.add(geom);
+    }
+  }
+
   protected static boolean isOfType(Geometry geom, String geometryType) {
     if (geom.getGeometryType() == geometryType) return true;
     if (geometryType == Geometry.TYPENAME_LINESTRING
-      && geom.getGeometryType() == Geometry.TYPENAME_LINEARRING) return true;
+        && geom.getGeometryType() == Geometry.TYPENAME_LINEARRING) return true;
     return false;
   }
-
-  public void filter(Geometry geom) {
-    if (geometryType == null || isOfType(geom, geometryType))
-      comps.add(geom);
-  }
-
 }
