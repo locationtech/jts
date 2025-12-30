@@ -16,6 +16,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryCollection;
 import org.locationtech.jts.geom.GeometryFilter;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Polygon;
@@ -41,10 +42,17 @@ public final class PolygonalExtracter implements GeometryFilter {
 	 * @return the {@code out} collection
 	 */
 	public static Collection<? super Geometry> getPolygonals(Geometry geom, Collection<? super Geometry> out) {
-		if (geom == null || geom.isEmpty())
+		if (geom == null)
 			return out;
 
-		geom.apply(new PolygonalExtracter(out));
+		if (geom instanceof Polygon || geom instanceof MultiPolygon) {
+			out.add(geom);
+		} else if (geom instanceof GeometryCollection) {
+			for (int i = 0; i < geom.getNumGeometries(); i++) {
+				getPolygonals(geom.getGeometryN(i), out);
+			}
+		}
+		// skip non-polygonal elemental geometries
 		return out;
 	}
 
@@ -52,7 +60,7 @@ public final class PolygonalExtracter implements GeometryFilter {
 	 * Extracts the {@link Polygon} and {@link MultiPolygon} elements from a
 	 * {@link Geometry} and returns them in a list.
 	 *
-	 * @param geom the geometry from which to extract (may be {@code null})
+	 * @param geom the geometry from which to extract
 	 * @return a new modifiable list containing polygonal elements
 	 */
 	public static List<Geometry> getPolygonals(Geometry geom) {

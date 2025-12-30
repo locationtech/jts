@@ -52,7 +52,7 @@ public class GeometryExtracter
 	 */
 	public static <T extends Geometry> List<T> extractByClass(Geometry geom, Class<T> clz, Collection<? super T> out) {
 		List<T> result = new ArrayList<T>();
-		if (geom == null || geom.isEmpty())
+		if (geom == null)
 			return result;
 
 		geom.apply(new GeometryExtracter(clz, result));
@@ -178,7 +178,7 @@ public class GeometryExtracter
   @Override
   public void filter(Geometry geom)
   {
-    if (geom == null || geom.isEmpty()) return;
+    if (geom == null) return;
 
     if (componentClass != null) {
       if (componentClass.isInstance(geom)) comps.add(geom);

@@ -95,7 +95,7 @@ public class LinearComponentExtracter implements GeometryComponentFilter
       Collection<? super LineString> out,
       boolean forceToLineString)
   {
-    if (geom == null || geom.isEmpty()) return out;
+    if (geom == null) return out;
 
     // Fast-path for single LineString inputs when not forcing ring conversion.
     // (If forcing, we still run the filter so LinearRing gets converted.)
@@ -202,7 +202,7 @@ public class LinearComponentExtracter implements GeometryComponentFilter
   @Override
   public void filter(Geometry geom)
   {
-    if (geom == null || geom.isEmpty()) return;
+    if (geom == null) return;
 
     if (isForcedToLineString && geom instanceof LinearRing) {
       LinearRing ring = (LinearRing) geom;
