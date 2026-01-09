@@ -19,6 +19,8 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.TopologyException;
 import org.locationtech.jts.util.Assert;
+import org.locationtech.jts.index.SpatialIndex;
+import org.locationtech.jts.index.hprtree.HPRtree;
 
 class PolygonBuilder {
 
@@ -175,11 +177,16 @@ class PolygonBuilder {
    */
   private void placeFreeHoles(List<OverlayEdgeRing> shellList, List<OverlayEdgeRing> freeHoleList)
   {
-    // TODO: use a spatial index to improve performance
+    SpatialIndex index = new HPRtree();
+    for (OverlayEdgeRing shell : shellList) {
+      index.insert(shell.getRing().getEnvelopeInternal(), shell);
+    }
+
     for (OverlayEdgeRing hole : freeHoleList ) {
       // only place this hole if it doesn't yet have a shell
       if (hole.getShell() == null) {
-        OverlayEdgeRing shell = hole.findEdgeRingContaining(shellList);
+        List<OverlayEdgeRing> shellListOverlaps = index.query(hole.getRing().getEnvelopeInternal());
+        OverlayEdgeRing shell = hole.findEdgeRingContaining(shellListOverlaps);
         // only when building a polygon-valid result
         if (isEnforcePolygonal  && shell == null) {
           throw new TopologyException("unable to assign free hole to a shell", hole.getCoordinate());
