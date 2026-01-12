@@ -48,8 +48,8 @@ import org.locationtech.jts.triangulate.quadedge.QuadEdgeSubdivision;
 public class VoronoiDiagramBuilder 
 {
   /**
-   * A very small factor which detects segments which might arise
-   * from nearly-cocircular site circumcentres.
+   * A very small factor which detects short Voronoi cell segments 
+   * which might be caused by nearly-cocircular site circumcentres.
    */
 	private static final double SHORT_SEG_TOLERANCE_FACTOR = 1.0e-10;
 	
@@ -209,17 +209,18 @@ public class VoronoiDiagramBuilder
   }
   
 	/**
-	 * Cleans diagram polygons to eliminate robustness errors,
+	 * Cleans diagram polygons to fix invalid topology caused by robustness errors,
 	 * 
 	 * @param polys a GeometryCollection containing the raw polygons for the diagram
-	 * @return the clean diagram polygons
+	 * @return the clean polygons
 	 */
   private Geometry clean(Geometry polys) {
     /**
 		 * Check for a diagram polygon with a very short edge which is invalid.
-		 * This is an efficient test which most typical datasets should pass.
 		 * This can indicate invalid diagram topology caused by nearly cocircular input points.
-		 * If found, snap the polygons to fix the topology.
+     * This is an efficient test which should not trigger on most typical datasets.
+     * 
+     * If found, snap the polygons to fix the topology.
 		 * This is a heuristic fix, but should generally restore correct topology
 		 * with very little effect on the diagram geometry.
 		 * 
