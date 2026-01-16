@@ -61,6 +61,7 @@ Distributions for older JTS versions can be obtained at the
 * Add `GeometryCollection` dimension cache (#1103)
 * Add `MathUtil.hypot` function and use it for length calculations (#1112)
 * Improve `LineStringSnapper` performance by using squared distance (#1111)
+* Add spatial index to OverlayNG `PolygonBuilder.placeFreeHoles` (#1173)
 
 ## JTS TestBuilder
 
