@@ -25,6 +25,7 @@ import org.locationtech.jts.geom.CoordinateList;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.util.AffineTransformation;
 import org.locationtech.jts.geom.util.AffineTransformationFactory;
 import org.locationtech.jts.geom.util.SineStarFactory;
@@ -395,5 +396,34 @@ public class CreateShapeFunctions {
     }
     pts.closeRing();
     return FunctionsUtil.getFactoryOrDefault(g).createPolygon(pts.toCoordinateArray());
+  }
+  
+  public static Geometry diagonals(Geometry g) {
+    Coordinate[] pts = g.getCoordinates();
+    int n = pts.length - 1;
+    
+    List<Geometry> chords = new ArrayList<Geometry>();
+    
+    for (int i = 0; i < n; i++) {
+      for (int j = i + 2; j < n; j++) {
+        if (i == j) continue;
+        if (i == 0 && j == n-1) continue;
+        
+        Coordinate[] chordPts = new Coordinate[] {
+            pts[i].copy(), pts[j].copy() };
+        LineString chord = g.getFactory().createLineString(chordPts);
+        //-- only keep internal chords
+        if (g.covers(chord)) {
+          chords.add(chord);
+        }
+      }
+    }
+    return g.getFactory().buildGeometry(chords);
+  }
+  
+  public static Geometry diagonalPartition(Geometry g) {
+    Geometry chords = diagonals(g);
+    Geometry noded = NodingFunctions.MCIndexNoding(g, chords);
+    return PolygonizeFunctions.polygonize(noded);
   }
 }
