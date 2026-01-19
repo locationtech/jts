@@ -22,9 +22,11 @@ import org.locationtech.jts.geom.LineString;
 /**
  * An algorithm for computing a distance metric
  * which is an approximation to the Hausdorff Distance
- * based on a discretization of the input {@link Geometry}.
+ * based on a discretization of the input {@link Geometry}s.
  * The algorithm computes the Hausdorff distance restricted to discrete points
  * for one of the geometries.
+ * The algorithm works on point and linear geometries only; 
+ * areal geometries are treated as their linear boundary.
  * The points can be either the vertices of the geometries (the default), 
  * or the geometries with line segments densified by a given fraction.
  * The class can also determine two points of the geometries 
