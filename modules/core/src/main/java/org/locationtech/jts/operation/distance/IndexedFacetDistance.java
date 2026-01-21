@@ -125,51 +125,32 @@ public class IndexedFacetDistance
    */
   public double distance(Geometry g)
   {
-    STRtree tree2 = FacetSequenceTreeBuilder.build(g);
-    Object[] obj = cachedTree.nearestNeighbour(tree2, 
-        FACET_SEQ_DIST);
+    Object[] obj = nearestFacets(g);
     FacetSequence fs1 = (FacetSequence) obj[0];
     FacetSequence fs2 = (FacetSequence) obj[1];
     return fs1.distance(fs2);
   }
-  
-  /**
-   * Computes the nearest locations on the base geometry
-   * and the given geometry.
-   * 
-   * @param g the geometry to compute the nearest location to
-   * @return the nearest locations
-   */
-  public GeometryLocation[] nearestLocations(Geometry g)
-  {
+
+  private Object[] nearestFacets(Geometry g) {
     STRtree tree2 = FacetSequenceTreeBuilder.build(g);
     Object[] obj = cachedTree.nearestNeighbour(tree2, 
         FACET_SEQ_DIST);
+    return obj;
+  }
+  
+  /**
+   * Computes the nearest points on the base geometry
+   * and the given geometry.
+   * 
+   * @param g the geometry to compute the nearest location to
+   * @return the nearest points
+   */
+  public Coordinate[] nearestPoints(Geometry g)
+  {
+    Object[] obj = nearestFacets(g);
     FacetSequence fs1 = (FacetSequence) obj[0];
     FacetSequence fs2 = (FacetSequence) obj[1];
     return fs1.nearestLocations(fs2);
-  }
-
-  /**
-   * Compute the nearest locations on the target geometry
-   * and the given geometry.
-   * 
-   * @param g the geometry to compute the nearest point to
-   * @return the nearest points
-   */
-  public Coordinate[] nearestPoints(Geometry g) {
-    GeometryLocation[] minDistanceLocation = nearestLocations(g);
-    Coordinate[] nearestPts = toPoints(minDistanceLocation);
-    return nearestPts;
-  }
-
-  private static Coordinate[] toPoints(GeometryLocation[] locations) {
-    if (locations == null) 
-      return null;
-    Coordinate[] nearestPts = new Coordinate[] {
-        locations[0].getCoordinate(),
-      locations[1].getCoordinate() };
-    return nearestPts;
   }
 
   /**
@@ -200,9 +181,6 @@ public class IndexedFacetDistance
       return fs1.distance(fs2);    
     }
   }
-
-
-
 }
 
 
