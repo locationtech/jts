@@ -57,18 +57,18 @@ public class FacetSequenceTreeBuilder {
         CoordinateSequence seq = null;
         if (geom instanceof LineString) {
           seq = ((LineString) geom).getCoordinateSequence();
-          addFacetSequences(geom, seq, sections);
+          addFacetSequences(seq, sections);
         }
         else if (geom instanceof Point) {
           seq = ((Point) geom).getCoordinateSequence();
-          addFacetSequences(geom, seq, sections);
+          addFacetSequences(seq, sections);
         }
       }
     });
     return sections;
   }
 
-  private static void addFacetSequences(Geometry geom, CoordinateSequence pts, List sections) {
+  private static void addFacetSequences(CoordinateSequence pts, List sections) {
     int i = 0;
     int size = pts.size();
     while (i <= size - 1) {
@@ -77,7 +77,7 @@ public class FacetSequenceTreeBuilder {
       // section
       if (end >= size - 1)
         end = size;
-      FacetSequence sect = new FacetSequence(geom, pts, i, end);
+      FacetSequence sect = new FacetSequence(pts, i, end);
       sections.add(sect);
       i = i + FACET_SEQUENCE_SIZE;
     }
