@@ -64,6 +64,7 @@ public class LayerListPanel extends JPanel {
   private JButton btnDown;
   private JButton btnDelete;
   private JButton btnPaste;
+  private JButton btnZoom;
 
   private Layer focusLayer;
 
@@ -105,6 +106,15 @@ public class LayerListPanel extends JPanel {
           }
         });
     buttonPanel.add(btnCopy);
+    
+    btnZoom = SwingUtil.createButton(AppIcons.ZOOM, 
+        "Zoom to layer",
+            new ActionListener() {
+          public void actionPerformed(ActionEvent e) {
+            layerZoom();
+          }
+        });
+    buttonPanel.add(btnZoom);
     
     btnInspect = SwingUtil.createButton(AppIcons.GEOM_INSPECT, 
         "Inspect layer geometry",
@@ -227,6 +237,7 @@ public class LayerListPanel extends JPanel {
     // every layer is copyable
     btnCopy.setEnabled(true);
     btnPaste.setEnabled(isModifiable && ! lyr.hasGeometry());
+    btnZoom.setEnabled(lyr.hasGeometry());
     btnUp.setEnabled(isModifiable);
     btnDown.setEnabled(isModifiable);
     btnDelete.setEnabled(isModifiable);
@@ -241,6 +252,10 @@ public class LayerListPanel extends JPanel {
 
   private void layerInspect() {
     JTSTestBuilder.controller().inspectGeometry(focusLayer.getName(), focusLayer.getGeometry());
+  }
+  
+  private void layerZoom() {
+    JTSTestBuilder.controller().zoomToGeometry(focusLayer.getGeometry());
   }
   
   private void layerDelete(Layer lyr) {

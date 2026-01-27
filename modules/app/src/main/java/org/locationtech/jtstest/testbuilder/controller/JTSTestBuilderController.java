@@ -352,6 +352,10 @@ public class JTSTestBuilderController
     editPanel().zoomToGeometry(1);
   }
   
+  public void zoomToGeometry(Geometry geom) {
+    editPanel().zoom(geom);
+  }
+  
   public void caseMoveTo(int dir, boolean isZoom) {
     if (dir < 1) {
       model().cases().prevCase();
