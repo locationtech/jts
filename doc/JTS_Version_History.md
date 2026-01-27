@@ -69,6 +69,8 @@ Distributions for older JTS versions can be obtained at the
 
 * Add Select Elements tool with virtual layer
 * Add Layer style presets
+* Add Layer List Zoom to Geometry button
+* Add Layer List Copy Geometry button
 
 # Version 1.20.0
 
