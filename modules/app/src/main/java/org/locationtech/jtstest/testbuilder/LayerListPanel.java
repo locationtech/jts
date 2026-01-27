@@ -58,6 +58,7 @@ public class LayerListPanel extends JPanel {
   private LayerStylePanel lyrStylePanel;
   List<LayerItemPanel> layerItems = new ArrayList<LayerItemPanel>();
 
+  private JButton btnAdd;
   private JButton btnCopy;
   private JButton btnInspect;
   private JButton btnUp;
@@ -98,14 +99,23 @@ public class LayerListPanel extends JPanel {
     panelLeft.add(scrollPane1, BorderLayout.CENTER);
     panelLeft.add(buttonPanel, BorderLayout.EAST);
 
-    btnCopy = SwingUtil.createButton(AppIcons.ADD, 
-        "Copy layer to a new layer",
+    btnAdd = SwingUtil.createButton(AppIcons.ADD, 
+        "Duplicate layer to a new layer",
+            new ActionListener() {
+          public void actionPerformed(ActionEvent e) {
+            layerAdd();
+          }
+        });
+    buttonPanel.add(btnAdd);
+    
+    btnCopy = SwingUtil.createButton(AppIcons.COPY, 
+        "Copy layer geometry",
             new ActionListener() {
           public void actionPerformed(ActionEvent e) {
             layerCopy();
           }
         });
-    buttonPanel.add(btnCopy);
+    buttonPanel.add(btnAdd);
     
     btnZoom = SwingUtil.createButton(AppIcons.ZOOM, 
         "Zoom to layer",
@@ -124,7 +134,7 @@ public class LayerListPanel extends JPanel {
           }
         });
     buttonPanel.add(btnInspect);
-    
+
     btnPaste = SwingUtil.createButton(AppIcons.PASTE, 
         "Paste geometry into layer",
             new ActionListener() {
@@ -133,6 +143,16 @@ public class LayerListPanel extends JPanel {
           }
         });
     buttonPanel.add(btnPaste);
+    
+    btnCopy = SwingUtil.createButton(AppIcons.COPY, 
+        "Copy layer geometry",
+            new ActionListener() {
+          public void actionPerformed(ActionEvent e) {
+            layerCopy();
+          }
+        });
+    buttonPanel.add(btnCopy);
+
     btnUp = SwingUtil.createButton(AppIcons.UP, 
         "Move layer up",
             new ActionListener() {
@@ -234,20 +254,25 @@ public class LayerListPanel extends JPanel {
   private void updateButtons(Layer lyr) {
     boolean isModifiable = lyr.isModifiable();
 
-    // every layer is copyable
-    btnCopy.setEnabled(true);
+    // every layer can be duplicated
+    btnAdd.setEnabled(true);
     btnPaste.setEnabled(isModifiable && ! lyr.hasGeometry());
+    btnCopy.setEnabled(lyr.hasGeometry());
     btnZoom.setEnabled(lyr.hasGeometry());
     btnUp.setEnabled(isModifiable);
     btnDown.setEnabled(isModifiable);
     btnDelete.setEnabled(isModifiable);
   }
 
-  private void layerCopy() {
+  private void layerAdd() {
     Layer copy = JTSTestBuilder.model().layerCopy(focusLayer);
     populateList();
     setLayerFocus(findLayerItem(copy));
     JTSTestBuilder.controller().geometryViewChanged();
+  }
+
+  private void layerCopy() {
+    SwingUtil.copyToClipboard(focusLayer.getGeometry(), false);
   }
 
   private void layerInspect() {
