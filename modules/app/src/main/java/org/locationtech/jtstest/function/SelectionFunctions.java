@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.locationtech.jts.algorithm.construct.MaximumInscribedCircle;
+import org.locationtech.jts.algorithm.distance.DirectedHausdorffDistance;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.prep.PreparedGeometry;
 import org.locationtech.jts.geom.prep.PreparedGeometryFactory;
@@ -234,6 +235,16 @@ public class SelectionFunctions
       public boolean isTrue(Geometry g) {
         boolean isWithinDist = indexedDist.isWithinDistance(g, maximumDistance);
         return isWithinDist;
+      }
+    });
+  }
+
+  public static Geometry fullyWithinDistance(Geometry a, final Geometry mask, double maximumDistance)
+  {
+    return select(a, new GeometryPredicate() {
+      public boolean isTrue(Geometry g) {
+        double tolerance = maximumDistance / 1e5;
+        return DirectedHausdorffDistance.isFullyWithinDistance(a, mask, maximumDistance, tolerance);
       }
     });
   }

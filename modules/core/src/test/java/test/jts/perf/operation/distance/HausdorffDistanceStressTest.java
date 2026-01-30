@@ -1,0 +1,98 @@
+/*
+ * Copyright (c) 2026 Martin Davis.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
+ * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
+ * and the Eclipse Distribution License is available at
+ *
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ */
+package test.jts.perf.operation.distance;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.locationtech.jts.algorithm.distance.DiscreteHausdorffDistance;
+import org.locationtech.jts.algorithm.distance.DirectedHausdorffDistance;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.util.SineStarFactory;
+import org.locationtech.jts.util.Debug;
+
+public class HausdorffDistanceStressTest {
+  static final int MAX_ITER = 10000;
+  
+  static final boolean VERBOSE = false;
+
+  static GeometryFactory geomFact = new GeometryFactory();
+  
+  public static void main(String[] args) {
+    
+    HausdorffDistanceStressTest test = new HausdorffDistanceStressTest();
+    test.run();
+  }
+
+  private void run() {
+    Geometry b = createSineStar(1000, 300, 50);
+    Debug.println(b);
+    
+    List<Geometry> grid = createCircleGrid(2000, 100);
+    
+    int iter = 0;
+    for (Geometry g : grid) {
+      iter++;
+      Debug.println(iter + "  ----------------");
+      Debug.println(g);
+      checkHausdorff(g, b);
+      
+      //if (iter > 10) break;
+    }
+  }
+  
+  private void checkHausdorff(Geometry g, Geometry b) {
+    double distDHD = DiscreteHausdorffDistance.distance(g, b, 0.01);
+    
+    double distHD = DirectedHausdorffDistance.hausdorffDistanceLine(g, b, 0.01).getLength();
+    //-- performance testing only
+    //double distDHD = distHD;
+    
+    double err = Math.abs(distDHD - distHD) / (distDHD + distHD);
+    
+    Debug.println(distDHD + "   " + distHD + "   err = " + err);
+    if (err > .01) {
+      System.out.println("<<<<<<<<<<<  ERROR!");
+    }
+  }
+
+  private List<Geometry> createCircleGrid(double size, int nSide) {
+    List<Geometry> geoms = new ArrayList<Geometry>();
+    
+    double inc = size / nSide;
+    
+    for (int i = 0; i < nSide; i++) {
+      for (int j = 0; j < nSide; j++) {
+        Coordinate p = new Coordinate(i * inc, j * inc);
+        Point pt = geomFact.createPoint(p);
+        Geometry buf = pt.buffer(inc);
+        geoms.add(buf);
+      }
+    }
+    return geoms;
+  }
+
+  Geometry createSineStar(double loc, double size, int nPts)
+  {
+    SineStarFactory gsf = new SineStarFactory(geomFact);
+    gsf.setCentre(new Coordinate(loc, loc));
+    gsf.setSize(size);
+    gsf.setNumPoints(nPts);
+    
+    Geometry g = gsf.createSineStar().getBoundary();
+
+    return g;
+  }
+}

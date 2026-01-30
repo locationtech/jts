@@ -13,6 +13,7 @@ package org.locationtech.jtstest.function;
 
 import org.locationtech.jts.algorithm.distance.DiscreteFrechetDistance;
 import org.locationtech.jts.algorithm.distance.DiscreteHausdorffDistance;
+import org.locationtech.jts.algorithm.distance.DirectedHausdorffDistance;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.LineString;
@@ -116,5 +117,29 @@ public class DistanceFunctions {
     }
     
     return a.getFactory().createMultiLineString(lines);
+  }
+  
+  @Metadata(description="Directed Hausdorff distance from A to B, up to tolerance")
+  public static double ohd(Geometry a, Geometry b, 
+      @Metadata(title="Distance tolerance")
+      double distTol)  
+  {   
+    return DirectedHausdorffDistance.distance(a, b, distTol);
+  }
+  
+  @Metadata(description="Directed Hausdorff distance from A to B, up to tolerance")
+  public static Geometry ohdLine(Geometry a, Geometry b, 
+      @Metadata(title="Distance tolerance")
+      double distTol)  
+  {   
+    return DirectedHausdorffDistance.distanceLine(a, b, distTol);
+  }
+  
+  @Metadata(description="Hausdorff distance from A to B, up to tolerance")
+  public static Geometry hdLine(Geometry a, Geometry b, 
+      @Metadata(title="Distance tolerance")
+      double distTol)  
+  {   
+    return DirectedHausdorffDistance.hausdorffDistanceLine(a, b, distTol);
   }
 }
