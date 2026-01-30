@@ -51,7 +51,8 @@ import org.locationtech.jts.operation.distance.IndexedFacetDistance;
  * <p>
  * Points, lines and polygons are supported as input.
  * If the query geometry is polygonal, 
- * the point of maximum distance may occur in the interior of a polygon.
+ * the point at maximum distance may occur in the interior of a query polygon.
+ * For a polygonal target geometry the point always lies on the boundary. 
  * <p>
  * The class can be used in prepared mode.
  * Creating an instance on a target geometry caches indexes for that geometry.
