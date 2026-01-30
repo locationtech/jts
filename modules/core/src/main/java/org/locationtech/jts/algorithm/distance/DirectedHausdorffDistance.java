@@ -14,8 +14,8 @@ package org.locationtech.jts.algorithm.distance;
 import java.util.Iterator;
 import java.util.PriorityQueue;
 
-import org.locationtech.jts.algorithm.construct.IndexedPointInPolygonsLocator;
 import org.locationtech.jts.algorithm.construct.LargestEmptyCircle;
+import org.locationtech.jts.algorithm.locate.IndexedPointInPolygonsLocator;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Dimension;
 import org.locationtech.jts.geom.Geometry;
