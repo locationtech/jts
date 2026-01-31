@@ -130,7 +130,7 @@ extends GeometryTestCase
     checkDistance(wkt1, wkt2, 0.01, "LINESTRING (6.5390625 6.537109375, 6.5390625 0)");
   }
   
-  public void testDirectedLines() throws Exception
+  public void testDirectedLines()
   {
     String wkt1 = "LINESTRING (1 6, 3 5, 1 4)";
     String wkt2 = "LINESTRING (1 10, 9 5, 1 2)";
@@ -138,7 +138,7 @@ extends GeometryTestCase
     checkDistance(wkt2, wkt1, 0.01, "LINESTRING (9 5, 3 5)");
   }
 
-  public void testDirectedLines2() throws Exception
+  public void testDirectedLines2()
   {
     String wkt1 = "LINESTRING (1 6, 3 5, 1 4)";
     String wkt2 = "LINESTRING (1 3, 1 9, 9 5, 1 1)";
@@ -146,9 +146,19 @@ extends GeometryTestCase
     checkDistance(wkt2, wkt1, 0.01, "LINESTRING (9 5, 3 5)");
   }
 
+  /**
+   * Tests that segments are detected as interior even for a large tolerance.
+   */
+  public void testInteriorSegmentsLargeTol() 
+  {
+    String a = "POLYGON ((4 6, 5 6, 5 5, 4 5, 4 6))";
+    String b = "POLYGON ((1 9, 9 9, 9 1, 1 1, 1 9))";
+    checkDistance(a, b, 2.0, 0.0);
+  }
+  
   //-----------------------------------------------------
   
-  public void testFullyWithinDistancePolygons() throws Exception
+  public void testFullyWithinDistancePolygons()
   {
     String a = "POLYGON ((1 4, 4 4, 4 1, 1 1, 1 4))";
     String b = "POLYGON ((10 10, 10 15, 15 15, 15 10, 10 10))";

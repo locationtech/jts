@@ -24,6 +24,7 @@ import org.locationtech.jts.geom.GeometryComponentFilter;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Location;
 import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.io.WKTWriter;
 import org.locationtech.jts.operation.distance.IndexedFacetDistance;
 
 /**
@@ -158,7 +159,7 @@ public class DirectedHausdorffDistance {
     //TODO: handle mixed geoms with points
     Coordinate[] maxDistPtsEdge = computeAtEdges(geomA, tolerance, maxDistanceLimit);
     
-    if (isBeyondLimit(maxDistanceLimit, distance(maxDistPtsEdge))) {
+    if (isBeyondLimit(distance(maxDistPtsEdge), maxDistanceLimit)) {
       return maxDistPtsEdge;
     }
     
@@ -173,6 +174,120 @@ public class DirectedHausdorffDistance {
       }
     }
     return maxDistPtsEdge;
+  }
+  
+  private Coordinate[] computeAtPoints(Geometry geomA, double maxDistanceLimit) {
+    double maxDist = -1.0;;
+    Coordinate[] maxDistPtsAB = null;
+    Iterator geomi = new GeometryCollectionIterator(geomA);
+    while (geomi.hasNext()) {
+      Geometry geomElemA = (Geometry) geomi.next();
+      if (! (geomElemA instanceof Point))
+        continue;
+      
+      Coordinate pA = geomElemA.getCoordinate();
+      Coordinate[] nearPtsBA = distToB.nearestPoints(pA);
+      double dist = distance(nearPtsBA);
+
+      boolean isInterior = dist > 0 && isInteriorB(pA);
+      //-- check for interior point
+      if (isInterior) {
+        dist = 0; 
+        nearPtsBA = copyPair( pA, pA );
+      }
+      if (dist > maxDist) {
+        maxDist = dist;
+        maxDistPtsAB = copyReverse(nearPtsBA);
+      }
+      if (isBeyondLimit(maxDist, maxDistanceLimit)) {
+        break;
+      }
+    }
+    return maxDistPtsAB;
+  }
+
+  private Coordinate[] computeAtEdges(Geometry geomA, double tolerance, double maxDistanceLimit) {
+    PriorityQueue<DHDSegment> segQueue = createSegQueue(geomA);
+
+    boolean maxDistSegFound = false;
+    DHDSegment maxDistSeg = null;
+    long iter = 0;
+    while (! segQueue.isEmpty()) {
+      iter++;
+      // get the segment with greatest distance
+      maxDistSeg = segQueue.remove();
+
+      /**
+       * Exit if segment length is within tolerance, so distance is accurate enough.
+       * 
+       * If maxDistanceLimit is specified, short-circuit if:
+       * - if segment distance bound is less than distance limit, no other segment can be farther
+       * - if a point of segment is farther than limit, isFulyWithin must be false
+       */
+      if (maxDistSeg.length() <= tolerance 
+          || isWithinLimit(maxDistSeg.maxDistanceBound(), maxDistanceLimit)
+          || isBeyondLimit(maxDistSeg.maxDistance(), maxDistanceLimit)
+          ) {
+        maxDistSegFound = true;
+        break;
+      }
+      
+      //-- not within tolerance, so bisect segment and keep searching
+      DHDSegment[] bisects = maxDistSeg.bisect(distToB);
+      addNonInterior(bisects[0], segQueue);
+      addNonInterior(bisects[1], segQueue);
+    }
+    if (maxDistSegFound)
+      return maxDistSeg.getMaxDistPts();
+    
+    /**
+     * No DHD segment was found. 
+     * This must be because all were inside the target.
+     * In this case distance is zero.
+     * Return a single coordinate of the input as a representative point
+     */
+    Coordinate maxPt = geomA.getCoordinate();
+    return copyPair(maxPt, maxPt);
+  }
+  
+  private static boolean isBeyondLimit(double maxDist, double maxDistanceLimit) {
+    return maxDistanceLimit >= 0 && maxDist > maxDistanceLimit;
+  }
+
+  private static boolean isWithinLimit(double maxDist, double maxDistanceLimit) {
+    return maxDistanceLimit >= 0 && maxDist <= maxDistanceLimit;
+  }
+
+  private void addNonInterior(DHDSegment ohdSegment, PriorityQueue<DHDSegment> segQueue) {
+    //-- discard segment if it is interior to a polygon
+    if (isInterior(ohdSegment)) {
+      return;
+    }
+    segQueue.add(ohdSegment);
+  }
+
+  /**
+   * Tests if segment is fully in the interior of the target geometry polygons (if any).
+   *  
+   * @param ohdSegment
+   * @return
+   */
+  private boolean isInterior(DHDSegment ohdSegment) {
+    if (! isAreaB)
+      return false;
+    double segDist = distToB.distance(ohdSegment.getEndpoint(0), ohdSegment.getEndpoint(1));
+    //-- if segment touches B it is not in interior
+    if (segDist == 0)
+      return false;
+    //-- only need to test one point to check interior
+    Coordinate pt = ohdSegment.getEndpoint(0);
+    boolean isInterior = isInteriorB(pt);
+    return isInterior;
+  }
+
+  private boolean isInteriorB(Coordinate p) {
+    if (! isAreaB) return false;
+    return ptInAreaB.locate(p) == Location.INTERIOR;
   }
   
   /**
@@ -220,111 +335,16 @@ public class DirectedHausdorffDistance {
     return copyReverse(nearPtsBA);
   }
 
-  private Coordinate[] computeAtPoints(Geometry geomA, double maxDistanceLimit) {
-    double maxDist = -1.0;;
-    Coordinate[] maxDistPtsAB = null;
-    Iterator geomi = new GeometryCollectionIterator(geomA);
-    while (geomi.hasNext()) {
-      Geometry geomElemA = (Geometry) geomi.next();
-      if (! (geomElemA instanceof Point))
-        continue;
-      
-      Coordinate pA = geomElemA.getCoordinate();
-      Coordinate[] nearPtsBA = distToB.nearestPoints(pA);
-      double dist = distance(nearPtsBA);
-
-      boolean isInterior = dist > 0 && isInteriorB(pA);
-      //-- check for interior point
-      if (isInterior) {
-        dist = 0; 
-        nearPtsBA = copyPair( pA, pA );
-      }
-      if (dist > maxDist) {
-        maxDist = dist;
-        maxDistPtsAB = copyReverse(nearPtsBA);
-      }
-      if (isBeyondLimit(maxDistanceLimit, maxDist)) {
-        break;
-      }
-    }
-    return maxDistPtsAB;
-  }
-
-  public Coordinate[] computeAtEdges(Geometry geomA, double tolerance, double maxDistanceLimit) {
-    PriorityQueue<DHDSegment> segQueue = createSegQueue(geomA);
-    
-    DHDSegment ohdSeg = null;
-    DHDSegment maxDistSeg = null;
-    long iter = 0;
-    while (! segQueue.isEmpty()) {
-      iter++;
-      // get the segment with greatest distance
-      maxDistSeg = segQueue.remove();
-
-      double maxDist = maxDistSeg.maxDistance();
-      if (maxDistSeg.length() <= tolerance 
-          || isWithinLimit(maxDistanceLimit, maxDistSeg.maxDistanceBound())) {
-        ohdSeg = maxDistSeg;
-        break;
-      }
-      
-      //-- not within tolerance, so bisect segment and keep searching
-      DHDSegment[] bisects = maxDistSeg.bisect(distToB);
-      addNonInterior(bisects[0], segQueue);
-      addNonInterior(bisects[1], segQueue);
-    }
-    if (ohdSeg != null)
-      return ohdSeg.getMaxDistPts();
-    
-    /**
-     * If no OHD segment was found, all were inside the target.
-     * In this case distance is zero.
-     * Return a single coordinate of the input as a representative point
-     */
-    Coordinate maxPt = maxDistSeg.getEndpoint(0);
-    return copyPair(maxPt, maxPt);
-  }
-
-  private boolean isBeyondLimit(double maxDistanceLimit, double maxDist) {
-    return maxDistanceLimit >= 0 && maxDist > maxDistanceLimit;
-  }
-
-  private boolean isWithinLimit(double maxDistanceLimit, double maxDist) {
-    return maxDistanceLimit >= 0 && maxDist <= maxDistanceLimit;
-  }
-
-  private void addNonInterior(DHDSegment ohdSegment, PriorityQueue<DHDSegment> segQueue) {
-    //-- discard segment if it is interior to a polygon
-    if (isInterior(ohdSegment)) {
-      return;
-    }
-    segQueue.add(ohdSegment);
-  }
-
   /**
-   * Tests if segment is fully in the interior of the target geometry polygons (if any).
-   *  
-   * @param ohdSegment
-   * @return
+   * Creates the priority queue for segments.
+   * Segments which are interior to a polygonal target geometry
+   * are not added to the queue.
+   * So if a query geometry is fully covered by the target
+   * the returned queue is empty.
+   * 
+   * @param geomA
+   * @return the segment priority queue
    */
-  private boolean isInterior(DHDSegment ohdSegment) {
-    if (! isAreaB)
-      return false;
-    double segDist = distToB.distance(ohdSegment.getEndpoint(0), ohdSegment.getEndpoint(1));
-    //-- if segment touches B it is not in interior
-    if (segDist == 0)
-      return false;
-    //-- only need to test one point to check interior
-    Coordinate pt = ohdSegment.getEndpoint(0);
-    boolean isInterior = isInteriorB(pt);
-    return isInterior;
-  }
-
-  private boolean isInteriorB(Coordinate p) {
-    if (! isAreaB) return false;
-    return ptInAreaB.locate(p) == Location.INTERIOR;
-  }
-  
   private PriorityQueue<DHDSegment> createSegQueue(Geometry geomA) {
     PriorityQueue<DHDSegment> priq = new PriorityQueue<DHDSegment>();
     geomA.apply(new GeometryComponentFilter() {
@@ -332,7 +352,7 @@ public class DirectedHausdorffDistance {
       @Override
       public void filter(Geometry geom) {
         if (geom instanceof LineString) {
-          initSegments(geom.getCoordinates(), priq);
+          addSegments(geom.getCoordinates(), priq);
         }
       }
     });
@@ -344,7 +364,7 @@ public class DirectedHausdorffDistance {
    * @param pts
    * @param priq
    */
-  private void initSegments(Coordinate[] pts, PriorityQueue<DHDSegment> priq) {
+  private void addSegments(Coordinate[] pts, PriorityQueue<DHDSegment> priq) {
     DHDSegment prevSeg = null;
     for (int i = 0; i < pts.length - 1; i++) {
       DHDSegment seg;
@@ -357,10 +377,9 @@ public class DirectedHausdorffDistance {
       }
       prevSeg = seg;
       /**
-       * Delay interior check until splitting, 
-       * to avoid computing more than needed.
+       * Don't add interior segments, since their distance must be zero.
        */
-      priq.add(seg);
+      addNonInterior(seg, priq);
       //System.out.println(seg.distance());
     }
   }
@@ -480,6 +499,10 @@ public class DirectedHausdorffDistance {
      */
     public int compareTo(DHDSegment o) {
       return -Double.compare(maxDistanceBound, o.maxDistanceBound);
+    }
+    
+    public String toString() {
+      return WKTWriter.toLineString(p0, p1);
     }
   }
 }
