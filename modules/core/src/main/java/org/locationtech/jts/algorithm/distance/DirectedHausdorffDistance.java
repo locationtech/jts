@@ -111,7 +111,7 @@ public class DirectedHausdorffDistance {
       pts = ptsAB;
     } 
     else {
-      pts = copyReverse(ptsBA);
+      pts = pairReverse(ptsBA);
     }
     return a.getFactory().createLineString(pts);
   }
@@ -120,11 +120,11 @@ public class DirectedHausdorffDistance {
     return pts[0].distance(pts[1]);
   }
 
-  private static Coordinate[] copyPair(Coordinate p0, Coordinate p1) {
+  private static Coordinate[] pair(Coordinate p0, Coordinate p1) {
     return new Coordinate[] { p0.copy(), p1.copy() };
   }
 
-  private static Coordinate[] copyReverse(Coordinate[] pts) {
+  private static Coordinate[] pairReverse(Coordinate[] pts) {
     return new Coordinate[] { pts[1].copy(), pts[0].copy() };
   }
   
@@ -193,11 +193,11 @@ public class DirectedHausdorffDistance {
       //-- check for interior point
       if (isInterior) {
         dist = 0; 
-        nearPtsBA = copyPair( pA, pA );
+        nearPtsBA = pair( pA, pA );
       }
       if (dist > maxDist) {
         maxDist = dist;
-        maxDistPtsAB = copyReverse(nearPtsBA);
+        maxDistPtsAB = pairReverse(nearPtsBA);
       }
       if (isBeyondLimit(maxDist, maxDistanceLimit)) {
         break;
@@ -247,7 +247,7 @@ public class DirectedHausdorffDistance {
      * Return a single coordinate of the input as a representative point
      */
     Coordinate maxPt = geomA.getCoordinate();
-    return copyPair(maxPt, maxPt);
+    return pair(maxPt, maxPt);
   }
   
   private static boolean isBeyondLimit(double maxDist, double maxDistanceLimit) {
@@ -332,7 +332,7 @@ public class DirectedHausdorffDistance {
       return null;
     }
     Coordinate[] nearPtsBA = distToB.nearestPoints(ptA);
-    return copyReverse(nearPtsBA);
+    return pairReverse(nearPtsBA);
   }
 
   /**
@@ -460,9 +460,9 @@ public class DirectedHausdorffDistance {
       double dist0 = p0.distance(nearPt0);
       double dist1 = p1.distance(nearPt1);
       if (dist0 > dist1) {
-        return copyPair(p0, nearPt0);        
+        return pair(p0, nearPt0);        
       }
-      return copyPair(p1, nearPt1);        
+      return pair(p1, nearPt1);        
     }
 
     /**
