@@ -66,6 +66,20 @@ public class HausdorffDistanceStressTest {
     if (err > .01) {
       System.out.println("<<<<<<<<<<<  ERROR!");
     }
+    
+    checkFullyWithinDistance(g, b);
+  }
+
+  private void checkFullyWithinDistance(Geometry g, Geometry b) {
+    double distDHD = DirectedHausdorffDistance.distanceLine(g, b, 0.01).getLength();
+    double tol = distDHD / 1000;
+    boolean isWithin = DirectedHausdorffDistance.isFullyWithinDistance(g, b, 1.25 * distDHD, tol);
+    boolean isBeyond = ! DirectedHausdorffDistance.isFullyWithinDistance(g, b, 0.75 * distDHD, tol);
+    if (! (isWithin && isBeyond)) {
+      System.out.format("ioWithin = %b   isBeyond = %b\n", isWithin, isBeyond);
+      System.out.println("<<<<<<<<<<<  ERROR!");
+      DirectedHausdorffDistance.isFullyWithinDistance(g, b, 0.75 * distDHD,tol);
+    }
   }
 
   private List<Geometry> createCircleGrid(double size, int nSide) {
