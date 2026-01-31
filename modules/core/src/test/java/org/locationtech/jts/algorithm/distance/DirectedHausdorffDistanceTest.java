@@ -146,6 +146,18 @@ extends GeometryTestCase
     checkDistance(wkt2, wkt1, 0.01, "LINESTRING (9 5, 3 5)");
   }
 
+  //-----------------------------------------------------
+  
+  public void testFullyWithinDistancePolygons() throws Exception
+  {
+    String a = "POLYGON ((1 4, 4 4, 4 1, 1 1, 1 4))";
+    String b = "POLYGON ((10 10, 10 15, 15 15, 15 10, 10 10))";
+    checkFullyWithinDistance(a, b, 5, 0.01, false);
+    checkFullyWithinDistance(a, b, 10, 0.01, false);
+    checkFullyWithinDistance(a, b, 20, 0.01, true);
+  }
+
+
   //======================================================================
   
   private static final double TOLERANCE = 0.001;
@@ -203,4 +215,15 @@ extends GeometryTestCase
     assertEquals(expectedDistance, distResult, TOLERANCE);
   }
 
+  
+  private void checkFullyWithinDistance(String a, String b, double distance, double tolerance, boolean expected) {
+    Geometry g1 = read(a);
+    Geometry g2 = read(b);
+    
+    boolean result = DirectedHausdorffDistance.isFullyWithinDistance(g1, g2, distance, tolerance);
+    
+    assertEquals(expected, result);
+  }
+
+  
 }

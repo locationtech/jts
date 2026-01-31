@@ -54,23 +54,25 @@ import org.locationtech.jts.operation.distance.IndexedFacetDistance;
  * the point at maximum distance may occur in the interior of a query polygon.
  * For a polygonal target geometry the point always lies on the boundary. 
  * <p>
+ * A common use case is to test whether a geometry A lies fully within a given 
+ * distance of another one B.
+ * {@link #isFullyWithinDistance(Geometry, double, double)} 
+ * can be used to test this efficiently.  
+ * It implements heuristic checks and short-circuiting to improve performance.
+ * This can much more efficient than computing whether A is covered by a buffer of B.
+ * <p>
  * The class can be used in prepared mode.
  * Creating an instance on a target geometry caches indexes for that geometry.
  * Then {@link #computeDistancePoints(Geometry, double) 
  * or {@link #isFullyWithinDistance(Geometry, double, double)}
  * can be called efficiently for multiple query geometries.
  * <p>
- * A use case is to test whether a geometry A lies fully within a given 
- * distance of another one B.
- * Using {@link #isFullyWithinDistance(Geometry, double, double)} 
- * is much more efficient than computing whether A is covered by a buffer of B.
- * <p>
  * Due to the nature of the Hausdorff distance, 
  * performance is not very sensitive to the distance tolerance,
  * so using a small tolerance is recommended.
  * <p>
  * This algorithm is easier to use, more accurate, 
- * and much faster than {@link DiscreteHausdorrffDistance}.
+ * and much faster than {@link DiscreteHausdorffDistance}.
  * 
  * @author Martin Davis
  *
@@ -113,6 +115,18 @@ public class DirectedHausdorffDistance {
     return a.getFactory().createLineString(pts);
   }
   
+  private static double distance(Coordinate[] pts) {
+    return pts[0].distance(pts[1]);
+  }
+
+  private static Coordinate[] copyPair(Coordinate p0, Coordinate p1) {
+    return new Coordinate[] { p0.copy(), p1.copy() };
+  }
+
+  private static Coordinate[] copyReverse(Coordinate[] pts) {
+    return new Coordinate[] { pts[1].copy(), pts[0].copy() };
+  }
+  
   private Geometry geomB;
   private IndexedFacetDistance distToB;
   private boolean isAreaB;
@@ -128,21 +142,25 @@ public class DirectedHausdorffDistance {
   }
   
   public boolean isFullyWithinDistance(Geometry a, double maxDistance, double tolerance) {
-    //TODO: optimize with short-circuiting
-    Coordinate[] maxDistCoords = computeDistancePoints(a, tolerance);
+    //TODO: check envelopes
+    Coordinate[] maxDistCoords = computeDistancePoints(a, tolerance, maxDistance);
     return distance(maxDistCoords) <= maxDistance;
-  }
-  
-  private static double distance(Coordinate[] pts) {
-    return pts[0].distance(pts[1]);
   }
 
   private Coordinate[] computeDistancePoints(Geometry geomA, double tolerance) {
+    return computeDistancePoints(geomA, tolerance, -1.0);
+  }
+  
+  private Coordinate[] computeDistancePoints(Geometry geomA, double tolerance, double maxDistanceLimit) {
     if (geomA.getDimension() == Dimension.P) {
-      return computeAtPoints(geomA);
+      return computeAtPoints(geomA, maxDistanceLimit);
     }
     //TODO: handle mixed geoms with points
-    Coordinate[] maxDistPtsEdge = computeAtEdges(geomA, tolerance);
+    Coordinate[] maxDistPtsEdge = computeAtEdges(geomA, tolerance, maxDistanceLimit);
+    
+    if (isBeyondLimit(maxDistanceLimit, distance(maxDistPtsEdge))) {
+      return maxDistPtsEdge;
+    }
     
     /**
      * Polygonal query geometry may have an interior point as the farthest point.
@@ -186,12 +204,14 @@ public class DirectedHausdorffDistance {
       return null;
     }
     
+    //TODO: add short-circuiting based on maxDistanceLimit?
+    
     Point centerPt = LargestEmptyCircle.getCenter(geomB, polygonalA, tolerance);
     Coordinate ptA = centerPt.getCoordinate();
     /**
      * If LEC centre is in B, the max distance is zero, so return null.
      * This will cause the computed segment distance to be returned,
-     * which is better since it occurs on a vertex (or edge?)
+     * which is preferred since it occurs on a vertex or edge.
      */
     if (isInteriorB(ptA)) {
       return null;
@@ -200,7 +220,7 @@ public class DirectedHausdorffDistance {
     return copyReverse(nearPtsBA);
   }
 
-  private Coordinate[] computeAtPoints(Geometry geomA) {
+  private Coordinate[] computeAtPoints(Geometry geomA, double maxDistanceLimit) {
     double maxDist = -1.0;;
     Coordinate[] maxDistPtsAB = null;
     Iterator geomi = new GeometryCollectionIterator(geomA);
@@ -223,19 +243,14 @@ public class DirectedHausdorffDistance {
         maxDist = dist;
         maxDistPtsAB = copyReverse(nearPtsBA);
       }
+      if (isBeyondLimit(maxDistanceLimit, maxDist)) {
+        break;
+      }
     }
     return maxDistPtsAB;
   }
-  
-  private static Coordinate[] copyPair(Coordinate p0, Coordinate p1) {
-    return new Coordinate[] { p0.copy(), p1.copy() };
-  }
 
-  private static Coordinate[] copyReverse(Coordinate[] pts) {
-    return new Coordinate[] { pts[1].copy(), pts[0].copy() };
-  }
-
-  public Coordinate[] computeAtEdges(Geometry geomA, double tolerance) {
+  public Coordinate[] computeAtEdges(Geometry geomA, double tolerance, double maxDistanceLimit) {
     PriorityQueue<DHDSegment> segQueue = createSegQueue(geomA);
     
     DHDSegment ohdSeg = null;
@@ -245,8 +260,10 @@ public class DirectedHausdorffDistance {
       iter++;
       // get the segment with greatest distance
       maxDistSeg = segQueue.remove();
-      
-      if (maxDistSeg.length() <= tolerance) {
+
+      double maxDist = maxDistSeg.maxDistance();
+      if (maxDistSeg.length() <= tolerance 
+          || isWithinLimit(maxDistanceLimit, maxDistSeg.maxDistanceBound())) {
         ohdSeg = maxDistSeg;
         break;
       }
@@ -266,6 +283,14 @@ public class DirectedHausdorffDistance {
      */
     Coordinate maxPt = maxDistSeg.getEndpoint(0);
     return copyPair(maxPt, maxPt);
+  }
+
+  private boolean isBeyondLimit(double maxDistanceLimit, double maxDist) {
+    return maxDistanceLimit >= 0 && maxDist > maxDistanceLimit;
+  }
+
+  private boolean isWithinLimit(double maxDistanceLimit, double maxDist) {
+    return maxDistanceLimit >= 0 && maxDist <= maxDistanceLimit;
   }
 
   private void addNonInterior(DHDSegment ohdSegment, PriorityQueue<DHDSegment> segQueue) {
@@ -400,6 +425,16 @@ public class DirectedHausdorffDistance {
 
     public double length() {
       return p0.distance(p1);
+    }
+    
+    public double maxDistance() {
+      double dist0 = p0.distance(nearPt0);
+      double dist1 = p1.distance(nearPt1);
+      return Math.max(dist0,dist1);
+    }
+    
+    public double maxDistanceBound() {
+      return maxDistanceBound;
     }
     
     public Coordinate[] getMaxDistPts() {

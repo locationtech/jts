@@ -243,8 +243,19 @@ public class SelectionFunctions
   {
     return select(a, new GeometryPredicate() {
       public boolean isTrue(Geometry g) {
-        double tolerance = maximumDistance / 1e5;
-        return DirectedHausdorffDistance.isFullyWithinDistance(a, mask, maximumDistance, tolerance);
+        double tolerance = maximumDistance / 1e4;
+        return DirectedHausdorffDistance.isFullyWithinDistance(g, mask, maximumDistance, tolerance);
+      }
+    });
+  }
+
+  public static Geometry fullyWithinDistancePrep(Geometry a, final Geometry mask, double maximumDistance)
+  {
+    DirectedHausdorffDistance dhd = new DirectedHausdorffDistance(mask);
+    return select(a, new GeometryPredicate() {
+      public boolean isTrue(Geometry g) {
+        double tolerance = maximumDistance / 1e4;
+        return dhd.isFullyWithinDistance(g, maximumDistance, tolerance);
       }
     });
   }

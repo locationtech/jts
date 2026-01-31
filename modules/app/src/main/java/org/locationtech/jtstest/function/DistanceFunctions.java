@@ -120,7 +120,7 @@ public class DistanceFunctions {
   }
   
   @Metadata(description="Directed Hausdorff distance from A to B, up to tolerance")
-  public static double ohd(Geometry a, Geometry b, 
+  public static double dhd(Geometry a, Geometry b, 
       @Metadata(title="Distance tolerance")
       double distTol)  
   {   
@@ -128,14 +128,14 @@ public class DistanceFunctions {
   }
   
   @Metadata(description="Directed Hausdorff distance from A to B, up to tolerance")
-  public static Geometry ohdLine(Geometry a, Geometry b, 
+  public static Geometry dhdLine(Geometry a, Geometry b, 
       @Metadata(title="Distance tolerance")
       double distTol)  
   {   
     return DirectedHausdorffDistance.distanceLine(a, b, distTol);
   }
   
-  @Metadata(description="Hausdorff distance from A to B, up to tolerance")
+  @Metadata(description="Hausdorff distance between A and B, up to tolerance")
   public static Geometry hdLine(Geometry a, Geometry b, 
       @Metadata(title="Distance tolerance")
       double distTol)  
