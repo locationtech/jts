@@ -18,6 +18,7 @@ import org.locationtech.jts.algorithm.construct.LargestEmptyCircle;
 import org.locationtech.jts.algorithm.locate.IndexedPointInPolygonsLocator;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Dimension;
+import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryCollectionIterator;
 import org.locationtech.jts.geom.GeometryComponentFilter;
@@ -143,9 +144,33 @@ public class DirectedHausdorffDistance {
   }
   
   public boolean isFullyWithinDistance(Geometry a, double maxDistance, double tolerance) {
-    //TODO: check envelopes
+    //-- envelope check
+    if (isBeyond(a.getEnvelopeInternal(), geomB.getEnvelopeInternal(), maxDistance))
+      return false;
+    
     Coordinate[] maxDistCoords = computeDistancePoints(a, tolerance, maxDistance);
     return distance(maxDistCoords) <= maxDistance;
+  }
+
+  /**
+   * Tests if a geometry must have a point farther than the maximum distance
+   * using the geometry envelopes.
+   * 
+   * @param envA
+   * @param envB
+   * @param maxDistance
+   * @return true if geometry A must have a far point from B
+   */
+  private static boolean isBeyond(Envelope envA, Envelope envB, double maxDistance) {
+    /**
+     * At least one point of the geometry lies on each edge of the envelope,
+     * so if any edge is far from the closest edge of the B envelope
+     * there must be a point further than the max distance.
+     */
+    return envA.getMinX() < envB.getMinX() - maxDistance
+      || envA.getMinY() < envB.getMinY() - maxDistance
+      || envA.getMaxX() > envB.getMaxX() + maxDistance
+      || envA.getMaxY() > envB.getMaxY() + maxDistance;
   }
 
   private Coordinate[] computeDistancePoints(Geometry geomA, double tolerance) {

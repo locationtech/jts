@@ -158,6 +158,15 @@ extends GeometryTestCase
   
   //-----------------------------------------------------
   
+  public void testFullyWithinDistanceLines()
+  {
+    String a = "MULTILINESTRING ((1 1, 3 3), (7 7, 9 9))";
+    String b = "MULTILINESTRING ((1 9, 1 5), (6 4, 8 2))";
+    checkFullyWithinDistance(a, b, 1, 0.01, false);
+    checkFullyWithinDistance(a, b, 4, 0.01, false);
+    checkFullyWithinDistance(a, b, 6, 0.01, true);
+  }
+
   public void testFullyWithinDistancePolygons()
   {
     String a = "POLYGON ((1 4, 4 4, 4 1, 1 1, 1 4))";
@@ -167,6 +176,14 @@ extends GeometryTestCase
     checkFullyWithinDistance(a, b, 20, 0.01, true);
   }
 
+  public void testFullyWithinDistancePolygonsNestedWithHole()
+  {
+    String a = "POLYGON ((2 8, 8 8, 8 2, 2 2, 2 8))";
+    String b = "POLYGON ((1 9, 9 9, 9 1, 1 1, 1 9), (3 7, 7 7, 7 3, 3 3, 3 7))";
+    checkFullyWithinDistance(a, b, 1, 0.01, false);
+    checkFullyWithinDistance(a, b, 2, 0.01, true);
+    checkFullyWithinDistance(a, b, 3, 0.01, true);
+  }
 
   //======================================================================
   
