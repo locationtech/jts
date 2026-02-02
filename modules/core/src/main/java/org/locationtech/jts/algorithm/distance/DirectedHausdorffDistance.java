@@ -31,20 +31,21 @@ import org.locationtech.jts.operation.distance.IndexedFacetDistance;
 /**
  * Computes the directed Hausdorff distance from one geometry to another, 
  * up to an approximation distance tolerance. 
- * The directed Hausdorff distance (DHD) is defined as:
- * <pre>
- * DHD(A,B) = max<sub>a &isin; A</sub> (max<sub>b &isin; B</sub> (distance(a, b) )
- * </pre>
- * The DHD is the maximum distance any point
+ * The directed Hausdorff distance is the maximum distance any point
  * on a query geometry A can be from a target geometry B.
- * Equivalently, every point in the query geometry is within the DHD distance
+ * Equivalently, every point in the query geometry is within that distance
  * of the target geometry.
  * The class can compute a pair of points at which the DHD is obtained:
  * <tt>[ farthest A point, nearest B point ]</tt>.
  * <p>
- * The DHD is asymmetric: <tt>DHD(A,B)</tt> may not be equal to <tt>DHD(B,A)</tt>.
+ *The directed Hausdorff distance (DHD) is defined as:
+ * <pre>
+ * DHD(A,B) = max<sub>a &isin; A</sub> (max<sub>b &isin; B</sub> (distance(a, b) )
+ * </pre>
+ * <p>
+ * DHD is asymmetric: <tt>DHD(A,B)</tt> may not be equal to <tt>DHD(B,A)</tt>.
  * Hence it is not a distance metric.
- * The Hausdorff distance is is a symmetric distance metric:
+ * The Hausdorff distance is is a symmetric distance metric defined as:
  * <pre>
  * HD(A,B) = max(DHD(A,B), DHD(B,A))
  * </pre>
@@ -61,7 +62,9 @@ import org.locationtech.jts.operation.distance.IndexedFacetDistance;
  * {@link #isFullyWithinDistance(Geometry, double, double)} 
  * can be used to test this efficiently.  
  * It implements heuristic checks and short-circuiting to improve performance.
- * This can much more efficient than computing whether A is covered by a buffer of B.
+ * This can much more efficient than computing whether A is covered by B.buffer(distance).
+ * It is also more accurate, since constructed buffers 
+ * are only linearized approximations to the true buffer.
  * <p>
  * The class can be used in prepared mode.
  * Creating an instance on a target geometry caches indexes for that geometry.
@@ -76,29 +79,72 @@ import org.locationtech.jts.operation.distance.IndexedFacetDistance;
  * This algorithm is easier to use, more accurate, 
  * and much faster than {@link DiscreteHausdorffDistance}.
  * 
+ * <h3>KNOWN ISSUES</h3>
+ * <ul>
+ * <li>if the two geometries are identical or nearly so, 
+ *     performance is slower than desirable.
+ * </ul>
  * @author Martin Davis
  *
  */
 public class DirectedHausdorffDistance {
 
+  /**
+   * Computes the directed Hausdorff distance of a query geometry A from a target one B.
+   * 
+   * @param a the query geometry  
+   * @param b the target geometry
+   * @param tolerance the approximation distance tolerance
+   * @return the directed Hausdorff distance
+   */
   public static double distance(Geometry a, Geometry b, double tolerance)
   {
     DirectedHausdorffDistance hd = new DirectedHausdorffDistance(b);
     return distance(hd.computeDistancePoints(a, tolerance));
   }
   
+  /**
+   * Computes a pair of points which attain the directed Hausdorff distance 
+   * of a query geometry A from a target one B.
+   * 
+   * @param a the query geometry  
+   * @param b the target geometry
+   * @param tolerance the approximation distance tolerance
+   * @return a pair of points [ptA, ptB] demonstrating the distance
+   */
   public static LineString distanceLine(Geometry a, Geometry b, double tolerance)
   {
     DirectedHausdorffDistance hd = new DirectedHausdorffDistance(b);
     return a.getFactory().createLineString(hd.computeDistancePoints(a, tolerance));
   }
   
+  /**
+   * Computes whether a query geometry lies fully within a give distance of a target geometry.
+   * Equivalently, detects whether any point of the query geometry is farther 
+   * from the target than the specified distance.
+   * This is the case if <tt>DHD(A, B) > maxDistance</tt>.
+   *  
+   * @param a the query geometry  
+   * @param b the target geometry
+   * @param maxDistance the distance limit
+   * @param tolerance the approximation distance tolerance
+   * @return true if the query geometry lies fully within the distance of the target
+   */
   public static boolean isFullyWithinDistance(Geometry a, Geometry b, double maxDistance, double tolerance)
   {
     DirectedHausdorffDistance hd = new DirectedHausdorffDistance(b);
     return hd.isFullyWithinDistance(a, maxDistance, tolerance);
   }
 
+  /**
+   * Computes a pair of points which attain the Hausdorff distance 
+   * between two geometries.
+   * 
+   * @param a a geometry  
+   * @param b a geometry
+   * @param tolerance the approximation distance tolerance
+   * @return a pair of points [ptA, ptB] demonstrating the Hausdorff distance
+   */
   public static LineString hausdorffDistanceLine(Geometry a, Geometry b, double tolerance)
   {
     DirectedHausdorffDistance hdAB = new DirectedHausdorffDistance(b);
@@ -134,6 +180,11 @@ public class DirectedHausdorffDistance {
   private boolean isAreaB;
   private IndexedPointInPolygonsLocator ptInAreaB;
 
+  /**
+   * Create a new instance for a target geometry B
+   * 
+   * @param b the geometry to compute the distance from
+   */
   public DirectedHausdorffDistance(Geometry b) {
     geomB = b;
     distToB = new IndexedFacetDistance(b);
@@ -143,6 +194,17 @@ public class DirectedHausdorffDistance {
     }
   }
   
+  /**
+   * Computes whether a query geometry lies fully within a give distance of the target geometry.
+   * Equivalently, detects whether any point of the query geometry is farther 
+   * from the target than the specified distance.
+   * This is the case if <tt>DHD(A, B) > maxDistance</tt>.
+   *  
+   * @param a the query geometry  
+   * @param maxDistance the distance limit
+   * @param tolerance the approximation distance tolerance
+   * @return true if the query geometry lies fully within the distance of the target
+   */
   public boolean isFullyWithinDistance(Geometry a, double maxDistance, double tolerance) {
     //-- envelope check
     if (isBeyond(a.getEnvelopeInternal(), geomB.getEnvelopeInternal(), maxDistance))
@@ -173,7 +235,15 @@ public class DirectedHausdorffDistance {
       || envA.getMaxY() > envB.getMaxY() + maxDistance;
   }
 
-  private Coordinate[] computeDistancePoints(Geometry geomA, double tolerance) {
+  /**
+   * Computes a pair of points which attain the directed Hausdorff distance 
+   * of a query geometry A from the target.
+   * 
+   * @param geomA the query geometry  
+   * @param tolerance the approximation distance tolerance
+   * @return a pair of points [ptA, ptB] demonstrating the distance
+   */
+  public Coordinate[] computeDistancePoints(Geometry geomA, double tolerance) {
     return computeDistancePoints(geomA, tolerance, -1.0);
   }
   
@@ -461,10 +531,6 @@ public class DirectedHausdorffDistance {
 
     public Coordinate getEndpoint(int index) {
       return index == 0 ? p0 : p1;
-    }
-    
-    public Coordinate getNearestPt(int index) {
-      return index == 0 ? nearPt0 : nearPt1;
     }
 
     public double length() {
