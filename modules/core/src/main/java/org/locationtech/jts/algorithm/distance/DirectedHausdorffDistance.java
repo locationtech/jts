@@ -226,8 +226,8 @@ public class DirectedHausdorffDistance {
   private static boolean isBeyond(Envelope envA, Envelope envB, double maxDistance) {
     /**
      * At least one point of the geometry lies on each edge of the envelope,
-     * so if any edge is far from the closest edge of the B envelope
-     * there must be a point further than the max distance.
+     * so if any edge is farther than maxDistance from the closest edge of the B envelope
+     * there must be a point at that distance (or further).
      */
     return envA.getMinX() < envB.getMinX() - maxDistance
       || envA.getMinY() < envB.getMinY() - maxDistance
@@ -328,7 +328,7 @@ public class DirectedHausdorffDistance {
       }
       
       //-- not within tolerance, so bisect segment and keep searching
-      DHDSegment[] bisects = maxDistSeg.bisect(distToB);
+      DHDSegment[] bisects = maxDistSeg.bisect(distToB, ptInAreaB);
       addNonInterior(bisects[0], segQueue);
       addNonInterior(bisects[1], segQueue);
     }
@@ -353,29 +353,33 @@ public class DirectedHausdorffDistance {
     return maxDistanceLimit >= 0 && maxDist <= maxDistanceLimit;
   }
 
-  private void addNonInterior(DHDSegment ohdSegment, PriorityQueue<DHDSegment> segQueue) {
+  private void addNonInterior(DHDSegment segment, PriorityQueue<DHDSegment> segQueue) {
     //-- discard segment if it is interior to a polygon
-    if (isInterior(ohdSegment)) {
+    if (isInterior(segment)) {
       return;
     }
-    segQueue.add(ohdSegment);
+    segQueue.add(segment);
   }
 
   /**
    * Tests if segment is fully in the interior of the target geometry polygons (if any).
    *  
-   * @param ohdSegment
+   * @param segment
    * @return
    */
-  private boolean isInterior(DHDSegment ohdSegment) {
+  private boolean isInterior(DHDSegment segment) {
     if (! isAreaB)
       return false;
-    double segDist = distToB.distance(ohdSegment.getEndpoint(0), ohdSegment.getEndpoint(1));
-    //-- if segment touches B it is not in interior
+    if (segment.maxDistance() > 0.0) {
+      return false;
+    }
+    //-- compute distance to B linework
+    double segDist = distToB.distance(segment.getEndpoint(0), segment.getEndpoint(1));
+    //-- if segment touches B linework it is not in interior
     if (segDist == 0)
       return false;
     //-- only need to test one point to check interior
-    Coordinate pt = ohdSegment.getEndpoint(0);
+    Coordinate pt = segment.getEndpoint(0);
     boolean isInterior = isInteriorB(pt);
     return isInterior;
   }
@@ -464,11 +468,11 @@ public class DirectedHausdorffDistance {
     for (int i = 0; i < pts.length - 1; i++) {
       DHDSegment seg;
       if (i == 0) {
-        seg = DHDSegment.create(pts[i], pts[i + 1], distToB);
+        seg = DHDSegment.create(pts[i], pts[i + 1], distToB, ptInAreaB);
       } 
       else {
         //-- optimize by avoiding recomputing pt distance
-        seg = DHDSegment.create(prevSeg, pts[i + 1], distToB);
+        seg = DHDSegment.create(prevSeg, pts[i + 1], distToB, ptInAreaB);
       }
       prevSeg = seg;
       /**
@@ -481,15 +485,15 @@ public class DirectedHausdorffDistance {
   
   private static class DHDSegment implements Comparable<DHDSegment> {
 
-    public static DHDSegment create(Coordinate p0, Coordinate p1, IndexedFacetDistance indexDist) {
+    public static DHDSegment create(Coordinate p0, Coordinate p1, IndexedFacetDistance indexDist, IndexedPointInPolygonsLocator ptInAreaB) {
       DHDSegment seg = new DHDSegment(p0, p1);
-      seg.init(indexDist);
+      seg.init(indexDist, ptInAreaB);
       return seg;
     }
 
-    public static DHDSegment create(DHDSegment prevSeg, Coordinate p1, IndexedFacetDistance indexDist) {
+    public static DHDSegment create(DHDSegment prevSeg, Coordinate p1, IndexedFacetDistance indexDist, IndexedPointInPolygonsLocator ptInAreaB) {
       DHDSegment seg = new DHDSegment(prevSeg.p1, p1);
-      seg.init(prevSeg.nearPt1, indexDist);
+      seg.init(prevSeg.nearPt1, indexDist, ptInAreaB);
       return seg;
     }
 
@@ -512,19 +516,24 @@ public class DirectedHausdorffDistance {
       computeMaxDistanceBound();
     }
 
-    private void init(IndexedFacetDistance indexDist) {
-      nearPt0 = nearestPt(p0, indexDist);
-      nearPt1 = nearestPt(p1, indexDist);
+    private void init(IndexedFacetDistance indexDist, IndexedPointInPolygonsLocator ptInAreaB) {
+      nearPt0 = nearestPt(p0, indexDist, ptInAreaB);
+      nearPt1 = nearestPt(p1, indexDist, ptInAreaB);
       computeMaxDistanceBound();
     }
 
-    private void init(Coordinate nearest0, IndexedFacetDistance indexDist) {
+    private void init(Coordinate nearest0, IndexedFacetDistance indexDist, IndexedPointInPolygonsLocator ptInAreaB) {
       nearPt0 = nearest0;
-      nearPt1 = nearestPt(p1, indexDist);
+      nearPt1 = nearestPt(p1, indexDist, ptInAreaB);
       computeMaxDistanceBound();
     }
 
-    private static Coordinate nearestPt(Coordinate p, IndexedFacetDistance indexDist) {
+    private static Coordinate nearestPt(Coordinate p, IndexedFacetDistance indexDist, IndexedPointInPolygonsLocator ptInAreaB) {
+      if (ptInAreaB != null) {
+        if (ptInAreaB.locate(p) != Location.EXTERIOR) {
+          return p;
+        }
+      }
       Coordinate[] nearestPts = indexDist.nearestPoints(p);
       return nearestPts[0];
     }
@@ -572,12 +581,12 @@ public class DirectedHausdorffDistance {
       maxDistanceBound = maxDist + length() / 2;
     } 
     
-    public DHDSegment[] bisect(IndexedFacetDistance distToB) {
+    public DHDSegment[] bisect(IndexedFacetDistance distToB, IndexedPointInPolygonsLocator ptInAreaB) {
       Coordinate mid = new Coordinate(
           (p0.x + p1.x) / 2, 
           (p0.y + p1.y) / 2 
           );
-      Coordinate nearPtMid = nearestPt(mid, distToB);
+      Coordinate nearPtMid = nearestPt(mid, distToB, ptInAreaB);
       return new DHDSegment[] {
           new DHDSegment(p0, nearPt0, mid, nearPtMid ),
           new DHDSegment(mid, nearPtMid, p1, nearPt1)

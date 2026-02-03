@@ -42,6 +42,13 @@ extends GeometryTestCase
     checkHD(a, b, 0.01, "LINESTRING (6 6, 5 0)");
   }
   
+  public void testPointPolygonInterior()
+  {
+    checkDistance("POINT (3 4)", "POLYGON ((1 9, 9 9, 9 1, 1 1, 1 9))",
+        0.01,
+        0);
+  }
+  
   public void testLineSegments()
   {
     checkHD("LINESTRING (0 0, 2 0)", "LINESTRING (0 0, 2 1)",
@@ -79,7 +86,15 @@ extends GeometryTestCase
     checkHD(a, b, 0.01, "LINESTRING (2 3, 5.5 3)");
   }
   
-  public void testPolygonLineInteriorPoint()
+  public void testPolygonLineCrossingBoundaryResult()
+  {
+    checkDistance("POLYGON ((2 8, 8 2, 2 1, 2 8))", 
+        "LINESTRING (6 5, 4 7, 0 0, 8 4)", 
+        0.001,
+        "LINESTRING (2 8, 3.9384615384615387 6.892307692307693)");
+  }
+  
+  public void testPolygonLineCrossingInteriorPoint()
   {
     checkDistanceStartPtLen("POLYGON ((2 8, 8 2, 2 1, 2 8))", 
         "LINESTRING (6 5, 4 7, 0 0, 9 1)", 
@@ -154,6 +169,17 @@ extends GeometryTestCase
     String a = "POLYGON ((4 6, 5 6, 5 5, 4 5, 4 6))";
     String b = "POLYGON ((1 9, 9 9, 9 1, 1 1, 1 9))";
     checkDistance(a, b, 2.0, 0.0);
+  }
+  
+  /**
+   * Tests that segment endpoint nearest points 
+   * which are interior to B have distance 0
+   */
+  public void testInteriorSegmentsSameExterior() 
+  {
+    String a = "POLYGON ((1 9, 3 9, 4 5, 5.05 9, 9 9, 9 1, 1 1, 1 9))";
+    String b = "POLYGON ((1 9, 9 9, 9 1, 1 1, 1 9))";
+    checkDistance(a, b, 1.0, 0.0);
   }
   
   //-----------------------------------------------------
