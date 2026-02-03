@@ -11,14 +11,17 @@
  */
 package org.locationtech.jts.geom;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import junit.textui.TestRunner;
+import test.jts.GeometryTestCase;
 
 
 /**
  * Test LineSegment methods
  */
-public class LineSegmentTest extends TestCase {
+public class LineSegmentTest extends GeometryTestCase {
 
   public static void main(String args[]) {
     TestRunner.run(LineSegmentTest.class);
@@ -53,6 +56,60 @@ public class LineSegmentTest extends TestCase {
     assertTrue(seg2.projectionFactor(new Coordinate(11, 0)) == 0.1);
   }
   
+  public void testProjectPoint() {
+    //-- interior point
+    checkProjectPoint("LINESTRING (4 0, 8 0)", "POINT (5 2)", 5, 0);
+    //-- endpoint
+    checkProjectPoint("LINESTRING (4 0, 8 0)", "POINT (8 2)", 8, 0);
+    //-- beyond end
+    checkProjectPoint("LINESTRING (4 0, 8 0)", "POINT (9 2)", 9, 0);
+    //-- before end
+    checkProjectPoint("LINESTRING (4 0, 8 0)", "POINT (3 2)", 3, 0);
+    //-- collinear
+    checkProjectPoint("LINESTRING (4 0, 8 0)", "POINT (2 0)", 2, 0);
+  }
+  
+  private void checkProjectPoint(String wkt1, String wkt2, double x, double y) {
+    LineSegment seg1 = readLineSegment(wkt1);
+    Point pt = (Point) read(wkt2);
+    Coordinate p = pt.getCoordinate();
+    Coordinate actual = seg1.project(p);
+    
+    checkEqualXY(new Coordinate(x, y), actual, 0.0001);
+  }
+
+  public void testProjectSegment() {
+    //-- project onto interior segment
+    checkProjectSegment("LINESTRING (0 0, 8 0)", "LINESTRING (1 2, 2 3)", "LINESTRING(1 0, 2 0)");
+    //-- project onto interior point
+    checkProjectSegment("LINESTRING (0 0, 8 0)", "LINESTRING (1 2, 1 4)", "LINESTRING(1 0, 1 0)");
+    //-- projection includes endpoint
+    checkProjectSegment("LINESTRING (0 0, 8 0)", "LINESTRING (0 2, 1 4)", "LINESTRING(0 0, 1 0)");
+    //- projection onto endpoint
+    checkProjectSegment("LINESTRING (0 0, 8 0)", "LINESTRING (8 2, 8 4)",  "LINESTRING(8 0, 8 0)");
+    checkProjectSegment("LINESTRING (0 0, 8 0)", "LINESTRING (0 2, 0 4)",  "LINESTRING(0 0, 0 0)");
+    checkProjectSegment("LINESTRING (0 0, 8 0)", "LINESTRING (0 2, -1 4)", "LINESTRING(0 0, 0 0)");
+    checkProjectSegment("LINESTRING (0 0, 8 0)", "LINESTRING (9 1, 8 0)",  "LINESTRING(8 0, 8 0)");
+    checkProjectSegment("LINESTRING (0 0, 8 0)", "LINESTRING (9 1, 8 1)",  "LINESTRING(8 0, 8 0)");
+    //-- no projection
+    checkProjectSegment("LINESTRING (0 0, 8 0)", "LINESTRING (9 1, 9 2)", null);
+  }
+
+  private void checkProjectSegment(String wkt1, String wkt2, String wktExpected) {
+    LineSegment seg1 = readLineSegment(wkt1);
+    LineSegment seg2 = readLineSegment(wkt2);
+    LineSegment actual = seg1.project(seg2);
+    
+    LineSegment expected = wktExpected == null ? null : readLineSegment(wktExpected);
+    checkEqual(expected, actual, 0.0001);
+  }
+  
+  private LineSegment readLineSegment(String wkt) {
+    Geometry g = read(wkt);
+    LineString line = (LineString) g;
+    return new LineSegment(line.getCoordinateN(0), line.getCoordinateN(1));
+  }
+
   public void testLineIntersection() {
     // simple case
     checkLineIntersection(

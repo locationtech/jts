@@ -468,16 +468,30 @@ public class LineSegment
     double pf0 = projectionFactor(seg.p0);
     double pf1 = projectionFactor(seg.p1);
     // check if segment projects at all
-    if (pf0 >= 1.0 && pf1 >= 1.0) return null;
-    if (pf0 <= 0.0 && pf1 <= 0.0) return null;
+    if (pf0 > 1.0 && pf1 > 1.0) return null;
+    if (pf0 < 0.0 && pf1 < 0.0) return null;
 
-    Coordinate newp0 = project(seg.p0, pf0);
-    if (pf0 < 0.0) newp0 = p0;
-    if (pf0 > 1.0) newp0 = p1;
+    Coordinate newp0;
+    if (pf0 < 0.0) {
+      newp0 = p0;
+    }
+    else if (pf0 > 1.0) {
+      newp0 = p1;
+    }
+    else {
+      newp0 = project(seg.p0, pf0);
+    }
 
-    Coordinate newp1 = project(seg.p1, pf1);
-    if (pf1 < 0.0) newp1 = p0;
-    if (pf1 > 1.0) newp1 = p1;
+    Coordinate newp1;
+    if (pf1 < 0.0) {
+      newp1 = p0;
+    }
+    else if (pf1 > 1.0) {
+      newp1 = p1;
+    }
+    else {
+      newp1 = project(seg.p1, pf1);
+    }
 
     return new LineSegment(newp0, newp1);
   }

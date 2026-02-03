@@ -233,7 +233,27 @@ public abstract class GeometryTestCase extends TestCase{
     assertEquals(message + " X", expected.getX(), actual.getX(), tolerance);
     assertEquals(message + " Y", expected.getY(), actual.getY(), tolerance);
   }
- 
+  
+  protected void checkEqual(LineSegment expected, LineSegment actual, double tolerance) {
+    boolean equal;
+    if (actual == null || expected == null) {
+      equal = actual == null && expected == null;
+    }
+    else {
+      equal = isEqual(actual, expected, tolerance);
+    }
+    if (! equal) {
+      System.out.format(CHECK_EQUAL_FAIL_MSG, expected, actual );
+    }
+    assertTrue(equal);
+  }
+  
+  private boolean isEqual(LineSegment actual, LineSegment expected, double tolerance) {
+    return expected.getCoordinate(0).equals2D(actual.getCoordinate(0), tolerance)
+        && expected.getCoordinate(1).equals2D(actual.getCoordinate(1), tolerance);
+    
+  }
+
   protected void checkNoAlias(Geometry geom, Geometry geom2) {
     Geometry geom2Copy = geom2.copy();
     geom.apply(new CoordinateFilter() {

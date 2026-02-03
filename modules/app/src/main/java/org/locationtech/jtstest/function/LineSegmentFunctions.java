@@ -116,4 +116,25 @@ public class LineSegmentFunctions
     return g1.getFactory().createPoint(reflectPt);
   }
 
+  public static Geometry project(Geometry g1, Geometry g2)
+  {
+    LineSegment seg1 = toLineSegment(g1);
+    Coordinate[] line2 = g2.getCoordinates();
+    if (line2.length == 1) {
+      Coordinate pt = line2[0];
+      Coordinate result = seg1.project(pt); 
+      return g1.getFactory().createPoint(result);
+    }
+    LineSegment seg2 = new LineSegment(line2[0], line2[1]);
+    LineSegment result = seg1.project(seg2);
+    if (result == null)
+      return g1.getFactory().createLineString();
+    return result.toGeometry(g1.getFactory());
+  }
+
+  private static LineSegment toLineSegment(Geometry g) {
+    Coordinate[] line = g.getCoordinates();
+    return new LineSegment(line[0], line[1]);
+  }
+
 }
