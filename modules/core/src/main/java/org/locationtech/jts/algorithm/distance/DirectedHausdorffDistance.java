@@ -82,7 +82,7 @@ import org.locationtech.jts.operation.distance.IndexedFacetDistance;
  * <h3>KNOWN ISSUES</h3>
  * <ul>
  * <li>if the two geometries are identical or nearly so, 
- *     performance is slower than desirable.
+ *     performance may be slow.
  * </ul>
  * @author Martin Davis
  *
@@ -206,10 +206,10 @@ public class DirectedHausdorffDistance {
    * @return true if the query geometry lies fully within the distance of the target
    */
   public boolean isFullyWithinDistance(Geometry a, double maxDistance, double tolerance) {
-    //-- envelope check
+    //-- envelope checks
     if (isBeyond(a.getEnvelopeInternal(), geomB.getEnvelopeInternal(), maxDistance))
       return false;
-    
+
     Coordinate[] maxDistCoords = computeDistancePoints(a, tolerance, maxDistance);
     return distance(maxDistCoords) <= maxDistance;
   }

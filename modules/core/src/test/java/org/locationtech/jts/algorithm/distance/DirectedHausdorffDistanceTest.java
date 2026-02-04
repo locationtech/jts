@@ -184,6 +184,35 @@ extends GeometryTestCase
   
   //-----------------------------------------------------
   
+  //-- shows withinDistance envelope check not triggering for disconnected A
+  public void testFullyWithinDistancePoints()
+  {
+    String a = "MULTIPOINT ((1 9), (9 1))";
+    String b = "MULTIPOINT ((1 1), (9 9))";
+    checkFullyWithinDistance(a, b, 1, 0.01, false);
+    checkFullyWithinDistance(a, b, 8.1, 0.01, true);
+  }
+
+  public void testFullyWithinDistanceDisconnectedLines()
+  {
+    String a = "MULTILINESTRING ((1 9, 2 9), (8 1, 9 1))";
+    String b = "LINESTRING (9 9, 1 1)";
+    checkFullyWithinDistance(a, b, 1, 0.01, false);
+    checkFullyWithinDistance(a, b, 6, 0.01, true);
+    checkFullyWithinDistance(b, a, 1, 0.01, false);
+    checkFullyWithinDistance(b, a, 7.1, 0.01, true);
+  }
+
+  public void testFullyWithinDistanceDisconnectedPolygons()
+  {
+    String a = "MULTIPOLYGON (((1 9, 2 9, 2 8, 1 8, 1 9)), ((8 2, 9 2, 9 1, 8 1, 8 2)))";
+    String b = "POLYGON ((1 2, 9 9, 2 1, 1 2))";
+    checkFullyWithinDistance(a, b, 1, 0.01, false);
+    checkFullyWithinDistance(a, b, 5.3, 0.01, true);
+    checkFullyWithinDistance(b, a, 1, 0.01, false);
+    checkFullyWithinDistance(b, a, 7.1, 0.01, true);
+  }
+
   public void testFullyWithinDistanceLines()
   {
     String a = "MULTILINESTRING ((1 1, 3 3), (7 7, 9 9))";
