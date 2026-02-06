@@ -26,14 +26,14 @@ extends GeometryTestCase
 
   public DirectedHausdorffDistanceTest(String name) { super(name); }
 
-  public void testPoints()
+  public void testPointPoint()
   {
     checkHD("POINT (0 0)", "POINT (1 1)", 
         0.01,
         "LINESTRING (0 0, 1 1)");
   }
   
-  public void testMultiPoints()
+  public void testPointsPoints()
   {
     String a = "MULTIPOINT ((0 1), (2 3), (4 5), (6 6))";
     String b = "MULTIPOINT ((0.1 0), (1 0), (2 0), (3 0), (4 0), (5 0))";
@@ -47,6 +47,13 @@ extends GeometryTestCase
     checkDistance("POINT (3 4)", "POLYGON ((1 9, 9 9, 9 1, 1 1, 1 9))",
         0.01,
         0);
+  }
+  
+  public void testPointsPolygon()
+  {
+    checkDistance("MULTIPOINT ((4 3), (2 8), (8 5))", "POLYGON ((6 9, 6 4, 9 1, 1 1, 6 9))",
+        0.01,
+        "LINESTRING (2 8, 4.426966292134832 6.48314606741573)");
   }
   
   public void testLineSegments()
