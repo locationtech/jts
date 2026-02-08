@@ -117,22 +117,6 @@ public class IndexedFacetDistance
     cachedTree = FacetSequenceTreeBuilder.build(geom);
   }
 
-  /**
-   * Computes the distance from the base geometry to 
-   * the given geometry.
-   *  
-   * @param g the geometry to compute the distance to
-   * 
-   * @return the computed distance
-   */
-  public double distance(Geometry g)
-  {
-    Object[] obj = nearestFacets(g);
-    FacetSequence fs1 = (FacetSequence) obj[0];
-    FacetSequence fs2 = (FacetSequence) obj[1];
-    return fs1.distance(fs2);
-  }
-
   private Object[] nearestFacets(Geometry g) {
     STRtree tree2 = FacetSequenceTreeBuilder.build(g);
     Object[] obj = cachedTree.nearestNeighbour(tree2, 
@@ -169,6 +153,22 @@ public class IndexedFacetDistance
     Object nearest = cachedTree.nearestNeighbour(fs2.getEnvelope(), fs2, FACET_SEQ_DIST);
     FacetSequence fs1 = (FacetSequence) nearest;
     return fs1.nearestLocations(fs2)[0];
+  }
+  
+  /**
+   * Computes the distance from the base geometry to 
+   * the given geometry.
+   *  
+   * @param g the geometry to compute the distance to
+   * 
+   * @return the computed distance
+   */
+  public double distance(Geometry g)
+  {
+    Object[] obj = nearestFacets(g);
+    FacetSequence fs1 = (FacetSequence) obj[0];
+    FacetSequence fs2 = (FacetSequence) obj[1];
+    return fs1.distance(fs2);
   }
   
   public double distance(Coordinate p) {
