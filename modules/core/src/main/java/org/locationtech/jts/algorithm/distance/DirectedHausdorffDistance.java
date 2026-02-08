@@ -275,18 +275,18 @@ public class DirectedHausdorffDistance {
         continue;
       
       Coordinate pA = geomElemA.getCoordinate();
-      Coordinate[] nearPtsBA = distanceToB.nearestPoints(pA);
-      double dist = distance(nearPtsBA);
+      Coordinate pB = distanceToB.nearestPoint(pA);
+      double dist = pA.distance(pB);
 
       boolean isInterior = dist > 0 && distanceToB.isInterior(pA);
       //-- check for interior point
       if (isInterior) {
         dist = 0; 
-        nearPtsBA = pair( pA, pA );
+        pB = pA;
       }
       if (dist > maxDist) {
         maxDist = dist;
-        maxDistPtsAB = pairReverse(nearPtsBA);
+        maxDistPtsAB = pair(pA, pB);
       }
       if (isBeyondLimit(maxDist, maxDistanceLimit)) {
         break;
@@ -299,12 +299,12 @@ public class DirectedHausdorffDistance {
     PriorityQueue<DHDSegment> segQueue = createSegQueue(geomA);
 
     boolean maxDistSegFound = false;
-    DHDSegment maxDistSeg = null;
+    DHDSegment segMaxDist = null;
     long iter = 0;
     while (! segQueue.isEmpty()) {
       iter++;
       // get the segment with greatest distance
-      maxDistSeg = segQueue.remove();
+      segMaxDist = segQueue.remove();
 
       /**
        * Exit if segment length is within tolerance, so distance is accurate enough.
@@ -313,21 +313,24 @@ public class DirectedHausdorffDistance {
        * - if segment distance bound is less than distance limit, no other segment can be farther
        * - if a point of segment is farther than limit, isFulyWithin must be false
        */
-      if (maxDistSeg.length() <= tolerance 
-          || isWithinLimit(maxDistSeg.maxDistanceBound(), maxDistanceLimit)
-          || isBeyondLimit(maxDistSeg.maxDistance(), maxDistanceLimit)
+      if (segMaxDist.length() <= tolerance 
+          || isWithinLimit(segMaxDist.maxDistanceBound(), maxDistanceLimit)
+          || isBeyondLimit(segMaxDist.maxDistance(), maxDistanceLimit)
           ) {
         maxDistSegFound = true;
         break;
       }
+      //System.out.println(segMaxDist);
+      
+      
       
       //-- not within tolerance, so bisect segment and keep searching
-      DHDSegment[] bisects = maxDistSeg.bisect(distanceToB);
+      DHDSegment[] bisects = segMaxDist.bisect(distanceToB);
       addNonInterior(bisects[0], segQueue);
       addNonInterior(bisects[1], segQueue);
     }
     if (maxDistSegFound)
-      return maxDistSeg.getMaxDistPts();
+      return segMaxDist.getMaxDistPts();
     
     /**
      * No DHD segment was found. 
@@ -409,8 +412,8 @@ public class DirectedHausdorffDistance {
     if (distanceToB.isInterior(ptA)) {
       return null;
     }
-    Coordinate[] nearPtsBA = distanceToB.nearestPoints(ptA);
-    return pairReverse(nearPtsBA);
+    Coordinate ptB = distanceToB.nearestFacetPoint(ptA);
+    return pair(ptA, ptB);
   }
 
   /**
@@ -463,21 +466,30 @@ public class DirectedHausdorffDistance {
   }
   
   private static class TargetDistance {
-    private IndexedFacetDistance distance;
+    private IndexedFacetDistance distanceToFacets;
     private boolean isArea;
     private IndexedPointInPolygonsLocator ptInArea;
     
     public TargetDistance(Geometry geom) {
-      distance = new IndexedFacetDistance(geom);
+      distanceToFacets = new IndexedFacetDistance(geom);
       isArea = geom.getDimension() >= Dimension.A;
       if (isArea) {
         ptInArea = new IndexedPointInPolygonsLocator(geom);
       }
     }
 
-    public Coordinate[] nearestPoints(Coordinate p) {
-      Coordinate pd = distance.nearestPoint(p);
-      return new Coordinate[] {pd, p};
+    public Coordinate nearestFacetPoint(Coordinate p) {
+      return distanceToFacets.nearestPoint(p);
+    }
+    
+    public Coordinate nearestPoint(Coordinate p) {
+      if (ptInArea != null) {
+        if (ptInArea.locate(p) != Location.EXTERIOR) {
+          return p;
+        }
+      }
+      Coordinate nearestPt = distanceToFacets.nearestPoint(p);
+      return nearestPt;
     }
     
     public boolean isInterior(Coordinate p) {
@@ -489,7 +501,7 @@ public class DirectedHausdorffDistance {
       if (! isArea)
         return false;
       //-- compute distance to B linework
-      double segDist = distance.distance(p0, p1);
+      double segDist = distanceToFacets.distance(p0, p1);
       //-- if segment touches B linework it is not in interior
       if (segDist == 0)
         return false;
@@ -497,16 +509,7 @@ public class DirectedHausdorffDistance {
       boolean isInterior = isInterior(p0);
       return isInterior;
     }
-    
-    public Coordinate nearestPt(Coordinate p) {
-      if (ptInArea != null) {
-        if (ptInArea.locate(p) != Location.EXTERIOR) {
-          return p;
-        }
-      }
-      Coordinate nearestPt = distance.nearestPoint(p);
-      return nearestPt;
-    }
+
   }
   
   private static class DHDSegment implements Comparable<DHDSegment> {
@@ -543,14 +546,14 @@ public class DirectedHausdorffDistance {
     }
 
     private void init(TargetDistance dist) {
-      nearPt0 = dist.nearestPt(p0);
-      nearPt1 = dist.nearestPt(p1);
+      nearPt0 = dist.nearestPoint(p0);
+      nearPt1 = dist.nearestPoint(p1);
       computeMaxDistanceBound();
     }
 
     private void init(Coordinate nearest0, TargetDistance dist) {
       nearPt0 = nearest0;
-      nearPt1 = dist.nearestPt(p1);
+      nearPt1 = dist.nearestPoint(p1);
       computeMaxDistanceBound();
     }
 
@@ -602,7 +605,7 @@ public class DirectedHausdorffDistance {
           (p0.x + p1.x) / 2, 
           (p0.y + p1.y) / 2 
           );
-      Coordinate nearPtMid = dist.nearestPt(mid);
+      Coordinate nearPtMid = dist.nearestPoint(mid);
       return new DHDSegment[] {
           new DHDSegment(p0, nearPt0, mid, nearPtMid ),
           new DHDSegment(mid, nearPtMid, p1, nearPt1)
