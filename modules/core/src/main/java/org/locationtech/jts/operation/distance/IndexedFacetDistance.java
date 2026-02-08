@@ -162,35 +162,27 @@ public class IndexedFacetDistance
    * @param p the point coordinate
    * @return the nearest point on the base geometry and the point
    */
-  public Coordinate[] nearestPoints(Coordinate p)
+  public Coordinate nearestPoint(Coordinate p)
   {
     CoordinateSequence seq = new CoordinateArraySequence(new Coordinate[] { p });
     FacetSequence fs2 = new FacetSequence(seq, 0);
     Object nearest = cachedTree.nearestNeighbour(fs2.getEnvelope(), fs2, FACET_SEQ_DIST);
     FacetSequence fs1 = (FacetSequence) nearest;
-    return fs1.nearestLocations(fs2);
+    return fs1.nearestLocations(fs2)[0];
   }
-  
   
   public double distance(Coordinate p) {
-    return distance(nearestPoints(p));
+    return p.distance(nearestPoint(p));
   }
   
-  private static double distance(Coordinate[] pts) {
-    return pts[0].distance(pts[1]);
-  }
-
-  public Coordinate[] nearestPoints(Coordinate p0, Coordinate p1)
+  public double distance(Coordinate p0, Coordinate p1)
   {
     CoordinateSequence seq = new CoordinateArraySequence(new Coordinate[] { p0, p1 });
     FacetSequence fs2 = new FacetSequence(seq, 0, 2);
     Object nearest = cachedTree.nearestNeighbour(fs2.getEnvelope(), fs2, FACET_SEQ_DIST);
     FacetSequence fs1 = (FacetSequence) nearest;
-    return fs1.nearestLocations(fs2);
-  }
-  
-  public double distance(Coordinate p0, Coordinate p1) {
-    return distance(nearestPoints(p0, p1));
+    Coordinate[] loc = fs1.nearestLocations(fs2);
+    return loc[0].distance(loc[1]);
   }
   
   /**

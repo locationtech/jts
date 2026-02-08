@@ -476,7 +476,8 @@ public class DirectedHausdorffDistance {
     }
 
     public Coordinate[] nearestPoints(Coordinate p) {
-      return distance.nearestPoints(p);
+      Coordinate pd = distance.nearestPoint(p);
+      return new Coordinate[] {pd, p};
     }
     
     public boolean isInterior(Coordinate p) {
@@ -503,8 +504,8 @@ public class DirectedHausdorffDistance {
           return p;
         }
       }
-      Coordinate[] nearestPts = distance.nearestPoints(p);
-      return nearestPts[0];
+      Coordinate nearestPt = distance.nearestPoint(p);
+      return nearestPt;
     }
   }
   
