@@ -314,7 +314,7 @@ public class DirectedHausdorffDistance {
        * - if segment distance bound is less than distance limit, no other segment can be farther
        * - if a point of segment is farther than limit, isFulyWithin must be false
        */
-      if (segMaxDist.length() <= tolerance 
+      if ((segMaxDist.length() <= tolerance)
           || isWithinLimit(segMaxDist.maxDistanceBound(), maxDistanceLimit)
           || isBeyondLimit(segMaxDist.maxDistance(), maxDistanceLimit)
           ) {
@@ -328,7 +328,6 @@ public class DirectedHausdorffDistance {
           continue;
         //System.out.println(segMaxDist);
         isSameSegment(segMaxDist);
-
       }
       
       //System.out.println(segMaxDist);
@@ -354,20 +353,7 @@ public class DirectedHausdorffDistance {
   private boolean isSameSegment(DHDSegment seg) {
     FacetLocation f0 = distanceToB.nearestLocation(seg.p0);
     FacetLocation f1 = distanceToB.nearestLocation(seg.p1);
-    if (f0.isSameSegment(f1))
-      return true;
-    //-- check if endpoints of same segment
-    if (f1.getIndex() == f0.normalize(f0.getIndex() + 1)
-        && seg.p1.equals2D(f1.getEndPoint(0)))
-    {
-      return true;
-    }
-    if (f0.getIndex() == f0.normalize(f1.getIndex() + 1)
-        && seg.p0.equals2D(f0.getEndPoint(0)))
-    {
-      return true;
-    }
-    return false;
+    return f0.isSameSegment(f1);
   }
 
   private static boolean isBeyondLimit(double maxDist, double maxDistanceLimit) {

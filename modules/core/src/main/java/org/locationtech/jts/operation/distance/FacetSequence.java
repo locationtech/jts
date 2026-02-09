@@ -154,12 +154,9 @@ public class FacetSequence
 
   public FacetLocation nearestLocation(Coordinate p)
   {
-    boolean isPoint = isPoint();
-    
-    if (isPoint) {
+    if (isPoint()) {
       return new FacetLocation(pts, 0, pts.getCoordinate(0));
     }
-
     return nearestLocationOnLine(p);
   }
 
@@ -177,9 +174,12 @@ public class FacetSequence
         minDistance = dist;
         nearestPt = nearestPoint(pt, q0, q1);
         index = i;
-        //-- segments are half-open, so final endpoint belongs to next segment
+        //-- segments are half-open, so 2nd endpoint belongs to next segment
+        //-- except for last segment on non-closed sequence
         if (dist == 0.0 && pt.equals2D(q1)) {
-          index++;
+          if (index < pts.size() - 1) {
+            index++;
+          }
           //-- normalize index for a ring
           index = normalize(pts, index);
         }
