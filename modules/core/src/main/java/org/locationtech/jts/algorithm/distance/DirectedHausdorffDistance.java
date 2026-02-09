@@ -26,6 +26,7 @@ import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Location;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.io.WKTWriter;
+import org.locationtech.jts.operation.distance.FacetLocation;
 import org.locationtech.jts.operation.distance.IndexedFacetDistance;
 
 /**
@@ -320,10 +321,18 @@ public class DirectedHausdorffDistance {
         maxDistSegFound = true;
         break;
       }
+      
+      //-- check for equal or coincident segments
+      if (segMaxDist.maxDistance() == 0.0) {
+        if (isSameSegment(segMaxDist))
+          continue;
+        //System.out.println(segMaxDist);
+        isSameSegment(segMaxDist);
+
+      }
+      
       //System.out.println(segMaxDist);
-      
-      
-      
+
       //-- not within tolerance, so bisect segment and keep searching
       DHDSegment[] bisects = segMaxDist.bisect(distanceToB);
       addNonInterior(bisects[0], segQueue);
@@ -342,6 +351,25 @@ public class DirectedHausdorffDistance {
     return pair(maxPt, maxPt);
   }
   
+  private boolean isSameSegment(DHDSegment seg) {
+    FacetLocation f0 = distanceToB.nearestLocation(seg.p0);
+    FacetLocation f1 = distanceToB.nearestLocation(seg.p1);
+    if (f0.isSameSegment(f1))
+      return true;
+    //-- check if endpoints of same segment
+    if (f1.getIndex() == f0.normalize(f0.getIndex() + 1)
+        && seg.p1.equals2D(f1.getEndPoint(0)))
+    {
+      return true;
+    }
+    if (f0.getIndex() == f0.normalize(f1.getIndex() + 1)
+        && seg.p0.equals2D(f0.getEndPoint(0)))
+    {
+      return true;
+    }
+    return false;
+  }
+
   private static boolean isBeyondLimit(double maxDist, double maxDistanceLimit) {
     return maxDistanceLimit >= 0 && maxDist > maxDistanceLimit;
   }
@@ -476,6 +504,10 @@ public class DirectedHausdorffDistance {
       if (isArea) {
         ptInArea = new IndexedPointInPolygonsLocator(geom);
       }
+    }
+
+    public FacetLocation nearestLocation(Coordinate p) {
+      return distanceToFacets.nearestLocation(p);
     }
 
     public Coordinate nearestFacetPoint(Coordinate p) {
