@@ -299,45 +299,66 @@ public class DirectedHausdorffDistance {
   private Coordinate[] computeAtEdges(Geometry geomA, double tolerance, double maxDistanceLimit) {
     PriorityQueue<DHDSegment> segQueue = createSegQueue(geomA);
 
-    boolean maxDistSegFound = false;
     DHDSegment segMaxDist = null;
     long iter = 0;
     while (! segQueue.isEmpty()) {
       iter++;
-      // get the segment with greatest distance
-      segMaxDist = segQueue.remove();
-
+      // get the segment with greatest distance bound
+      DHDSegment segMaxBound = segQueue.remove();
+/*
+      double maxDistBound = segMaxBound.maxDistanceBound();
+      double maxDist = segMaxBound.maxDistance();
+      System.out.format("%s  len: %f bound: %f  maxDist: %f\n", 
+          segMaxBound, segMaxBound.length(), maxDistBound, maxDist);
+      if (maxDist > 1) {
+        System.out.println("FOUND");
+      }
+*/
       /**
-       * Exit if segment length is within tolerance, so distance is accurate enough.
-       * 
+       * Save if segment is farther than most distant so far
+       */
+      if (segMaxDist == null 
+          || segMaxBound.maxDistance() > segMaxDist.maxDistance()) {
+        segMaxDist = segMaxBound;
+      }
+      /**
        * If maxDistanceLimit is specified, short-circuit if:
        * - if segment distance bound is less than distance limit, no other segment can be farther
        * - if a point of segment is farther than limit, isFulyWithin must be false
        */
-      if ((segMaxDist.length() <= tolerance)
-          || isWithinLimit(segMaxDist.maxDistanceBound(), maxDistanceLimit)
-          || isBeyondLimit(segMaxDist.maxDistance(), maxDistanceLimit)
+      if (isWithinLimit(segMaxBound.maxDistanceBound(), maxDistanceLimit)
+          || isBeyondLimit(segMaxBound.maxDistance(), maxDistanceLimit)
           ) {
-        maxDistSegFound = true;
         break;
       }
       
-      //-- check for equal or coincident segments
-      if (segMaxDist.maxDistance() == 0.0) {
-        if (isSameSegment(segMaxDist))
+      /**
+       * Check for equal or coincident segments.
+       * If so, don't bisect the segment further.
+       * This improves performance when the inputs have identical segments.
+       */
+      if (segMaxBound.maxDistance() == 0.0) {
+        if (isSameSegment(segMaxBound))
           continue;
         //System.out.println(segMaxDist);
-        isSameSegment(segMaxDist);
+        //isSameSegment(segMaxBound);
       }
       
       //System.out.println(segMaxDist);
 
-      //-- not within tolerance, so bisect segment and keep searching
-      DHDSegment[] bisects = segMaxDist.bisect(distanceToB);
-      addNonInterior(bisects[0], segQueue);
-      addNonInterior(bisects[1], segQueue);
+      /**
+       * If segment is longer than tolerance 
+       * and it might provide a better max distance point,
+       * bisect and keep searching
+       */
+      if ((segMaxBound.length() > tolerance)
+          && segMaxBound.maxDistanceBound() > segMaxDist.maxDistance()) {
+        DHDSegment[] bisects = segMaxBound.bisect(distanceToB);
+        addNonInterior(bisects[0], segQueue);
+        addNonInterior(bisects[1], segQueue);
+      }
     }
-    if (maxDistSegFound)
+    if (segMaxDist != null)
       return segMaxDist.getMaxDistPts();
     
     /**

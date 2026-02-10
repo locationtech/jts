@@ -132,7 +132,9 @@ extends GeometryTestCase
     String a = "MULTIPOLYGON (((1 1, 1 10, 5 1, 1 1)), ((4 17, 9 15, 9 6, 4 17)))";
     String b = "MULTIPOLYGON (((1 12, 4 13, 8 10, 1 12)), ((3 8, 7 7, 6 2, 3 8)))";
     checkDistance(a, b, 0.01, "LINESTRING (1 1, 5.4 3.2)");
-    checkDistance(b, a, 0.001, "LINESTRING (2.669921875 12.556640625, 5.446115154109589 13.818546660958905)");
+    checkDistanceStartPtLen(b, a, 0.001,
+        "LINESTRING (2.669921875 12.556640625, 5.446115154109589 13.818546660958905)",
+        0.01);
   }
   
   // Tests that target area interiors have distance = 0
