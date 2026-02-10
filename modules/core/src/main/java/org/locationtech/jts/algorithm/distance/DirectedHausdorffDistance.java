@@ -69,7 +69,7 @@ import org.locationtech.jts.operation.distance.IndexedFacetDistance;
  * <p>
  * The class can be used in prepared mode.
  * Creating an instance on a target geometry caches indexes for that geometry.
- * Then {@link #computeDistancePoints(Geometry, double) 
+ * Then {@link #maximumDistancePoints(Geometry, double) 
  * or {@link #isFullyWithinDistance(Geometry, double, double)}
  * can be called efficiently for multiple query geometries.
  * <p>
@@ -96,7 +96,7 @@ public class DirectedHausdorffDistance {
   public static double distance(Geometry a, Geometry b, double tolerance)
   {
     DirectedHausdorffDistance hd = new DirectedHausdorffDistance(b);
-    return distance(hd.computeDistancePoints(a, tolerance));
+    return distance(hd.maximumDistancePoints(a, tolerance));
   }
   
   /**
@@ -111,7 +111,7 @@ public class DirectedHausdorffDistance {
   public static LineString distanceLine(Geometry a, Geometry b, double tolerance)
   {
     DirectedHausdorffDistance hd = new DirectedHausdorffDistance(b);
-    return a.getFactory().createLineString(hd.computeDistancePoints(a, tolerance));
+    return a.getFactory().createLineString(hd.maximumDistancePoints(a, tolerance));
   }
   
   /**
@@ -144,9 +144,9 @@ public class DirectedHausdorffDistance {
   public static LineString hausdorffDistanceLine(Geometry a, Geometry b, double tolerance)
   {
     DirectedHausdorffDistance hdAB = new DirectedHausdorffDistance(b);
-    Coordinate[] ptsAB = hdAB.computeDistancePoints(a, tolerance);
+    Coordinate[] ptsAB = hdAB.maximumDistancePoints(a, tolerance);
     DirectedHausdorffDistance hdBA = new DirectedHausdorffDistance(a);
-    Coordinate[] ptsBA = hdBA.computeDistancePoints(b, tolerance);
+    Coordinate[] ptsBA = hdBA.maximumDistancePoints(b, tolerance);
     
     //-- return points in A-B order
     Coordinate[] pts;
@@ -227,13 +227,13 @@ public class DirectedHausdorffDistance {
 
   /**
    * Computes a pair of points which attain the directed Hausdorff distance 
-   * of a query geometry A from the target.
+   * of a query geometry A from the target B.
    * 
    * @param geomA the query geometry  
    * @param tolerance the approximation distance tolerance
    * @return a pair of points [ptA, ptB] demonstrating the distance
    */
-  public Coordinate[] computeDistancePoints(Geometry geomA, double tolerance) {
+  public Coordinate[] maximumDistancePoints(Geometry geomA, double tolerance) {
     return computeDistancePoints(geomA, tolerance, -1.0);
   }
   
