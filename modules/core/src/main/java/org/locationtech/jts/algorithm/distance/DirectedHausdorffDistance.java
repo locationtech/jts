@@ -80,11 +80,6 @@ import org.locationtech.jts.operation.distance.IndexedFacetDistance;
  * This algorithm is easier to use, more accurate, 
  * and much faster than {@link DiscreteHausdorffDistance}.
  * 
- * <h3>KNOWN ISSUES</h3>
- * <ul>
- * <li>if the two geometries are identical or nearly so, 
- *     performance may be slow.
- * </ul>
  * @author Martin Davis
  *
  */
@@ -481,6 +476,7 @@ public class DirectedHausdorffDistance {
    * @param priq
    */
   private void addSegments(Coordinate[] pts, PriorityQueue<DHDSegment> priq) {
+    DHDSegment segMaxDist = null;
     DHDSegment prevSeg = null;
     for (int i = 0; i < pts.length - 1; i++) {
       DHDSegment seg;
@@ -488,14 +484,24 @@ public class DirectedHausdorffDistance {
         seg = DHDSegment.create(pts[i], pts[i + 1], distanceToB);
       } 
       else {
-        //-- optimize by avoiding recomputing pt distance
+        //-- avoiding recomputing prev pt distance
         seg = DHDSegment.create(prevSeg, pts[i + 1], distanceToB);
       }
       prevSeg = seg;
-      /**
-       * Don't add interior segments, since their distance must be zero.
-       */
-      addNonInterior(seg, priq);
+      
+      //-- don't bother adding segment if it can't be further away then current max
+      if (segMaxDist == null 
+          || seg.maxDistanceBound() > segMaxDist.maxDistance()) {
+        /**
+         * Don't add interior segments, since their distance must be zero.
+         */
+        addNonInterior(seg, priq);
+      }
+      
+      if (segMaxDist == null 
+          || seg.maxDistance() > segMaxDist.maxDistance()) {
+        segMaxDist = seg;;
+      }
       //System.out.println(seg.distance());
     }
   }
