@@ -328,15 +328,15 @@ public class DirectedHausdorffDistance {
       }
       
       /**
-       * Check for equal or coincident segments.
+       * Check for equal or collinear segments.
        * If so, don't bisect the segment further.
-       * This improves performance when the inputs have identical segments.
+       * This greatly improves performance when the inputs 
+       * have identical or collinear segments
+       * (in particular, the case when the inputs are identical).
        */
       if (segMaxBound.maxDistance() == 0.0) {
-        if (isSameSegment(segMaxBound))
+        if (isSameOrCollinear(segMaxBound))
           continue;
-        //System.out.println(segMaxDist);
-        //isSameSegment(segMaxBound);
       }
       
       //System.out.println(segMaxDist);
@@ -366,7 +366,7 @@ public class DirectedHausdorffDistance {
     return pair(maxPt, maxPt);
   }
   
-  private boolean isSameSegment(DHDSegment seg) {
+  private boolean isSameOrCollinear(DHDSegment seg) {
     FacetLocation f0 = distanceToB.nearestLocation(seg.p0);
     FacetLocation f1 = distanceToB.nearestLocation(seg.p1);
     return f0.isSameSegment(f1);
@@ -471,6 +471,7 @@ public class DirectedHausdorffDistance {
   }
 
   /**
+   * Add segments to queue 
    *  
    * @param pts
    * @param priq
@@ -489,7 +490,7 @@ public class DirectedHausdorffDistance {
       }
       prevSeg = seg;
       
-      //-- don't bother adding segment if it can't be further away then current max
+      //-- don't add segment if it can't be further away then current max
       if (segMaxDist == null 
           || seg.maxDistanceBound() > segMaxDist.maxDistance()) {
         /**
@@ -575,7 +576,8 @@ public class DirectedHausdorffDistance {
     private Coordinate nearPt0;
     private Coordinate p1;
     private Coordinate nearPt1;
-    double maxDistanceBound = Double.NEGATIVE_INFINITY;
+    private double maxDistanceBound = Double.NEGATIVE_INFINITY;
+    private double maxDistance;
     
     private DHDSegment(Coordinate p0, Coordinate p1) {
       this.p0 = p0;
@@ -587,19 +589,19 @@ public class DirectedHausdorffDistance {
       this.nearPt0 = nearPt0;
       this.p1 = p1;
       this.nearPt1 = nearPt1;
-      computeMaxDistanceBound();
+      computeMaxDistances();
     }
 
     private void init(TargetDistance dist) {
       nearPt0 = dist.nearestPoint(p0);
       nearPt1 = dist.nearestPoint(p1);
-      computeMaxDistanceBound();
+      computeMaxDistances();
     }
 
     private void init(Coordinate nearest0, TargetDistance dist) {
       nearPt0 = nearest0;
       nearPt1 = dist.nearestPoint(p1);
-      computeMaxDistanceBound();
+      computeMaxDistances();
     }
 
     public Coordinate getEndpoint(int index) {
@@ -611,9 +613,7 @@ public class DirectedHausdorffDistance {
     }
     
     public double maxDistance() {
-      double dist0 = p0.distance(nearPt0);
-      double dist1 = p1.distance(nearPt1);
-      return Math.max(dist0,dist1);
+      return maxDistance;
     }
     
     public double maxDistanceBound() {
@@ -632,17 +632,15 @@ public class DirectedHausdorffDistance {
     /**
      * Computes a least upper bound for the maximum distance to a segment.
      */
-    private void computeMaxDistanceBound() {
-      //System.out.println(distance());
-      
+    private void computeMaxDistances() {
       /**
        * Least upper bound is the max distance to the endpoints,
        * plus half segment length.
        */
       double dist0 = p0.distance(nearPt0);
       double dist1 = p1.distance(nearPt1);
-      double maxDist = Math.max(dist0, dist1);
-      maxDistanceBound = maxDist + length() / 2;
+      maxDistance = Math.max(dist0, dist1);
+      maxDistanceBound = maxDistance + length() / 2;
     } 
     
     public DHDSegment[] bisect(TargetDistance dist) {
