@@ -77,6 +77,14 @@ extends GeometryTestCase
         "LINESTRING (0 0, 0 2)");
   }
   
+  public void testLinesTopoEqual()
+  {
+    checkDistance("MULTILINESTRING ((10 10, 10 90, 40 30), (40 30, 60 80, 90 30, 40 10))", 
+        "LINESTRING (10 10, 10 90, 40 30, 60 80, 90 30, 40 10)", 
+        0.01,
+        0.0);
+  }
+  
   public void testLinesPolygon()
   {
     checkHD("MULTILINESTRING ((1 1, 2 7), (7 1, 9 9))", 
