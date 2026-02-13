@@ -139,7 +139,7 @@ public class IndexedFacetDistance
     return fs1.nearestLocations(fs2);
   }
 
-  public FacetLocation nearestLocation(Coordinate p) {
+  public CoordinateSequenceLocation nearestLocation(Coordinate p) {
     CoordinateSequence seq = new CoordinateArraySequence(new Coordinate[] { p });
     FacetSequence fs = new FacetSequence(seq, 0);
     Object nearest = cachedTree.nearestNeighbour(fs.getEnvelope(), fs, FACET_SEQ_DIST);
@@ -161,7 +161,7 @@ public class IndexedFacetDistance
     FacetSequence fs = new FacetSequence(seq, 0);
     Object nearest = cachedTree.nearestNeighbour(fs.getEnvelope(), fs, FACET_SEQ_DIST);
     FacetSequence fsN = (FacetSequence) nearest;
-    return fsN.nearestLocations(fs)[0];
+    return fsN.nearestLocation(p).getCoordinate();
   }
   
   /**

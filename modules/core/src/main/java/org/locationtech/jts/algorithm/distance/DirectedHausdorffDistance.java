@@ -26,7 +26,7 @@ import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Location;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.io.WKTWriter;
-import org.locationtech.jts.operation.distance.FacetLocation;
+import org.locationtech.jts.operation.distance.CoordinateSequenceLocation;
 import org.locationtech.jts.operation.distance.IndexedFacetDistance;
 
 /**
@@ -367,8 +367,8 @@ public class DirectedHausdorffDistance {
   }
   
   private boolean isSameOrCollinear(DHDSegment seg) {
-    FacetLocation f0 = distanceToB.nearestLocation(seg.p0);
-    FacetLocation f1 = distanceToB.nearestLocation(seg.p1);
+    CoordinateSequenceLocation f0 = distanceToB.nearestLocation(seg.p0);
+    CoordinateSequenceLocation f1 = distanceToB.nearestLocation(seg.p1);
     return f0.isSameSegment(f1);
   }
 
@@ -520,7 +520,7 @@ public class DirectedHausdorffDistance {
       }
     }
 
-    public FacetLocation nearestLocation(Coordinate p) {
+    public CoordinateSequenceLocation nearestLocation(Coordinate p) {
       return distanceToFacets.nearestLocation(p);
     }
 

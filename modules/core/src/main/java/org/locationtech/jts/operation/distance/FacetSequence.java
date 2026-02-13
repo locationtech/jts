@@ -152,15 +152,15 @@ public class FacetSequence
     return locs;    
   }
 
-  public FacetLocation nearestLocation(Coordinate p)
+  public CoordinateSequenceLocation nearestLocation(Coordinate p)
   {
     if (isPoint()) {
-      return new FacetLocation(pts, 0, pts.getCoordinate(0));
+      return new CoordinateSequenceLocation(pts, 0, pts.getCoordinate(0));
     }
     return nearestLocationOnLine(p);
   }
 
-  private FacetLocation nearestLocationOnLine(Coordinate pt) 
+  private CoordinateSequenceLocation nearestLocationOnLine(Coordinate pt) 
   {
     double minDistance = Double.MAX_VALUE;
     int index = -1;
@@ -187,7 +187,7 @@ public class FacetSequence
           break;
       }
     }
-    return new FacetLocation(pts, index, nearestPt);
+    return new CoordinateSequenceLocation(pts, index, nearestPt);
   }
 
   private static int normalize(CoordinateSequence pts, int index) {

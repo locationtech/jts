@@ -16,23 +16,24 @@ import org.locationtech.jts.geom.CoordinateSequence;
 import org.locationtech.jts.geom.CoordinateSequences;
 
 /**
+ * A location on a {@link FacetSequence}.
  * 
  * Location indexes are always the index of a sequence segment.  
- * This means they are always less than the number of vertices
+ * Thus they are always less than the number of vertices
  * in the sequence. The endpoint in a sequence 
  * has the index of the final segment in the sequence.
- * if the sequence is a ring, the imdex of the final endpoint is
+ * if the sequence is a ring, the index of the final endpoint is
  * normalized to 0.
  * 
  * @author mdavis
  *
  */
-public class FacetLocation {
+public class CoordinateSequenceLocation {
   private CoordinateSequence seq;
   private int index;
   private Coordinate pt;
   
-  public FacetLocation(CoordinateSequence seq, int index, Coordinate pt) {
+  public CoordinateSequenceLocation(CoordinateSequence seq, int index, Coordinate pt) {
     this.seq = seq;
     this.pt = pt;
     this.index = index;
@@ -40,7 +41,11 @@ public class FacetLocation {
       this.index = seq.size() - 1;
   }
 
-  public boolean isSameSegment(FacetLocation f) {
+  public Coordinate getCoordinate() {
+    return pt;
+  }
+  
+  public boolean isSameSegment(CoordinateSequenceLocation f) {
     if (seq != f.seq)
       return false;
     if (index == f.index)
