@@ -117,6 +117,7 @@ public class DirectedHausdorffDistance {
   /**
    * Computes a pair of points which attain the symmetric Hausdorff distance 
    * between two geometries.
+   * This the maximum of the two directed Hausdorff distances.
    * 
    * @param a a geometry  
    * @param b a geometry
@@ -131,12 +132,10 @@ public class DirectedHausdorffDistance {
     Coordinate[] ptsBA = hdBA.maximumDistancePoints(b, tolerance);
     
     //-- return points in A-B order
-    Coordinate[] pts;
-    if (distance(ptsAB) > distance(ptsBA)) {
-      pts = ptsAB;
-    } 
-    else {
-      pts = pairReverse(ptsBA);
+    Coordinate[] pts = ptsAB;
+    if (distance(ptsBA) > distance(ptsAB)) {
+      //-- reverse the BA points
+      pts = pair(ptsBA[1], ptsBA[0]);
     }
     return a.getFactory().createLineString(pts);
   }
@@ -165,10 +164,6 @@ public class DirectedHausdorffDistance {
 
   private static Coordinate[] pair(Coordinate p0, Coordinate p1) {
     return new Coordinate[] { p0.copy(), p1.copy() };
-  }
-
-  private static Coordinate[] pairReverse(Coordinate[] pts) {
-    return new Coordinate[] { pts[1].copy(), pts[0].copy() };
   }
   
   private Geometry geomB;
