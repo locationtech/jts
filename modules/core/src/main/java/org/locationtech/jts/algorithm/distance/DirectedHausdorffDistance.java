@@ -100,7 +100,7 @@ public class DirectedHausdorffDistance {
   }
   
   /**
-   * Computes a pair of points which attain the directed Hausdorff distance 
+   * Computes a line containing a pair of points which attain the directed Hausdorff distance 
    * of a query geometry A from a target one B.
    * 
    * @param a the query geometry  
@@ -113,27 +113,9 @@ public class DirectedHausdorffDistance {
     DirectedHausdorffDistance hd = new DirectedHausdorffDistance(b);
     return a.getFactory().createLineString(hd.maximumDistancePoints(a, tolerance));
   }
-  
-  /**
-   * Computes whether a query geometry lies fully within a give distance of a target geometry.
-   * Equivalently, detects whether any point of the query geometry is farther 
-   * from the target than the specified distance.
-   * This is the case if <tt>DHD(A, B) > maxDistance</tt>.
-   *  
-   * @param a the query geometry  
-   * @param b the target geometry
-   * @param maxDistance the distance limit
-   * @param tolerance the approximation distance tolerance
-   * @return true if the query geometry lies fully within the distance of the target
-   */
-  public static boolean isFullyWithinDistance(Geometry a, Geometry b, double maxDistance, double tolerance)
-  {
-    DirectedHausdorffDistance hd = new DirectedHausdorffDistance(b);
-    return hd.isFullyWithinDistance(a, maxDistance, tolerance);
-  }
 
   /**
-   * Computes a pair of points which attain the Hausdorff distance 
+   * Computes a pair of points which attain the symmetric Hausdorff distance 
    * between two geometries.
    * 
    * @param a a geometry  
@@ -157,6 +139,24 @@ public class DirectedHausdorffDistance {
       pts = pairReverse(ptsBA);
     }
     return a.getFactory().createLineString(pts);
+  }
+  
+  /**
+   * Computes whether a query geometry lies fully within a give distance of a target geometry.
+   * Equivalently, detects whether any point of the query geometry is farther 
+   * from the target than the specified distance.
+   * This is the case if <tt>DHD(A, B) > maxDistance</tt>.
+   *  
+   * @param a the query geometry  
+   * @param b the target geometry
+   * @param maxDistance the distance limit
+   * @param tolerance the approximation distance tolerance
+   * @return true if the query geometry lies fully within the distance of the target
+   */
+  public static boolean isFullyWithinDistance(Geometry a, Geometry b, double maxDistance, double tolerance)
+  {
+    DirectedHausdorffDistance hd = new DirectedHausdorffDistance(b);
+    return hd.isFullyWithinDistance(a, maxDistance, tolerance);
   }
   
   private static double distance(Coordinate[] pts) {
@@ -239,10 +239,10 @@ public class DirectedHausdorffDistance {
   
   private Coordinate[] computeDistancePoints(Geometry geomA, double tolerance, double maxDistanceLimit) {
     if (geomA.getDimension() == Dimension.P) {
-      return computeAtPoints(geomA, maxDistanceLimit);
+      return computeForPoints(geomA, maxDistanceLimit);
     }
     //TODO: handle mixed geoms with points
-    Coordinate[] maxDistPtsEdge = computeAtEdges(geomA, tolerance, maxDistanceLimit);
+    Coordinate[] maxDistPtsEdge = computeForEdges(geomA, tolerance, maxDistanceLimit);
     
     if (isBeyondLimit(distance(maxDistPtsEdge), maxDistanceLimit)) {
       return maxDistPtsEdge;
@@ -252,7 +252,7 @@ public class DirectedHausdorffDistance {
      * Polygonal query geometry may have an interior point as the farthest point.
      */
     if (geomA.getDimension() == Dimension.A) {
-      Coordinate[] maxDistPtsInterior = computeAtAreaInterior(geomA, tolerance);
+      Coordinate[] maxDistPtsInterior = computeForAreaInterior(geomA, tolerance);
       if (maxDistPtsInterior != null 
           && distance(maxDistPtsInterior) > distance(maxDistPtsEdge)) {
         return maxDistPtsInterior;
@@ -261,7 +261,7 @@ public class DirectedHausdorffDistance {
     return maxDistPtsEdge;
   }
   
-  private Coordinate[] computeAtPoints(Geometry geomA, double maxDistanceLimit) {
+  private Coordinate[] computeForPoints(Geometry geomA, double maxDistanceLimit) {
     double maxDist = -1.0;;
     Coordinate[] maxDistPtsAB = null;
     Iterator geomi = new GeometryCollectionIterator(geomA);
@@ -291,7 +291,7 @@ public class DirectedHausdorffDistance {
     return maxDistPtsAB;
   }
 
-  private Coordinate[] computeAtEdges(Geometry geomA, double tolerance, double maxDistanceLimit) {
+  private Coordinate[] computeForEdges(Geometry geomA, double tolerance, double maxDistanceLimit) {
     PriorityQueue<DHDSegment> segQueue = createSegQueue(geomA);
 
     DHDSegment segMaxDist = null;
@@ -313,7 +313,7 @@ public class DirectedHausdorffDistance {
        * Save if segment is farther than most distant so far
        */
       if (segMaxDist == null 
-          || segMaxBound.maxDistance() > segMaxDist.maxDistance()) {
+          || segMaxBound.getMaxDistance() > segMaxDist.getMaxDistance()) {
         segMaxDist = segMaxBound;
       }
       /**
@@ -321,8 +321,8 @@ public class DirectedHausdorffDistance {
        * - if segment distance bound is less than distance limit, no other segment can be farther
        * - if a point of segment is farther than limit, isFulyWithin must be false
        */
-      if (isWithinLimit(segMaxBound.maxDistanceBound(), maxDistanceLimit)
-          || isBeyondLimit(segMaxBound.maxDistance(), maxDistanceLimit)
+      if (isWithinLimit(segMaxBound.getMaxDistanceBound(), maxDistanceLimit)
+          || isBeyondLimit(segMaxBound.getMaxDistance(), maxDistanceLimit)
           ) {
         break;
       }
@@ -334,7 +334,7 @@ public class DirectedHausdorffDistance {
        * have identical or collinear segments
        * (in particular, the case when the inputs are identical).
        */
-      if (segMaxBound.maxDistance() == 0.0) {
+      if (segMaxBound.getMaxDistance() == 0.0) {
         if (isSameOrCollinear(segMaxBound))
           continue;
       }
@@ -346,13 +346,17 @@ public class DirectedHausdorffDistance {
        * and it might provide a better max distance point,
        * bisect and keep searching
        */
-      if ((segMaxBound.length() > tolerance)
-          && segMaxBound.maxDistanceBound() > segMaxDist.maxDistance()) {
+      if ((segMaxBound.getLength() > tolerance)
+          && segMaxBound.getMaxDistanceBound() > segMaxDist.getMaxDistance()) {
         DHDSegment[] bisects = segMaxBound.bisect(distanceToB);
         addNonInterior(bisects[0], segQueue);
         addNonInterior(bisects[1], segQueue);
       }
     }
+    /**
+     * A segment at maximum distance was found.
+     * Return the farthest point pair
+     */
     if (segMaxDist != null)
       return segMaxDist.getMaxDistPts();
     
@@ -395,7 +399,7 @@ public class DirectedHausdorffDistance {
    * @return
    */
   private boolean isInterior(DHDSegment segment) {
-    if (segment.maxDistance() > 0.0) {
+    if (segment.getMaxDistance() > 0.0) {
       return false;
     }
     return distanceToB.isInterior(segment.getEndpoint(0), segment.getEndpoint(1));
@@ -418,7 +422,7 @@ public class DirectedHausdorffDistance {
    * @return the maximum distance point pair at an interior point of A, 
    *   or null if it is known to not occur at an interior point 
    */
-  private Coordinate[] computeAtAreaInterior(Geometry geomA, double tolerance) {
+  private Coordinate[] computeForAreaInterior(Geometry geomA, double tolerance) {
     //TODO: extract polygonal geoms from A
     Geometry polygonalA = geomA;
     
@@ -492,7 +496,7 @@ public class DirectedHausdorffDistance {
       
       //-- don't add segment if it can't be further away then current max
       if (segMaxDist == null 
-          || seg.maxDistanceBound() > segMaxDist.maxDistance()) {
+          || seg.getMaxDistanceBound() > segMaxDist.getMaxDistance()) {
         /**
          * Don't add interior segments, since their distance must be zero.
          */
@@ -500,7 +504,7 @@ public class DirectedHausdorffDistance {
       }
       
       if (segMaxDist == null 
-          || seg.maxDistance() > segMaxDist.maxDistance()) {
+          || seg.getMaxDistance() > segMaxDist.getMaxDistance()) {
         segMaxDist = seg;;
       }
       //System.out.println(seg.distance());
@@ -608,15 +612,15 @@ public class DirectedHausdorffDistance {
       return index == 0 ? p0 : p1;
     }
 
-    public double length() {
+    public double getLength() {
       return p0.distance(p1);
     }
     
-    public double maxDistance() {
+    public double getMaxDistance() {
       return maxDistance;
     }
     
-    public double maxDistanceBound() {
+    public double getMaxDistanceBound() {
       return maxDistanceBound;
     }
     
@@ -640,7 +644,7 @@ public class DirectedHausdorffDistance {
       double dist0 = p0.distance(nearPt0);
       double dist1 = p1.distance(nearPt1);
       maxDistance = Math.max(dist0, dist1);
-      maxDistanceBound = maxDistance + length() / 2;
+      maxDistanceBound = maxDistance + getLength() / 2;
     } 
     
     public DHDSegment[] bisect(TargetDistance dist) {
