@@ -46,53 +46,60 @@ public class DistanceFunctions {
     return a.getFactory().createLineString(dist.getCoordinates());
   }
 
-  public static double hausdorffDistance(Geometry a, Geometry b)  
-  {   
-    return DiscreteHausdorffDistance.distance(a, b);
-  }
-  
-  @Metadata(description="Hausdorff distance between A and B")
-  public static Geometry hausdorffDistanceLine(Geometry a, Geometry b)  
-  {   
-    return DiscreteHausdorffDistance.distanceLine(a, b);
-  }
-
-  @Metadata(description="Hausdorff distance between A and B, densified")
-	public static Geometry hausdorffDistanceLineDensify(Geometry a, Geometry b, 
-      @Metadata(title="Densify fraction")
-	    double frac)	
-	{		
-    return DiscreteHausdorffDistance.distanceLine(a, b, frac);
-	}
-
-  @Metadata(description="Oriented Hausdorff distance from A to B")
-  public static Geometry orientedHausdorffDistanceLine(Geometry a, Geometry b)  
+  @Metadata(description="Oriented discrete Hausdorff distance line from A to B")
+  public static Geometry orientedDiscreteHausdorffLine(Geometry a, Geometry b)  
   {   
     return DiscreteHausdorffDistance.orientedDistanceLine(a, b);
   }
 
-  @Metadata(description="Oriented Hausdorff distance from A to B")
-  public static Geometry clippedOrientedHausdorffDistanceLine(Geometry a, Geometry b)  
-  {   
-    //TODO: would this be more efficient done as part of DiscreteHausdorffDistance?
-    Geometry clippedLine = LinearReferencingFunctions.project(a, b);
-    return DiscreteHausdorffDistance.orientedDistanceLine(clippedLine, b);
-  }
-
-  @Metadata(description="Oriented Hausdorff distance from A to B")
-	public static double orientedHausdorffDistance(Geometry a, Geometry b)	
+  @Metadata(description="Oriented discrete Hausdorff distance from A to B")
+	public static double orientedDiscreteHausdorffDistance(Geometry a, Geometry b)	
 	{		
     return DiscreteHausdorffDistance.orientedDistance(a, b);
 	}
 	
-  @Metadata(description="Oriented Hausdorff distance from A to B, densified")
-  public static Geometry orientedHausdorffDistanceLineDensify(Geometry a, Geometry b, 
+  @Metadata(description="Oriented discrete Hausdorff distance line from A to B, densified")
+  public static Geometry orientedDiscreteHausdorffLineDensify(Geometry a, Geometry b, 
       @Metadata(title="Densify fraction")
       double frac)  
   {   
     return DiscreteHausdorffDistance.orientedDistanceLine(a, b, frac);
   }
 
+  @Metadata(description="Clipped Oriented Hausdorff distance from A to B")
+  public static Geometry clippedOrientedHausdorffDistanceLine(Geometry a, Geometry b)  
+  {   
+    //TODO: would this be more efficient done as part of DiscreteHausdorffDistance?
+    Geometry clippedLine = LinearReferencingFunctions.project(a, b);
+    return DiscreteHausdorffDistance.orientedDistanceLine(clippedLine, b);
+  }
+  
+  @Metadata(description="Directed Hausdorff distance from A to B, up to tolerance")
+  public static double directedHausdorffDistance(Geometry a, Geometry b, 
+      @Metadata(title="Distance tolerance")
+      double distTol)  
+  {   
+    return DirectedHausdorffDistance.distance(a, b, distTol);
+  }
+  
+  @Metadata(description="Directed Hausdorff distance from A to B, up to tolerance")
+  public static Geometry directedHausdorffLine(Geometry a, Geometry b, 
+      @Metadata(title="Distance tolerance")
+      double distTol)  
+  {   
+    return DirectedHausdorffDistance.distanceLine(a, b, distTol);
+  }
+  
+  @Metadata(description="Hausdorff distance between A and B, up to tolerance")
+  public static Geometry hausdorffLine(Geometry a, Geometry b, 
+      @Metadata(title="Distance tolerance")
+      double distTol)  
+  {   
+    return DirectedHausdorffDistance.hausdorffDistanceLine(a, b, distTol);
+  }
+  
+  //--------------------------------------------
+  
   public static double distanceIndexed(Geometry a, Geometry b) {
     return IndexedFacetDistance.distance(a, b);
   }
@@ -118,28 +125,5 @@ public class DistanceFunctions {
     
     return a.getFactory().createMultiLineString(lines);
   }
-  
-  @Metadata(description="Directed Hausdorff distance from A to B, up to tolerance")
-  public static double dhd(Geometry a, Geometry b, 
-      @Metadata(title="Distance tolerance")
-      double distTol)  
-  {   
-    return DirectedHausdorffDistance.distance(a, b, distTol);
-  }
-  
-  @Metadata(description="Directed Hausdorff distance from A to B, up to tolerance")
-  public static Geometry dhdLine(Geometry a, Geometry b, 
-      @Metadata(title="Distance tolerance")
-      double distTol)  
-  {   
-    return DirectedHausdorffDistance.distanceLine(a, b, distTol);
-  }
-  
-  @Metadata(description="Hausdorff distance between A and B, up to tolerance")
-  public static Geometry hdLine(Geometry a, Geometry b, 
-      @Metadata(title="Distance tolerance")
-      double distTol)  
-  {   
-    return DirectedHausdorffDistance.hausdorffDistanceLine(a, b, distTol);
-  }
+
 }
