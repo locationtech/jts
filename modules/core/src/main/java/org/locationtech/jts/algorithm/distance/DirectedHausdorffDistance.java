@@ -342,7 +342,6 @@ public class DirectedHausdorffDistance {
     /**
      * Polygonal query geometry may have an interior point as the farthest point.
      */
-    //*
     if (geomA.getDimension() == Dimension.A) {
       Coordinate[] maxDistPtsInterior = computeForAreaInterior(geomA, tolerance);
       if (maxDistPtsInterior != null 
@@ -350,7 +349,6 @@ public class DirectedHausdorffDistance {
         return maxDistPtsInterior;
       }
     }
-    //*/
     return maxDistPtsEdge;
   }
   
@@ -393,6 +391,9 @@ public class DirectedHausdorffDistance {
       iter++;
       // get the segment with greatest distance bound
       DHDSegment segMaxBound = segQueue.remove();
+      //System.out.println(segMaxBound);
+      //System.out.println(WKTWriter.toLineString(segMaxBound.getMaxDistPts()));
+
 /*
       double maxDistBound = segMaxBound.maxDistanceBound();
       double maxDist = segMaxBound.maxDistance();
@@ -403,14 +404,21 @@ public class DirectedHausdorffDistance {
       }
 */
       /**
-       * Save if segment is farther than most distant so far
+       * Save if segment point is farther than current farthest
        */
       if (segMaxDist == null 
           || segMaxBound.getMaxDistance() > segMaxDist.getMaxDistance()) {
         segMaxDist = segMaxBound;
       }
       /**
-       * If maxDistanceLimit is specified, short-circuit if:
+       * Stop searching if remaining items in queue must all be closer
+       * than the current maximum distance.
+       */
+      if (segMaxBound.getMaxDistanceBound() <= segMaxDist.getMaxDistance()) {
+        break;
+      }
+      /**
+       * If maxDistanceLimit is specified, can stop searching if:
        * - if segment distance bound is less than distance limit, no other segment can be farther
        * - if a point of segment is farther than limit, isFulyWithin must be false
        */
@@ -419,7 +427,7 @@ public class DirectedHausdorffDistance {
           ) {
         break;
       }
-      
+
       /**
        * Check for equal or collinear segments.
        * If so, don't bisect the segment further.
@@ -435,12 +443,11 @@ public class DirectedHausdorffDistance {
       //System.out.println(segMaxDist);
 
       /**
-       * If segment is longer than tolerance 
-       * and it might provide a better max distance point,
-       * bisect and keep searching
+       * If segment is longer than tolerance
+       * it might provide a better max distance point,
+       * so bisect and keep searching
        */
-      if ((segMaxBound.getLength() > tolerance)
-          && segMaxBound.getMaxDistanceBound() > segMaxDist.getMaxDistance()) {
+      if ((segMaxBound.getLength() > tolerance)) {
         DHDSegment[] bisects = segMaxBound.bisect(distanceToB);
         addNonInterior(bisects[0], segQueue);
         addNonInterior(bisects[1], segQueue);
