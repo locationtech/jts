@@ -114,7 +114,7 @@ extends GeometryTestCase
     checkDistanceStartPtLen("POLYGON ((2 8, 8 2, 2 1, 2 8))", 
         "LINESTRING (6 5, 4 7, 0 0, 9 1)", 
         0.001,
-        "LINESTRING (4.557 2.9937, 2.4 4.2)", 0.01);
+        "LINESTRING (4.555 2.989, 4.828 0.536)", 0.01);
   }
   
   public void testPolygonPolygon()

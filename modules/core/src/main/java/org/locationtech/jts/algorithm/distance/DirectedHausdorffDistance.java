@@ -86,11 +86,13 @@ import org.locationtech.jts.operation.distance.IndexedFacetDistance;
 public class DirectedHausdorffDistance {
 
   /**
-   * Computes the directed Hausdorff distance of a query geometry A from a target one B.
+   * Computes the directed Hausdorff distance 
+   * of a query geometry A from a target one B,
+   * up to a given distance accuracy.
    * 
    * @param a the query geometry  
    * @param b the target geometry
-   * @param tolerance the approximation distance tolerance
+   * @param tolerance the accuracy distance tolerance
    * @return the directed Hausdorff distance
    */
   public static double distance(Geometry a, Geometry b, double tolerance)
@@ -100,12 +102,26 @@ public class DirectedHausdorffDistance {
   }
   
   /**
-   * Computes a line containing a pair of points which attain the directed Hausdorff distance 
+   * Computes the directed Hausdorff distance 
    * of a query geometry A from a target one B.
    * 
    * @param a the query geometry  
    * @param b the target geometry
-   * @param tolerance the approximation distance tolerance
+   * @return the directed Hausdorff distance
+   */
+  public static double distance(Geometry a, Geometry b)
+  {
+    DirectedHausdorffDistance hd = new DirectedHausdorffDistance(b);
+    return distance(hd.maximumDistancePoints(a));
+  }
+  
+  /**
+   * Computes a line containing a pair of points which attain the directed Hausdorff distance 
+   * of a query geometry A from a target one B, up to a given distance accuracy.
+   * 
+   * @param a the query geometry  
+   * @param b the target geometry
+   * @param tolerance the accuracy distance tolerance
    * @return a pair of points [ptA, ptB] demonstrating the distance
    */
   public static LineString distanceLine(Geometry a, Geometry b, double tolerance)
@@ -115,8 +131,23 @@ public class DirectedHausdorffDistance {
   }
 
   /**
+   * Computes a line containing a pair of points which attain the directed Hausdorff distance 
+   * of a query geometry A from a target one B.
+   * 
+   * @param a the query geometry  
+   * @param b the target geometry
+   * @param tolerance the accuracy distance tolerance
+   * @return a pair of points [ptA, ptB] demonstrating the distance
+   */
+  public static LineString distanceLine(Geometry a, Geometry b)
+  {
+    DirectedHausdorffDistance hd = new DirectedHausdorffDistance(b);
+    return a.getFactory().createLineString(hd.maximumDistancePoints(a));
+  }
+  
+  /**
    * Computes a pair of points which attain the symmetric Hausdorff distance 
-   * between two geometries.
+   * between two geometries, up to a given distance accuracy.
    * This the maximum of the two directed Hausdorff distances.
    * 
    * @param a a geometry  
@@ -130,6 +161,31 @@ public class DirectedHausdorffDistance {
     Coordinate[] ptsAB = hdAB.maximumDistancePoints(a, tolerance);
     DirectedHausdorffDistance hdBA = new DirectedHausdorffDistance(a);
     Coordinate[] ptsBA = hdBA.maximumDistancePoints(b, tolerance);
+    
+    //-- return points in A-B order
+    Coordinate[] pts = ptsAB;
+    if (distance(ptsBA) > distance(ptsAB)) {
+      //-- reverse the BA points
+      pts = pair(ptsBA[1], ptsBA[0]);
+    }
+    return a.getFactory().createLineString(pts);
+  }
+  
+  /**
+   * Computes a pair of points which attain the symmetric Hausdorff distance 
+   * between two geometries.
+   * This the maximum of the two directed Hausdorff distances.
+   * 
+   * @param a a geometry  
+   * @param b a geometry
+   * @return a pair of points [ptA, ptB] demonstrating the Hausdorff distance
+   */  
+  public static LineString hausdorffDistanceLine(Geometry a, Geometry b)
+  {
+    DirectedHausdorffDistance hdAB = new DirectedHausdorffDistance(b);
+    Coordinate[] ptsAB = hdAB.maximumDistancePoints(a);
+    DirectedHausdorffDistance hdBA = new DirectedHausdorffDistance(a);
+    Coordinate[] ptsBA = hdBA.maximumDistancePoints(b);
     
     //-- return points in A-B order
     Coordinate[] pts = ptsAB;
@@ -158,6 +214,12 @@ public class DirectedHausdorffDistance {
     return hd.isFullyWithinDistance(a, maxDistance, tolerance);
   }
   
+  public static boolean isFullyWithinDistance(Geometry a, Geometry b, double maxDistance)
+  {
+    DirectedHausdorffDistance hd = new DirectedHausdorffDistance(b);
+    return hd.isFullyWithinDistance(a, maxDistance);
+  }
+  
   private static double distance(Coordinate[] pts) {
     return pts[0].distance(pts[1]);
   }
@@ -166,6 +228,20 @@ public class DirectedHausdorffDistance {
     return new Coordinate[] { p0.copy(), p1.copy() };
   }
   
+  /**
+   * Heuristic factor to improve performance of area interior farthest point computation.
+   */
+  private static final double AREA_INTERIOR_PERFORMANCE_FACTOR = 20;
+  
+  /**
+   * Heuristic automatic tolerance factor
+   */
+  private static final double AUTO_TOLERANCE_FACTOR = 1.0e3;
+  
+  private static double computeTolerance(Geometry geom) {
+    return geom.getEnvelopeInternal().getDiameter() / AUTO_TOLERANCE_FACTOR;
+  }
+
   private Geometry geomB;
   private TargetDistance distanceToB;
 
@@ -180,14 +256,29 @@ public class DirectedHausdorffDistance {
   }
   
   /**
-   * Computes whether a query geometry lies fully within a give distance of the target geometry.
+   * Tests whether a query geometry lies fully within a give distance of the target geometry.
    * Equivalently, detects whether any point of the query geometry is farther 
    * from the target than the specified distance.
    * This is the case if <tt>DHD(A, B) > maxDistance</tt>.
    *  
    * @param a the query geometry  
    * @param maxDistance the distance limit
-   * @param tolerance the approximation distance tolerance
+   * @return true if the query geometry lies fully within the distance of the target
+   */
+  public boolean isFullyWithinDistance(Geometry a, double maxDistance) {
+    return isFullyWithinDistance(a, maxDistance, computeTolerance(a));
+  }
+  
+  /**
+   * Tests whether a query geometry lies fully within a give distance of the target geometry,
+   * up to a given distance accuracy.
+   * Equivalently, detects whether any point of the query geometry is farther 
+   * from the target than the specified distance.
+   * This is the case if <tt>DHD(A, B) > maxDistance</tt>.
+   *  
+   * @param a the query geometry  
+   * @param maxDistance the distance limit
+   * @param tolerance the accuracy distance tolerance
    * @return true if the query geometry lies fully within the distance of the target
    */
   public boolean isFullyWithinDistance(Geometry a, double maxDistance, double tolerance) {
@@ -219,7 +310,12 @@ public class DirectedHausdorffDistance {
       || envA.getMaxX() > envB.getMaxX() + maxDistance
       || envA.getMaxY() > envB.getMaxY() + maxDistance;
   }
-
+  
+  public Coordinate[] maximumDistancePoints(Geometry geomA) {
+    double tolerance = computeTolerance(geomA);
+    return computeDistancePoints(geomA, tolerance, -1.0);
+  }
+  
   /**
    * Computes a pair of points which attain the directed Hausdorff distance 
    * of a query geometry A from the target B.
@@ -231,7 +327,7 @@ public class DirectedHausdorffDistance {
   public Coordinate[] maximumDistancePoints(Geometry geomA, double tolerance) {
     return computeDistancePoints(geomA, tolerance, -1.0);
   }
-  
+
   private Coordinate[] computeDistancePoints(Geometry geomA, double tolerance, double maxDistanceLimit) {
     if (geomA.getDimension() == Dimension.P) {
       return computeForPoints(geomA, maxDistanceLimit);
@@ -246,6 +342,7 @@ public class DirectedHausdorffDistance {
     /**
      * Polygonal query geometry may have an interior point as the farthest point.
      */
+    //*
     if (geomA.getDimension() == Dimension.A) {
       Coordinate[] maxDistPtsInterior = computeForAreaInterior(geomA, tolerance);
       if (maxDistPtsInterior != null 
@@ -253,6 +350,7 @@ public class DirectedHausdorffDistance {
         return maxDistPtsInterior;
       }
     }
+    //*/
     return maxDistPtsEdge;
   }
   
@@ -423,15 +521,23 @@ public class DirectedHausdorffDistance {
     
     /**
      * Optimization - skip if A interior cannot intersect B,
-     * and thus farther point must lie on A segment
+     * and thus farther point must lie on A boundary
      */
     if (polygonalA.getEnvelopeInternal().disjoint(geomB.getEnvelopeInternal())) {
       return null;
     }
     
+    /**
+     * The LargestEmptyCircle computation is much slower than the boundary one, 
+     * is quite unlikely to occur,
+     * and accuracy is probably less critical (or obvious).
+     * So improve performance by using a coarser distance tolerance.
+     */
+    double lecTol = AREA_INTERIOR_PERFORMANCE_FACTOR * tolerance;
+
     //TODO: add short-circuiting based on maxDistanceLimit?
     
-    Point centerPt = LargestEmptyCircle.getCenter(geomB, polygonalA, tolerance);
+    Point centerPt = LargestEmptyCircle.getCenter(geomB, polygonalA, lecTol);
     Coordinate ptA = centerPt.getCoordinate();
     /**
      * If LEC centre is in B, the max distance is zero, so return null.

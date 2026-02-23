@@ -82,12 +82,18 @@ public class DistanceFunctions {
     return DirectedHausdorffDistance.distance(a, b, distTol);
   }
   
-  @Metadata(description="Directed Hausdorff distance from A to B, up to tolerance")
-  public static Geometry directedHausdorffLine(Geometry a, Geometry b, 
+  @Metadata(description="Directed Hausdorff distance line from A to B, up to tolerance")
+  public static Geometry directedHausdorffLineTol(Geometry a, Geometry b, 
       @Metadata(title="Distance tolerance")
       double distTol)  
   {   
     return DirectedHausdorffDistance.distanceLine(a, b, distTol);
+  }
+  
+  @Metadata(description="Directed Hausdorff distance line from A to B")
+  public static Geometry directedHausdorffLine(Geometry a, Geometry b)  
+  {   
+    return DirectedHausdorffDistance.distanceLine(a, b);
   }
   
   @Metadata(description="Hausdorff distance between A and B, up to tolerance")
