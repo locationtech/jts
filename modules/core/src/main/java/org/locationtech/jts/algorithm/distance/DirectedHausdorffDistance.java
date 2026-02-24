@@ -423,20 +423,21 @@ public class DirectedHausdorffDistance {
       //System.out.println(WKTWriter.toLineString(segMaxBound.getMaxDistPts()));
 
 /*
-      double maxDistBound = segMaxBound.maxDistanceBound();
-      double maxDist = segMaxBound.maxDistance();
+      double maxDistBound = segMaxBound.getMaxDistanceBound();
+      double maxDist = segMaxBound.getMaxDistance();
       System.out.format("%s  len: %f bound: %f  maxDist: %f\n", 
-          segMaxBound, segMaxBound.length(), maxDistBound, maxDist);
+          segMaxBound, segMaxBound.getLength(), maxDistBound, maxDist);
       if (maxDist > 1) {
         System.out.println("FOUND");
       }
-*/
+//*/
       /**
        * Save if segment point is farther than current farthest
        */
       if (segMaxDist == null 
           || segMaxBound.getMaxDistance() > segMaxDist.getMaxDistance()) {
         segMaxDist = segMaxBound;
+        //System.out.println(">>>>  " + WKTWriter.toLineString(segMaxDist.getMaxDistPts()));
       }
       /**
        * Stop searching if remaining items in queue must all be closer
