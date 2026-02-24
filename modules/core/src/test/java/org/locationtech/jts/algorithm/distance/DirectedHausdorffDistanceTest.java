@@ -26,6 +26,22 @@ extends GeometryTestCase
 
   public DirectedHausdorffDistanceTest(String name) { super(name); }
 
+  public void testEmptyPoint()
+  {
+    checkDistanceEmpty("POINT EMPTY", "POINT (1 1)");
+  }
+  
+  public void testEmptyLine()
+  {
+    checkDistanceEmpty("LINESTRING EMPTY", "LINESTRING (0 0, 2 1)");
+  }
+  
+  public void testEmptyPolygon()
+  {
+    checkDistanceEmpty("POLYGON EMPTY", "POLYGON ((1 9, 9 9, 9 1, 1 1, 1 9))");
+  }
+  
+  //--------------------------------------
   public void testPointPoint()
   {
     checkHausdorff("POINT (0 0)", "POINT (1 1)", 
@@ -191,6 +207,20 @@ extends GeometryTestCase
   
   //-----------------------------------------------------
   
+  public void testFullyWithinDistanceEmptyPoints()
+  {
+    String a = "POINT EMPTY";
+    String b = "MULTIPOINT ((1 1), (9 9))";
+    checkFullyWithinDistanceEmpty(a, b);
+  }
+
+  public void testFullyWithinDistanceEmptyLine()
+  {
+    String a = "LINESTRING EMPTY";
+    String b = "LINESTRING (9 9, 1 1)";
+    checkFullyWithinDistanceEmpty(a, b);
+  }
+  
   //-- shows withinDistance envelope check not triggering for disconnected A
   public void testFullyWithinDistancePoints()
   {
@@ -316,4 +346,26 @@ extends GeometryTestCase
     assertEquals(expected, result);
   }
   
+  private void checkFullyWithinDistanceEmpty(String a, String b) {
+    checkFullyWithinDistance(a, b, 0, false);
+    checkFullyWithinDistance(b, a, 0, false);
+    checkFullyWithinDistance(a, b, 1, false);
+    checkFullyWithinDistance(b, a, 1, false);
+    checkFullyWithinDistance(a, b, 1000, false);
+    checkFullyWithinDistance(b, a, 1000, false);
+  }
+  
+  private void checkDistanceEmpty(String a, String b) {
+    Geometry g1 = read(a);
+    Geometry g2 = read(b);
+    
+    Coordinate[] resultPts = DirectedHausdorffDistance.distancePoints(g1, g2);
+    assert(resultPts == null);
+    
+    double resultDist = DirectedHausdorffDistance.distance(g1, g2);
+    assert(Double.isNaN(resultDist));
+    
+    double hausdorffDist = DirectedHausdorffDistance.hausdorffDistance(g1, g2);
+    assert(Double.isNaN(hausdorffDist));
+  }
 }

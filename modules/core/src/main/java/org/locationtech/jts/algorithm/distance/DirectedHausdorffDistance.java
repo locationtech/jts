@@ -30,13 +30,12 @@ import org.locationtech.jts.operation.distance.CoordinateSequenceLocation;
 import org.locationtech.jts.operation.distance.IndexedFacetDistance;
 
 /**
- * Computes the directed Hausdorff distance from one geometry to another, 
- * up to an approximation distance tolerance. 
+ * Computes the directed Hausdorff distance from one geometry to another. 
  * The directed Hausdorff distance is the maximum distance any point
  * on a query geometry A can be from a target geometry B.
  * Equivalently, every point in the query geometry is within that distance
  * of the target geometry.
- * The class can compute a pair of points at which the DHD is obtained:
+ * The class can compute a pair of points at which the distance is attained:
  * <tt>[ farthest A point, nearest B point ]</tt>.
  * <p>
  *The directed Hausdorff distance (DHD) is defined as:
@@ -51,7 +50,7 @@ import org.locationtech.jts.operation.distance.IndexedFacetDistance;
  * HD(A,B) = max(DHD(A,B), DHD(B,A))
  * </pre>
  * This can be computed via the 
- * {@link #hausdorffDistanceLine(Geometry, Geometry, double)} function.
+ * {@link #hausdorffDistancePoints(Geometry, Geometry)} function.
  * <p>
  * Points, lines and polygons are supported as input.
  * If the query geometry is polygonal, 
@@ -60,22 +59,22 @@ import org.locationtech.jts.operation.distance.IndexedFacetDistance;
  * <p>
  * A common use case is to test whether a geometry A lies fully within a given 
  * distance of another one B.
- * {@link #isFullyWithinDistance(Geometry, double, double)} 
+ * {@link #isFullyWithinDistance(Geometry, double)} 
  * can be used to test this efficiently.  
  * It implements heuristic checks and short-circuiting to improve performance.
- * This can much more efficient than computing whether A is covered by B.buffer(distance).
- * It is also more accurate, since constructed buffers 
- * are only linearized approximations to the true buffer.
  * <p>
  * The class can be used in prepared mode.
  * Creating an instance on a target geometry caches indexes for that geometry.
- * Then {@link #farthestPoints(Geometry, double) 
- * or {@link #isFullyWithinDistance(Geometry, double, double)}
- * can be called efficiently for multiple query geometries.
+ * Then {@link #farthestPoints(Geometry) 
+ * or {@link #isFullyWithinDistance(Geometry, double)}
+ * can be called efficiently for multiple query geometries. 
  * <p>
- * Due to the nature of the Hausdorff distance, 
- * performance is not very sensitive to the distance tolerance,
- * so using a small tolerance is recommended.
+ * If the Hausdorff distance is attained at a non-vertex of the query geometry,
+ * the location is approximated.  
+ * The algorithm uses a distance tolerance to control the approximation accuracy.
+ * The tolerance is automatically determined to balance between accuracy and performance.
+ * if more accuracy is desired some function signatures are provided 
+ * which allow specifying a distance tolerance .
  * <p>
  * This algorithm is easier to use, more accurate, 
  * and much faster than {@link DiscreteHausdorffDistance}.
@@ -85,13 +84,16 @@ import org.locationtech.jts.operation.distance.IndexedFacetDistance;
  */
 public class DirectedHausdorffDistance {
   
+  private static final double EMPTY_DISTANCE = Double.NaN;
+
   /**
    * Computes the directed Hausdorff distance 
    * of a query geometry A from a target one B.
    * 
    * @param a the query geometry  
    * @param b the target geometry
-   * @return the directed Hausdorff distance
+   * @return the directed Hausdorff distance,
+   *   or NaN if an input is empty
    */
   public static double distance(Geometry a, Geometry b)
   {
@@ -107,7 +109,8 @@ public class DirectedHausdorffDistance {
    * @param a the query geometry  
    * @param b the target geometry
    * @param tolerance the accuracy distance tolerance
-   * @return the directed Hausdorff distance
+   * @return the directed Hausdorff distance,
+   * or NaN if an input is empty
    */
   public static double distance(Geometry a, Geometry b, double tolerance)
   {
@@ -122,7 +125,8 @@ public class DirectedHausdorffDistance {
    * @param a the query geometry  
    * @param b the target geometry
    * @param tolerance the accuracy distance tolerance
-   * @return a pair of points [ptA, ptB] demonstrating the distance
+   * @return a pair of points [ptA, ptB] demonstrating the distance,
+   * or null if an input is empty
    */
   public static Coordinate[] distancePoints(Geometry a, Geometry b)
   {
@@ -137,7 +141,8 @@ public class DirectedHausdorffDistance {
    * @param a the query geometry  
    * @param b the target geometry
    * @param tolerance the accuracy distance tolerance
-   * @return a pair of points [ptA, ptB] demonstrating the distance
+   * @return a pair of points [ptA, ptB] demonstrating the distance,
+   * or null if an input is empty
    */
   public static Coordinate[] distancePoints(Geometry a, Geometry b, double tolerance)
   {
@@ -152,7 +157,8 @@ public class DirectedHausdorffDistance {
    * 
    * @param a a geometry  
    * @param b a geometry
-   * @return a pair of points [ptA, ptB] demonstrating the Hausdorff distance
+   * @return a pair of points [ptA, ptB] demonstrating the Hausdorff distance,
+   * or null if an input is empty
    */  
   public static Coordinate[] hausdorffDistancePoints(Geometry a, Geometry b)
   {
@@ -176,7 +182,7 @@ public class DirectedHausdorffDistance {
    * 
    * @param a a geometry  
    * @param b a geometry
-   * @return the Hausdorff distance
+   * @return the Hausdorff distance, or NaN if an input is empty
    */  
   public static double hausdorffDistance(Geometry a, Geometry b)
   {
@@ -220,6 +226,8 @@ public class DirectedHausdorffDistance {
   }
   
   private static double distance(Coordinate[] pts) {
+    if (pts == null)
+      return EMPTY_DISTANCE;
     return pts[0].distance(pts[1]);
   }
 
@@ -289,6 +297,9 @@ public class DirectedHausdorffDistance {
       return false;
 
     Coordinate[] maxDistCoords = computeDistancePoints(a, tolerance, maxDistance);
+    //-- handle empty case
+    if (maxDistCoords == null)
+      return false;
     return distance(maxDistCoords) <= maxDistance;
   }
 
@@ -316,9 +327,11 @@ public class DirectedHausdorffDistance {
   /**
    * Computes a pair of points which attain the directed Hausdorff distance 
    * of a query geometry A from the target B.
+   * If either geometry is empty the result is null.
    * 
    * @param geomA the query geometry  
-   * @return a pair of points [ptA, ptB] attaining the distance
+   * @return a pair of points [ptA, ptB] attaining the distance,
+   * or null if an input is empty
    */
   public Coordinate[] farthestPoints(Geometry geomA) {
     double tolerance = computeTolerance(geomA);
@@ -329,16 +342,21 @@ public class DirectedHausdorffDistance {
    * Computes a pair of points which attain the directed Hausdorff distance 
    * of a query geometry A from the target B,
    * up to a given distance accuracy.
+   * If either geometry is empty the result is null.
    * 
    * @param geomA the query geometry  
    * @param tolerance the approximation distance tolerance
-   * @return a pair of points [ptA, ptB] attaining the distance
+   * @return a pair of points [ptA, ptB] attaining the distance,
+   * or null if an input is empty
    */
   public Coordinate[] farthestPoints(Geometry geomA, double tolerance) {
     return computeDistancePoints(geomA, tolerance, -1.0);
   }
 
   private Coordinate[] computeDistancePoints(Geometry geomA, double tolerance, double maxDistanceLimit) {
+    if (geomA.isEmpty() || geomB.isEmpty())
+      return null;
+    
     if (geomA.getDimension() == Dimension.P) {
       return computeForPoints(geomA, maxDistanceLimit);
     }
