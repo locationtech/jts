@@ -249,17 +249,17 @@ public class DirectedHausdorffDistance {
     return geom.getEnvelopeInternal().getDiameter() / AUTO_TOLERANCE_FACTOR;
   }
 
-  private Geometry geomB;
-  private TargetDistance distanceToB;
+  private Geometry target;
+  private TargetDistance targetDistance;
 
   /**
-   * Create a new instance for a target geometry B
+   * Create a new instance for a target geometry.
    * 
-   * @param b the geometry to compute the distance from
+   * @param geom the geometry to compute the distance from
    */
-  public DirectedHausdorffDistance(Geometry b) {
-    geomB = b;
-    distanceToB = new TargetDistance(geomB);
+  public DirectedHausdorffDistance(Geometry geom) {
+    this.target = geom;
+    targetDistance = new TargetDistance(this.target);
   }
   
   /**
@@ -268,15 +268,15 @@ public class DirectedHausdorffDistance {
    * from the target than the specified distance.
    * This is the case if <tt>DHD(A, B) > maxDistance</tt>.
    *  
-   * @param a the query geometry  
+   * @param geom the query geometry  
    * @param maxDistance the distance limit
    * @return true if the query geometry lies fully within the distance of the target
    */
-  public boolean isFullyWithinDistance(Geometry a, double maxDistance) {
+  public boolean isFullyWithinDistance(Geometry geom, double maxDistance) {
     //TODO: should the tolerance be computed as a fraction of the maxDistance?
     //return isFullyWithinDistance(a, maxDistance, computeTolerance(a));
     double tolerance = maxDistance / AUTO_TOLERANCE_FACTOR;
-    return isFullyWithinDistance(a, maxDistance, tolerance);
+    return isFullyWithinDistance(geom, maxDistance, tolerance);
   }
   
   /**
@@ -286,17 +286,17 @@ public class DirectedHausdorffDistance {
    * from the target than the specified distance.
    * This is the case if <tt>DHD(A, B) > maxDistance</tt>.
    *  
-   * @param a the query geometry  
+   * @param geom the query geometry  
    * @param maxDistance the distance limit
    * @param tolerance the accuracy distance tolerance
    * @return true if the query geometry lies fully within the distance of the target
    */
-  public boolean isFullyWithinDistance(Geometry a, double maxDistance, double tolerance) {
+  public boolean isFullyWithinDistance(Geometry geom, double maxDistance, double tolerance) {
     //-- envelope checks
-    if (isBeyond(a.getEnvelopeInternal(), geomB.getEnvelopeInternal(), maxDistance))
+    if (isBeyond(geom.getEnvelopeInternal(), target.getEnvelopeInternal(), maxDistance))
       return false;
 
-    Coordinate[] maxDistCoords = computeDistancePoints(a, tolerance, maxDistance);
+    Coordinate[] maxDistCoords = computeDistancePoints(geom, tolerance, maxDistance);
     //-- handle empty case
     if (maxDistCoords == null)
       return false;
@@ -304,13 +304,13 @@ public class DirectedHausdorffDistance {
   }
 
   /**
-   * Tests if a geometry must have a point farther than the maximum distance
-   * using the geometry envelopes.
+   * Tests if an envelope must have a side farther than the maximum distance
+   * from another envelope.
    * 
    * @param envA
    * @param envB
    * @param maxDistance
-   * @return true if geometry A must have a far point from B
+   * @return true if envelope A must have a far point from envelope B
    */
   private static boolean isBeyond(Envelope envA, Envelope envB, double maxDistance) {
     /**
@@ -329,13 +329,13 @@ public class DirectedHausdorffDistance {
    * of a query geometry A from the target B.
    * If either geometry is empty the result is null.
    * 
-   * @param geomA the query geometry  
+   * @param geom the query geometry  
    * @return a pair of points [ptA, ptB] attaining the distance,
    * or null if an input is empty
    */
-  public Coordinate[] farthestPoints(Geometry geomA) {
-    double tolerance = computeTolerance(geomA);
-    return farthestPoints(geomA, tolerance);
+  public Coordinate[] farthestPoints(Geometry geom) {
+    double tolerance = computeTolerance(geom);
+    return farthestPoints(geom, tolerance);
   }
   
   /**
@@ -344,24 +344,24 @@ public class DirectedHausdorffDistance {
    * up to a given distance accuracy.
    * If either geometry is empty the result is null.
    * 
-   * @param geomA the query geometry  
+   * @param geom the query geometry  
    * @param tolerance the approximation distance tolerance
    * @return a pair of points [ptA, ptB] attaining the distance,
    * or null if an input is empty
    */
-  public Coordinate[] farthestPoints(Geometry geomA, double tolerance) {
-    return computeDistancePoints(geomA, tolerance, -1.0);
+  public Coordinate[] farthestPoints(Geometry geom, double tolerance) {
+    return computeDistancePoints(geom, tolerance, -1.0);
   }
 
-  private Coordinate[] computeDistancePoints(Geometry geomA, double tolerance, double maxDistanceLimit) {
-    if (geomA.isEmpty() || geomB.isEmpty())
+  private Coordinate[] computeDistancePoints(Geometry geom, double tolerance, double maxDistanceLimit) {
+    if (geom.isEmpty() || target.isEmpty())
       return null;
     
-    if (geomA.getDimension() == Dimension.P) {
-      return computeForPoints(geomA, maxDistanceLimit);
+    if (geom.getDimension() == Dimension.P) {
+      return computeForPoints(geom, maxDistanceLimit);
     }
     //TODO: handle mixed geoms with points
-    Coordinate[] maxDistPtsEdge = computeForEdges(geomA, tolerance, maxDistanceLimit);
+    Coordinate[] maxDistPtsEdge = computeForEdges(geom, tolerance, maxDistanceLimit);
     
     if (isBeyondLimit(distance(maxDistPtsEdge), maxDistanceLimit)) {
       return maxDistPtsEdge;
@@ -370,8 +370,8 @@ public class DirectedHausdorffDistance {
     /**
      * Polygonal query geometry may have an interior point as the farthest point.
      */
-    if (geomA.getDimension() == Dimension.A) {
-      Coordinate[] maxDistPtsInterior = computeForAreaInterior(geomA, tolerance);
+    if (geom.getDimension() == Dimension.A) {
+      Coordinate[] maxDistPtsInterior = computeForAreaInterior(geom, tolerance);
       if (maxDistPtsInterior != null 
           && distance(maxDistPtsInterior) > distance(maxDistPtsEdge)) {
         return maxDistPtsInterior;
@@ -380,20 +380,20 @@ public class DirectedHausdorffDistance {
     return maxDistPtsEdge;
   }
   
-  private Coordinate[] computeForPoints(Geometry geomA, double maxDistanceLimit) {
+  private Coordinate[] computeForPoints(Geometry geom, double maxDistanceLimit) {
     double maxDist = -1.0;;
     Coordinate[] maxDistPtsAB = null;
-    Iterator geomi = new GeometryCollectionIterator(geomA);
+    Iterator geomi = new GeometryCollectionIterator(geom);
     while (geomi.hasNext()) {
-      Geometry geomElemA = (Geometry) geomi.next();
-      if (! (geomElemA instanceof Point))
+      Geometry geomElem = (Geometry) geomi.next();
+      if (! (geomElem instanceof Point))
         continue;
       
-      Coordinate pA = geomElemA.getCoordinate();
-      Coordinate pB = distanceToB.nearestPoint(pA);
+      Coordinate pA = geomElem.getCoordinate();
+      Coordinate pB = targetDistance.nearestPoint(pA);
       double dist = pA.distance(pB);
 
-      boolean isInterior = dist > 0 && distanceToB.isInterior(pA);
+      boolean isInterior = dist > 0 && targetDistance.isInterior(pA);
       //-- check for interior point
       if (isInterior) {
         dist = 0; 
@@ -410,8 +410,8 @@ public class DirectedHausdorffDistance {
     return maxDistPtsAB;
   }
 
-  private Coordinate[] computeForEdges(Geometry geomA, double tolerance, double maxDistanceLimit) {
-    PriorityQueue<DHDSegment> segQueue = createSegQueue(geomA);
+  private Coordinate[] computeForEdges(Geometry geom, double tolerance, double maxDistanceLimit) {
+    PriorityQueue<DHDSegment> segQueue = createSegQueue(geom);
 
     DHDSegment segMaxDist = null;
     long iter = 0;
@@ -476,7 +476,7 @@ public class DirectedHausdorffDistance {
        * so bisect and keep searching
        */
       if ((segMaxBound.getLength() > tolerance)) {
-        DHDSegment[] bisects = segMaxBound.bisect(distanceToB);
+        DHDSegment[] bisects = segMaxBound.bisect(targetDistance);
         addNonInterior(bisects[0], segQueue);
         addNonInterior(bisects[1], segQueue);
       }
@@ -494,13 +494,13 @@ public class DirectedHausdorffDistance {
      * In this case distance is zero.
      * Return a single coordinate of the input as a representative point
      */
-    Coordinate maxPt = geomA.getCoordinate();
+    Coordinate maxPt = geom.getCoordinate();
     return pair(maxPt, maxPt);
   }
   
   private boolean isSameOrCollinear(DHDSegment seg) {
-    CoordinateSequenceLocation f0 = distanceToB.nearestLocation(seg.p0);
-    CoordinateSequenceLocation f1 = distanceToB.nearestLocation(seg.p1);
+    CoordinateSequenceLocation f0 = targetDistance.nearestLocation(seg.p0);
+    CoordinateSequenceLocation f1 = targetDistance.nearestLocation(seg.p1);
     return f0.isSameSegment(f1);
   }
 
@@ -530,11 +530,11 @@ public class DirectedHausdorffDistance {
     if (segment.getMaxDistance() > 0.0) {
       return false;
     }
-    return distanceToB.isInterior(segment.getEndpoint(0), segment.getEndpoint(1));
+    return targetDistance.isInterior(segment.getEndpoint(0), segment.getEndpoint(1));
   }
 
   /**
-   * If the query geometry A is polygonal, it is possible
+   * If the query geometry is polygonal, it is possible
    * the farthest point lies in its interior.
    * In this case it occurs at the centre of the Largest Empty Circle
    * with B as obstacles and query geometry as constraint.
@@ -545,20 +545,20 @@ public class DirectedHausdorffDistance {
    * can determine that the max distance is at 
    * the previously computed edge points.
    * 
-   * @param geomA
+   * @param geom
    * @param tolerance
-   * @return the maximum distance point pair at an interior point of A, 
+   * @return the maximum distance point pair at an interior point of a polygon, 
    *   or null if it is known to not occur at an interior point 
    */
-  private Coordinate[] computeForAreaInterior(Geometry geomA, double tolerance) {
+  private Coordinate[] computeForAreaInterior(Geometry geom, double tolerance) {
     //TODO: extract polygonal geoms from A
-    Geometry polygonalA = geomA;
+    Geometry polygonal = geom;
     
     /**
      * Optimization - skip if A interior cannot intersect B,
      * and thus farther point must lie on A boundary
      */
-    if (polygonalA.getEnvelopeInternal().disjoint(geomB.getEnvelopeInternal())) {
+    if (polygonal.getEnvelopeInternal().disjoint(target.getEnvelopeInternal())) {
       return null;
     }
     
@@ -572,17 +572,17 @@ public class DirectedHausdorffDistance {
 
     //TODO: add short-circuiting based on maxDistanceLimit?
     
-    Point centerPt = LargestEmptyCircle.getCenter(geomB, polygonalA, lecTol);
+    Point centerPt = LargestEmptyCircle.getCenter(target, polygonal, lecTol);
     Coordinate ptA = centerPt.getCoordinate();
     /**
      * If LEC centre is in B, the max distance is zero, so return null.
      * This will cause the computed segment distance to be returned,
      * which is preferred since it occurs on a vertex or edge.
      */
-    if (distanceToB.isInterior(ptA)) {
+    if (targetDistance.isInterior(ptA)) {
       return null;
     }
-    Coordinate ptB = distanceToB.nearestFacetPoint(ptA);
+    Coordinate ptB = targetDistance.nearestFacetPoint(ptA);
     return pair(ptA, ptB);
   }
 
@@ -593,12 +593,12 @@ public class DirectedHausdorffDistance {
    * So if a query geometry is fully covered by the target
    * the returned queue is empty.
    * 
-   * @param geomA
+   * @param geom
    * @return the segment priority queue
    */
-  private PriorityQueue<DHDSegment> createSegQueue(Geometry geomA) {
+  private PriorityQueue<DHDSegment> createSegQueue(Geometry geom) {
     PriorityQueue<DHDSegment> priq = new PriorityQueue<DHDSegment>();
-    geomA.apply(new GeometryComponentFilter() {
+    geom.apply(new GeometryComponentFilter() {
 
       @Override
       public void filter(Geometry geom) {
@@ -622,11 +622,11 @@ public class DirectedHausdorffDistance {
     for (int i = 0; i < pts.length - 1; i++) {
       DHDSegment seg;
       if (i == 0) {
-        seg = DHDSegment.create(pts[i], pts[i + 1], distanceToB);
+        seg = DHDSegment.create(pts[i], pts[i + 1], targetDistance);
       } 
       else {
         //-- avoiding recomputing prev pt distance
-        seg = DHDSegment.create(prevSeg, pts[i + 1], distanceToB);
+        seg = DHDSegment.create(prevSeg, pts[i + 1], targetDistance);
       }
       prevSeg = seg;
       
