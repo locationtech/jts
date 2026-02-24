@@ -29,7 +29,6 @@ extends GeometryTestCase
   public void testPointPoint()
   {
     checkHD("POINT (0 0)", "POINT (1 1)", 
-        0.01,
         "LINESTRING (0 0, 1 1)");
   }
   
@@ -39,7 +38,7 @@ extends GeometryTestCase
     String b = "MULTIPOINT ((0.1 0), (1 0), (2 0), (3 0), (4 0), (5 0))";
     checkDistance(a, b, 0.01, "LINESTRING (6 6, 5 0)");
     checkDistance(b, a, 0.01, "LINESTRING (5 0, 2 3)");
-    checkHD(a, b, 0.01, "LINESTRING (6 6, 5 0)");
+    checkHD(a, b, "LINESTRING (6 6, 5 0)");
   }
   
   public void testPointPolygonInterior()
@@ -59,21 +58,18 @@ extends GeometryTestCase
   public void testLineSegments()
   {
     checkHD("LINESTRING (0 0, 2 0)", "LINESTRING (0 0, 2 1)",
-        0.01,
         "LINESTRING (2 0, 2 1)");
   }
   
   public void testLineSegments2()
   {
     checkHD("LINESTRING (0 0, 2 0)", "LINESTRING (0 1, 1 2, 2 1)", 
-        0.01,
         "LINESTRING (1 0, 1 2)");
   }
   
   public void testLinePoints()
   {
     checkHD("LINESTRING (0 0, 2 0)", "MULTIPOINT (0 2, 1 0, 2 1)", 
-        0.01,
         "LINESTRING (0 0, 0 2)");
   }
   
@@ -89,7 +85,6 @@ extends GeometryTestCase
   {
     checkHD("MULTILINESTRING ((1 1, 2 7), (7 1, 9 9))", 
         "POLYGON ((3 7, 6 7, 6 4, 3 4, 3 7))", 
-        0.01,
         "LINESTRING (9 9, 6 7)");
   }
   
@@ -98,7 +93,7 @@ extends GeometryTestCase
     String a = "MULTILINESTRING ((2 3, 2 7), (9 1, 9 8, 4 9))";
     String b = "POLYGON ((3 7, 6 8, 8 2, 3 4, 3 7))";
     checkDistance(a, b, 0.01, "LINESTRING (9 8, 6.3 7.1)");
-    checkHD(a, b, 0.01, "LINESTRING (2 3, 5.5 3)");
+    checkHD(a, b, "LINESTRING (2 3, 5.5 3)");
   }
   
   public void testPolygonLineCrossingBoundaryResult()
@@ -123,7 +118,7 @@ extends GeometryTestCase
     String b = "POLYGON ((1 19, 5 12, 5 3, 14 10, 11 19, 19 19, 20 0, 1 1, 1 19))";
     checkDistance(b, a, 0.01, "LINESTRING (20 0, 17 3)");
     checkDistance(a, b, 0.01, "LINESTRING (6.6796875 18, 11 19)");
-    checkHD(a, b, 0.01, "LINESTRING (6.6796875 18, 11 19)");
+    checkHD(a, b, "LINESTRING (6.6796875 18, 11 19)");
   }
   
   public void testPolygonPolygonHolesNested()
@@ -158,7 +153,7 @@ extends GeometryTestCase
     String wkt1 = "LINESTRING (1 1, 5 10, 9 1)";
     String wkt2 = "LINESTRING (0 10, 0 0, 10 0)";
     
-    checkHD(wkt1, wkt2, 0.01, "LINESTRING (6.53857421875 6.5382080078125, 6.53857421875 0)");
+    checkHD(wkt1, wkt2, "LINESTRING (6.53857421875 6.5382080078125, 6.53857421875 0)");
     checkDistance(wkt1, wkt2, 0.01, "LINESTRING (6.5390625 6.537109375, 6.5390625 0)");
   }
   
@@ -261,7 +256,7 @@ extends GeometryTestCase
   
   private static final double TOLERANCE = 0.001;
   
-  private void checkHD(String wkt1, String wkt2, double tolerance, String wktExpected) 
+  private void checkHD(String wkt1, String wkt2, String wktExpected) 
   {
     Geometry g1 = read(wkt1);
     Geometry g2 = read(wkt2);
