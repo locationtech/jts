@@ -82,7 +82,7 @@ public class HausdorffDistancePerfTest extends PerformanceTestCase {
   private void checkHausdorff(Geometry g, Geometry b) {
     double distDHD = DiscreteHausdorffDistance.distance(g, b, 0.01);
     
-    double distHD = DirectedHausdorffDistance.hausdorffDistanceLine(g, b, 0.01).getLength();
+    double distHD = DirectedHausdorffDistance.hausdorffDistanceLine(g, b).getLength();
     //-- performance testing only
     //double distDHD = distHD;
     

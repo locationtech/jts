@@ -158,7 +158,7 @@ extends GeometryTestCase
     String wkt1 = "LINESTRING (1 1, 5 10, 9 1)";
     String wkt2 = "LINESTRING (0 10, 0 0, 10 0)";
     
-    checkHD(wkt1, wkt2, 0.01, "LINESTRING (6.5390625 6.537109375, 6.5390625 0)");
+    checkHD(wkt1, wkt2, 0.01, "LINESTRING (6.53857421875 6.5382080078125, 6.53857421875 0)");
     checkDistance(wkt1, wkt2, 0.01, "LINESTRING (6.5390625 6.537109375, 6.5390625 0)");
   }
   
@@ -266,7 +266,7 @@ extends GeometryTestCase
     Geometry g1 = read(wkt1);
     Geometry g2 = read(wkt2);
     
-    Geometry result = DirectedHausdorffDistance.hausdorffDistanceLine(g1, g2, tolerance);
+    Geometry result = DirectedHausdorffDistance.hausdorffDistanceLine(g1, g2);
     Geometry expected = read(wktExpected);
     checkEqualExact(expected, result, TOLERANCE);
     

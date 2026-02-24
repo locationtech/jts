@@ -97,11 +97,9 @@ public class DistanceFunctions {
   }
   
   @Metadata(description="Hausdorff distance between A and B, up to tolerance")
-  public static Geometry hausdorffLine(Geometry a, Geometry b, 
-      @Metadata(title="Distance tolerance")
-      double distTol)  
+  public static Geometry hausdorffLine(Geometry a, Geometry b)  
   {   
-    return DirectedHausdorffDistance.hausdorffDistanceLine(a, b, distTol);
+    return DirectedHausdorffDistance.hausdorffDistanceLine(a, b);
   }
   
   //--------------------------------------------

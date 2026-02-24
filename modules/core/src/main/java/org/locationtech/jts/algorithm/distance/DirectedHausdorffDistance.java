@@ -69,7 +69,7 @@ import org.locationtech.jts.operation.distance.IndexedFacetDistance;
  * <p>
  * The class can be used in prepared mode.
  * Creating an instance on a target geometry caches indexes for that geometry.
- * Then {@link #maximumDistancePoints(Geometry, double) 
+ * Then {@link #farthestPoints(Geometry, double) 
  * or {@link #isFullyWithinDistance(Geometry, double, double)}
  * can be called efficiently for multiple query geometries.
  * <p>
@@ -98,7 +98,7 @@ public class DirectedHausdorffDistance {
   public static double distance(Geometry a, Geometry b, double tolerance)
   {
     DirectedHausdorffDistance hd = new DirectedHausdorffDistance(b);
-    return distance(hd.maximumDistancePoints(a, tolerance));
+    return distance(hd.farthestPoints(a, tolerance));
   }
   
   /**
@@ -112,7 +112,7 @@ public class DirectedHausdorffDistance {
   public static double distance(Geometry a, Geometry b)
   {
     DirectedHausdorffDistance hd = new DirectedHausdorffDistance(b);
-    return distance(hd.maximumDistancePoints(a));
+    return distance(hd.farthestPoints(a));
   }
   
   /**
@@ -127,7 +127,7 @@ public class DirectedHausdorffDistance {
   public static LineString distanceLine(Geometry a, Geometry b, double tolerance)
   {
     DirectedHausdorffDistance hd = new DirectedHausdorffDistance(b);
-    return a.getFactory().createLineString(hd.maximumDistancePoints(a, tolerance));
+    return a.getFactory().createLineString(hd.farthestPoints(a, tolerance));
   }
 
   /**
@@ -142,33 +142,7 @@ public class DirectedHausdorffDistance {
   public static LineString distanceLine(Geometry a, Geometry b)
   {
     DirectedHausdorffDistance hd = new DirectedHausdorffDistance(b);
-    return a.getFactory().createLineString(hd.maximumDistancePoints(a));
-  }
-  
-  /**
-   * Computes a pair of points which attain the symmetric Hausdorff distance 
-   * between two geometries, up to a given distance accuracy.
-   * This the maximum of the two directed Hausdorff distances.
-   * 
-   * @param a a geometry  
-   * @param b a geometry
-   * @param tolerance the approximation distance tolerance
-   * @return a pair of points [ptA, ptB] demonstrating the Hausdorff distance
-   */
-  public static LineString hausdorffDistanceLine(Geometry a, Geometry b, double tolerance)
-  {
-    DirectedHausdorffDistance hdAB = new DirectedHausdorffDistance(b);
-    Coordinate[] ptsAB = hdAB.maximumDistancePoints(a, tolerance);
-    DirectedHausdorffDistance hdBA = new DirectedHausdorffDistance(a);
-    Coordinate[] ptsBA = hdBA.maximumDistancePoints(b, tolerance);
-    
-    //-- return points in A-B order
-    Coordinate[] pts = ptsAB;
-    if (distance(ptsBA) > distance(ptsAB)) {
-      //-- reverse the BA points
-      pts = pair(ptsBA[1], ptsBA[0]);
-    }
-    return a.getFactory().createLineString(pts);
+    return a.getFactory().createLineString(hd.farthestPoints(a));
   }
   
   /**
@@ -183,9 +157,9 @@ public class DirectedHausdorffDistance {
   public static LineString hausdorffDistanceLine(Geometry a, Geometry b)
   {
     DirectedHausdorffDistance hdAB = new DirectedHausdorffDistance(b);
-    Coordinate[] ptsAB = hdAB.maximumDistancePoints(a);
+    Coordinate[] ptsAB = hdAB.farthestPoints(a);
     DirectedHausdorffDistance hdBA = new DirectedHausdorffDistance(a);
-    Coordinate[] ptsBA = hdBA.maximumDistancePoints(b);
+    Coordinate[] ptsBA = hdBA.farthestPoints(b);
     
     //-- return points in A-B order
     Coordinate[] pts = ptsAB;
@@ -236,7 +210,7 @@ public class DirectedHausdorffDistance {
   /**
    * Heuristic automatic tolerance factor
    */
-  private static final double AUTO_TOLERANCE_FACTOR = 1.0e3;
+  private static final double AUTO_TOLERANCE_FACTOR = 1.0e4;
   
   private static double computeTolerance(Geometry geom) {
     return geom.getEnvelopeInternal().getDiameter() / AUTO_TOLERANCE_FACTOR;
@@ -311,20 +285,28 @@ public class DirectedHausdorffDistance {
       || envA.getMaxY() > envB.getMaxY() + maxDistance;
   }
   
-  public Coordinate[] maximumDistancePoints(Geometry geomA) {
-    double tolerance = computeTolerance(geomA);
-    return computeDistancePoints(geomA, tolerance, -1.0);
-  }
-  
   /**
    * Computes a pair of points which attain the directed Hausdorff distance 
    * of a query geometry A from the target B.
    * 
    * @param geomA the query geometry  
-   * @param tolerance the approximation distance tolerance
-   * @return a pair of points [ptA, ptB] demonstrating the distance
+   * @return a pair of points [ptA, ptB] attaining the distance
    */
-  public Coordinate[] maximumDistancePoints(Geometry geomA, double tolerance) {
+  public Coordinate[] farthestPoints(Geometry geomA) {
+    double tolerance = computeTolerance(geomA);
+    return farthestPoints(geomA, tolerance);
+  }
+  
+  /**
+   * Computes a pair of points which attain the directed Hausdorff distance 
+   * of a query geometry A from the target B,
+   * up to a given distance accuracy.
+   * 
+   * @param geomA the query geometry  
+   * @param tolerance the approximation distance tolerance
+   * @return a pair of points [ptA, ptB] attaining the distance
+   */
+  public Coordinate[] farthestPoints(Geometry geomA, double tolerance) {
     return computeDistancePoints(geomA, tolerance, -1.0);
   }
 
