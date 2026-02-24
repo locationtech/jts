@@ -46,12 +46,6 @@ public class DistanceFunctions {
     return a.getFactory().createLineString(dist.getCoordinates());
   }
 
-  @Metadata(description="Oriented discrete Hausdorff distance line from A to B")
-  public static Geometry orientedDiscreteHausdorffLine(Geometry a, Geometry b)  
-  {   
-    return DiscreteHausdorffDistance.orientedDistanceLine(a, b);
-  }
-
   @Metadata(description="Oriented discrete Hausdorff distance from A to B")
 	public static double orientedDiscreteHausdorffDistance(Geometry a, Geometry b)	
 	{		
@@ -66,12 +60,12 @@ public class DistanceFunctions {
     return DiscreteHausdorffDistance.orientedDistanceLine(a, b, frac);
   }
 
-  @Metadata(description="Clipped Oriented Hausdorff distance from A to B")
-  public static Geometry clippedOrientedHausdorffDistanceLine(Geometry a, Geometry b)  
+  @Metadata(description="Clipped directed Hausdorff distance from A to B")
+  public static Geometry clippedDirectedHausdorffLine(Geometry a, Geometry b)  
   {   
-    //TODO: would this be more efficient done as part of DiscreteHausdorffDistance?
     Geometry clippedLine = LinearReferencingFunctions.project(a, b);
-    return DiscreteHausdorffDistance.orientedDistanceLine(clippedLine, b);
+    Coordinate[] pts = DirectedHausdorffDistance.distancePoints(clippedLine, b);
+    return a.getFactory().createLineString(pts);
   }
   
   @Metadata(description="Directed Hausdorff distance from A to B, up to tolerance")
