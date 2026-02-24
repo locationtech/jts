@@ -87,19 +87,22 @@ public class DistanceFunctions {
       @Metadata(title="Distance tolerance")
       double distTol)  
   {   
-    return DirectedHausdorffDistance.distanceLine(a, b, distTol);
+    Coordinate[] pts = DirectedHausdorffDistance.distancePoints(a, b, distTol);
+    return a.getFactory().createLineString(pts);
   }
   
   @Metadata(description="Directed Hausdorff distance line from A to B")
   public static Geometry directedHausdorffLine(Geometry a, Geometry b)  
   {   
-    return DirectedHausdorffDistance.distanceLine(a, b);
+    Coordinate[] pts = DirectedHausdorffDistance.distancePoints(a, b);
+    return a.getFactory().createLineString(pts);
   }
   
   @Metadata(description="Hausdorff distance between A and B, up to tolerance")
   public static Geometry hausdorffLine(Geometry a, Geometry b)  
   {   
-    return DirectedHausdorffDistance.hausdorffDistanceLine(a, b);
+    Coordinate[] pts = DirectedHausdorffDistance.hausdorffDistancePoints(a, b);
+    return a.getFactory().createLineString(pts);
   }
   
   //--------------------------------------------

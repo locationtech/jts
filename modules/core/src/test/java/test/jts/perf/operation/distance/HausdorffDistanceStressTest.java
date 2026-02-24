@@ -48,6 +48,7 @@ public class HausdorffDistanceStressTest {
       Debug.println(iter + "  ----------------");
       Debug.println(g);
       checkHausdorff(g, b);
+      checkFullyWithinDistance(g, b);
       
       //if (iter > 10) break;
     }
@@ -56,7 +57,7 @@ public class HausdorffDistanceStressTest {
   private void checkHausdorff(Geometry g, Geometry b) {
     double distDHD = DiscreteHausdorffDistance.distance(g, b, 0.01);
     
-    double distHD = DirectedHausdorffDistance.hausdorffDistanceLine(g, b).getLength();
+    double distHD = DirectedHausdorffDistance.hausdorffDistance(g, b);
     //-- performance testing only
     //double distDHD = distHD;
     
@@ -66,19 +67,18 @@ public class HausdorffDistanceStressTest {
     if (err > .01) {
       System.out.println("<<<<<<<<<<<  ERROR!");
     }
-    
-    checkFullyWithinDistance(g, b);
   }
 
   private void checkFullyWithinDistance(Geometry g, Geometry b) {
-    double distDHD = DirectedHausdorffDistance.distanceLine(g, b, 0.01).getLength();
-    double tol = distDHD / 1000;
-    boolean isWithin = DirectedHausdorffDistance.isFullyWithinDistance(g, b, 1.05 * distDHD, tol);
-    boolean isBeyond = ! DirectedHausdorffDistance.isFullyWithinDistance(g, b, 0.95 * distDHD, tol);
+    double distDHD = DirectedHausdorffDistance.distance(g, b, 0.01);
+
+    boolean isWithin = DirectedHausdorffDistance.isFullyWithinDistance(g, b, 1.05 * distDHD);
+    boolean isBeyond = ! DirectedHausdorffDistance.isFullyWithinDistance(g, b, 0.95 * distDHD);
+    
     if (! (isWithin && isBeyond)) {
       System.out.format("ioWithin = %b   isBeyond = %b\n", isWithin, isBeyond);
       System.out.println("<<<<<<<<<<<  ERROR!");
-      DirectedHausdorffDistance.isFullyWithinDistance(g, b, 0.75 * distDHD,tol);
+      //DirectedHausdorffDistance.isFullyWithinDistance(g, b, 0.75 * distDHD,tol);
     }
   }
 

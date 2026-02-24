@@ -14,10 +14,9 @@ package test.jts.perf.operation.distance;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.locationtech.jts.algorithm.distance.DiscreteHausdorffDistance;
 import org.locationtech.jts.algorithm.distance.DirectedHausdorffDistance;
+import org.locationtech.jts.algorithm.distance.DiscreteHausdorffDistance;
 import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
@@ -71,9 +70,9 @@ public class HausdorffDistancePerfTest extends PerformanceTestCase {
       iter++;
       Debug.println(iter + "  ----------------");
       Debug.println(g);
-      //checkHausdorff(g, b);
+      checkHausdorff(g, b);
       //boolean isWithin = DirectedHausdorffDistance.isFullyWithinDistance(g, b, 4 * distance, 0.1);
-      boolean isWithin = dhd.isFullyWithinDistance(g, 4 * distance, 0.1);
+      boolean isWithin = dhd.isFullyWithinDistance(g, 4 * distance);
       
       //if (iter > 10) break;
     }
@@ -82,7 +81,7 @@ public class HausdorffDistancePerfTest extends PerformanceTestCase {
   private void checkHausdorff(Geometry g, Geometry b) {
     double distDHD = DiscreteHausdorffDistance.distance(g, b, 0.01);
     
-    double distHD = DirectedHausdorffDistance.hausdorffDistanceLine(g, b).getLength();
+    double distHD = DirectedHausdorffDistance.hausdorffDistance(g, b);
     //-- performance testing only
     //double distDHD = distHD;
     
@@ -97,7 +96,7 @@ public class HausdorffDistancePerfTest extends PerformanceTestCase {
   }
 
   private void checkFullyWithinDistance(Geometry g, Geometry b) {
-    double distDHD = DirectedHausdorffDistance.distanceLine(g, b, 0.01).getLength();
+    double distDHD = DirectedHausdorffDistance.distance(g, b, 0.01);
     double tol = distDHD / 1000;
     boolean isWithin = DirectedHausdorffDistance.isFullyWithinDistance(g, b, 1.05 * distDHD, tol);
     boolean isBeyond = ! DirectedHausdorffDistance.isFullyWithinDistance(g, b, 0.95 * distDHD, tol);

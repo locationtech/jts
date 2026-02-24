@@ -256,7 +256,8 @@ extends GeometryTestCase
     Geometry g1 = read(wkt1);
     Geometry g2 = read(wkt2);
     
-    Geometry result = DirectedHausdorffDistance.hausdorffDistanceLine(g1, g2);
+    Coordinate[] pts = DirectedHausdorffDistance.hausdorffDistancePoints(g1, g2);
+    Geometry result = g1.getFactory().createLineString(pts);
     Geometry expected = read(wktExpected);
     checkEqualExact(expected, result, TOLERANCE);
   }
@@ -265,7 +266,8 @@ extends GeometryTestCase
     Geometry g1 = read(wkt1);
     Geometry g2 = read(wkt2);
     
-    Geometry result = DirectedHausdorffDistance.distanceLine(g1, g2);
+    Coordinate[] pts = DirectedHausdorffDistance.distancePoints(g1, g2);
+    Geometry result = g1.getFactory().createLineString(pts);
     Geometry expected = read(wktExpected);
     checkEqualExact(expected, result, TOLERANCE);
   }
@@ -275,7 +277,8 @@ extends GeometryTestCase
     Geometry g1 = read(wkt1);
     Geometry g2 = read(wkt2);
     
-    Geometry result = DirectedHausdorffDistance.distanceLine(g1, g2);
+    Coordinate[] pts = DirectedHausdorffDistance.distancePoints(g1, g2);
+    Geometry result = g1.getFactory().createLineString(pts);
     Geometry expected = read(wktExpected);
     
     Coordinate resultPt = result.getCoordinates()[0];
@@ -292,9 +295,7 @@ extends GeometryTestCase
     Geometry g1 = read(wkt1);
     Geometry g2 = read(wkt2);
     
-    Geometry result = DirectedHausdorffDistance.distanceLine(g1, g2, tolerance);
-    
-    double distResult = result.getLength();
+    double distResult = DirectedHausdorffDistance.distance(g1, g2, tolerance);
     assertEquals(expectedDistance, distResult, TOLERANCE);
   }
 
@@ -303,9 +304,7 @@ extends GeometryTestCase
     Geometry g1 = read(wkt1);
     Geometry g2 = read(wkt2);
     
-    Geometry result = DirectedHausdorffDistance.distanceLine(g1, g2);
-    
-    double distResult = result.getLength();
+    double distResult = DirectedHausdorffDistance.distance(g1, g2);
     assertEquals(expectedDistance, distResult, TOLERANCE);
   }
 
@@ -314,7 +313,6 @@ extends GeometryTestCase
     Geometry g2 = read(b);
     
     boolean result = DirectedHausdorffDistance.isFullyWithinDistance(g1, g2, distance);
-    
     assertEquals(expected, result);
   }
   
