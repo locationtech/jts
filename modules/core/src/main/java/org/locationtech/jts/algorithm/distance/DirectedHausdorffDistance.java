@@ -57,10 +57,10 @@ import org.locationtech.jts.operation.distance.IndexedFacetDistance;
  * the point at maximum distance may occur in the interior of a query polygon.
  * For a polygonal target geometry the point always lies on the boundary. 
  * <p>
- * A common use case is to test whether a geometry A lies fully within a given 
- * distance of another one B.
- * {@link #isFullyWithinDistance(Geometry, double)} 
- * can be used to test this efficiently.  
+ * The directed Hausdorff distance can be used to test 
+ * whether a geometry lies fully within a given distance of another one.
+ * The {@link #isFullyWithinDistance(Geometry, double)} function
+ * is provided to execute this test efficiently.  
  * It implements heuristic checks and short-circuiting to improve performance.
  * <p>
  * The class can be used in prepared mode.
@@ -70,7 +70,7 @@ import org.locationtech.jts.operation.distance.IndexedFacetDistance;
  * can be called efficiently for multiple query geometries. 
  * <p>
  * If the Hausdorff distance is attained at a non-vertex of the query geometry,
- * the location is approximated.  
+ * the location must be approximated.  
  * The algorithm uses a distance tolerance to control the approximation accuracy.
  * The tolerance is automatically determined to balance between accuracy and performance.
  * if more accuracy is desired some function signatures are provided 
