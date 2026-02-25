@@ -83,8 +83,6 @@ import org.locationtech.jts.operation.distance.IndexedFacetDistance;
  *
  */
 public class DirectedHausdorffDistance {
-  
-  private static final double EMPTY_DISTANCE = Double.NaN;
 
   /**
    * Computes the directed Hausdorff distance 
@@ -235,15 +233,28 @@ public class DirectedHausdorffDistance {
     return new Coordinate[] { p0.copy(), p1.copy() };
   }
   
-  /**
-   * Heuristic factor to improve performance of area interior farthest point computation.
-   */
-  private static final double AREA_INTERIOR_PERFORMANCE_FACTOR = 20;
-  
+  private static final double EMPTY_DISTANCE = Double.NaN;
+
   /**
    * Heuristic automatic tolerance factor
    */
   private static final double AUTO_TOLERANCE_FACTOR = 1.0e4;
+  
+  /**
+   * Heuristic factor to improve performance of area interior farthest point computation.
+   * The LargestEmptyCircle computation is much slower than the boundary one, 
+   * is unlikely to occur, and accuracy is less critical (and obvious).
+   * Improve performance by using a coarser distance tolerance.
+   */
+  private static final double AREA_INTERIOR_TOLERANCE_FACTOR = 20;
+  
+  /**
+   * Tolerance factor for isFullyWithinDistance.
+   * A larger factor is used to increase accuracy.
+   * The operation will usually short-circuit, so performance impact is low.
+   */
+  private static final double FULLY_WITHIN_TOLERANCE_FACTOR = 10 * AUTO_TOLERANCE_FACTOR;
+
   
   private static double computeTolerance(Geometry geom) {
     return geom.getEnvelopeInternal().getDiameter() / AUTO_TOLERANCE_FACTOR;
@@ -273,9 +284,7 @@ public class DirectedHausdorffDistance {
    * @return true if the query geometry lies fully within the distance of the target
    */
   public boolean isFullyWithinDistance(Geometry geom, double maxDistance) {
-    //TODO: should the tolerance be computed as a fraction of the maxDistance?
-    //return isFullyWithinDistance(a, maxDistance, computeTolerance(a));
-    double tolerance = maxDistance / AUTO_TOLERANCE_FACTOR;
+    double tolerance = maxDistance / FULLY_WITHIN_TOLERANCE_FACTOR;
     return isFullyWithinDistance(geom, maxDistance, tolerance);
   }
   
@@ -569,11 +578,9 @@ public class DirectedHausdorffDistance {
      * and accuracy is probably less critical (or obvious).
      * So improve performance by using a coarser distance tolerance.
      */
-    double lecTol = AREA_INTERIOR_PERFORMANCE_FACTOR * tolerance;
-
     //TODO: add short-circuiting based on maxDistanceLimit?
     
-    Point centerPt = LargestEmptyCircle.getCenter(target, polygonal, lecTol);
+    Point centerPt = LargestEmptyCircle.getCenter(target, polygonal, tolerance * AREA_INTERIOR_TOLERANCE_FACTOR);
     Coordinate ptA = centerPt.getCoordinate();
     /**
      * If LEC centre is in B, the max distance is zero, so return null.
