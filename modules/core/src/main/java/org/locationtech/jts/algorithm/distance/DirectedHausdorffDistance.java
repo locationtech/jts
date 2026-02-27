@@ -255,7 +255,14 @@ public class DirectedHausdorffDistance {
    */
   private static final double FULLY_WITHIN_TOLERANCE_FACTOR = 10 * AUTO_TOLERANCE_FACTOR;
 
-  
+  /**
+   * Computes an automatic distance tolerance for a query geometry.
+   * A tolerance of zero may be returned (e.g. for a zero-length line);
+   * this is supported by the distance algorithm.
+   * 
+   * @param geom the query geometry
+   * @return the distance tolerance
+   */
   private static double computeTolerance(Geometry geom) {
     return geom.getEnvelopeInternal().getDiameter() / AUTO_TOLERANCE_FACTOR;
   }
@@ -363,6 +370,14 @@ public class DirectedHausdorffDistance {
   }
 
   private Coordinate[] computeDistancePoints(Geometry geom, double tolerance, double maxDistanceLimit) {
+    /**
+     * Negative tolerances are not allowed.
+     * Zero tolerance is allowed, to support zero-size input.
+     */
+    if (tolerance < 0.0 ) {
+      throw new IllegalArgumentException("Tolerance must be non-negative");
+    }
+    
     if (geom.isEmpty() || target.isEmpty())
       return null;
     
@@ -412,7 +427,8 @@ public class DirectedHausdorffDistance {
         maxDist = dist;
         maxDistPtsAB = pair(pA, pB);
       }
-      if (isBeyondLimit(maxDist, maxDistanceLimit)) {
+      if (isValidLimit(maxDistanceLimit) 
+          && isBeyondLimit(maxDist, maxDistanceLimit)) {
         break;
       }
     }
@@ -460,10 +476,12 @@ public class DirectedHausdorffDistance {
        * - if segment distance bound is less than distance limit, no other segment can be farther
        * - if a point of segment is farther than limit, isFulyWithin must be false
        */
-      if (isWithinLimit(segMaxBound.getMaxDistanceBound(), maxDistanceLimit)
+      if (isValidLimit(maxDistanceLimit)) {
+        if (isWithinLimit(segMaxBound.getMaxDistanceBound(), maxDistanceLimit)
           || isBeyondLimit(segMaxBound.getMaxDistance(), maxDistanceLimit)
           ) {
-        break;
+            break;
+        }
       }
 
       /**
@@ -483,9 +501,10 @@ public class DirectedHausdorffDistance {
       /**
        * If segment is longer than tolerance
        * it might provide a better max distance point,
-       * so bisect and keep searching
+       * so bisect and keep searching.
        */
-      if ((segMaxBound.getLength() > tolerance)) {
+      if (tolerance > 0 
+          && segMaxBound.getLength() > tolerance) {
         DHDSegment[] bisects = segMaxBound.bisect(targetDistance);
         addNonInterior(bisects[0], segQueue);
         addNonInterior(bisects[1], segQueue);
@@ -514,6 +533,10 @@ public class DirectedHausdorffDistance {
     return f0.isSameSegment(f1);
   }
 
+  private static boolean isValidLimit(double limit) {
+    return limit >= 0.0;
+  }
+  
   private static boolean isBeyondLimit(double maxDist, double maxDistanceLimit) {
     return maxDistanceLimit >= 0 && maxDist > maxDistanceLimit;
   }
@@ -561,6 +584,9 @@ public class DirectedHausdorffDistance {
    *   or null if it is known to not occur at an interior point 
    */
   private Coordinate[] computeForAreaInterior(Geometry geom, double tolerance) {
+    if (tolerance <= 0.0)
+      return null;
+    
     //TODO: extract polygonal geoms from A
     Geometry polygonal = geom;
     

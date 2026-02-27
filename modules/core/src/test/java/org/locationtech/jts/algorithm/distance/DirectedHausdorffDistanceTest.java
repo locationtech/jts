@@ -26,6 +26,8 @@ extends GeometryTestCase
 
   public DirectedHausdorffDistanceTest(String name) { super(name); }
 
+  //-- empty inputs
+  
   public void testEmptyPoint()
   {
     checkDistanceEmpty("POINT EMPTY", "POINT (1 1)");
@@ -42,6 +44,76 @@ extends GeometryTestCase
   }
   
   //--------------------------------------
+  //-- extreme and invalid inputs
+  
+  public void testZeroTolerancePoint()
+  {
+    checkDistance("POINT (5 5)", "LINESTRING (5 1, 9 5)",
+        0,
+        "LINESTRING (5 5, 7 3)");
+  }
+  
+  public void testZeroToleranceLine()
+  {
+    checkDistance("LINESTRING (1 5, 5 5)", "LINESTRING (5 1, 9 5)",
+        0,
+        "LINESTRING (1 5, 5 1)");
+  }
+  
+  public void testZeroToleranceZeroLengthLineQuery()
+  {
+    checkDistance("LINESTRING (5 5, 5 5)", "LINESTRING (5 1, 9 5)",
+        0,
+        "LINESTRING (5 5, 7 3)");
+  }
+  
+  public void testZeroLengthLineQuery()
+  {
+    checkDistance("LINESTRING (5 5, 5 5)", "LINESTRING (5 1, 9 5)",
+        "LINESTRING (5 5, 7 3)");
+  }
+  
+  public void testZeroLengthPolygonQuery()
+  {
+    checkDistance("POLYGON ((5 5, 5 5, 5 5, 5 5))", "LINESTRING (5 1, 9 5)",
+        "LINESTRING (5 5, 7 3)");
+  }
+  
+  public void testZeroLengthLineTarget()
+  {
+    checkDistance("POINT (5 5)", "LINESTRING (5 1, 5 1)",
+        "LINESTRING (5 5, 5 1)");
+  }
+  
+  public void testNegativeTolerancePoint()
+  {
+    try {
+      checkDistance("POINT (5 5)", "LINESTRING (5 1, 9 5)",
+          -1,
+          "LINESTRING (5 5, 7 3)");
+      fail();
+    }
+    catch (IllegalArgumentException expected) {
+      
+    }
+  }
+  
+  public void testNegativeToleranceLine()
+  {
+    try {
+      checkDistance("LINESTRING (1 5, 5 5)", "LINESTRING (5 1, 9 5)",
+        -1,
+        "LINESTRING (1 5, 5 1)");
+      fail();
+    }
+    catch (IllegalArgumentException expected) {
+    
+    }
+  }
+  
+  //--------------------------------------
+  
+  
   public void testPointPoint()
   {
     checkHausdorff("POINT (0 0)", "POINT (1 1)", 
@@ -297,6 +369,16 @@ extends GeometryTestCase
     Geometry g2 = read(wkt2);
     
     Coordinate[] pts = DirectedHausdorffDistance.distancePoints(g1, g2);
+    Geometry result = g1.getFactory().createLineString(pts);
+    Geometry expected = read(wktExpected);
+    checkEqualExact(expected, result, TOLERANCE);
+  }
+  
+  private void checkDistance(String wkt1, String wkt2, double tolerance, String wktExpected) {
+    Geometry g1 = read(wkt1);
+    Geometry g2 = read(wkt2);
+    
+    Coordinate[] pts = DirectedHausdorffDistance.distancePoints(g1, g2, tolerance);
     Geometry result = g1.getFactory().createLineString(pts);
     Geometry expected = read(wktExpected);
     checkEqualExact(expected, result, TOLERANCE);
