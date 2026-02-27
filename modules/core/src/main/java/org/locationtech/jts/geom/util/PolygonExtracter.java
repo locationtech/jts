@@ -11,66 +11,63 @@
  */
 package org.locationtech.jts.geom.util;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryCollection;
 import org.locationtech.jts.geom.GeometryFilter;
 import org.locationtech.jts.geom.Polygon;
 
 /**
- * Extracts all the {@link Polygon} elements from a {@link Geometry}.
- *
+ * Extracts {@link Polygon} components from a {@link Geometry}.
+ * <p>
+ * This class implements {@link GeometryFilter} so it can be passed to
+ * {@link Geometry#apply(GeometryFilter)}.
+ * 
  * @version 1.7
- * @see GeometryExtracter
+ * @see org.locationtech.jts.geom.util.GeometryExtracter GeometryExtracter
  */
-public class PolygonExtracter
-  implements GeometryFilter
-{
-  /**
-   * Extracts the {@link Polygon} elements from a single {@link Geometry}
-   * and adds them to the provided {@link List}.
-   * 
-   * @param geom the geometry from which to extract
-   * @param list the list to add the extracted elements to
-   */
-  public static List getPolygons(Geometry geom, List list)
-  {
-  	if (geom instanceof Polygon) {
-  		list.add(geom);
-  	}
-  	else if (geom instanceof GeometryCollection) {
-  		geom.apply(new PolygonExtracter(list));
-  	}
-  	// skip non-Polygonal elemental geometries
-  	
-    return list;
-  }
+public final class PolygonExtracter implements GeometryFilter {
 
-  /**
-   * Extracts the {@link Polygon} elements from a single {@link Geometry}
-   * and returns them in a {@link List}.
-   * 
-   * @param geom the geometry from which to extract
-   */
-  public static List getPolygons(Geometry geom)
-  {
-    return getPolygons(geom, new ArrayList());
-  }
+	/**
+	 * Extracts the {@link Polygon} elements from a single {@link Geometry} and adds
+	 * them to the provided {@link Collection}.
+	 *
+	 * @param geom the geometry from which to extract (may be {@code null})
+	 * @param out  an optional collection to add the extracted polygons to (may be
+	 *             {@code null})
+	 * @return a new modifiable {@link List} containing the extracted polygons
+	 */
+	public static List<Polygon> getPolygons(Geometry geom, Collection<? super Polygon> out) {
+		return GeometryExtracter.extractByClass(geom, Polygon.class, out);
+	}
 
-  private List comps;
-  /**
-   * Constructs a PolygonExtracterFilter with a list in which to store Polygons found.
-   */
-  public PolygonExtracter(List comps)
-  {
-    this.comps = comps;
-  }
+	/**
+	 * Extracts the {@link Polygon} elements from a single {@link Geometry} and
+	 * returns them in a {@link List}.
+	 *
+	 * @param geom the geometry from which to extract (may be {@code null})
+	 * @return a new modifiable {@link List} containing the extracted polygons
+	 */
+	public static List<Polygon> getPolygons(Geometry geom) {
+		return GeometryExtracter.extractByClass(geom, Polygon.class);
+	}
 
-  public void filter(Geometry geom)
-  {
-    if (geom instanceof Polygon) comps.add(geom);
-  }
+	private final Collection<? super Polygon> comps;
 
+	/**
+	 * Constructs a filter with a collection in which to store {@link Polygon}s
+	 * found.
+	 *
+	 * @param comps the collection in which to store polygons found
+	 */
+	public PolygonExtracter(Collection<? super Polygon> comps) {
+		this.comps = comps;
+	}
+
+	@Override
+	public void filter(Geometry geom) {
+		if (geom instanceof Polygon)
+			comps.add((Polygon) geom);
+	}
 }
