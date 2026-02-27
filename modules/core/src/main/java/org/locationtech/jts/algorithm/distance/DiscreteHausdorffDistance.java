@@ -71,6 +71,7 @@ import org.locationtech.jts.geom.LineString;
  * This is more efficient than testing whether A is covered by a buffer of B.
  * 
  * @see DiscreteFrechetDistance
+ * @see DirectedHausdorffDistance
  * 
  */
 public class DiscreteHausdorffDistance

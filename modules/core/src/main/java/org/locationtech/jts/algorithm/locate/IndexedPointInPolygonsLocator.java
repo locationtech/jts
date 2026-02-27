@@ -9,12 +9,10 @@
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
  */
-package org.locationtech.jts.algorithm.construct;
+package org.locationtech.jts.algorithm.locate;
 
 import java.util.List;
 
-import org.locationtech.jts.algorithm.locate.IndexedPointInAreaLocator;
-import org.locationtech.jts.algorithm.locate.PointOnGeometryLocator;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
@@ -24,12 +22,15 @@ import org.locationtech.jts.index.strtree.STRtree;
 
 /**
  * Determines the location of a point in the polygonal elements of a geometry.
+ * The polygons may overlap.
  * Uses spatial indexing to provide efficient performance.
  * 
  * @author mdavis
+ * 
+ * @see IndexedPointInAreaLocator
  *
  */
-class IndexedPointInPolygonsLocator implements PointOnGeometryLocator {
+public class IndexedPointInPolygonsLocator implements PointOnGeometryLocator {
 
   private Geometry geom;
   private STRtree index;
