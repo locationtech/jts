@@ -44,6 +44,13 @@ public class HSBPalette {
     return pal;
   }
 
+  public static HSBPalette createSpectrumRange(int numHue, float hueRange, float h, float s, float b) {
+    return new HSBPalette(numHue, h, hueRange,
+        1, s, s,
+        1, b, b
+        ); 
+  }
+  
   private void setHueInc(float hInc) {
       this.hInc = hInc;
    }
@@ -74,7 +81,7 @@ public class HSBPalette {
     this.numB = numB;
     this.hBase = hBase;
     this.hRange = hRange;
-    this.h1 = hBase - hRange / 2;
+    this.h1 = hBase;
     this.sLo = sLo;
     this.bLo = bLo;
     // TODO: make this mod 1

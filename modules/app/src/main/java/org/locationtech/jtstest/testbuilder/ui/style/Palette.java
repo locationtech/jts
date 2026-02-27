@@ -22,16 +22,19 @@ public class Palette {
   public static final int TYPE_VARY = 2;
   public static final int TYPE_SPECTRUM = 3;
   public static final int TYPE_SPECTRUM_RANDOM = 4;
+  public static final int TYPE_SPECTRUM_THIRD = 5;
   
   private static final float BRIGHT_RANGE = 0.1f;
   private static final float SAT_RANGE = 0.2f;
   
   public static HSBPalette customPalette(int paletteType, Color clrBase, int numHues) {
-    HSBPalette pal = null;
+    
     float sat = ColorUtil.getSaturation(clrBase);
     float bright = ColorUtil.getBrightness(clrBase);
+    float hue = ColorUtil.getHue(clrBase);
+    
+    HSBPalette pal = null;
     if (TYPE_VARY == paletteType) {
-      float hue = ColorUtil.getHue(clrBase);
       pal = new HSBPalette(5, hue, HSBPalette.HUE_WIDTH / 2,
           3, sat - SAT_RANGE/2, sat + SAT_RANGE/2,
           3, bright - BRIGHT_RANGE/2, bright + BRIGHT_RANGE/2
@@ -42,6 +45,9 @@ public class Palette {
     }
     else if (TYPE_SPECTRUM_RANDOM == paletteType) {
       return HSBPalette.createSpectrumIncremental(0.23f, sat, bright);
+    }
+    else if (TYPE_SPECTRUM_THIRD == paletteType) {
+      return HSBPalette.createSpectrumRange(numHues, 0.333f, hue, sat, bright);
     }
     return pal;
   }
