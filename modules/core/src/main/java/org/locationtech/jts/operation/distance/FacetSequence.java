@@ -15,6 +15,7 @@ package org.locationtech.jts.operation.distance;
 import org.locationtech.jts.algorithm.Distance;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateSequence;
+import org.locationtech.jts.geom.CoordinateSequences;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.LineSegment;
 
@@ -149,6 +150,57 @@ public class FacetSequence
       computeDistanceLineLine(facetSeq, locs);
     }
     return locs;    
+  }
+
+  public CoordinateSequenceLocation nearestLocation(Coordinate p)
+  {
+    if (isPoint()) {
+      return new CoordinateSequenceLocation(pts, 0, pts.getCoordinate(0));
+    }
+    return nearestLocationOnLine(p);
+  }
+
+  private CoordinateSequenceLocation nearestLocationOnLine(Coordinate pt) 
+  {
+    double minDistance = Double.MAX_VALUE;
+    int index = -1;
+    Coordinate nearestPt = null;
+    
+    for (int i = start; i < end - 1; i++) {
+      Coordinate q0 = pts.getCoordinate(i);
+      Coordinate q1 = pts.getCoordinate(i + 1);
+      double dist = Distance.pointToSegment(pt, q0, q1);
+      if (dist < minDistance) {
+        minDistance = dist;
+        nearestPt = nearestPoint(pt, q0, q1);
+        index = i;
+        //-- segments are half-open, so 2nd endpoint belongs to next segment
+        //-- except for last segment on non-closed sequence
+        if (dist == 0.0 && pt.equals2D(q1)) {
+          if (index < pts.size() - 1) {
+            index++;
+          }
+          //-- normalize index for a ring
+          index = normalize(pts, index);
+        }
+        if (minDistance <= 0.0) 
+          break;
+      }
+    }
+    return new CoordinateSequenceLocation(pts, index, nearestPt);
+  }
+
+  private static int normalize(CoordinateSequence pts, int index) {
+    if (index >= pts.size() - 1
+        && CoordinateSequences.isRing(pts)) {
+      index = 0;
+    }
+    return index;
+  }
+  
+  private Coordinate nearestPoint(Coordinate pt, Coordinate q0, Coordinate q1) {
+    LineSegment seg = new LineSegment(q0, q1);
+    return seg.closestPoint(pt);
   }
 
   private double computeDistanceLineLine(FacetSequence facetSeq, Coordinate[] locs)

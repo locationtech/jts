@@ -13,6 +13,7 @@ package org.locationtech.jtstest.function;
 
 import org.locationtech.jts.algorithm.distance.DiscreteFrechetDistance;
 import org.locationtech.jts.algorithm.distance.DiscreteHausdorffDistance;
+import org.locationtech.jts.algorithm.distance.DirectedHausdorffDistance;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.LineString;
@@ -45,53 +46,61 @@ public class DistanceFunctions {
     return a.getFactory().createLineString(dist.getCoordinates());
   }
 
-  public static double hausdorffDistance(Geometry a, Geometry b)  
-  {   
-    return DiscreteHausdorffDistance.distance(a, b);
-  }
-  
-  @Metadata(description="Hausdorff distance between A and B")
-  public static Geometry hausdorffDistanceLine(Geometry a, Geometry b)  
-  {   
-    return DiscreteHausdorffDistance.distanceLine(a, b);
-  }
-
-  @Metadata(description="Hausdorff distance between A and B, densified")
-	public static Geometry hausdorffDistanceLineDensify(Geometry a, Geometry b, 
-      @Metadata(title="Densify fraction")
-	    double frac)	
-	{		
-    return DiscreteHausdorffDistance.distanceLine(a, b, frac);
-	}
-
-  @Metadata(description="Oriented Hausdorff distance from A to B")
-  public static Geometry orientedHausdorffDistanceLine(Geometry a, Geometry b)  
-  {   
-    return DiscreteHausdorffDistance.orientedDistanceLine(a, b);
-  }
-
-  @Metadata(description="Oriented Hausdorff distance from A to B")
-  public static Geometry clippedOrientedHausdorffDistanceLine(Geometry a, Geometry b)  
-  {   
-    //TODO: would this be more efficient done as part of DiscreteHausdorffDistance?
-    Geometry clippedLine = LinearReferencingFunctions.project(a, b);
-    return DiscreteHausdorffDistance.orientedDistanceLine(clippedLine, b);
-  }
-
-  @Metadata(description="Oriented Hausdorff distance from A to B")
-	public static double orientedHausdorffDistance(Geometry a, Geometry b)	
+  @Metadata(description="Oriented discrete Hausdorff distance from A to B")
+	public static double orientedDiscreteHausdorffDistance(Geometry a, Geometry b)	
 	{		
     return DiscreteHausdorffDistance.orientedDistance(a, b);
 	}
 	
-  @Metadata(description="Oriented Hausdorff distance from A to B, densified")
-  public static Geometry orientedHausdorffDistanceLineDensify(Geometry a, Geometry b, 
+  @Metadata(description="Oriented discrete Hausdorff distance line from A to B, densified")
+  public static Geometry orientedDiscreteHausdorffLineDensify(Geometry a, Geometry b, 
       @Metadata(title="Densify fraction")
       double frac)  
   {   
     return DiscreteHausdorffDistance.orientedDistanceLine(a, b, frac);
   }
 
+  @Metadata(description="Clipped directed Hausdorff distance from A to B")
+  public static Geometry clippedDirectedHausdorffLine(Geometry a, Geometry b)  
+  {   
+    Geometry clippedLine = LinearReferencingFunctions.project(a, b);
+    Coordinate[] pts = DirectedHausdorffDistance.distancePoints(clippedLine, b);
+    return a.getFactory().createLineString(pts);
+  }
+  
+  @Metadata(description="Directed Hausdorff distance from A to B, up to tolerance")
+  public static double directedHausdorffDistance(Geometry a, Geometry b, 
+      @Metadata(title="Distance tolerance")
+      double distTol)  
+  {   
+    return DirectedHausdorffDistance.distance(a, b, distTol);
+  }
+  
+  @Metadata(description="Directed Hausdorff distance line from A to B, up to tolerance")
+  public static Geometry directedHausdorffLineTol(Geometry a, Geometry b, 
+      @Metadata(title="Distance tolerance")
+      double distTol)  
+  {   
+    Coordinate[] pts = DirectedHausdorffDistance.distancePoints(a, b, distTol);
+    return a.getFactory().createLineString(pts);
+  }
+  
+  @Metadata(description="Directed Hausdorff distance line from A to B")
+  public static Geometry directedHausdorffLine(Geometry a, Geometry b)  
+  {   
+    Coordinate[] pts = DirectedHausdorffDistance.distancePoints(a, b);
+    return a.getFactory().createLineString(pts);
+  }
+  
+  @Metadata(description="Hausdorff distance between A and B, up to tolerance")
+  public static Geometry hausdorffLine(Geometry a, Geometry b)  
+  {   
+    Coordinate[] pts = DirectedHausdorffDistance.hausdorffDistancePoints(a, b);
+    return a.getFactory().createLineString(pts);
+  }
+  
+  //--------------------------------------------
+  
   public static double distanceIndexed(Geometry a, Geometry b) {
     return IndexedFacetDistance.distance(a, b);
   }
@@ -117,4 +126,5 @@ public class DistanceFunctions {
     
     return a.getFactory().createMultiLineString(lines);
   }
+
 }
