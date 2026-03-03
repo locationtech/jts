@@ -25,6 +25,7 @@ Distributions for older JTS versions can be obtained at the
 
 * Add `CoverageCleaner` (#1126)
 * Add `MinimumBoundingTriangle` (#1160)
+* Add `DirectedHausdorffDistance` class (#1182)
 
 ### Functionality Improvements
 
