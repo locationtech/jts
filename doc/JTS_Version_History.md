@@ -56,6 +56,7 @@ Distributions for older JTS versions can be obtained at the
 * Fix CoordinateList.clone() to copy correctly (#1168)
 * Add Voronoi snapping heuristic to fix invalid diagram topology (#1174)
 * Fix `LineSegment.project` to handle segments projecting onto a single endpoint (#1179)
+* Fix DD equals and compareTo (#1186)
 
 ### Performance Improvements
 
