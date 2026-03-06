@@ -91,7 +91,7 @@ import java.io.Serializable;
  *
  */
 public strictfp final class DD 
-  implements Serializable, Comparable, Cloneable
+  implements Serializable, Comparable<DD>, Cloneable
 {
   /**
    * The value nearest to the constant Pi.
@@ -985,9 +985,12 @@ public strictfp final class DD
    * @param y a DoubleDouble value
    * @return true if this value = y
    */
-  public boolean equals(DD y)
+  public boolean equals(Object o)
   {
-    return hi == y.hi && lo == y.lo;
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;    
+    DD dd = (DD) o;
+    return hi == dd.hi && lo == dd.lo;
   }
   
   /**
@@ -1030,13 +1033,12 @@ public strictfp final class DD
   /**
    * Compares two DoubleDouble objects numerically.
    * 
+   * @param other a DD value to compare to
    * @return -1,0 or 1 depending on whether this value is less than, equal to
    * or greater than the value of <tt>o</tt>
    */
-  public int compareTo(Object o) 
+  public int compareTo(DD other) 
   {
-    DD other = (DD) o;
-
     if (hi < other.hi) return -1;
     if (hi > other.hi) return 1;
     if (lo < other.lo) return -1;
