@@ -100,12 +100,17 @@ public class OrientationIsCCWTest extends GeometryTestCase {
   public void testMultipleTopFlatSegmentCollapseFlatTop() {
     checkCCW(true, "POLYGON ((10 10, 90 10, 70 70, 90 70, 10 70, 30 70, 50 70, 10 10))");
   }
-  
+
   /**
    * Signed-area orientation returns orientation of largest enclosed area
    */
   public void testBowTieByArea() {
     checkCCWArea(true, "POLYGON ((10 10, 50 10, 25 35, 35 35, 10 10))");
+  }
+
+  // See https://trac.osgeo.org/postgis/ticket/6065
+  public void testPostGISTicket6065() {
+    checkCCW(false, "0103000000010000000A000000890205230D6C31408177583619475140FD613B270D6C314031AA5436194751405D58985776943140195EE965DE47514085FFA6647B9F31408FC1C62B394851405D58985776943140195EE965DE475140FD613B270D6C314031AA543619475140A4613B270D6C31402FAA543619475140890205230D6C31408177583619475140320205230D6C31407E77583619475140890205230D6C31408177583619475140");
   }
   
   private void checkCCW(boolean expectedCCW, String wkt) {
