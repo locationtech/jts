@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.EnumSet;
+import java.util.Locale;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateSequence;
@@ -443,6 +444,12 @@ public class WKTWriter
   {
     indent(useFormatting, level, writer);
 
+    // Extension hook for SFA / ISO 19125-2 geometries (curve, surface, etc.)
+    if (appendOtherGeometryTaggedText(geometry, outputOrdinates, useFormatting,
+            level, writer, formatter)) {
+      return;
+    }
+
     if (geometry instanceof Point) {
       appendPointTaggedText((Point) geometry, outputOrdinates, useFormatting,
               level, writer, formatter);
@@ -479,6 +486,29 @@ public class WKTWriter
       Assert.shouldNeverReachHere("Unsupported Geometry implementation:"
            + geometry.getClass());
     }
+  }
+
+  /**
+   * Hook for subclasses to write geometry types not handled by the core
+   * dispatch (extended OGC SFA / ISO 19125-2 types such as
+   * {@code CircularString}, {@code CompoundCurve}, {@code CurvePolygon},
+   * {@code MultiCurve}, {@code MultiSurface}, {@code Triangle},
+   * {@code PolyhedralSurface}, {@code Tin}).
+   * <p>
+   * Called early in {@link #appendGeometryTaggedText} so that subclasses
+   * can intercept geometries that would otherwise be routed to a parent
+   * class's handler by the {@code instanceof} ladder. Implementations
+   * should return {@code true} if the geometry was written, and
+   * {@code false} if the core dispatch should proceed.
+   * <p>
+   * The default implementation returns {@code false}, preserving the
+   * previous behaviour.
+   */
+  protected boolean appendOtherGeometryTaggedText(
+          Geometry geometry, EnumSet<Ordinate> outputOrdinates, boolean useFormatting,
+          int level, Writer writer, OrdinateFormat formatter)
+      throws IOException {
+    return false;
   }
 
   /**
@@ -519,7 +549,7 @@ public class WKTWriter
           int level, Writer writer, OrdinateFormat formatter)
     throws IOException
   {
-    writer.write(WKTConstants.LINESTRING);
+    writer.write(lineString.getGeometryType().toUpperCase(Locale.ROOT));
     writer.write(" ");
     appendOrdinateText(outputOrdinates, writer);
     appendSequenceText(lineString.getCoordinateSequence(), outputOrdinates, useFormatting,
@@ -565,7 +595,7 @@ public class WKTWriter
           int level, Writer writer, OrdinateFormat formatter)
     throws IOException
   {
-    writer.write(WKTConstants.POLYGON);
+    writer.write(polygon.getGeometryType().toUpperCase(Locale.ROOT));
     writer.write(" ");
     appendOrdinateText(outputOrdinates, writer);
     appendPolygonText(polygon, outputOrdinates, useFormatting,
@@ -610,7 +640,7 @@ public class WKTWriter
           int level, Writer writer, OrdinateFormat formatter)
     throws IOException
   {
-    writer.write(WKTConstants.MULTILINESTRING);
+    writer.write(multiLineString.getGeometryType().toUpperCase(Locale.ROOT));
     writer.write(" ");
     appendOrdinateText(outputOrdinates, writer);
     appendMultiLineStringText(multiLineString, outputOrdinates, useFormatting,
@@ -633,7 +663,7 @@ public class WKTWriter
           int level, Writer writer, OrdinateFormat formatter)
     throws IOException
   {
-    writer.write(WKTConstants.MULTIPOLYGON);
+    writer.write(multiPolygon.getGeometryType().toUpperCase(Locale.ROOT));
     writer.write(" ");
     appendOrdinateText(outputOrdinates, writer);
     appendMultiPolygonText(multiPolygon, outputOrdinates, useFormatting,
@@ -723,7 +753,7 @@ public class WKTWriter
    * @param writer         the output writer to append to.
    * @throws IOException   if an error occurs while using the writer.
    */
-  private void appendOrdinateText(EnumSet<Ordinate> outputOrdinates, Writer writer) throws IOException {
+  protected void appendOrdinateText(EnumSet<Ordinate> outputOrdinates, Writer writer) throws IOException {
 
     if (outputOrdinates.contains(Ordinate.Z))
       writer.append(WKTConstants.Z);
@@ -743,7 +773,7 @@ public class WKTWriter
    * @param  writer          the output writer to append to
    * @param  formatter       the formatter to use for writing ordinate values.
    */
-  private void appendSequenceText(CoordinateSequence seq, EnumSet<Ordinate> outputOrdinates, boolean useFormatting,
+  protected void appendSequenceText(CoordinateSequence seq, EnumSet<Ordinate> outputOrdinates, boolean useFormatting,
                                   int level, boolean indentFirst, Writer writer, OrdinateFormat formatter)
     throws IOException
   {
@@ -779,7 +809,7 @@ public class WKTWriter
    * @param  writer          the output writer to append to
    * @param  formatter       the formatter to use for writing ordinate values.
    */
-  private void appendPolygonText(
+  protected void appendPolygonText(
           Polygon polygon, EnumSet<Ordinate> outputOrdinates, boolean useFormatting,
           int level, boolean indentFirst, Writer writer, OrdinateFormat formatter)
     throws IOException
@@ -845,7 +875,7 @@ public class WKTWriter
    * @param  writer           the output writer to append to
    * @param  formatter        the formatter to use for writing ordinate values.
    */
-  private void appendMultiLineStringText(MultiLineString multiLineString, EnumSet<Ordinate> outputOrdinates,
+  protected void appendMultiLineStringText(MultiLineString multiLineString, EnumSet<Ordinate> outputOrdinates,
            boolean useFormatting, int level, /*boolean indentFirst, */Writer writer, OrdinateFormat formatter)
     throws IOException
   {
@@ -879,7 +909,7 @@ public class WKTWriter
    * @param  writer          the output writer to append to
    * @param  formatter       the formatter to use for writing ordinate values.
    */
-  private void appendMultiPolygonText(
+  protected void appendMultiPolygonText(
           MultiPolygon multiPolygon, EnumSet<Ordinate> outputOrdinates, boolean useFormatting,
           int level, Writer writer, OrdinateFormat formatter)
     throws IOException
@@ -946,7 +976,7 @@ public class WKTWriter
     indent(useFormatting, level, writer);
   }
 
-  private void indent(boolean useFormatting, int level, Writer writer)
+  protected void indent(boolean useFormatting, int level, Writer writer)
     throws IOException
   {
     if (! useFormatting || level <= 0)
