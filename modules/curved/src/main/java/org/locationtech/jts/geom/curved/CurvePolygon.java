@@ -11,6 +11,7 @@
  */
 package org.locationtech.jts.geom.curved;
 
+import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.Polygon;
@@ -19,7 +20,7 @@ import org.locationtech.jts.geom.Polygon;
  * A polygon whose rings may be straight, circular, or compound curves.
  * Phase-1 stand-in: rings are linearised to {@link LinearRing}s on read.
  */
-public class CurvePolygon extends Polygon {
+public class CurvePolygon extends Polygon implements Linearizable {
   private static final long serialVersionUID = 1L;
 
   public CurvePolygon(LinearRing shell, LinearRing[] holes, GeometryFactory factory) {
@@ -33,5 +34,31 @@ public class CurvePolygon extends Polygon {
   @Override
   public String getGeometryType() {
     return "CurvePolygon";
+  }
+
+  @Override
+  protected CurvePolygon copyInternal() {
+    GeometryFactory f = getFactory();
+    if (isEmpty()) return new CurvePolygon(f);
+    LinearRing shell = (LinearRing) getExteriorRing().copy();
+    int holeCount = getNumInteriorRing();
+    LinearRing[] holes = new LinearRing[holeCount];
+    for (int i = 0; i < holeCount; i++) {
+      holes[i] = (LinearRing) getInteriorRingN(i).copy();
+    }
+    return new CurvePolygon(shell, holes, f);
+  }
+
+  @Override
+  public Geometry toLinear(double tolerance) {
+    GeometryFactory f = getFactory();
+    if (isEmpty()) return f.createPolygon();
+    LinearRing shell = (LinearRing) getExteriorRing().copy();
+    int holeCount = getNumInteriorRing();
+    LinearRing[] holes = new LinearRing[holeCount];
+    for (int i = 0; i < holeCount; i++) {
+      holes[i] = (LinearRing) getInteriorRingN(i).copy();
+    }
+    return f.createPolygon(shell, holes);
   }
 }
