@@ -27,7 +27,20 @@ public class WKTConstants {
   public static final String MULTIPOINT = "MULTIPOINT";
   public static final String POINT = "POINT";
   public static final String POLYGON = "POLYGON";
-  
+
+  /* Extended OGC SFA / ISO 19125-2 type keywords. The core JTS readers and
+   * writers do not handle these directly; they are exposed here so that
+   * extension modules (e.g. {@code jts-curved}) and downstream tooling can
+   * share a single canonical set of strings. */
+  public static final String CIRCULARSTRING = "CIRCULARSTRING";
+  public static final String COMPOUNDCURVE = "COMPOUNDCURVE";
+  public static final String CURVEPOLYGON = "CURVEPOLYGON";
+  public static final String MULTICURVE = "MULTICURVE";
+  public static final String MULTISURFACE = "MULTISURFACE";
+  public static final String POLYHEDRALSURFACE = "POLYHEDRALSURFACE";
+  public static final String TIN = "TIN";
+  public static final String TRIANGLE = "TRIANGLE";
+
   public static final String EMPTY = "EMPTY";
 
   public static final String M = "M";
