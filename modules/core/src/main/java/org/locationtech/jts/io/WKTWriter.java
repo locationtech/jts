@@ -46,9 +46,24 @@ import org.locationtech.jts.util.Assert;
  * <p>
  * The SFS WKT spec does not define a special tag for {@link LinearRing}s.
  * Under the spec, rings are output as <code>LINESTRING</code>s.
- * In order to allow precisely specifying constructed geometries, 
- * JTS also supports a non-standard <code>LINEARRING</code> tag which is used 
+ * In order to allow precisely specifying constructed geometries,
+ * JTS also supports a non-standard <code>LINEARRING</code> tag which is used
  * to output LinearRings.
+ * <p>
+ * <b>Extension:</b> this class is designed to be subclassed to support
+ * OGC SFA / ISO 19125-2 extended geometry types. The keyword for each
+ * tagged-text emission is now read from
+ * {@code geometry.getGeometryType().toUpperCase()}, so {@link Geometry}
+ * subclasses with structurally compatible bodies emit their own
+ * keyword without any new dispatch branches. For types that need
+ * different bodies (e.g. preserving member structure in
+ * {@code CompoundCurve}), subclasses should override
+ * {@link #appendOtherGeometryTaggedText}, which is invoked early in
+ * the dispatch ladder. Helpers for composing emission output
+ * ({@link #indent}, {@link #appendOrdinateText},
+ * {@link #appendSequenceText}, {@link #appendPolygonText},
+ * {@link #appendMultiLineStringText}, {@link #appendMultiPolygonText})
+ * are exposed as {@code protected}.
  *
  * @version 1.7
  * @see WKTReader

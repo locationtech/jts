@@ -26,4 +26,14 @@ public class Tin extends PolyhedralSurface {
   public String getGeometryType() {
     return "Tin";
   }
+
+  @Override
+  protected Tin copyInternal() {
+    int n = getNumGeometries();
+    Polygon[] patches = new Polygon[n];
+    for (int i = 0; i < n; i++) {
+      patches[i] = (Polygon) getGeometryN(i).copy();
+    }
+    return new Tin(patches, getFactory());
+  }
 }

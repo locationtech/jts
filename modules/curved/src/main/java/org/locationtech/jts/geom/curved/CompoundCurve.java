@@ -12,6 +12,7 @@
 package org.locationtech.jts.geom.curved;
 
 import org.locationtech.jts.geom.CoordinateSequence;
+import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
 
@@ -20,7 +21,7 @@ import org.locationtech.jts.geom.LineString;
  * segments. Phase-1 stand-in: member structure is collapsed to a flat
  * concatenation of control points. A future phase will preserve segments.
  */
-public class CompoundCurve extends LineString {
+public class CompoundCurve extends LineString implements Linearizable {
   private static final long serialVersionUID = 1L;
 
   public CompoundCurve(CoordinateSequence points, GeometryFactory factory) {
@@ -30,5 +31,15 @@ public class CompoundCurve extends LineString {
   @Override
   public String getGeometryType() {
     return "CompoundCurve";
+  }
+
+  @Override
+  protected CompoundCurve copyInternal() {
+    return new CompoundCurve(getCoordinateSequence().copy(), getFactory());
+  }
+
+  @Override
+  public Geometry toLinear(double tolerance) {
+    return getFactory().createLineString(getCoordinateSequence().copy());
   }
 }

@@ -11,6 +11,7 @@
  */
 package org.locationtech.jts.geom.curved;
 
+import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.Polygon;
@@ -24,7 +25,7 @@ import org.locationtech.jts.geom.Polygon;
  * is preserved unchanged in jts-core. The geometry type lives here in the
  * curved package to avoid that name collision.
  */
-public class Triangle extends Polygon {
+public class Triangle extends Polygon implements Linearizable {
   private static final long serialVersionUID = 1L;
 
   public Triangle(LinearRing shell, GeometryFactory factory) {
@@ -38,5 +39,19 @@ public class Triangle extends Polygon {
   @Override
   public String getGeometryType() {
     return "Triangle";
+  }
+
+  @Override
+  protected Triangle copyInternal() {
+    GeometryFactory f = getFactory();
+    if (isEmpty()) return new Triangle(f);
+    return new Triangle((LinearRing) getExteriorRing().copy(), f);
+  }
+
+  @Override
+  public Geometry toLinear(double tolerance) {
+    GeometryFactory f = getFactory();
+    if (isEmpty()) return f.createPolygon();
+    return f.createPolygon((LinearRing) getExteriorRing().copy());
   }
 }
