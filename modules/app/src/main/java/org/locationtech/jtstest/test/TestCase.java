@@ -15,8 +15,10 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.IntersectionMatrix;
 import org.locationtech.jts.geom.PrecisionModel;
+import org.locationtech.jts.geom.curved.CurvedGeometryFactory;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
+import org.locationtech.jts.io.curved.CurvedWKTReader;
 import org.locationtech.jts.io.WKTWriter;
 import org.locationtech.jts.util.Assert;
 
@@ -294,8 +296,8 @@ public class TestCase implements Testable {
   }
 
   public void initGeometry() throws ParseException {
-    GeometryFactory fact = new GeometryFactory(pm, 0);
-    WKTReader wktRdr = new WKTReader(fact);
+    GeometryFactory fact = new CurvedGeometryFactory(pm, 0);
+    WKTReader wktRdr = new CurvedWKTReader(fact);
     if (geom[0] != null) {
       return;
     }
@@ -350,8 +352,8 @@ public class TestCase implements Testable {
     if (wellKnownText == null) {
       return null;
     }
-    GeometryFactory fact = new GeometryFactory(pm, 0);
-    WKTReader wktRdr = new WKTReader(fact);
+    GeometryFactory fact = new CurvedGeometryFactory(pm, 0);
+    WKTReader wktRdr = new CurvedWKTReader(fact);
     return wktRdr.read(wellKnownText);
   }
 
