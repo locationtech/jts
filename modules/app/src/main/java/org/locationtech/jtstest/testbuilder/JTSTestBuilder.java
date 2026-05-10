@@ -18,6 +18,7 @@ import javax.swing.UIManager;
 
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.PrecisionModel;
+import org.locationtech.jts.geom.curved.CurvedGeometryFactory;
 import org.locationtech.jtstest.cmd.CommandOptions;
 import org.locationtech.jtstest.command.CommandLine;
 import org.locationtech.jtstest.command.Option;
@@ -80,8 +81,8 @@ public class JTSTestBuilder
     /**
      * Allow this to work even if TestBuilder is not initialized
      */
-    if (instance() == null) 
-      return new GeometryFactory();
+    if (instance() == null)
+      return new CurvedGeometryFactory();
     return model().getGeometryFactory();
   }
   
