@@ -11,12 +11,13 @@
  */
 package org.locationtech.jts.geom.curved;
 
+import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Polygon;
 
 /** A contiguous collection of polygonal patches that share edges. */
-public class PolyhedralSurface extends MultiPolygon {
+public class PolyhedralSurface extends MultiPolygon implements Linearizable {
   private static final long serialVersionUID = 1L;
 
   public PolyhedralSurface(Polygon[] patches, GeometryFactory factory) {
@@ -26,5 +27,26 @@ public class PolyhedralSurface extends MultiPolygon {
   @Override
   public String getGeometryType() {
     return "PolyhedralSurface";
+  }
+
+  @Override
+  protected PolyhedralSurface copyInternal() {
+    int n = getNumGeometries();
+    Polygon[] patches = new Polygon[n];
+    for (int i = 0; i < n; i++) {
+      patches[i] = (Polygon) getGeometryN(i).copy();
+    }
+    return new PolyhedralSurface(patches, getFactory());
+  }
+
+  @Override
+  public Geometry toLinear(double tolerance) {
+    GeometryFactory f = getFactory();
+    int n = getNumGeometries();
+    Polygon[] patches = new Polygon[n];
+    for (int i = 0; i < n; i++) {
+      patches[i] = (Polygon) getGeometryN(i).copy();
+    }
+    return f.createMultiPolygon(patches);
   }
 }

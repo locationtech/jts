@@ -80,9 +80,34 @@ import org.locationtech.jts.util.AssertionFailedException;
  * <li>The reader uses <tt>Double.parseDouble</tt> to perform the conversion of ASCII
  * numbers to floating point.  This means it supports the Java
  * syntax for floating point literals (including scientific notation).
- * <li><tt>NaN</tt>, <tt>Inf</tt> and <tt>-Inf</tt> ordinate symbols are supported (case-insensitive), 
+ * <li><tt>NaN</tt>, <tt>Inf</tt> and <tt>-Inf</tt> ordinate symbols are supported (case-insensitive),
  * which convert to the corresponding IEE-754 value
  * </ul>
+ * <h3>Extension</h3>
+ * <p>This class is designed to be subclassed to support OGC SFA / ISO
+ * 19125-2 extended geometry types (such as {@code CIRCULARSTRING},
+ * {@code COMPOUNDCURVE}, {@code CURVEPOLYGON}, {@code TRIANGLE},
+ * {@code POLYHEDRALSURFACE}, {@code TIN}). Subclasses should override
+ * {@link #readOtherGeometryText} to recognise additional type keywords,
+ * and may compose their implementation from the protected helpers
+ * exposed by this class:
+ * <ul>
+ * <li>tokenizer helpers: {@link #getNextEmptyOrOpener},
+ *     {@link #getNextCloserOrComma}, {@link #getNextWord},
+ *     {@link #lookAheadWord};
+ * <li>coordinate helpers: {@link #getCoordinate},
+ *     {@link #getCoordinateSequence},
+ *     {@link #createCoordinateSequenceEmpty};
+ * <li>nested-geometry helpers: {@link #readLineStringText},
+ *     {@link #readLinearRingText}, {@link #readPolygonText},
+ *     {@link #readMultiPolygonText}, and the 3-arg form of
+ *     {@link #readGeometryTaggedText} for dispatching on a known type;
+ * <li>error helper: {@link #parseErrorWithLine};
+ * <li>fields: {@link #geometryFactory}, {@link #csFactory}.
+ * </ul>
+ * The default implementation of {@link #readOtherGeometryText} throws
+ * a {@link ParseException}, preserving the historical behaviour for
+ * direct (non-extending) callers.
  * <h3>Syntax</h3>
  * The following syntax specification describes the version of Well-Known Text
  * supported by JTS.
@@ -178,7 +203,17 @@ public class WKTReader
   private static final String INF_SYMBOL = "Inf";
   private static final String NEG_INF_SYMBOL = "-Inf";
 
+  /**
+   * The factory used to construct the {@link Geometry} return values.
+   * Exposed as {@code protected} so that extension subclasses (see
+   * {@link #readOtherGeometryText}) can construct geometries with the
+   * same factory the reader is parameterised with.
+   */
   protected GeometryFactory geometryFactory;
+  /**
+   * The {@link CoordinateSequenceFactory} of {@link #geometryFactory}.
+   * Exposed as {@code protected} for the same reason.
+   */
   protected CoordinateSequenceFactory csFactory;
   private static CoordinateSequenceFactory csFactoryXYZM = CoordinateArraySequenceFactory.instance();
   private PrecisionModel precisionModel;

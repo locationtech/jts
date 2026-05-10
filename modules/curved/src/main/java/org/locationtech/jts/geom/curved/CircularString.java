@@ -12,6 +12,7 @@
 package org.locationtech.jts.geom.curved;
 
 import org.locationtech.jts.geom.CoordinateSequence;
+import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
 
@@ -25,7 +26,7 @@ import org.locationtech.jts.geom.LineString;
  * operations fall through to the parent's polyline behaviour. Native
  * arc-aware algorithms are out of scope for this module today.
  */
-public class CircularString extends LineString {
+public class CircularString extends LineString implements Linearizable {
   private static final long serialVersionUID = 1L;
 
   public CircularString(CoordinateSequence points, GeometryFactory factory) {
@@ -35,5 +36,15 @@ public class CircularString extends LineString {
   @Override
   public String getGeometryType() {
     return "CircularString";
+  }
+
+  @Override
+  protected CircularString copyInternal() {
+    return new CircularString(getCoordinateSequence().copy(), getFactory());
+  }
+
+  @Override
+  public Geometry toLinear(double tolerance) {
+    return getFactory().createLineString(getCoordinateSequence().copy());
   }
 }
