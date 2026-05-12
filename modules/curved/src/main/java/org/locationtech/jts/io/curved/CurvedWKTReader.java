@@ -75,39 +75,31 @@ public class CurvedWKTReader extends WKTReader {
   @Override
   protected Geometry readOtherGeometryText(StreamTokenizer tokenizer, String type, EnumSet<Ordinate> ordinateFlags)
       throws IOException, ParseException {
-    if (matchesType(type, WKTConstants.TRIANGLE)) {
+    if (isTypeName(tokenizer, type, WKTConstants.TRIANGLE)) {
       return readTriangleText(tokenizer, ordinateFlags);
     }
-    if (matchesType(type, WKTConstants.POLYHEDRALSURFACE)) {
+    if (isTypeName(tokenizer, type, WKTConstants.POLYHEDRALSURFACE)) {
       return readPolyhedralSurfaceText(tokenizer, ordinateFlags);
     }
-    if (matchesType(type, WKTConstants.TIN)) {
+    if (isTypeName(tokenizer, type, WKTConstants.TIN)) {
       return readTinText(tokenizer, ordinateFlags);
     }
-    if (matchesType(type, WKTConstants.CIRCULARSTRING)) {
+    if (isTypeName(tokenizer, type, WKTConstants.CIRCULARSTRING)) {
       return readCircularStringText(tokenizer, ordinateFlags);
     }
-    if (matchesType(type, WKTConstants.COMPOUNDCURVE)) {
+    if (isTypeName(tokenizer, type, WKTConstants.COMPOUNDCURVE)) {
       return readCompoundCurveText(tokenizer, ordinateFlags);
     }
-    if (matchesType(type, WKTConstants.CURVEPOLYGON)) {
+    if (isTypeName(tokenizer, type, WKTConstants.CURVEPOLYGON)) {
       return readCurvePolygonText(tokenizer, ordinateFlags);
     }
-    if (matchesType(type, WKTConstants.MULTICURVE)) {
+    if (isTypeName(tokenizer, type, WKTConstants.MULTICURVE)) {
       return readMultiCurveText(tokenizer, ordinateFlags);
     }
-    if (matchesType(type, WKTConstants.MULTISURFACE)) {
+    if (isTypeName(tokenizer, type, WKTConstants.MULTISURFACE)) {
       return readMultiSurfaceText(tokenizer, ordinateFlags);
     }
     return super.readOtherGeometryText(tokenizer, type, ordinateFlags);
-  }
-
-  /** Match a type keyword optionally followed by a Z, M or ZM suffix. */
-  private static boolean matchesType(String type, String typeName) {
-    if (!type.startsWith(typeName)) return false;
-    String mod = type.substring(typeName.length());
-    return mod.length() == 0 || mod.equals(WKTConstants.Z)
-        || mod.equals(WKTConstants.M) || mod.equals(WKTConstants.ZM);
   }
 
   private Triangle readTriangleText(StreamTokenizer tokenizer, EnumSet<Ordinate> ordinateFlags)

@@ -858,10 +858,21 @@ S  */
     throw parseErrorWithLine(tokenizer, "Unknown geometry type: " + type);
   }
 
-  private boolean isTypeName(StreamTokenizer tokenizer, String type, String typeName) throws ParseException {
+  /**
+   * Returns whether the parsed {@code type} keyword (already uppercased,
+   * with the Z/M/ZM modifier optionally appended) matches the canonical
+   * {@code typeName}. Throws {@link ParseException} when the suffix is
+   * non-empty and not a recognised dimension modifier, so callers do not
+   * need to defend against that case themselves.
+   * <p>
+   * Promoted from {@code private} to {@code protected} so that subclasses
+   * implementing {@link #readOtherGeometryText} can share a single canonical
+   * keyword/modifier matcher rather than rolling their own.
+   */
+  protected boolean isTypeName(StreamTokenizer tokenizer, String type, String typeName) throws ParseException {
     if (! type.startsWith(typeName))
       return false;
-    
+
     String modifiers = type.substring(typeName.length());
     boolean isValidMod = modifiers.length() <= 2 &&
         (modifiers.length() == 0
@@ -871,7 +882,7 @@ S  */
     if (! isValidMod) {
       throw parseErrorWithLine(tokenizer, "Invalid dimension modifiers: " + type);
     }
-    
+
     return true;
   }
 
