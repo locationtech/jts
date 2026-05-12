@@ -106,6 +106,39 @@ explicitly instantiate `CurvedWKTReader` / `CurvedWKTWriter` /
 module GraalVM native-image friendly and avoids surprising other
 classpath users.
 
+## Verifying the JTSTestBuilder integration
+
+Phase 4-A wires `JTSTestBuilder` to use the curve-aware reader and
+factory on every WKT-parsing path, so curved WKT round-trips through
+the existing UI with no new controls. To smoke-test a build:
+
+```sh
+mvn -B -q install -DskipTests -Dcheckstyle.skip=true
+java -jar modules/app/target/JTSTestBuilder.jar
+```
+
+Then, for each row below, paste the WKT into **Input A**, click
+**Load**, and check the geometry-tree label on the left:
+
+| Paste this WKT                                                   | Expected type      |
+|------------------------------------------------------------------|--------------------|
+| `CIRCULARSTRING(1 5, 6 2, 7 3)`                                  | `CircularString`   |
+| `COMPOUNDCURVE((5 3, 5 13), CIRCULARSTRING(5 13, 7 15, 9 13))`   | `CompoundCurve`    |
+| `CURVEPOLYGON(CIRCULARSTRING(0 0, 4 0, 4 4, 0 4, 0 0))`          | `CurvePolygon`     |
+| `MULTICURVE((0 0, 1 1), CIRCULARSTRING(2 2, 3 3, 4 2))`          | `MultiCurve`       |
+| `MULTISURFACE(CURVEPOLYGON(CIRCULARSTRING(0 0, 4 0, 4 4, 0 4, 0 0)))` | `MultiSurface` |
+| `TRIANGLE((0 0, 1 0, 0 1, 0 0))`                                 | `Triangle`         |
+| `POLYHEDRALSURFACE(((0 0, 0 1, 1 1, 1 0, 0 0)))`                 | `PolyhedralSurface`|
+| `TIN(((0 0, 1 0, 0 1, 0 0)), ((1 0, 1 1, 0 1, 1 0)))`            | `Tin`              |
+| `CIRCULARSTRING ZM(1 2 3 4, 5 6 7 8, 9 10 11 12)`                | `CircularString`   |
+
+Save the case (`File ▸ Save…`), reopen it, and confirm the tree
+labels survive the round-trip. Spatial functions in the **Geometry
+Functions** panel still operate on each curve's polyline / polygon
+parent (per the phase-1 contract); the explicit linearised form is
+available programmatically via `((Linearizable) g).toLinear(0.0)`.
+A function-panel binding and drawing tools are deferred to Phase 4-B.
+
 ## References
 
 - Discussion: <https://github.com/locationtech/jts/discussions/1193>
