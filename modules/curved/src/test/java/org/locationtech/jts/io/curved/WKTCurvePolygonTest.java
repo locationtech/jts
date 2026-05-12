@@ -82,16 +82,19 @@ public class WKTCurvePolygonTest extends GeometryTestCase {
     checkEqual(g, g2);
   }
 
-  /** A CurvePolygon's outer ring must be a closed curve. */
+  /**
+   * The CurvePolygon outer ring must be closed (first point == last point).
+   * This rule is enforced today by the LinearRing factory inside
+   * {@code readCurvePolygonText}, which throws {@link IllegalArgumentException}
+   * for non-closed coordinate sequences.
+   */
   public void testRejectsUnclosedRing() throws Exception {
-    // positive control
     assertNotNull(new CurvedWKTReader().read("CURVEPOLYGON((0 0, 1 0, 1 1, 0 1, 0 0))"));
-
     try {
       new CurvedWKTReader().read("CURVEPOLYGON((0 0, 1 0, 1 1, 0 1))");
       fail("Expected parse failure for unclosed CURVEPOLYGON ring");
-    } catch (Throwable e) {
-      // expected
+    } catch (IllegalArgumentException e) {
+      // expected: LinearRing factory rejects non-closed coordinate sequences
     }
   }
 }
