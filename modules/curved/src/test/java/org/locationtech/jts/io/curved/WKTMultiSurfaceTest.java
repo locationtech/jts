@@ -54,6 +54,20 @@ public class WKTMultiSurfaceTest extends GeometryTestCase {
     assertEquals(2, g.getNumGeometries());
   }
 
+  /**
+   * MULTISURFACE accepts a tagged TRIANGLE member because {@code Triangle}
+   * extends {@code Polygon} and {@code readSurfaceMember} dispatches via
+   * {@code instanceof Polygon}. Locks in that dispatch contract.
+   */
+  public void testReadHeterogeneousWithTriangleMember() throws Exception {
+    Geometry g = new CurvedWKTReader().read(
+        "MULTISURFACE(TRIANGLE((0 0, 1 0, 0 1, 0 0)), ((2 2, 3 2, 3 3, 2 3, 2 2)))");
+    assertEquals(TYPENAME_MULTISURFACE, g.getGeometryType());
+    assertEquals(2, g.getNumGeometries());
+    assertEquals("Triangle", g.getGeometryN(0).getGeometryType());
+    assertEquals("Polygon", g.getGeometryN(1).getGeometryType());
+  }
+
   public void testReadXYZ() throws Exception {
     Geometry g = new CurvedWKTReader().read(
         "MULTISURFACE Z(CURVEPOLYGON(CIRCULARSTRING(0 0 0, 4 0 0, 4 4 0, 0 4 0, 0 0 0)))");
