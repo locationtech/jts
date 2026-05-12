@@ -39,6 +39,18 @@
                   </archive>
                 </configuration>
             </plugin>
+            <plugin>
+                <!-- Spec / red-test suites under spec/curveawareness/ are
+                     intentionally red and document deferred behaviour
+                     (see issue #1195 §11). They run on demand with
+                     `mvn -pl modules/curved test -Dtest=<SpecClassName>`. -->
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>**/spec/curveawareness/*.java</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 

@@ -168,14 +168,15 @@ public class CurvedWKTReader extends WKTReader {
       throws IOException, ParseException {
     String tok = getNextEmptyOrOpener(tokenizer);
     if (tok.equals(WKTConstants.EMPTY)) return new CurvePolygon(geometryFactory);
-    List<LinearRing> rings = new ArrayList<LinearRing>();
+    // F-CP: collect every ring member structurally (LineString / Circular / Compound)
+    // so CurvePolygon can expose them via getExteriorCurve / getInteriorCurveN.
+    List<LineString> rings = new ArrayList<LineString>();
     do {
-      Coordinate[] coords = readCurveMember(tokenizer, ordinateFlags).getCoordinates();
-      rings.add(geometryFactory.createLinearRing(coords));
+      rings.add(readCurveMember(tokenizer, ordinateFlags));
       tok = getNextCloserOrComma(tokenizer);
     } while (tok.equals(","));
-    LinearRing shell = rings.remove(0);
-    return new CurvePolygon(shell, rings.toArray(new LinearRing[0]), geometryFactory);
+    LineString shell = rings.remove(0);
+    return new CurvePolygon(shell, rings.toArray(new LineString[0]), geometryFactory);
   }
 
   private MultiCurve readMultiCurveText(StreamTokenizer tokenizer, EnumSet<Ordinate> ordinateFlags)
