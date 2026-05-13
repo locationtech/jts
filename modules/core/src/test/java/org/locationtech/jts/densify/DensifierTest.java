@@ -11,6 +11,8 @@
  */
 package org.locationtech.jts.densify;
 
+import java.util.Random;
+
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateXY;
 import org.locationtech.jts.geom.Geometry;
@@ -94,11 +96,36 @@ public class DensifierTest extends GeometryTestCase {
       assertEquals(3, line.getCoordinateSequence().getDimension());
   }
 
+  public void testStepping() {
+    checkDensifyWithInterpolator("LINESTRING (0 0, 0 24)", 10, new StraightSteppingSegmentInterpolator(),
+        "LINESTRING (0 0, 0 8, 0 16, 0 24)");
+  }
 
+  public void testSubdividing() {
+    checkDensifyWithInterpolator("LINESTRING (0 0, 0 24)", 10, new StraightSubdividingSegmentInterpolator(),
+        "LINESTRING (0 0, 0 6, 0 12, 0 18, 0 24)");
+  }
+
+  public void testFractal() {
+    final double segment = 10;
+    Geometry geom = read("LINESTRING (0 0, 0 24)");
+    Geometry actual = Densifier.densify(geom, (double) segment, new FractalSegmentInterpolator(0.5, new Random()));
+    assertTrue("Densified geometry has length less than original", actual.getLength() > geom.getLength());
+    assertTrue("Densified geometry has length longer than expected after random fractalization",
+        actual.getLength() < geom.getLength() * Math.pow(2, geom.getLength() / segment / 2.0));
+  }
+  
   private void checkDensify(String wkt, double distanceTolerance, String wktExpected) {
     Geometry geom = read(wkt);
     Geometry expected = read(wktExpected);
     Geometry actual = Densifier.densify(geom, distanceTolerance);
+    checkEqual(expected, actual, TOLERANCE);
+  }
+  
+  private void checkDensifyWithInterpolator(String wkt, double distanceTolerance, SegmentInterpolator interpolator, String wktExpected) {
+    Geometry geom = read(wkt);
+    Geometry expected = read(wktExpected);
+    Geometry actual = Densifier.densify(geom, distanceTolerance, interpolator);
     checkEqual(expected, actual, TOLERANCE);
   }
 
@@ -108,6 +135,7 @@ public class DensifierTest extends GeometryTestCase {
     Geometry actual = Densifier.densify(geom, distanceTolerance);
     checkEqualXYZ(expected, actual);
   }
+
   /**
    * Note: it's hard to construct a geometry which would actually be invalid when densified.
    * This test just checks that the code path executes.
@@ -126,4 +154,5 @@ public class DensifierTest extends GeometryTestCase {
     checkEqual(expected, actual, TOLERANCE);
   }
   
+
 }
