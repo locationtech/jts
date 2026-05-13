@@ -277,13 +277,17 @@ public class CurvePolygonStructuralSpec extends GeometryTestCase {
    */
   public void test_FCP_DOVE_legacyPolygonApiContractDecision() throws Exception {
     CurvePolygon cp = readCurvePolygon(WKT_CP_COMPOUND_SHELL_WITH_HOLE);
-    fail("FCP-DOVE: a structural CurvePolygon needs a named accessor that returns "
-        + "the CompoundCurve shell. Pick option A (new getExteriorCurve()), B (widen "
-        + "getExteriorRing() to LineString), or C (fail-fast on getExteriorRing()) "
-        + "and record the choice in modules/curved/spec/SPEC_F_CP.md before this "
-        + "test is replaced by the implementation. Today getExteriorRing() returns "
-        + "a flat LinearRing of densified chord coordinates: "
-        + cp.getExteriorRing().getClass().getSimpleName());
+    // Option-A assertion: getExteriorCurve() is the structural accessor,
+    // getExteriorRing() keeps returning a LinearRing for legacy callers.
+    LineString structural = cp.getExteriorCurve();
+    LinearRing legacy = cp.getExteriorRing();
+    assertNotNull("FCP-DOVE Option-A: getExteriorCurve() returns the structural shell",
+        structural);
+    assertNotNull("FCP-DOVE Option-A: getExteriorRing() remains usable by legacy callers",
+        legacy);
+    assertTrue("FCP-DOVE Option-A: structural shell is a Curve (Compound or Circular), got "
+        + structural.getClass().getSimpleName(),
+        structural instanceof CompoundCurve || structural instanceof CircularString);
   }
 
   // ============================================================
@@ -292,17 +296,16 @@ public class CurvePolygonStructuralSpec extends GeometryTestCase {
   // ============================================================
 
   /**
-   * Returns the structural shell of the given CurvePolygon. Once F-CP lands
-   * this delegates to whatever named accessor the {@code FCP-DOVE} decision
-   * settled on (A: {@code getExteriorCurve()}; B: {@code getExteriorRing()}
-   * widened; C: a new method on CurvePolygon itself).
-   *
-   * <p>Today it returns {@code cp.getExteriorRing()} so the structural-
-   * preservation tests fail at the structural-class assertion rather than
-   * the accessor-missing one.
+   * Returns the structural shell of the given CurvePolygon. On this
+   * Option-A spike branch the helper delegates to
+   * {@link CurvePolygon#getExteriorCurve()}; on the Option-B branch it
+   * would call the widened {@code getExteriorRing()}; on the Option-C
+   * branch it would also call {@code getExteriorCurve()} after
+   * {@code getExteriorRing()} starts throwing.
    */
   private static Geometry structuralShellOf(CurvePolygon cp) {
-    return cp.getExteriorRing();
+    LineString curve = cp.getExteriorCurve();
+    return curve != null ? curve : cp.getExteriorRing();
   }
 
   private static Geometry structuralHoleOf(CurvePolygon cp, int i) {

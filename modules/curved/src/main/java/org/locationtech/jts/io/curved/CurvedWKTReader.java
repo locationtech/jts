@@ -168,14 +168,24 @@ public class CurvedWKTReader extends WKTReader {
       throws IOException, ParseException {
     String tok = getNextEmptyOrOpener(tokenizer);
     if (tok.equals(WKTConstants.EMPTY)) return new CurvePolygon(geometryFactory);
-    List<LinearRing> rings = new ArrayList<LinearRing>();
+    // Option-A spike (FCP-S / FCP-DOVE): preserve the first member as a structural
+    // LineString (may be CircularString / CompoundCurve / plain LineString) and
+    // pass it to the structural-aware CurvePolygon constructor. Holes still
+    // linearise to LinearRings -- separate sub-TAG (FCP-H) when symmetry lands.
+    LineString structuralShell = null;
+    List<LinearRing> holes = new ArrayList<LinearRing>();
+    boolean first = true;
     do {
-      Coordinate[] coords = readCurveMember(tokenizer, ordinateFlags).getCoordinates();
-      rings.add(geometryFactory.createLinearRing(coords));
+      LineString member = readCurveMember(tokenizer, ordinateFlags);
+      if (first) {
+        structuralShell = member;
+        first = false;
+      } else {
+        holes.add(geometryFactory.createLinearRing(member.getCoordinates()));
+      }
       tok = getNextCloserOrComma(tokenizer);
     } while (tok.equals(","));
-    LinearRing shell = rings.remove(0);
-    return new CurvePolygon(shell, rings.toArray(new LinearRing[0]), geometryFactory);
+    return new CurvePolygon(structuralShell, holes.toArray(new LinearRing[0]), geometryFactory);
   }
 
   private MultiCurve readMultiCurveText(StreamTokenizer tokenizer, EnumSet<Ordinate> ordinateFlags)
