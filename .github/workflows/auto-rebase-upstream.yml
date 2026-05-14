@@ -1,0 +1,141 @@
+name: Auto-rebase on locationtech/jts
+
+# Rebases this fork's master onto locationtech/jts:master on a daily
+# schedule. If the rebase is clean it force-pushes the result. If
+# there are conflicts the rebase is aborted (master is left untouched)
+# and a GitHub issue is opened or updated with the list of conflicting
+# paths so a human can do the merge manually.
+#
+# Configure UPSTREAM_REPO / UPSTREAM_BRANCH / TARGET_BRANCH below to
+# repoint at a different upstream or fork branch.
+
+on:
+  schedule:
+    - cron: '0 6 * * *'   # 06:00 UTC every day
+  workflow_dispatch:       # manual trigger from the Actions tab
+
+permissions:
+  contents: write
+  issues: write
+
+env:
+  UPSTREAM_REPO: locationtech/jts
+  UPSTREAM_BRANCH: master
+  TARGET_BRANCH: master
+  CONFLICT_LABEL: upstream-rebase-conflict
+
+jobs:
+  rebase:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout target branch with full history
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_BRANCH }}
+          fetch-depth: 0
+          # GITHUB_TOKEN is sufficient unless TARGET_BRANCH is protected
+          # and configured to reject pushes from github-actions[bot].
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure git identity
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Add upstream remote and fetch
+        run: |
+          git remote remove upstream 2>/dev/null || true
+          git remote add upstream "https://github.com/${UPSTREAM_REPO}.git"
+          git fetch upstream "${UPSTREAM_BRANCH}"
+
+      - name: Attempt rebase
+        id: rebase
+        run: |
+          set +e
+          git rebase "upstream/${UPSTREAM_BRANCH}"
+          RC=$?
+          if [ $RC -ne 0 ]; then
+            CONFLICTS=$(git diff --name-only --diff-filter=U)
+            git rebase --abort
+            {
+              echo "status=conflict"
+              echo "conflicts<<EOF"
+              echo "$CONFLICTS"
+              echo "EOF"
+            } >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "status=clean" >> "$GITHUB_OUTPUT"
+
+      - name: Detect if push is needed
+        id: ahead
+        if: steps.rebase.outputs.status == 'clean'
+        run: |
+          # If HEAD is the same commit as origin/<TARGET_BRANCH>, the
+          # rebase was a no-op (upstream had nothing new on top of us).
+          if git diff --quiet "origin/${TARGET_BRANCH}..HEAD"; then
+            echo "needpush=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "needpush=true"  >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Force-push rebased branch
+        if: steps.rebase.outputs.status == 'clean' && steps.ahead.outputs.needpush == 'true'
+        run: git push --force-with-lease origin "HEAD:${TARGET_BRANCH}"
+
+      - name: Ensure conflict label exists
+        if: steps.rebase.outputs.status == 'conflict'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh label create "${CONFLICT_LABEL}" \
+            --description "Auto-rebase against ${UPSTREAM_REPO} hit a conflict" \
+            --color "B60205" \
+          || true
+
+      - name: Open or update conflict issue
+        if: steps.rebase.outputs.status == 'conflict'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CONFLICTS: ${{ steps.rebase.outputs.conflicts }}
+        run: |
+          UPSTREAM_SHA=$(git rev-parse "upstream/${UPSTREAM_BRANCH}")
+          BODY_FILE=$(mktemp)
+          cat > "$BODY_FILE" <<EOF
+          The scheduled rebase of \`${TARGET_BRANCH}\` onto \`upstream/${UPSTREAM_BRANCH}\` (${UPSTREAM_REPO}) hit a conflict and was aborted. \`${TARGET_BRANCH}\` is unchanged.
+
+          **Upstream HEAD:** \`${UPSTREAM_SHA}\`
+          **Workflow run:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+          **Conflicting paths:**
+          \`\`\`
+          ${CONFLICTS}
+          \`\`\`
+
+          Resolve locally:
+          \`\`\`
+          git fetch upstream
+          git checkout ${TARGET_BRANCH}
+          git rebase upstream/${UPSTREAM_BRANCH}
+          # resolve files, then:
+          git add -A && git rebase --continue
+          git push --force-with-lease origin ${TARGET_BRANCH}
+          \`\`\`
+
+          This issue auto-updates on each subsequent failed run. Close it once the rebase has been resolved manually.
+          EOF
+
+          EXISTING=$(gh issue list \
+            --label "${CONFLICT_LABEL}" \
+            --state open \
+            --json number \
+            --jq '.[0].number')
+
+          if [ -n "$EXISTING" ]; then
+            gh issue comment "$EXISTING" --body-file "$BODY_FILE"
+          else
+            gh issue create \
+              --title "Upstream rebase conflict ($(date -u +%Y-%m-%d))" \
+              --label "${CONFLICT_LABEL}" \
+              --body-file "$BODY_FILE"
+          fi
