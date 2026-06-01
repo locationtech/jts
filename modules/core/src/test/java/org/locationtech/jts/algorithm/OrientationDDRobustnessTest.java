@@ -20,12 +20,17 @@ import junit.textui.TestRunner;
  * Uses {@link DDCounterexampleHunter} to characterize the robustness of the
  * JTS orientation predicate over arbitrary double coordinates (JTS #1106).
  * <p>
- * The suite asserts two complementary things:
+ * The suite asserts three things:
  * <ul>
  *   <li>the search is effective &mdash; it readily finds counterexamples for
- *       the naive and legacy predicates that DD replaced; and</li>
- *   <li>the current DD predicate ({@link Orientation#index}) produces no
- *       counterexamples under the same adversarial inputs.</li>
+ *       the naive and legacy predicates that DD replaced;</li>
+ *   <li>within a bounded coordinate-magnitude band the current DD predicate
+ *       ({@link Orientation#index}) produces no counterexamples under the same
+ *       adversarial inputs; and</li>
+ *   <li>outside that band DD <i>does</i> fail &mdash; for very large
+ *       coordinates the products overflow and for very small ones they
+ *       underflow, in both cases yielding a wrong (collinear) result. These
+ *       are characterization tests of a real limitation, not endorsements.</li>
  * </ul>
  * Budgets are kept modest so the suite runs quickly; the extended evidence
  * comes from {@link DDCounterexampleHunter#main}, which runs far larger hunts.
@@ -59,7 +64,11 @@ public class OrientationDDRobustnessTest extends TestCase {
         legacy.foundAny());
   }
 
-  /** DD must have no counterexamples on adversarial near-collinear inputs. */
+  /**
+   * Within the safe magnitude band DD must have no counterexamples on
+   * adversarial near-collinear inputs. (Magnitudes here are far below the
+   * 2^512 overflow threshold; see {@link #testDDFailsOnOverflow}.)
+   */
   public void testDDSoundNearCollinear() {
     double[] mags = { 1.0e7, 1.0e12, 4.5e15 };
     for (double mag : mags) {
@@ -86,6 +95,58 @@ public class OrientationDDRobustnessTest extends TestCase {
       DDCounterexampleHunter.HuntResult dd =
           DDCounterexampleHunter.hunt(DDCounterexampleHunter.DD, cases);
       assertFalse("DD counterexample found (uniform, magnitude " + mag + "):\n" + dd, dd.foundAny());
+    }
+  }
+
+  /**
+   * Characterization: for coordinate magnitudes at or above 2^512 the DD
+   * products overflow to Infinity, the determinant becomes NaN, and
+   * Orientation.index returns 0 (collinear) for points that are not collinear.
+   * Just below the threshold the predicate is still sound.
+   */
+  public void testDDFailsOnOverflow() {
+    // clearly past the overflow threshold: every near-collinear case fails
+    DDCounterexampleHunter.HuntResult over =
+        DDCounterexampleHunter.hunt(DDCounterexampleHunter.DD,
+            DDCounterexampleHunter.extremeMagnitude(2000, 520, 1));
+    assertTrue("expected DD to overflow and fail at magnitude 2^520", over.foundAny());
+
+    // a safe magnitude (2^256) far below the threshold remains sound
+    DDCounterexampleHunter.HuntResult safe =
+        DDCounterexampleHunter.hunt(DDCounterexampleHunter.DD,
+            DDCounterexampleHunter.extremeMagnitude(2000, 256, 1));
+    assertFalse("DD should be sound well below the overflow threshold:\n" + safe, safe.foundAny());
+  }
+
+  /**
+   * Characterization: for very small coordinate magnitudes the DD products
+   * underflow to zero and Orientation.index returns 0 (collinear) for points
+   * that are not collinear.
+   */
+  public void testDDFailsOnUnderflow() {
+    DDCounterexampleHunter.HuntResult under =
+        DDCounterexampleHunter.hunt(DDCounterexampleHunter.DD,
+            DDCounterexampleHunter.extremeMagnitude(2000, -540, 1));
+    assertTrue("expected DD to underflow and fail at magnitude 2^-540", under.foundAny());
+
+    DDCounterexampleHunter.HuntResult safe =
+        DDCounterexampleHunter.hunt(DDCounterexampleHunter.DD,
+            DDCounterexampleHunter.extremeMagnitude(2000, -256, 1));
+    assertFalse("DD should be sound well above the underflow threshold:\n" + safe, safe.foundAny());
+  }
+
+  /** The explicit, hand-checked overflow/underflow counterexamples all fail. */
+  public void testKnownCounterexamples() {
+    for (double[] c : DDCounterexampleHunter.KNOWN_COUNTEREXAMPLES) {
+      int expected = RocqRefRunner.refSignExact(c[0], c[1], c[2], c[3], c[4], c[5]);
+      int actual = org.locationtech.jts.algorithm.Orientation.index(
+          new org.locationtech.jts.geom.Coordinate(c[0], c[1]),
+          new org.locationtech.jts.geom.Coordinate(c[2], c[3]),
+          new org.locationtech.jts.geom.Coordinate(c[4], c[5]));
+      assertTrue("expected exact orientation to be non-collinear", expected != 0);
+      assertEquals("known counterexample should show DD reporting collinear (0)",
+          0, actual);
+      assertTrue("DD result should differ from exact", actual != expected);
     }
   }
 }

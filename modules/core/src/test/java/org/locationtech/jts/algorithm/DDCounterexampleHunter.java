@@ -34,15 +34,55 @@ import org.locationtech.jts.geom.Coordinate;
  * </ul>
  * Running all three against the same exact oracle both demonstrates that the
  * search is effective (it finds many counterexamples for the legacy and naive
- * predicates) and quantifies the robustness gained by DD.
+ * predicates) and characterizes where DD is and is not sound.
  * <p>
- * Empirically the DD predicate produces <b>no</b> counterexamples even under
- * targeted, near-degenerate constructions. This is consistent with a margin
- * argument: for double inputs the smallest non-zero orientation determinant is
- * on the order of 2<sup>-104</sup> relative to the product scale, whereas DD
- * resolves to roughly 2<sup>-106</sup> &mdash; about two bits of headroom.
+ * <b>DD is sound only within a bounded coordinate-magnitude band.</b> For
+ * coordinates roughly in {@code [2^-511, 2^511]} the products stay in the
+ * normal double range and DD has about two bits of headroom over the smallest
+ * non-zero determinant, so no counterexamples are found even under targeted
+ * near-degenerate constructions. Outside that band DD fails trivially:
+ * <ul>
+ *   <li><b>Overflow</b> (|coord| &ge; 2<sup>512</sup> &asymp; 1.34e154): the DD
+ *       products exceed {@code Double.MAX_VALUE}, become {@code Infinity}, and
+ *       the determinant evaluates to {@code Infinity - Infinity = NaN}, which
+ *       {@code orientationIndex} reports as {@code 0} (collinear) regardless of
+ *       the true orientation.</li>
+ *   <li><b>Underflow</b> (|coord| &le; ~2<sup>-512</sup>): the products fall
+ *       below {@code Double.MIN_VALUE}, flush to zero, and the determinant is
+ *       reported as {@code 0}.</li>
+ * </ul>
+ * These overflow/underflow failures are exposed by {@link #extremeMagnitude}
+ * and {@link #KNOWN_COUNTEREXAMPLES}; a robust predicate would scale the
+ * coordinates to avoid them.
  */
 public class DDCounterexampleHunter {
+
+  /**
+   * Coordinate magnitudes at or above this overflow the DD products and break
+   * the predicate (2<sup>512</sup>, the point where a product reaches
+   * {@code Double.MAX_VALUE}).
+   */
+  public static final double OVERFLOW_MAGNITUDE = Math.scalb(1.0, 512);
+
+  /**
+   * Coordinate magnitudes at or below this underflow the DD products and break
+   * the predicate (~2<sup>-512</sup>).
+   */
+  public static final double UNDERFLOW_MAGNITUDE = Math.scalb(1.0, -512);
+
+  /**
+   * Explicit triples on which {@link Orientation#index} returns the wrong sign,
+   * each as {@code {p0x,p0y,p1x,p1y,qx,qy}}. All are genuinely counter-clockwise
+   * (exact sign +1) but DD reports collinear (0). The first two are overflow
+   * cases, the third underflow.
+   */
+  public static final double[][] KNOWN_COUNTEREXAMPLES = {
+    { 0, 0, 1e200, 1e200, 2e200, 2.0000001e200 },
+    { 0, 0, Math.scalb(1.0, 512), Math.scalb(1.0, 512),
+            Math.scalb(1.0, 513), Math.nextUp(Math.scalb(1.0, 513)) },
+    { 0, 0, Math.scalb(1.0, -540), Math.scalb(1.0, -540),
+            Math.scalb(1.0, -539), Math.nextUp(Math.scalb(1.0, -539)) },
+  };
 
   /** A predicate under test: maps three points to an orientation index. */
   public interface Predicate {
@@ -198,6 +238,27 @@ public class DDCounterexampleHunter {
           rndD(rnd, magnitude), rndD(rnd, magnitude),
           rndD(rnd, magnitude), rndD(rnd, magnitude),
           rndD(rnd, magnitude), rndD(rnd, magnitude) });
+    }
+    return cases;
+  }
+
+  /**
+   * Near-collinear triples whose coordinates are scaled to {@code 2^exponent},
+   * for probing the overflow (large positive exponent) and underflow (large
+   * negative exponent) regimes where the DD products leave the normal double
+   * range.
+   */
+  public static List<double[]> extremeMagnitude(int n, int exponent, long seed) {
+    Random rnd = new Random(seed);
+    double scale = Math.scalb(1.0, exponent);
+    List<double[]> cases = new ArrayList<double[]>(n);
+    for (int i = 0; i < n; i++) {
+      double bx = (rnd.nextDouble() + 0.5) * scale;
+      double by = (rnd.nextDouble() + 0.5) * scale;
+      double cx = bx * 2.0;
+      // nudge off the line p0=(0,0) -> (bx,by) so the exact orientation is non-zero
+      double cy = rnd.nextBoolean() ? Math.nextUp(by * 2.0) : Math.nextDown(by * 2.0);
+      cases.add(new double[] { 0, 0, bx, by, cx, cy });
     }
     return cases;
   }
