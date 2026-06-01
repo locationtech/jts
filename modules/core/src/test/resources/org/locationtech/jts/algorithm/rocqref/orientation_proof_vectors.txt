@@ -1,0 +1,34 @@
+# Orientation reference vectors for JTS #1106 (orientation soundness).
+#
+# Consumed by RocqRefRunner.loadProofCases / RocqRefRunnerTest.
+#
+# This file is the drop-in slot for vectors exported from the Rocq (Coq)
+# orientation-soundness development. The Rocq artifacts were not reachable in
+# the environment where this test was authored, so the vectors below were
+# derived directly from the certified reference (exact 64-bit integer
+# determinant sign) for the integer domain |coordinate| <= 2^25. Replace or
+# extend this file with the real Rocq export when it is available; every sign
+# is cross-checked against the in-code reference on load, so a stale or
+# inconsistent export will fail the build rather than weaken the test.
+#
+# Format (whitespace-separated, '#' comments and blank lines ignored):
+#   p0x p0y  p1x p1y  qx qy  [expectedSign]
+# expectedSign in {-1, 0, 1}: -1 = clockwise, 0 = collinear, 1 = counter-clockwise.
+
+# --- basic turns ---
+0 0    1 0    0 1     1
+0 0    1 0    0 -1   -1
+0 0    0 1    1 0    -1
+
+# --- exact collinearity ---
+0 0    2 2    1 1     0
+0 0    4 2    2 1     0
+-33554432 -33554432   33554432 33554432   0 0   0
+
+# --- near-collinear (one unit off a long diagonal) ---
+0 0    1000000 1000000   1000001 1000000   -1
+0 0    1000000 1000000   1000000 1000001    1
+
+# --- domain boundary (largest representable determinants) ---
+33554432 33554432    -33554432 -33554432    33554432 -33554432    1
+-33554432 33554432    33554432 -33554432    33554431 -33554432   -1
