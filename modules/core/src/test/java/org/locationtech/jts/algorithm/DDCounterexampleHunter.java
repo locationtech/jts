@@ -54,6 +54,12 @@ import org.locationtech.jts.geom.Coordinate;
  * These overflow/underflow failures are exposed by {@link #extremeMagnitude}
  * and {@link #KNOWN_COUNTEREXAMPLES}; a robust predicate would scale the
  * coordinates to avoid them.
+ * <p>
+ * The ground truth here is entirely self-contained: {@link RocqRefRunner#refSignExact}
+ * (BigDecimal, exact for dyadic doubles). As an aside, every verdict above was
+ * also spot-checked against an external GMP-backed exact-integer orientation
+ * oracle and agreed in all cases; that oracle is a nicety for corroboration, not
+ * a dependency of these tests.
  */
 public class DDCounterexampleHunter {
 
