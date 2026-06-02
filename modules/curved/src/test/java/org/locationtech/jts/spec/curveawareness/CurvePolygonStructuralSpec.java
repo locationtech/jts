@@ -165,6 +165,50 @@ public class CurvePolygonStructuralSpec extends GeometryTestCase {
   }
 
   // ============================================================
+  // FCP-EQ — equality/identity is based only on densified views
+  // (documents EPIC §7 "equalsExact" open question / R-EQ).
+  // Structural curves are *not* part of equalsExact or hashCode.
+  // ============================================================
+
+  /**
+   * Documents that {@code equalsExact} (and thus structural equality) on
+   * {@code CurvePolygon} is inherited from {@code Polygon} and only looks at
+   * the densified {@code LinearRing} views. Different structural curves that
+   * densify to the same rings compare equal. This matches the current
+   * "silent inheritance" after adding structural state; arc-aware equality
+   * is deferred to the R-EQ TAG.
+   */
+  public void test_FCP_EQ_equalityIsViewBasedNotStructural() throws Exception {
+    // Arc-shelled CP (structural shell is a CircularString)
+    CurvePolygon cpCurved = readCurvePolygon(WKT_CP_ARC_SHELL);
+
+    // Equivalent CP constructed using the densified view as its "structural"
+    // (i.e. a plain LinearRing; the legacy ctor path)
+    LinearRing viewShell = cpCurved.getExteriorRing();
+    CurvePolygon cpViewBased = new CurvePolygon(viewShell, new LinearRing[0], cpCurved.getFactory());
+
+    // They compare equalExact because their views match (current behaviour)
+    assertTrue("CurvePoly with curved structural equalsExact one whose structural is the equivalent linear view (views only)",
+        cpCurved.equalsExact(cpViewBased));
+
+    // But curve-aware code can still distinguish via the accessors
+    assertTrue("curved one exposes CircularString structural",
+        cpCurved.getExteriorCurve() instanceof CircularString);
+    assertTrue("view-based one exposes LinearRing as structural",
+        cpViewBased.getExteriorCurve() instanceof LinearRing);
+
+    // A plain Polygon from the same view does NOT equalExact the CurvePoly
+    // (isEquivalentClass requires exact class match for Polygons)
+    Polygon plain = (Polygon) cpCurved.toLinear(0.0);
+    assertFalse("CurvePolygon must not equalExact a plain Polygon even with identical densified rings",
+        cpCurved.equalsExact(plain));
+
+    // Direct view comparison would succeed, of course
+    assertTrue("the views themselves are equalExact",
+        cpCurved.getExteriorRing().equalsExact(plain.getExteriorRing()));
+  }
+
+  // ============================================================
   // Helpers — abstract over the chosen accessor so the FCP-DOVE
   // decision can flip in one place without rewriting every test.
   // ============================================================

@@ -15,6 +15,8 @@ package org.locationtech.jts.io.curved;
 
 import org.locationtech.jts.geom.Geometry;
 
+import java.util.Locale;
+
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
@@ -51,6 +53,21 @@ public class WKTCurvePolygonTest extends GeometryTestCase {
         "CURVEPOLYGON Z(CIRCULARSTRING(0 0 0, 4 0 0, 4 4 0, 0 4 0, 0 0 0), (1 1 0, 3 3 0, 3 1 0, 1 1 0))");
     assertEquals(TYPENAME_CURVEPOLYGON, g.getGeometryType());
     assertEquals(0.0, g.getCoordinates()[0].getZ(), 0.0);
+
+    // Verify round-trip and that dim qualifier is declared only at top level (not repeated per-ring).
+    // Per the review note: repeating Z/M on inner rings (CIRCULARSTRING Z ...) is non-standard.
+    // Use 3D writer (plain default is XY-only).
+    CurvedWKTWriter w3 = new CurvedWKTWriter(3);
+    String emitted = w3.write(g);
+    String eu = emitted.toUpperCase(Locale.ROOT);
+    assertTrue("outer must have Z qualifier", eu.contains("CURVEPOLYGON Z"));
+    // Inner curved ring must NOT repeat the Z qualifier (declared at top level).
+    assertFalse("inner CIRCULARSTRING ring must not repeat Z qualifier (declared at top level)",
+        eu.contains("CIRCULARSTRING Z"));
+    // Re-parse the emitted to ensure it round-trips cleanly (reader accepts without inner qualifier).
+    Geometry g2 = new CurvedWKTReader().read(emitted);
+    assertEquals("round-tripped geometry type", TYPENAME_CURVEPOLYGON, g2.getGeometryType());
+    assertEquals("Z coord preserved after roundtrip", 0.0, g2.getCoordinates()[0].getZ(), 0.0);
   }
 
   public void testReadCompoundCurveRing() throws Exception {
@@ -58,6 +75,25 @@ public class WKTCurvePolygonTest extends GeometryTestCase {
         "CURVEPOLYGON(COMPOUNDCURVE(CIRCULARSTRING(0 0, 1 1, 2 0), (2 0, 0 0)))");
     assertEquals(TYPENAME_CURVEPOLYGON, g.getGeometryType());
     assertFalse(g.isEmpty());
+    // Verify writer now emits OGC-conformant member-structured COMPOUNDCURVE for the ring
+    // (single linear member in phase-1 flat model, but with proper grouping parens).
+    String w = new CurvedWKTWriter().write(g);
+    String wu = w.toUpperCase(Locale.ROOT);
+    // Verify OGC member-structured form for the compound ring (even if flattened to one linear member in phase-1).
+    assertTrue("COMPOUNDCURVE ring must be emitted in conformant structured form (with member parens) for interop",
+        wu.contains("COMPOUNDCURVE") && wu.contains("(("));
+
+    // Also verify for Z/M compound ring: dim only on outer, no repeat on inner COMPOUNDCURVE/CIRCULARSTRING.
+    Geometry gZ = new CurvedWKTReader().read(
+        "CURVEPOLYGON Z(COMPOUNDCURVE(CIRCULARSTRING(0 0 0, 1 1 1, 2 0 0), (2 0 0, 0 0 0)))");
+    CurvedWKTWriter w3 = new CurvedWKTWriter(3);
+    String wZ = w3.write(gZ);
+    String wuZ = wZ.toUpperCase(Locale.ROOT);
+    assertTrue("outer Z for compound ring poly", wuZ.contains("CURVEPOLYGON Z"));
+    assertFalse("no repeated Z on inner COMPOUNDCURVE ring", wuZ.contains("COMPOUNDCURVE Z"));
+    assertFalse("no repeated Z on inner CIRC in compound", wuZ.contains("CIRCULARSTRING Z"));
+    Geometry gZ2 = new CurvedWKTReader().read(wZ);
+    assertEquals(0.0, gZ2.getCoordinates()[0].getZ(), 0.0);
   }
 
   public void testReadEmpty() throws Exception {

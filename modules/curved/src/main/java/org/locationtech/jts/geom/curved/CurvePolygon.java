@@ -26,6 +26,28 @@ import org.locationtech.jts.geom.Polygon;
  * {@link #getExteriorCurve()} / {@link #getInteriorCurveN(int)} to obtain the
  * structural {@link LineString} (which may be a {@link CircularString} or
  * {@link CompoundCurve}).
+ *
+ * <p><b>Equality / identity semantics (EPIC §7 risk, R-EQ TAG):</b>
+ * {@code equalsExact} (and by extension structural equality for use in
+ * collections via {@link #equals(Object)} / {@link #hashCode()}) is
+ * inherited from {@link Polygon} without override. It compares only the
+ * densified {@link LinearRing} views (the chord approximations created at
+ * construction time via {@code toLinear(0.0)}). The structural curves
+ * (shell/holes) are <i>not</i> consulted. Consequently:
+ * <ul>
+ *   <li>Two {@code CurvePolygon}s whose curves densify to identical rings
+ *       (same control points at tol=0) compare equal via {@code equalsExact},
+ *       even if the curves themselves differ in type or parameters.</li>
+ *   <li>A {@code CurvePolygon} never {@code equalsExact}s a plain
+ *       {@code Polygon} (even with identical flattened rings), because
+ *       {@link Polygon#isEquivalentClass(Geometry)} (inherited) requires
+ *       exact class name match. (Contrast with {@code LineString} subclasses,
+ *       where {@code isEquivalentClass} is lenient via {@code instanceof}.)
+ * </ul>
+ * This is the current (phase-1) behaviour. Arc-aware / structural equality
+ * is explicitly deferred to the R-EQ TAG; see the EPIC and
+ * {@code SPEC_F_CP.md}. Tests should not assume structural curves affect
+ * equality.
  */
 public class CurvePolygon extends Polygon implements Linearizable {
   private static final long serialVersionUID = 1L;

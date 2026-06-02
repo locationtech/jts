@@ -18,6 +18,7 @@ import java.util.Locale;
 
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.curved.CompoundCurve;
 import org.locationtech.jts.geom.curved.CurvePolygon;
 import org.locationtech.jts.io.Ordinate;
 import org.locationtech.jts.io.OrdinateFormat;
@@ -31,7 +32,9 @@ import org.locationtech.jts.io.WKTWriter;
  * For top-level curved types the core writer already uses {@code getGeometryType()}
  * so they round-trip their keyword. This subclass overrides the extension hook
  * to emit structural CurvePolygon rings (preserving CIRCULARSTRING / COMPOUNDCURVE
- * tags for curved rings inside the CURVEPOLYGON body).
+ * tags for curved rings inside the CURVEPOLYGON body) and to ensure COMPOUNDCURVE
+ * (top-level or as ring) is always emitted in OGC-conformant member-structured form
+ * COMPOUNDCURVE ( ( ... ) ) rather than the non-standard flat coordinate list form.
  */
 public class CurvedWKTWriter extends WKTWriter {
 
@@ -49,6 +52,10 @@ public class CurvedWKTWriter extends WKTWriter {
       int level, Writer writer, OrdinateFormat formatter) throws IOException {
     if (geometry instanceof CurvePolygon) {
       appendCurvePolygonTaggedText((CurvePolygon) geometry, outputOrdinates,
+          useFormatting, level, writer, formatter);
+      return true;
+    } else if (geometry instanceof CompoundCurve) {
+      appendCompoundCurveTaggedText((CompoundCurve) geometry, outputOrdinates,
           useFormatting, level, writer, formatter);
       return true;
     }
@@ -86,10 +93,30 @@ public class CurvedWKTWriter extends WKTWriter {
     writer.write(")");
   }
 
+  private void appendCompoundCurveTaggedText(CompoundCurve cc,
+      EnumSet<Ordinate> outputOrdinates, boolean useFormatting,
+      int level, Writer writer, OrdinateFormat formatter) throws IOException {
+    // Always emit in OGC-conformant structured member form, using the flat
+    // coordinate sequence as a single linear member. This ensures valid WKT
+    // for interop (COMPOUNDCURVE ( ( ... ) )) even for the phase-1 flat
+    // CompoundCurve representation. Readers accept this form, and it is
+    // standard (unlike the previous flat-without-inner-parens emission).
+    writer.write(cc.getGeometryType().toUpperCase(Locale.ROOT));
+    writer.write(" ");
+    appendOrdinateText(outputOrdinates, writer);
+    writer.write(" (");
+    appendSequenceText(cc.getCoordinateSequence(), outputOrdinates, useFormatting,
+        level, false, writer, formatter);
+    writer.write(")");
+  }
+
   /**
    * Emit a ring position inside CURVEPOLYGON: for a curved ring (CircularString or
-   * CompoundCurve) emit its tagged form e.g. "CIRCULARSTRING (pts)" or "COMPOUNDCURVE (pts)";
+   * CompoundCurve) emit its tagged form e.g. "CIRCULARSTRING (pts)" or "COMPOUNDCURVE ( (pts) )";
    * for a linear one emit plain "(pts)".
+   * <p>
+   * COMPOUNDCURVE is emitted with explicit member grouping parens so the result
+   * is OGC SQL/MM conformant WKT (required for interop with PostGIS, Oracle, etc.).
    */
   private void appendCurveRingText(LineString ring,
       EnumSet<Ordinate> outputOrdinates, boolean useFormatting,
@@ -98,13 +125,22 @@ public class CurvedWKTWriter extends WKTWriter {
     boolean isCurvedRing = ring.getGeometryType().equalsIgnoreCase("CircularString")
         || ring.getGeometryType().equalsIgnoreCase("CompoundCurve");
     if (isCurvedRing) {
-      // Emit e.g. COMPOUNDCURVE ( seq )  -- using its getGeometryType for the tag
       if (indentFirst) indent(useFormatting, level, writer);
       writer.write(ring.getGeometryType().toUpperCase(Locale.ROOT));
-      writer.write(" ");
-      appendOrdinateText(outputOrdinates, writer);
-      appendSequenceText(ring.getCoordinateSequence(), outputOrdinates, useFormatting,
-          level, false, writer, formatter);
+      if (ring instanceof CompoundCurve) {
+        // Structured member form for OGC conformance: COMPOUNDCURVE ( (seq) )
+        // No per-ring dim qualifier (declared once on the outer CURVEPOLYGON).
+        writer.write(" (");
+        appendSequenceText(ring.getCoordinateSequence(), outputOrdinates, useFormatting,
+            level, false, writer, formatter);
+        writer.write(")");
+      } else {
+        // CIRCULARSTRING ring: "CIRCULARSTRING (pts...)"
+        // Dim qualifier is only on the containing CURVEPOLYGON (standard WKT).
+        writer.write(" ");
+        appendSequenceText(ring.getCoordinateSequence(), outputOrdinates, useFormatting,
+            level, false, writer, formatter);
+      }
     } else {
       // Linear ring body: delegate to appendSequenceText which emits the parenthesized (coords)
       appendSequenceText(ring.getCoordinateSequence(), outputOrdinates, useFormatting,

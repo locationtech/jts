@@ -144,7 +144,7 @@ public class CurvedWKTReader extends WKTReader {
       return new CompoundCurve(createCoordinateSequenceEmpty(ordinateFlags), geometryFactory);
     }
     // Choose between SFA-structured form `((...), CIRCULARSTRING(...), ...)`
-    // and the writer's flat round-trip form `(p, p, p, ...)`.
+    // and legacy flat forms. CurvedWKTWriter now emits the standard member-structured form.
     String w = lookAheadWord(tokenizer);
     if (!w.equals(L_PAREN) && !isCurveMemberTag(w)) {
       List<Coordinate> coords = new ArrayList<Coordinate>();
