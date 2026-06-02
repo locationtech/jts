@@ -18,6 +18,7 @@ import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.curved.CircularString;
 import org.locationtech.jts.geom.curved.CompoundCurve;
 import org.locationtech.jts.geom.curved.CurvePolygon;
+import org.locationtech.jts.geom.curved.CurvedGeometryFactory;
 import org.locationtech.jts.geom.curved.Linearizable;
 import org.locationtech.jts.io.curved.CurvedWKTReader;
 import org.locationtech.jts.io.curved.CurvedWKTWriter;
@@ -255,5 +256,45 @@ public class CurvePolygonStructuralSpec extends GeometryTestCase {
     } catch (Exception e) {
       return cc;
     }
+  }
+
+  // ============================================================
+  // B-CP verification (green proof for RGR on B-CP TAG)
+  // Added during green phase; exercises the override without editing the
+  // red TAG fail in CurveAwarenessSpecTest (per "don't integrate yet").
+  // When B-CP ships, the meter method is deleted (not turned green).
+  // ============================================================
+
+  /**
+   * Green verification that CurvePolygon.getBoundary() now uses the F-CP
+   * structural curves (CompoundCurve / CircularString members) rather than
+   * the densified LinearRing view from the Polygon supertype.
+   * <p>
+   * This lives in the structural spec (executable doc) so the main
+   * CurveAwarenessSpecTest#test_B_CP_* can stay as the red progress meter.
+   */
+  public void test_B_CP_boundaryUsesStructuralCurvesNotDensifiedView() throws Exception {
+    // Use explicit CurvedGeometryFactory so read produces proper structural curves
+    // (the default CurvedWKTReader() ctor may pair with plain GF in some paths).
+    CurvedWKTReader r = new CurvedWKTReader(new CurvedGeometryFactory());
+    Geometry g = r.read(
+        "CURVEPOLYGON (COMPOUNDCURVE (CIRCULARSTRING (0 0, 5 5, 10 0), (10 0, 0 0)))");
+    assertTrue("reader produced CurvePolygon", g instanceof CurvePolygon);
+    CurvePolygon cp = (CurvePolygon) g;
+
+    Geometry boundary = cp.getBoundary();
+
+    // The key B-CP assertion: type is the structural curve, not LinearRing
+    assertEquals("B-CP green: boundary of 0-hole compound CP must be CompoundCurve",
+        "CompoundCurve", boundary.getGeometryType());
+    assertTrue("B-CP green: must still be a LineString subtype (contract)",
+        boundary instanceof LineString);
+    assertTrue("B-CP green: exact structural type preserved (CompoundCurve not densified)",
+        boundary instanceof CompoundCurve);
+
+    // For completeness: a 0-hole circular case also preserves
+    CurvePolygon cpArc = (CurvePolygon) r.read(WKT_CP_ARC_SHELL);
+    Geometry bArc = cpArc.getBoundary();
+    assertEquals("CircularString", bArc.getGeometryType());
   }
 }

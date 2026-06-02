@@ -117,11 +117,45 @@ public class CurveAwarenessSpecTest extends GeometryTestCase {
   // Boundary
   // ============================================================
 
-  /** B-CP: CurvePolygon.getBoundary() returns a CompoundCurve. */
+  /**
+   * B-CP: CurvePolygon.getBoundary() returns a CompoundCurve (or other curve LineString).
+   *
+   * <p>RED-FIRST SEAM IDENTIFICATION (for RGR on this TAG):
+   * <ul>
+   *   <li>Interface seam: Geometry.getBoundary() is abstract; Polygon impl (see Polygon:261)
+   *       builds LinearRing/MultiLineString from its (densified) shell/holes fields.
+   *       CurvePolygon must override to expose structural curves (the F-CP addition).</li>
+   *   <li>Return-type seam (Option A two-tier): 0-hole case in Polygon always does
+   *       createLinearRing(...); for curved CP we must return the structural e.g. CompoundCurve
+   *       (which is-a LineString, so most Geometry/LineString callers ok). Strict casts to
+   *       LinearRing on result will fail for curved -- same contract trade-off as getExteriorRing.
+   *       With holes: Polygon returns MultiLineString; we return MultiCurve (is-a MLS).</li>
+   *   <li>Factory/ctor seam: use this.getFactory() (CurvedGeometryFactory in normal curved paths)
+   *       and prefer CurvedGeometryFactory.createMultiCurve when available; else direct
+   *       new MultiCurve(...) (MultiCurve ctor just calls super, getGeometryType will still say MultiCurve).</li>
+   *   <li>Copy/ownership seam: like copyInternal/reverseInternal (added in F-CP review), boundary
+   *       must return copies of structuralShell/structuralHoles, not aliases.</li>
+   *   <li>Empty + linear-degen seam: match Polygon empty -> empty MLS; if a CurvePolygon was
+   *       built with all-LinearRing structurals, 0-hole boundary should ideally be LinearRing
+   *       (via copy() which preserves LR because LR overrides copyInternal).</li>
+   *   <li>Routing seam in BoundaryOp:124: if (geom instanceof LineString) ... else geom.getBoundary();
+   *       therefore curved *lineals* (CC, CS) get line-boundary logic for free (good for B-CC);
+   *       curved *surfaces* hit the Polygon override path (this TAG).</li>
+   *   <li>Cross-type seam for B-MS: MultiPolygon.getBoundary (MultiPolygon:95) does
+   *       polygon.getBoundary() per member then createMultiLineString on collected; so
+   *       MultiSurface will also need override (collect and createMultiCurve if any curved)
+   *       -- but left for B-MS TAG / tightly coupled follow-up.</li>
+   *   <li>No core change for this TAG (unlike N-*, PLG etc per epic §6); pure jts-curved.</li>
+   * </ul>
+   * After seams ID, green adds minimal override; verification test added elsewhere (don't edit
+   * this fail to green; delete only on ship per epic §5/11).
+   */
   public void test_B_CP_curvePolygonBoundaryIsCompoundCurve() throws Exception {
     Geometry g = read(
         "CURVEPOLYGON (COMPOUNDCURVE (CIRCULARSTRING (0 0, 5 5, 10 0), (10 0, 0 0)))");
     Geometry boundary = g.getBoundary();
+    // Red probe (seam exercise): today hits Polygon impl -> LinearRing from densified view.
+    // After green: will be CompoundCurve (or the structural curve type).
     fail("B-CP: CurvePolygon.getBoundary() should be a CompoundCurve(CircularString, "
         + "LineString); got " + boundary.getGeometryType() + ".");
   }

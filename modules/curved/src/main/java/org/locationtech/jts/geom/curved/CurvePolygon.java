@@ -137,13 +137,14 @@ public class CurvePolygon extends Polygon implements Linearizable {
   @Override
   protected CurvePolygon reverseInternal() {
     GeometryFactory f = getFactory();
-    if (isEmpty() || structuralShell == null) {
+    LineString[] rings = structuralRings();
+    if (rings.length == 0) {
       return new CurvePolygon(f);
     }
-    LineString revShell = (LineString) structuralShell.reverse();
-    LineString[] revHoles = new LineString[structuralHoles.length];
-    for (int i = 0; i < structuralHoles.length; i++) {
-      revHoles[i] = (LineString) structuralHoles[i].reverse();
+    LineString revShell = (LineString) rings[0].reverse();
+    LineString[] revHoles = new LineString[rings.length - 1];
+    for (int i = 0; i < revHoles.length; i++) {
+      revHoles[i] = (LineString) rings[i + 1].reverse();
     }
     return new CurvePolygon(revShell, revHoles, f);
   }
@@ -159,14 +160,83 @@ public class CurvePolygon extends Polygon implements Linearizable {
     super.normalize();
   }
 
+  /**
+   * Computes the boundary of this CurvePolygon using its structural curves
+   * (per F-CP Option A), not the densified LinearRing views.
+   * <p>
+   * For a simple (0-hole) CurvePolygon the result is the structural exterior
+   * curve (CircularString, CompoundCurve, or LinearRing for the all-linear case)
+   * -- a LineString subtype. For polygons with holes the result is a MultiCurve
+   * containing the structural ring curves (in shell + holes order).
+   * This implements B-CP while preserving the Polygon boundary contract for
+   * legacy linear CurvePolygons (LR / MLS subtypes where no curves present).
+   *
+   * @return a lineal geometry (LineString or MultiCurve/MultiLineString subtype)
+   * @see Geometry#getBoundary
+   */
+  @Override
+  public Geometry getBoundary() {
+    if (isEmpty() || structuralShell == null) {
+      return getFactory().createMultiLineString();
+    }
+    LineString[] rings = structuralRings();
+    if (rings.length == 0) {
+      return getFactory().createMultiLineString();
+    }
+    if (rings.length == 1) {
+      // 0-hole: return copy of the (only) structural ring. This preserves the
+      // exact subtype (LinearRing -> LR via its copyInternal; CompoundCurve,
+      // CircularString likewise). Matches the spirit of Polygon's 0-hole path
+      // (createLinearRing from seq) while keeping curve identity for B-CP etc.
+      return (LineString) rings[0].copy();
+    }
+    // >=1 hole (or more generally >1 ring): decide container for soundness.
+    // If *all* structural rings are LinearRings (possible for a CurvePolygon
+    // built via legacy ctor or with explicit LR structs), delegate to super so
+    // we return a plain MultiLineString (exact match to Polygon contract for
+    // the linear-degenerate case). Otherwise return a MultiCurve (the curve-
+    // aware container) even if some members happen to be linear.
+    boolean allLinearRings = true;
+    for (LineString r : rings) {
+      if (!(r instanceof LinearRing)) {
+        allLinearRings = false;
+        break;
+      }
+    }
+    if (allLinearRings) {
+      return super.getBoundary();
+    }
+    GeometryFactory f = getFactory();
+    if (f instanceof CurvedGeometryFactory) {
+      return ((CurvedGeometryFactory) f).createMultiCurve(rings);
+    }
+    return new MultiCurve(rings, f);
+  }
+
+  /**
+   * Returns the structural rings in boundary order: [shell, hole0, hole1, ...].
+   * Never null; length == 0 for empty. Used by getBoundary (B-CP etc) and
+   * available for copy/reverse/toLinear if they want to DRY up later.
+   */
+  private LineString[] structuralRings() {
+    if (structuralShell == null) {
+      return new LineString[0];
+    }
+    LineString[] rings = new LineString[structuralHoles.length + 1];
+    rings[0] = structuralShell;
+    System.arraycopy(structuralHoles, 0, rings, 1, structuralHoles.length);
+    return rings;
+  }
+
   @Override
   protected CurvePolygon copyInternal() {
     GeometryFactory f = getFactory();
-    if (isEmpty() || structuralShell == null) return new CurvePolygon(f);
-    LineString shellCopy = (LineString) structuralShell.copy();
-    LineString[] holeCopies = new LineString[structuralHoles.length];
-    for (int i = 0; i < structuralHoles.length; i++) {
-      holeCopies[i] = (LineString) structuralHoles[i].copy();
+    LineString[] rings = structuralRings();
+    if (rings.length == 0) return new CurvePolygon(f);
+    LineString shellCopy = (LineString) rings[0].copy();
+    LineString[] holeCopies = new LineString[rings.length - 1];
+    for (int i = 0; i < holeCopies.length; i++) {
+      holeCopies[i] = (LineString) rings[i + 1].copy();
     }
     return new CurvePolygon(shellCopy, holeCopies, f);
   }
