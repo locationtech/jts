@@ -95,7 +95,7 @@ public class CurveAwarenessSpecTest extends GeometryTestCase {
   public void test_M_AREA_CP_curvePolygonAreaWithSegmentCorrection() throws Exception {
     // Disk of radius 10 expressed as CURVEPOLYGON of two half-arcs. Area = π · R² ≈ 314.159.
     Geometry g = read(
-        "CURVEPOLYGON ((CIRCULARSTRING (-10 0, 0 10, 10 0, 0 -10, -10 0)))");
+        "CURVEPOLYGON (CIRCULARSTRING (-10 0, 0 10, 10 0, 0 -10, -10 0))");
     double expected = Math.PI * 100;
     double actual = g.getArea();
     fail("M-AREA-CP: disk (R=10) area should be ≈ " + expected
@@ -120,7 +120,7 @@ public class CurveAwarenessSpecTest extends GeometryTestCase {
   /** B-CP: CurvePolygon.getBoundary() returns a CompoundCurve. */
   public void test_B_CP_curvePolygonBoundaryIsCompoundCurve() throws Exception {
     Geometry g = read(
-        "CURVEPOLYGON ((CIRCULARSTRING (0 0, 5 5, 10 0), (10 0, 0 0)))");
+        "CURVEPOLYGON (COMPOUNDCURVE (CIRCULARSTRING (0 0, 5 5, 10 0), (10 0, 0 0)))");
     Geometry boundary = g.getBoundary();
     fail("B-CP: CurvePolygon.getBoundary() should be a CompoundCurve(CircularString, "
         + "LineString); got " + boundary.getGeometryType() + ".");
@@ -130,7 +130,7 @@ public class CurveAwarenessSpecTest extends GeometryTestCase {
   public void test_B_MS_multiSurfaceBoundaryIsMultiCurve() throws Exception {
     Geometry g = read(
         "MULTISURFACE (((0 0, 10 0, 10 10, 0 10, 0 0)), "
-        + "CURVEPOLYGON ((CIRCULARSTRING (20 0, 25 5, 30 0), (30 0, 20 0))))");
+        + "CURVEPOLYGON (COMPOUNDCURVE (CIRCULARSTRING (20 0, 25 5, 30 0), (30 0, 20 0))))");
     Geometry boundary = g.getBoundary();
     fail("B-MS: MultiSurface.getBoundary() should be a MultiCurve preserving curved "
         + "ring members; got " + boundary.getGeometryType() + ".");
@@ -242,7 +242,7 @@ public class CurveAwarenessSpecTest extends GeometryTestCase {
   public void test_R_CONT_containsAndIntersectsForArcInputs() throws Exception {
     // Disk centred (0,0) R=10 contains POINT(5 5)? Yes -- 5√2 ≈ 7.07 < 10.
     Geometry disk = read(
-        "CURVEPOLYGON ((CIRCULARSTRING (-10 0, 0 10, 10 0, 0 -10, -10 0)))");
+        "CURVEPOLYGON (CIRCULARSTRING (-10 0, 0 10, 10 0, 0 -10, -10 0))");
     Geometry pt = read("POINT (5 5)");
     boolean expected = true;
     boolean actual = disk.contains(pt);
@@ -296,9 +296,9 @@ public class CurveAwarenessSpecTest extends GeometryTestCase {
   /** OV: overlay output preserves arcs where boundary is curved. */
   public void test_OV_unionOfTwoDisksProducesCurvePolygon() throws Exception {
     Geometry diskA = read(
-        "CURVEPOLYGON ((CIRCULARSTRING (-10 0, 0 10, 10 0, 0 -10, -10 0)))");
+        "CURVEPOLYGON (CIRCULARSTRING (-10 0, 0 10, 10 0, 0 -10, -10 0))");
     Geometry diskB = read(
-        "CURVEPOLYGON ((CIRCULARSTRING (5 0, 15 10, 25 0, 15 -10, 5 0)))");
+        "CURVEPOLYGON (CIRCULARSTRING (5 0, 15 10, 25 0, 15 -10, 5 0))");
     Geometry u = diskA.union(diskB);
     fail("OV: union of two disks should be a CurvePolygon with CIRCULARSTRING "
         + "boundary arcs joined at the two intersection points; got "
