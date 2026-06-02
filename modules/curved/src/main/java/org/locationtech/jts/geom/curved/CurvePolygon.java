@@ -34,10 +34,11 @@ public class CurvePolygon extends Polygon implements Linearizable {
   private final LineString[] structuralHoles;
 
   public CurvePolygon(LinearRing shell, LinearRing[] holes, GeometryFactory factory) {
-    LinearRing[] h = (holes == null) ? new LinearRing[0] : holes;
-    super(shell, h, factory);
+    // Note: ternary in super() arg to keep 'super' as the first *statement* for Java 8 source compat.
+    // (Flexible constructor bodies / statements-before-super are a newer language feature.)
+    super(shell, (holes == null ? new LinearRing[0] : holes), factory);
     this.structuralShell = shell;
-    this.structuralHoles = copyAsLineStrings(h);
+    this.structuralHoles = copyAsLineStrings(holes);
   }
 
   public CurvePolygon(GeometryFactory factory) {
