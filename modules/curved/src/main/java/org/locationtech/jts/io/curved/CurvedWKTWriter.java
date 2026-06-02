@@ -11,23 +11,27 @@
  */
 package org.locationtech.jts.io.curved;
 
+import java.io.IOException;
+import java.io.Writer;
+import java.util.EnumSet;
+import java.util.Locale;
+
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.curved.CurvePolygon;
+import org.locationtech.jts.io.Ordinate;
+import org.locationtech.jts.io.OrdinateFormat;
+import org.locationtech.jts.io.WKTConstants;
 import org.locationtech.jts.io.WKTWriter;
 
 /**
  * A {@link WKTWriter} subclass for the OGC SFA / ISO 19125-2 extended
  * geometry types.
  * <p>
- * In the current phase-1 implementation this class is a no-op marker:
- * the curve geometry classes ({@code CircularString}, {@code Triangle},
- * {@code CurvePolygon}, etc.) extend their nearest core counterparts
- * and the core {@code WKTWriter} already emits each subclass's keyword
- * via {@code Geometry.getGeometryType().toUpperCase(Locale.ROOT)}.
- * <p>
- * The class is provided here so that callers can pair {@code
- * CurvedWKTReader} with {@code CurvedWKTWriter} symmetrically, and so
- * that future enhancements (member-structured emission for
- * {@code CompoundCurve}, etc.) can land here without changing caller
- * code.
+ * For top-level curved types the core writer already uses {@code getGeometryType()}
+ * so they round-trip their keyword. This subclass overrides the extension hook
+ * to emit structural CurvePolygon rings (preserving CIRCULARSTRING / COMPOUNDCURVE
+ * tags for curved rings inside the CURVEPOLYGON body).
  */
 public class CurvedWKTWriter extends WKTWriter {
 
@@ -37,5 +41,74 @@ public class CurvedWKTWriter extends WKTWriter {
 
   public CurvedWKTWriter(int outputDimension) {
     super(outputDimension);
+  }
+
+  @Override
+  protected boolean appendOtherGeometryTaggedText(Geometry geometry,
+      EnumSet<Ordinate> outputOrdinates, boolean useFormatting,
+      int level, Writer writer, OrdinateFormat formatter) throws IOException {
+    if (geometry instanceof CurvePolygon) {
+      appendCurvePolygonTaggedText((CurvePolygon) geometry, outputOrdinates,
+          useFormatting, level, writer, formatter);
+      return true;
+    }
+    return false;
+  }
+
+  private void appendCurvePolygonTaggedText(CurvePolygon polygon,
+      EnumSet<Ordinate> outputOrdinates, boolean useFormatting,
+      int level, Writer writer, OrdinateFormat formatter) throws IOException {
+    writer.write(polygon.getGeometryType().toUpperCase(Locale.ROOT));
+    writer.write(" ");
+    appendOrdinateText(outputOrdinates, writer);
+    appendCurvePolygonText(polygon, outputOrdinates, useFormatting, level, false, writer, formatter);
+  }
+
+  private void appendCurvePolygonText(CurvePolygon polygon,
+      EnumSet<Ordinate> outputOrdinates, boolean useFormatting,
+      int level, boolean indentFirst, Writer writer, OrdinateFormat formatter)
+      throws IOException {
+    if (polygon.isEmpty()) {
+      writer.write(WKTConstants.EMPTY);
+      return;
+    }
+    if (indentFirst) indent(useFormatting, level, writer);
+    writer.write("(");
+    LineString shell = polygon.getExteriorCurve();
+    if (shell != null) {
+      appendCurveRingText(shell, outputOrdinates, useFormatting, level, false, writer, formatter);
+    }
+    for (int i = 0; i < polygon.getNumInteriorRing(); i++) {
+      writer.write(", ");
+      appendCurveRingText(polygon.getInteriorCurveN(i), outputOrdinates, useFormatting,
+          level + 1, true, writer, formatter);
+    }
+    writer.write(")");
+  }
+
+  /**
+   * Emit a ring position inside CURVEPOLYGON: for a curved ring (CircularString or
+   * CompoundCurve) emit its tagged form e.g. "CIRCULARSTRING (pts)" or "COMPOUNDCURVE (pts)";
+   * for a linear one emit plain "(pts)".
+   */
+  private void appendCurveRingText(LineString ring,
+      EnumSet<Ordinate> outputOrdinates, boolean useFormatting,
+      int level, boolean indentFirst, Writer writer, OrdinateFormat formatter)
+      throws IOException {
+    boolean isCurvedRing = ring.getGeometryType().equalsIgnoreCase("CircularString")
+        || ring.getGeometryType().equalsIgnoreCase("CompoundCurve");
+    if (isCurvedRing) {
+      // Emit e.g. COMPOUNDCURVE ( seq )  -- using its getGeometryType for the tag
+      if (indentFirst) indent(useFormatting, level, writer);
+      writer.write(ring.getGeometryType().toUpperCase(Locale.ROOT));
+      writer.write(" ");
+      appendOrdinateText(outputOrdinates, writer);
+      appendSequenceText(ring.getCoordinateSequence(), outputOrdinates, useFormatting,
+          level, false, writer, formatter);
+    } else {
+      // Linear ring body: delegate to appendSequenceText which emits the parenthesized (coords)
+      appendSequenceText(ring.getCoordinateSequence(), outputOrdinates, useFormatting,
+          level, indentFirst, writer, formatter);
+    }
   }
 }

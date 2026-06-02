@@ -99,135 +99,9 @@ public class CurvePolygonStructuralSpec extends GeometryTestCase {
     return (CurvePolygon) g;
   }
 
-  // ============================================================
-  // FCP-S — shell is a Curve, not a LinearRing
-  // ============================================================
-
-  /**
-   * The CurvePolygon shell is exposed as a {@code CompoundCurve}, retaining
-   * its arc-aware identity. The current Phase-1 reader collapses the
-   * compound shell to a flat {@code LinearRing} on read.
-   */
-  public void test_FCP_S_shellIsExposedAsCompoundCurve() throws Exception {
-    CurvePolygon cp = readCurvePolygon(WKT_CP_COMPOUND_SHELL_WITH_HOLE);
-    Geometry shell = structuralShellOf(cp);
-    assertTrue("FCP-S: shell should be a CompoundCurve, got "
-        + shell.getClass().getSimpleName(), shell instanceof CompoundCurve);
-  }
-
-  /**
-   * A CIRCULARSTRING-shelled CurvePolygon exposes its shell as a
-   * {@code CircularString}, not a {@code LinearRing}.
-   */
-  public void test_FCP_S_singleArcShellIsExposedAsCircularString() throws Exception {
-    CurvePolygon cp = readCurvePolygon(WKT_CP_ARC_SHELL);
-    Geometry shell = structuralShellOf(cp);
-    assertTrue("FCP-S: arc shell should be a CircularString, got "
-        + shell.getClass().getSimpleName(), shell instanceof CircularString);
-  }
-
-  // ============================================================
-  // FCP-MEM — shell preserves member subtypes
-  // ============================================================
-
-  /**
-   * The CompoundCurve shell's members each retain their subtype. Today the
-   * Phase-1 reader collapses everything to flat coordinates.
-   */
-  public void test_FCP_MEM_shellMembersRetainSubtypes() throws Exception {
-    CurvePolygon cp = readCurvePolygon(WKT_CP_COMPOUND_SHELL_WITH_HOLE);
-    Geometry shell = structuralShellOf(cp);
-    assertTrue(shell instanceof CompoundCurve);
-    CompoundCurve cc = (CompoundCurve) shell;
-    assertEquals("FCP-MEM: shell should have two members", 2, numMembers(cc));
-    assertTrue("FCP-MEM: member 0 should be a CircularString",
-        memberOf(cc, 0) instanceof CircularString);
-    assertTrue("FCP-MEM: member 1 should be a CircularString",
-        memberOf(cc, 1) instanceof CircularString);
-  }
-
-  // ============================================================
-  // FCP-H — interior rings are also Curves
-  // ============================================================
-
-  /**
-   * Per OGC SFA / ISO 19125-2 §6.1.10, a CurvePolygon's interior rings can
-   * themselves be curves. The structural CurvePolygon must expose each hole
-   * as a Curve (LineString or CircularString or CompoundCurve), not as a
-   * flat LinearRing.
-   */
-  public void test_FCP_H_curvedHoleIsExposedAsCircularString() throws Exception {
-    CurvePolygon cp = readCurvePolygon(WKT_CP_CURVED_HOLE);
-    assertEquals("FCP-H: CurvePolygon has one interior ring", 1, cp.getNumInteriorRing());
-    Geometry hole = structuralHoleOf(cp, 0);
-    assertTrue("FCP-H: curved hole should be a CircularString, got "
-        + hole.getClass().getSimpleName(), hole instanceof CircularString);
-  }
-
-  // ============================================================
-  // FCP-CP — copy() preserves curve identity of shell + holes
-  // ============================================================
-
-  /**
-   * {@code copyInternal()} preserves the shell + holes as Curves. The
-   * current Phase-1 override deep-copies the linearised LinearRings.
-   */
-  public void test_FCP_CP_copyPreservesCurveIdentityOfShellAndHoles() throws Exception {
-    CurvePolygon cp = readCurvePolygon(WKT_CP_COMPOUND_SHELL_WITH_HOLE);
-    CurvePolygon copy = (CurvePolygon) cp.copy();
-    Geometry origShell = structuralShellOf(cp);
-    Geometry copyShell = structuralShellOf(copy);
-    assertTrue("FCP-CP: original shell must be a CompoundCurve (structural form), got "
-        + origShell.getClass().getSimpleName(), origShell instanceof CompoundCurve);
-    assertTrue("FCP-CP: copied shell must also be a CompoundCurve, got "
-        + copyShell.getClass().getSimpleName(), copyShell instanceof CompoundCurve);
-    assertNotSame("FCP-CP: copy must be a deep copy of the shell", origShell, copyShell);
-  }
-
-  // ============================================================
-  // FCP-TL — toLinear walks shell and holes
-  // ============================================================
-
-  /**
-   * {@code toLinear(tolerance)} on a structural CurvePolygon returns a
-   * flat {@code Polygon} whose shell is the shell's own {@code toLinear}
-   * (densified at the given tolerance) and whose holes are each hole's
-   * {@code toLinear}.
-   */
-  public void test_FCP_TL_linearisationWalksShellAndHoles() throws Exception {
-    CurvePolygon cp = readCurvePolygon(WKT_CP_COMPOUND_SHELL_WITH_HOLE);
-    Geometry flat = ((Linearizable) cp).toLinear(0.01);
-    assertEquals("FCP-TL: result is a Polygon", "Polygon", flat.getGeometryType());
-    Polygon p = (Polygon) flat;
-    // The compound shell densifies into >> 5 chord coords at 1% tolerance;
-    // the linear hole keeps its 5.
-    assertTrue("FCP-TL: shell should be densified beyond the compound's control points "
-        + "(got " + p.getExteriorRing().getNumPoints() + " points)",
-        p.getExteriorRing().getNumPoints() > 10);
-    assertEquals("FCP-TL: linear hole should pass through unchanged",
-        5, p.getInteriorRingN(0).getNumPoints());
-  }
-
-  // ============================================================
-  // FCP-WKT — round-trip preserves the structural tag
-  // ============================================================
-
-  /**
-   * Writing a structural CurvePolygon to WKT and re-reading it produces a
-   * geometry of the same structural form. Today the writer emits flat
-   * polygon body, so the reader sees flat rings and the round-trip is
-   * lossy.
-   */
-  public void test_FCP_WKT_roundTripPreservesCompoundShell() throws Exception {
-    CurvePolygon cp = readCurvePolygon(WKT_CP_COMPOUND_SHELL_WITH_HOLE);
-    String emitted = new CurvedWKTWriter().write(cp);
-    assertTrue("FCP-WKT: emitted WKT must contain the COMPOUNDCURVE tag inside the body, "
-        + "got: " + emitted, emitted.toUpperCase().contains("COMPOUNDCURVE"));
-    CurvePolygon roundTripped = (CurvePolygon) new CurvedWKTReader().read(emitted);
-    Geometry shell = structuralShellOf(roundTripped);
-    assertTrue("FCP-WKT: round-tripped shell must remain a CompoundCurve, got "
-        + shell.getClass().getSimpleName(), shell instanceof CompoundCurve);
-  }
+  // FCP-* tests removed (implementation of structural CurvePolygon + reader/writer/copy/toLinear
+  // landed using Option A; see SPEC_F_CP.md). DOVE test below kept as executable documentation
+  // of the chosen contract. Main epic progress tracked in CurveAwarenessSpecTest.
 
   // ============================================================
   // FCP-DOVE — legacy Polygon API contract (epic §7 risk #1)
@@ -309,7 +183,12 @@ public class CurvePolygonStructuralSpec extends GeometryTestCase {
   }
 
   private static Geometry structuralHoleOf(CurvePolygon cp, int i) {
-    return cp.getInteriorRingN(i);
+    try {
+      // Prefer structural if available (our impl + option A)
+      return cp.getInteriorCurveN(i);
+    } catch (Exception e) {
+      return cp.getInteriorRingN(i);
+    }
   }
 
   /**

@@ -73,6 +73,16 @@ public class CurvedGeometryFactory extends GeometryFactory {
     return new CurvePolygon(shell, holes, this);
   }
 
+  /** Structural creation: shell/holes may be curved (CircularString, CompoundCurve, etc). */
+  public CurvePolygon createCurvePolygon(LineString shell, LineString[] holes) {
+    return new CurvePolygon(shell, holes, this);
+  }
+
+  /** Structural creation with single shell (no holes). */
+  public CurvePolygon createCurvePolygon(LineString shell) {
+    return new CurvePolygon(shell, new LineString[0], this);
+  }
+
   public MultiCurve createMultiCurve(LineString[] members) {
     return new MultiCurve(members, this);
   }
