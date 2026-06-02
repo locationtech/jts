@@ -108,6 +108,36 @@ public class CurvePolygon extends Polygon implements Linearizable {
   }
 
   @Override
+  public CurvePolygon reverse() {
+    return (CurvePolygon) super.reverse();
+  }
+
+  @Override
+  protected CurvePolygon reverseInternal() {
+    GeometryFactory f = getFactory();
+    if (isEmpty() || structuralShell == null) {
+      return new CurvePolygon(f);
+    }
+    LineString revShell = (LineString) structuralShell.reverse();
+    LineString[] revHoles = new LineString[structuralHoles.length];
+    for (int i = 0; i < structuralHoles.length; i++) {
+      revHoles[i] = (LineString) structuralHoles[i].reverse();
+    }
+    return new CurvePolygon(revShell, revHoles, f);
+  }
+
+  @Override
+  public void normalize() {
+    // Normalize the legacy LinearRing views (shell/holes) per Polygon contract (Option A).
+    // The structural curves (source of truth for arcs) are left unchanged; their densified
+    // views are normalized. This avoids losing curved identity while keeping legacy API
+    // behaviour (e.g. normalized() rings for getExteriorRing etc.).
+    // Full arc-aware structural normalization (e.g. consistent orientation of CircularString
+    // members) is deferred; see review notes for SPEC_F_CP.md alignment.
+    super.normalize();
+  }
+
+  @Override
   protected CurvePolygon copyInternal() {
     GeometryFactory f = getFactory();
     if (isEmpty() || structuralShell == null) return new CurvePolygon(f);
