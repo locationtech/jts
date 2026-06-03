@@ -27,13 +27,13 @@ import org.locationtech.jts.geom.curved.CurvedGeometryFactory;
  * with host-atan2 extraction override, matching this file's exactCircularArcLength).
  * See https://github.com/grootstebozewolf/NetTopologySuite.Proofs/issues/64 .
  * <p>
- * Currently demonstrates that the phase-1 linearised CircularString.getLength()
- * deviates from the analytical circular arc length on adversarial inputs
- * (near-flat, extreme magnitude, etc.). This populates concrete counterexamples
- * for the M-LEN-* red TAGs in CurveAwarenessSpecTest.
+ * Exercises the analytical length on CircularString (M-LEN-CS) via the
+ * CurveRefRunner oracle + hunter. The hunter now finds 0 deviations for CS
+ * (length matches exact); previously (chord polyline) it found many on the
+ * adversarial generators. Vectors + load/validate remain for regression.
  * <p>
- * When native arc length / area etc. are implemented, flip the assertions to
- * "no (or bounded) deviations" and add the vector cases as regression.
+ * For CompoundCurve (M-LEN-CC) the phase-1 flat-seq representation still
+ * loses member structure, so length remains chord-sum until the members spike lands.
  */
 public class CurveAdversarialTest extends TestCase {
 
@@ -52,18 +52,14 @@ public class CurveAdversarialTest extends TestCase {
   }
 
   public void testHunterFindsArcLengthDeviationsOnAdversarialInputs() {
-    // Run a modest search; the phase-1 impl (chord lengths) must deviate on
-    // the generators that produce non-trivial arcs.
+    // After M-LEN-CS, the *current* CircularString.getLength() is analytical
+    // (no longer chord polyline), so the hunter (which calls getLength() on
+    // freshly created CS instances) will find 0 deviations.
     List<CurveCounterexampleHunter.Mismatch> bad =
         CurveCounterexampleHunter.huntArcLength(2_000);
-    // We expect to find many (near-flat small-sagitta arcs have chord vs arc
-    // difference; extreme scales stress fp too).
-    assertTrue("hunter should discover counterexamples for linearised length on curves; found " + bad.size(),
-        bad.size() > 0);
-    // Spot-check one
-    CurveCounterexampleHunter.Mismatch m = bad.get(0);
-    assertTrue(m.delta > 0);
-    assertTrue(m.input instanceof CircularString);
+    assertTrue("M-LEN-CS implemented: hunter finds 0 deviations on CircularString " +
+        "(length now matches exact oracle). Before the fix it reliably found >0. " +
+        "Found " + bad.size(), bad.isEmpty());
   }
 
   public void testKnownNearFlatCaseFromVectorsDeviatesUnderLinearImpl() throws Exception {

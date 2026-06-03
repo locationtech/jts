@@ -69,12 +69,41 @@ public class CurveAwarenessSpecTest extends GeometryTestCase {
   // Metrics
   // ============================================================
 
-  /** M-LEN-CS: CircularString.getLength returns analytical arc length, not chord sum. */
+  /**
+   * M-LEN-CS: CircularString.getLength returns analytical arc length (r*theta), not
+   * the chord-sum of its control points (current LineString behaviour).
+   *
+   * <p>RED-FIRST SEAM IDENTIFICATION (RGR for M-LEN-CS; low risk/cost after F-CP +
+   * adversarial infra already in place from #1197-style work):
+   * <ul>
+   *   <li>Seam in core: LineString.getLength() does "return Length.ofLine(points);"
+   *       where points = getCoordinateSequence() (the control pts for a CircularString).
+   *       Length.ofLine just sums Euclidean distances between consecutive coords
+   *       (i.e. chords), ignoring the circular interpolation.</li>
+   *   <li>CircularString storage (phase-1): still a flat CoordinateSequence of control
+   *       points (inherited from LineString). For a k-arc CircularString there are
+   *       2 + 2*k points; consecutive triples (i, i+1, i+2 step 2) define each arc.</li>
+   *   <li>Ref oracle: CurveRefRunner.exactCircularArcLength(sx,sy, mx,my, ex,ey)
+   *       (already used by the hunter and vectors for adversarial M-LEN tests;
+   *       implements the same r*theta after circumcenter that the proofs use).</li>
+   *   <li>Override location: only need to override in CircularString (and later
+   *       CompoundCurve once member structure is preserved; see compoundcurve-members
+   *       spike). No core change.</li>
+   *   <li>Multi-arc: the walk must stride by 2 over the control seq and sum the
+   *       per-arc lengths (the red test is single-arc, but infra supports multi).</li>
+   *   <li>Empty/degen: size &lt; 3 -> 0 (or chord of endpoints); collinear controls
+   *       fall back to chord in the exact fn (already in CurveRefRunner).</li>
+   * </ul>
+   * After seams, green adds the override (using the ref we already have). Verification
+   * can live next to the hunter tests; meter red left with fail("TAG: M-LEN-CS...")
+   * (delete on ship).
+   */
   public void test_M_LEN_CS_circularStringArcLength() throws Exception {
     // Half-circle radius 10 — arc length = π · 10 ≈ 31.4159
     Geometry g = read("CIRCULARSTRING (-10 0, 0 10, 10 0)");
     double expectedArc = Math.PI * 10;
     double actual = g.getLength();
+    // Red probe: today falls to LineString/Length.ofLine -> chord sum of the 3 pts.
     fail("M-LEN-CS: half-circle (R=10) length should be ≈ " + expectedArc
         + " (π·R) but Geometry.getLength() returned " + actual
         + " (chord-sum of the 3 control points).");
@@ -143,8 +172,8 @@ public class CurveAwarenessSpecTest extends GeometryTestCase {
    *       curved *surfaces* hit the Polygon override path (this TAG).</li>
    *   <li>Cross-type seam for B-MS: MultiPolygon.getBoundary (MultiPolygon:95) does
    *       polygon.getBoundary() per member then createMultiLineString on collected; so
-   *       MultiSurface will also need override (collect and createMultiCurve if any curved)
-   *       -- but left for B-MS TAG / tightly coupled follow-up.</li>
+   *       MultiSurface overrides (see B-MS RGR) to collect and createMultiCurve if any
+   *       curved (done as tightly coupled follow-up to B-CP).</li>
    *   <li>No core change for this TAG (unlike N-*, PLG etc per epic §6); pure jts-curved.</li>
    * </ul>
    * After seams ID, green adds minimal override; verification test added elsewhere (don't edit

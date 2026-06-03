@@ -47,4 +47,58 @@ public class CircularString extends LineString implements Linearizable {
   public Geometry toLinear(double tolerance) {
     return getFactory().createLineString(getCoordinateSequence().copy());
   }
+
+  @Override
+  public double getLength() {
+    // M-LEN-CS green: analytical sum, not chord sum of controls.
+    // Walks the control seq taking every consecutive triple (stride 2) as one arc.
+    CoordinateSequence cs = getCoordinateSequence();
+    int n = cs.size();
+    if (n < 3) return 0.0;
+    double len = 0.0;
+    for (int i = 0; i + 2 < n; i += 2) {
+      len += exactCircularArcLength(
+          cs.getX(i), cs.getY(i),
+          cs.getX(i + 1), cs.getY(i + 1),
+          cs.getX(i + 2), cs.getY(i + 2)
+      );
+    }
+    return len;
+  }
+
+  /**
+   * Exact arc length for one circular arc given its 3 control points.
+   * (Inlined here for main-code use by getLength(); the test CurveRefRunner
+   * keeps its own copy for adversarial/hunter isolation.)
+   */
+  private static double exactCircularArcLength(double sx, double sy,
+                                               double mx, double my,
+                                               double ex, double ey) {
+    double d = 2 * (sx * (my - ey) + mx * (ey - sy) + ex * (sy - my));
+    if (Math.abs(d) < 1e-12) {
+      return Math.hypot(ex - sx, ey - sy);
+    }
+    double cx = ((sx * sx + sy * sy) * (my - ey)
+               + (mx * mx + my * my) * (ey - sy)
+               + (ex * ex + ey * ey) * (sy - my)) / d;
+    double cy = ((sx * sx + sy * sy) * (ex - mx)
+               + (mx * mx + my * my) * (sx - ex)
+               + (ex * ex + ey * ey) * (mx - sx)) / d;
+    double r = Math.hypot(sx - cx, sy - cy);
+    if (r < 1e-12) {
+      return Math.hypot(ex - sx, ey - sy);
+    }
+    double a0 = Math.atan2(sy - cy, sx - cx);
+    double a1 = Math.atan2(my - cy, mx - cx);
+    double a2 = Math.atan2(ey - cy, ex - cx);
+    double sweep = a2 - a0;
+    sweep = ((sweep + Math.PI) % (2 * Math.PI)) - Math.PI;
+    double aMidRel = a1 - a0;
+    aMidRel = ((aMidRel + Math.PI) % (2 * Math.PI)) - Math.PI;
+    if (Math.signum(sweep) * Math.signum(aMidRel) < 0 && Math.abs(sweep) < Math.PI) {
+      sweep = (sweep > 0 ? sweep - 2 * Math.PI : sweep + 2 * Math.PI);
+    }
+    double theta = Math.abs(sweep);
+    return r * theta;
+  }
 }
