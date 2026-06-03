@@ -56,6 +56,8 @@ public class CurveAwarenessSpecTest extends GeometryTestCase {
   // ============================================================
 
   // F-CP, F-MC, F-MS landed (structural composites + subtype preservation in copy/ctor/reader/writer).
+  // B-CP, B-MS landed (curve-preserving getBoundary on CP + MS).
+  // M-LEN-CS landed (analytical length on CircularString via r*theta; CC phase-1 flat still chords).
   // F-RD (CurvedShapeWriter integration) remains for later.
 
   /** F-RD: renderer arc-walks CurvePolygon rings + MultiCurve+MultiSurface. */
