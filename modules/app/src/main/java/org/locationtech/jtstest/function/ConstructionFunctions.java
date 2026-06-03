@@ -20,10 +20,16 @@ import org.locationtech.jts.algorithm.construct.LargestEmptyCircle;
 import org.locationtech.jts.algorithm.construct.MaximumInscribedCircle;
 import org.locationtech.jts.algorithm.hull.ConcaveHull;
 import org.locationtech.jts.densify.Densifier;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryCollection;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.OctagonalEnvelope;
+import org.locationtech.jts.geom.curved.CompoundCurve;
+import org.locationtech.jts.geom.curved.CurvedGeometryFactory;
 import org.locationtech.jtstest.geomfunction.Metadata;
 
 public class ConstructionFunctions {
@@ -183,5 +189,87 @@ public class ConstructionFunctions {
     double convexLen = geom.convexHull().getLength();
     return (geom.getLength() - convexLen) / convexLen;
   }
-  
+
+  // ===========================================================================
+  // OGC SFA / ISO 19125-2 curve aggregation
+  // ===========================================================================
+
+  /**
+   * Wraps the line-or-arc members of {@code geom} as an OGC SFA / ISO
+   * 19125-2 {@link CompoundCurve}. Accepts a LineString, a
+   * CircularString, an existing CompoundCurve, a MultiLineString, or
+   * a (possibly heterogeneous) GeometryCollection of those. Non-curve
+   * members raise an {@link IllegalArgumentException}.
+   *
+   * <p>Adjacent-endpoint connectivity (which OGC SFA requires) is
+   * <em>not</em> validated here; callers are responsible for ordering
+   * their inputs. Validation is deferred to the spec-compliance phase.
+   */
+  @Metadata(description = "Wraps line / arc members as an OGC SFA / ISO 19125-2 CompoundCurve")
+  public static Geometry toCompoundCurve(Geometry geom) {
+    return toCompoundCurveFromList(extractCurves(geom), geom.getFactory());
+  }
+
+  /** Two-input convenience: combines the line-or-arc members from
+   *  inputs A and B into a single CompoundCurve, in that order. */
+  @Metadata(description = "Combines line / arc members from inputs A and B as a CompoundCurve")
+  public static Geometry toCompoundCurveAB(Geometry a, Geometry b) {
+    List<LineString> all = new ArrayList<LineString>();
+    if (a != null) all.addAll(extractCurves(a));
+    if (b != null) all.addAll(extractCurves(b));
+    return toCompoundCurveFromList(all, a != null ? a.getFactory() : b.getFactory());
+  }
+
+  // ---- helpers --------------------------------------------------------------
+
+  private static List<LineString> extractCurves(Geometry geom) {
+    List<LineString> out = new ArrayList<LineString>();
+    collectCurves(geom, out);
+    return out;
+  }
+
+  private static void collectCurves(Geometry geom, List<LineString> sink) {
+    if (geom == null || geom.isEmpty()) return;
+    if (geom instanceof CompoundCurve) {
+      // Flatten the nested CompoundCurve so the result has a single
+      // member array (callers chaining toCompoundCurve over an
+      // already-compound result get the expected flat list).
+      CompoundCurve cc = (CompoundCurve) geom;
+      for (int i = 0; i < cc.getNumCurves(); i++) {
+        sink.add(cc.getCurveN(i));
+      }
+      return;
+    }
+    if (geom instanceof GeometryCollection) {
+      // Includes MultiLineString and plain GeometryCollection. Walk
+      // children so users can pass a GC of mixed lines and arcs.
+      for (int i = 0; i < geom.getNumGeometries(); i++) {
+        collectCurves(geom.getGeometryN(i), sink);
+      }
+      return;
+    }
+    if (geom instanceof LineString) {
+      sink.add((LineString) geom);
+      return;
+    }
+    throw new IllegalArgumentException(
+        "toCompoundCurve: expected a curve (LineString / CircularString / "
+        + "CompoundCurve / MultiLineString / GeometryCollection of these), "
+        + "got: " + geom.getGeometryType());
+  }
+
+  private static Geometry toCompoundCurveFromList(List<LineString> members,
+                                                   org.locationtech.jts.geom.GeometryFactory hintFactory) {
+    if (members.isEmpty()) {
+      // Empty result: an empty LineString is the simplest representation
+      // and avoids constructing a transient empty CompoundCurve, which
+      // round-trips identically.
+      return hintFactory.createLineString();
+    }
+    CurvedGeometryFactory cgf = (hintFactory instanceof CurvedGeometryFactory)
+        ? (CurvedGeometryFactory) hintFactory
+        : new CurvedGeometryFactory(hintFactory.getPrecisionModel(), hintFactory.getSRID());
+    return new CompoundCurve(members.toArray(new LineString[0]), cgf);
+  }
+
 }

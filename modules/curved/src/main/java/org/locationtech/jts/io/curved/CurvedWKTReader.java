@@ -141,7 +141,7 @@ public class CurvedWKTReader extends WKTReader {
       throws IOException, ParseException {
     String tok = getNextEmptyOrOpener(tokenizer);
     if (tok.equals(WKTConstants.EMPTY)) {
-      return new CompoundCurve(createCoordinateSequenceEmpty(ordinateFlags), geometryFactory);
+      return new CompoundCurve(new LineString[0], geometryFactory);
     }
     // Choose between SFA-structured form `((...), CIRCULARSTRING(...), ...)`
     // and legacy flat forms. CurvedWKTWriter now emits the standard member-structured form.
@@ -151,17 +151,15 @@ public class CurvedWKTReader extends WKTReader {
       do {
         coords.add(getCoordinate(tokenizer, ordinateFlags, false));
       } while (getNextCloserOrComma(tokenizer).equals(","));
-      return new CompoundCurve(csFactory.create(coords.toArray(new Coordinate[0])), geometryFactory);
+      LineString singleLine = geometryFactory.createLineString(coords.toArray(new Coordinate[0]));
+      return new CompoundCurve(new LineString[] { singleLine }, geometryFactory);
     }
-    List<Coordinate> all = new ArrayList<Coordinate>();
+    List<LineString> members = new ArrayList<LineString>();
     do {
-      Coordinate[] cc = readCurveMember(tokenizer, ordinateFlags).getCoordinates();
-      int start = all.isEmpty() ? 0 : 1;
-      for (int i = start; i < cc.length; i++) all.add(cc[i]);
+      members.add(readCurveMember(tokenizer, ordinateFlags));
       tok = getNextCloserOrComma(tokenizer);
     } while (tok.equals(","));
-    CoordinateSequence seq = csFactory.create(all.toArray(new Coordinate[0]));
-    return new CompoundCurve(seq, geometryFactory);
+    return new CompoundCurve(members.toArray(new LineString[0]), geometryFactory);
   }
 
   private CurvePolygon readCurvePolygonText(StreamTokenizer tokenizer, EnumSet<Ordinate> ordinateFlags)

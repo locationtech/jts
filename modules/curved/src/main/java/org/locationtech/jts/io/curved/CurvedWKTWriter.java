@@ -96,17 +96,27 @@ public class CurvedWKTWriter extends WKTWriter {
   private void appendCompoundCurveTaggedText(CompoundCurve cc,
       EnumSet<Ordinate> outputOrdinates, boolean useFormatting,
       int level, Writer writer, OrdinateFormat formatter) throws IOException {
-    // Always emit in OGC-conformant structured member form, using the flat
-    // coordinate sequence as a single linear member. This ensures valid WKT
-    // for interop (COMPOUNDCURVE ( ( ... ) )) even for the phase-1 flat
-    // CompoundCurve representation. Readers accept this form, and it is
-    // standard (unlike the previous flat-without-inner-parens emission).
+    // Emit in full OGC-conformant member-structured form, tagging each curved
+    // member (CIRCULARSTRING) while using plain (...) for LineString segments.
+    // This preserves curve identity on round-trip (the goal of the epic).
     writer.write(cc.getGeometryType().toUpperCase(Locale.ROOT));
     writer.write(" ");
     appendOrdinateText(outputOrdinates, writer);
+    if (cc.isEmpty()) {
+      writer.write(WKTConstants.EMPTY);
+      return;
+    }
     writer.write(" (");
-    appendSequenceText(cc.getCoordinateSequence(), outputOrdinates, useFormatting,
-        level, false, writer, formatter);
+    for (int i = 0; i < cc.getNumCurves(); i++) {
+      if (i > 0) writer.write(", ");
+      LineString member = cc.getCurveN(i);
+      if (member instanceof CircularString) {
+        writer.write("CIRCULARSTRING ");
+      }
+      // Body only for the member (no per-member dim flag; outer carries it).
+      appendSequenceText(member.getCoordinateSequence(), outputOrdinates,
+          useFormatting, level, false, writer, formatter);
+    }
     writer.write(")");
   }
 
@@ -128,8 +138,9 @@ public class CurvedWKTWriter extends WKTWriter {
       if (indentFirst) indent(useFormatting, level, writer);
       writer.write(ring.getGeometryType().toUpperCase(Locale.ROOT));
       if (ring instanceof CompoundCurve) {
-        // Structured member form for OGC conformance: COMPOUNDCURVE ( (seq) )
-        // No per-ring dim qualifier (declared once on the outer CURVEPOLYGON).
+        // For rings we still use a grouped form; for full member tagging inside
+        // the ring's COMPOUNDCURVE we rely on the top-level path or future
+        // refinement (appendCompound handles tagging of Circular members).
         writer.write(" (");
         appendSequenceText(ring.getCoordinateSequence(), outputOrdinates, useFormatting,
             level, false, writer, formatter);

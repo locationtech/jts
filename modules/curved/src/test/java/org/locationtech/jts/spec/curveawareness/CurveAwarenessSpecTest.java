@@ -57,7 +57,7 @@ public class CurveAwarenessSpecTest extends GeometryTestCase {
 
   // F-CP, F-MC, F-MS landed (structural composites + subtype preservation in copy/ctor/reader/writer).
   // B-CP, B-MS landed (curve-preserving getBoundary on CP + MS).
-  // M-LEN-CS landed (analytical length on CircularString via r*theta; CC phase-1 flat still chords).
+  // M-LEN-CS landed (analytical on CircularString); M-LEN-CC landed (sums member lengths, using structural CompoundCurve).
   // F-RD (CurvedShapeWriter integration) remains for later.
 
   /** F-RD: renderer arc-walks CurvePolygon rings + MultiCurve+MultiSurface. */
@@ -111,7 +111,14 @@ public class CurveAwarenessSpecTest extends GeometryTestCase {
         + " (chord-sum of the 3 control points).");
   }
 
-  /** M-LEN-CC: CompoundCurve.getLength sums analytical members. */
+  /**
+   * M-LEN-CC: CompoundCurve.getLength sums analytical members (arcs via r*theta,
+   * lines via chord length).
+   *
+   * <p>Now green on the impl side (delegates to member.getLength() after structural
+   * members landed); the fail("TAG:...") marker is retained per RGR / epic §5
+   * convention — delete the whole method in the ship commit.
+   */
   public void test_M_LEN_CC_compoundCurveLengthSumsMembers() throws Exception {
     Geometry g = read(
         "COMPOUNDCURVE ((0 0, 10 0), CIRCULARSTRING (10 0, 15 5, 20 0))");
