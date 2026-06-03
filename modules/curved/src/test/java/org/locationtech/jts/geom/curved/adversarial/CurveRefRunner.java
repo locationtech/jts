@@ -20,6 +20,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateSequence;
+import org.locationtech.jts.geom.curved.CircularString;
+import org.locationtech.jts.geom.curved.CurvedGeometryFactory;
 
 /**
  * A reference runner for curve-awareness properties, inspired by the
@@ -61,6 +64,38 @@ public final class CurveRefRunner {
     public String toString() {
       return String.format("Arc((%.6g,%.6g)-(%.6g,%.6g)-(%.6g,%.6g)) len=%.12g",
           sx, sy, mx, my, ex, ey, expectedLength);
+    }
+  }
+
+  /** The outcome of running JTS CircularString.getLength() against reference cases (modeled on RocqRefRunner.Result). */
+  public static final class Result {
+    public long checked = 0;
+    public long mismatches = 0;
+    /** A capped list of human-readable mismatch descriptions. */
+    public final List<String> failures = new ArrayList<String>();
+    private static final int MAX_FAILURES_RECORDED = 20;
+
+    void record(ArcLengthCase c, double actual) {
+      mismatches++;
+      if (failures.size() < MAX_FAILURES_RECORDED) {
+        failures.add(c + " but CircularString.getLength() returned " + actual);
+      }
+    }
+
+    public boolean isSound() {
+      return mismatches == 0;
+    }
+
+    public String toString() {
+      StringBuilder sb = new StringBuilder();
+      sb.append(checked).append(" cases checked, ").append(mismatches).append(" mismatch(es)");
+      for (String f : failures) {
+        sb.append("\n  ").append(f);
+      }
+      if (mismatches > failures.size()) {
+        sb.append("\n  ... (").append(mismatches - failures.size()).append(" more)");
+      }
+      return sb.toString();
     }
   }
 
@@ -152,5 +187,30 @@ public final class CurveRefRunner {
       if (is == null) throw new IOException("resource not found: " + resourcePath);
       return loadArcLengthCases(is);
     }
+  }
+
+  private static CircularString makeCS(ArcLengthCase c) {
+    CoordinateSequence cs = new CurvedGeometryFactory().getCoordinateSequenceFactory().create(3, 2);
+    cs.setOrdinate(0, 0, c.sx); cs.setOrdinate(0, 1, c.sy);
+    cs.setOrdinate(1, 0, c.mx); cs.setOrdinate(1, 1, c.my);
+    cs.setOrdinate(2, 0, c.ex); cs.setOrdinate(2, 1, c.ey);
+    return new CircularString(cs, new CurvedGeometryFactory());
+  }
+
+  /**
+   * Runs CircularString.getLength() against the reference for every case (modeled on RocqRefRunner.run).
+   * Returns a Result that can be asserted with isSound() for hardening tests.
+   */
+  public static Result run(Iterable<ArcLengthCase> cases) {
+    Result r = new Result();
+    for (ArcLengthCase c : cases) {
+      r.checked++;
+      CircularString cs = makeCS(c);
+      double actual = cs.getLength();
+      if (Math.abs(actual - c.expectedLength) > 1e-9 * Math.max(1.0, Math.abs(c.expectedLength))) {
+        r.record(c, actual);
+      }
+    }
+    return r;
   }
 }

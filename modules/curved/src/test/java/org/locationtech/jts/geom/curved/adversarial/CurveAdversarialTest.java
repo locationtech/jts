@@ -15,8 +15,12 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
+import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.curved.CircularString;
+import org.locationtech.jts.geom.curved.CompoundCurve;
+import org.locationtech.jts.geom.curved.CurvePolygon;
 import org.locationtech.jts.geom.curved.CurvedGeometryFactory;
+import org.locationtech.jts.io.curved.CurvedWKTReader;
 
 /**
  * JUnit exercising the curve adversarial hunter + ref runner (in the spirit
@@ -39,7 +43,8 @@ public class CurveAdversarialTest extends TestCase {
 
   public void testLoadArcLengthVectors() throws Exception {
     // The "artifact" we prepared (inspired by the orientation_proof_vectors.txt
-    // added in PR#1197 and exported from the proofs side).
+    // added in PR#1197 and exported from the proofs side). Load validates
+    // claimed vs exact (RocqRefRunner style).
     List<CurveRefRunner.ArcLengthCase> cases =
         CurveRefRunner.loadArcLengthCases(
             "/org/locationtech/jts/geom/curved/rocqref/curve_arc_length_vectors.txt");
@@ -49,6 +54,10 @@ public class CurveAdversarialTest extends TestCase {
           c.sx, c.sy, c.mx, c.my, c.ex, c.ey);
       assertEquals("vector case must match oracle", c.expectedLength, derived, 1e-9);
     }
+    // Hardening: run the actual JTS impl (CircularString.getLength) against the
+    // certified reference cases (using RocqRefRunner-style Result/run).
+    CurveRefRunner.Result r = CurveRefRunner.run(cases);
+    assertTrue("M-LEN-CS unsound on arc length vectors (RocqRefRunner hardening):\n" + r, r.isSound());
   }
 
   public void testHunterFindsArcLengthDeviationsOnAdversarialInputs() {
@@ -67,16 +76,16 @@ public class CurveAdversarialTest extends TestCase {
         CurveRefRunner.loadArcLengthCases(
             "/org/locationtech/jts/geom/curved/rocqref/curve_arc_length_vectors.txt");
     // Demonstrate on the small-sagitta (near-flat) reference case that the
-    // phase-1 linearised length deviates from the exact circular value.
+    // geometry length now matches the exact (hardened using RocqRefRunner-style vectors/cases).
     // (The vectors file is the "artifact" prepared in the style of #1197.)
     boolean checkedOne = false;
     for (CurveRefRunner.ArcLengthCase c : cases) {
       if (Math.abs(c.my) > 1e-4 && Math.abs(c.my) < 0.01) { // near-flat-ish sagitta
         CircularString arc = make3pt(c.sx, c.sy, c.mx, c.my, c.ex, c.ey);
         double lin = arc.getLength();
-        // For small sagitta the chord-vs-arc deviation is O(sag^2) -- often < 1e-6 relative.
-        // The important thing is that the vector loaded, the oracle matches the claimed,
-        // and the hunter (below) reliably finds larger-deviation adversarial cases.
+        // After M-LEN-CS, lin now matches exact (hardened via RocqRefRunner cases).
+        assertEquals("M-LEN-CS: geometry length now matches certified ref on vector case (hardened)",
+            c.expectedLength, lin, 1e-9);
         assertEquals("oracle roundtrip for loaded vector case", c.expectedLength, 
             CurveRefRunner.exactCircularArcLength(c.sx, c.sy, c.mx, c.my, c.ex, c.ey), 1e-9);
         checkedOne = true;
@@ -147,5 +156,49 @@ public class CurveAdversarialTest extends TestCase {
         assertEquals("vector must validate against refSign (RocqRefRunner style)", c.expected, refSign(c.p0x, c.p0y, c.p1x, c.p1y, c.qx, c.qy));
       }
     }
+  }
+
+  /**
+   * Harden B-MS/B-CP boundaries using the RocqRefRunner pattern (orient ref):
+   * boundaries must preserve the orientation semantics of their (curve) control points.
+   */
+  public void testCurveBoundaryHardeningUsingRocqRefRunner() throws Exception {
+    CurvedWKTReader cr = new CurvedWKTReader(new CurvedGeometryFactory());
+    // Single CP 0-hole (use known closed arc ring): boundary should be the arc curve itself; its control pts must have non-zero orient.
+    CurvePolygon cp = (CurvePolygon) cr.read("CURVEPOLYGON (CIRCULARSTRING (0 0, 10 0, 5 5, 0 5, 0 0))");
+    Geometry b = cp.getBoundary();
+    assertTrue(b instanceof CircularString);
+    CircularString ca = (CircularString) b;
+    int o = refSign(ca.getCoordinateN(0).x, ca.getCoordinateN(0).y,
+                    ca.getCoordinateN(1).x, ca.getCoordinateN(1).y,
+                    ca.getCoordinateN(2).x, ca.getCoordinateN(2).y);
+    assertTrue("CP boundary curve controls must have defined orientation (RocqRefRunner hardened)", o != 0);
+
+    // MS with curved member: boundary MultiCurve must contain curve whose controls have orient.
+    org.locationtech.jts.geom.Geometry ms = cr.read(
+        "MULTISURFACE (((0 0, 10 0, 10 10, 0 10, 0 0)), CURVEPOLYGON (COMPOUNDCURVE (CIRCULARSTRING (20 0, 25 5, 30 0), (30 0, 20 0))))");
+    Geometry bm = ms.getBoundary();
+    assertEquals("MultiCurve", bm.getGeometryType());
+    boolean foundCurvedWithOrient = false;
+    for (int i = 0; i < bm.getNumGeometries(); i++) {
+      org.locationtech.jts.geom.Geometry child = bm.getGeometryN(i);
+      if (child instanceof CircularString) {
+        CircularString c = (CircularString) child;
+        int oo = refSign(c.getCoordinateN(0).x, c.getCoordinateN(0).y,
+                         c.getCoordinateN(1).x, c.getCoordinateN(1).y,
+                         c.getCoordinateN(2).x, c.getCoordinateN(2).y);
+        if (oo != 0) foundCurvedWithOrient = true;
+      } else if (child instanceof CompoundCurve) {
+        CompoundCurve cc = (CompoundCurve) child;
+        // Check orient of first arc's controls (indices 0,1,2)
+        if (cc.getNumPoints() >= 3) {
+          int oo = refSign(cc.getCoordinateN(0).x, cc.getCoordinateN(0).y,
+                           cc.getCoordinateN(1).x, cc.getCoordinateN(1).y,
+                           cc.getCoordinateN(2).x, cc.getCoordinateN(2).y);
+          if (oo != 0) foundCurvedWithOrient = true;
+        }
+      }
+    }
+    assertTrue("MS boundary must preserve curved ring with defined orient (RocqRefRunner)", foundCurvedWithOrient);
   }
 }
