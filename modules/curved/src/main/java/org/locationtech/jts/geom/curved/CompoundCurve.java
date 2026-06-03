@@ -123,6 +123,36 @@ public class CompoundCurve extends LineString implements Linearizable {
   }
 
   /**
+   * V-CS / V-CP support: arc-aware isSimple for CompoundCurve.
+   * A CompoundCurve (as edge or ring) is simple if none of its sub-curves
+   * self-intersect and non-adjacent sub-curves do not intersect (adjacent
+   * only share their common endpoint).
+   */
+  @Override
+  public boolean isSimple() {
+    int n = getNumCurves();
+    if (n == 0) return true;
+    for (int i = 0; i < n; i++) {
+      LineString m = getCurveN(i);
+      if (m instanceof CircularString) {
+        if (!((CircularString) m).isSimple()) return false;
+      } else if (m instanceof CompoundCurve) {
+        if (!((CompoundCurve) m).isSimple()) return false;
+      } else {
+        // plain LineString: use inherited chord check
+        if (!m.isSimple()) return false;
+      }
+    }
+    // Cross checks between non-adjacent members (conservative using control chords for now)
+    for (int i = 0; i < n; i++) {
+      for (int j = i + 2; j < n; j++) {
+        if (getCurveN(i).intersects(getCurveN(j))) return false;
+      }
+    }
+    return true;
+  }
+
+  /**
    * M-LEN-CC: CompoundCurve.getLength sums the lengths of its members.
    *
    * <p>For {@link CircularString} members this is the analytical arc length

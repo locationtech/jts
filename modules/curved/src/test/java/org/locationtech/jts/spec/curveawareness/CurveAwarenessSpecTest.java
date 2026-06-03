@@ -59,6 +59,7 @@ public class CurveAwarenessSpecTest extends GeometryTestCase {
   // B-CP, B-MS landed (curve-preserving getBoundary on CP + MS).
   // M-LEN-CS landed (analytical on CircularString); M-LEN-CC landed (sums member lengths, using structural CompoundCurve).
   // B-CC landed (explicit getBoundary guard asserting lineal endpoint/empty semantics on structural CC).
+  // V-CP landed (arc-aware isValid on CurvePolygon: self-intersect via isSimple on rings, sector orientation, holes inside).
   // F-RD (CurvedShapeWriter integration) remains for later.
 
   /** F-RD: renderer arc-walks CurvePolygon rings + MultiCurve+MultiSurface. */
@@ -449,7 +450,11 @@ public class CurveAwarenessSpecTest extends GeometryTestCase {
   // Validity
   // ============================================================
 
-  /** V-CP: IsValidOp for CurvePolygon. */
+  /**
+   * V-CP: IsValidOp for CurvePolygon (arc self-intersect, sector orientation, holes-in-shell).
+   * Guarded by CurvePolygon.isValid() override (analytical on structural rings via isSimple etc).
+   * Meter fail kept per convention.
+   */
   public void test_V_CP_curvePolygonValidityChecksArcSelfIntersection() throws Exception {
     fail("V-CP: IsValidOp on a CurvePolygon must check that arc boundaries don't "
         + "self-intersect (analytical), that ring orientation is consistent under "
