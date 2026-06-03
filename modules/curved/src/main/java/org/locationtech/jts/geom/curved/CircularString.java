@@ -38,6 +38,21 @@ public class CircularString extends LineString implements Linearizable {
     return "CircularString";
   }
 
+  /**
+   * B-CC (lineal) guard for CircularString: explicit override of the
+   * inherited line boundary contract, for symmetry with the CompoundCurve
+   * guard and to assert the intent for curved lineals.
+   *
+   * <p>CircularString is a 1D lineal; its boundary is therefore the same
+   * as LineString: open -> MultiPoint of its two control endpoints
+   * (start of first arc, end of last arc); closed -> empty (modulo bnRule).
+   * We make this explicit so the contract is visible on the curved subtype.
+   */
+  @Override
+  public Geometry getBoundary() {
+    return super.getBoundary();
+  }
+
   @Override
   protected CircularString copyInternal() {
     return new CircularString(getCoordinateSequence().copy(), getFactory());
