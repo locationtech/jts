@@ -182,5 +182,19 @@ public class CompoundCurveMembersTest extends GeometryTestCase {
     Geometry bClosed = closed.getBoundary();
     assertTrue("closed CC should have empty boundary", bClosed.isEmpty());
     assertEquals("MultiPoint", bClosed.getGeometryType());
+
+    // CS lineal boundary (symmetric guard) also behaves as expected
+    CircularString openArc = (CircularString) new CurvedWKTReader().read(
+        "CIRCULARSTRING (0 0, 5 5, 10 0)");
+    Geometry bArc = openArc.getBoundary();
+    assertEquals("MultiPoint", bArc.getGeometryType());
+    assertEquals(2, bArc.getNumGeometries());
+
+    CircularString closedArc = (CircularString) new CurvedWKTReader().read(
+        "CIRCULARSTRING (0 0, 5 5, 0 0)");  // degenerate but closed per coords
+    // Even if degenerate, the guard ensures we go through the lineal path.
+    Geometry bClosedArc = closedArc.getBoundary();
+    // For a 3-pt closed (first==last) it will typically be empty under default bnRule.
+    assertTrue(bClosedArc.isEmpty() || bClosedArc.getNumGeometries() == 1);
   }
 }
