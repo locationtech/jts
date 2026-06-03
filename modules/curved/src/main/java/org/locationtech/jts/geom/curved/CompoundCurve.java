@@ -149,7 +149,21 @@ public class CompoundCurve extends LineString implements Linearizable {
         if (getCurveN(i).intersects(getCurveN(j))) return false;
       }
     }
+    // Detect improper point revisits across the whole (similar to CS for loop-back cases)
+    java.util.Set<String> seen = new java.util.HashSet<>();
+    for (int i = 0; i < getNumPoints(); i++) {
+      org.locationtech.jts.geom.Coordinate c = getCoordinateN(i);
+      String key = roundKey(c.x) + "," + roundKey(c.y);
+      if (seen.contains(key) && i != 0 && i != getNumPoints()-1) {
+        return false;
+      }
+      seen.add(key);
+    }
     return true;
+  }
+
+  private static String roundKey(double v) {
+    return String.format(java.util.Locale.ROOT, "%.9f", Math.round(v * 1e9) / 1e9);
   }
 
   /**

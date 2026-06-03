@@ -359,8 +359,7 @@ public class CurvePolygonStructuralSpec extends GeometryTestCase {
     // If the impl detects overlap it would return false; current cross logic may or not for this data.
     // We at least assert no crash and isSimple runs.
     boolean simple = overlapping.isSimple();
-    // For this data the arcs do overlap, but our i+2 skip + 3pt may report true or false; the test just ensures integration.
-    // (no strong assert here; the point is the V-CP code path using isSimple on curved rings is exercised without crash)
+    assertFalse("V-CP (supports V-CS): self-overlapping multi-arc CircularString must report !isSimple via analytical arc cross detection (plus point revisit)", simple);
   }
 
   /** Orientation wrong (shell clockwise) should be invalid per sector area. */

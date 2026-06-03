@@ -278,6 +278,27 @@ public class CircularString extends LineString implements Linearizable {
         if (arcsIntersectProper(arc1, arc2)) return false;
       }
     }
+    // Additional detection for self-overlap / loop-back: repeated control points at non-adjacent positions
+    // (e.g. the classic V-CS "loops back over itself" case revisits (0,0) interiorly).
+    // This complements geometric arc cross for cases where arcs touch/revisit without proper interior cross.
+    java.util.Set<String> seen = new java.util.HashSet<>();
+    for (int i = 0; i < nPts; i++) {
+      org.locationtech.jts.geom.Coordinate c = cs.getCoordinate(i);
+      String key = roundForKey(c.x) + "," + roundForKey(c.y);
+      if (seen.contains(key)) {
+        // Repeated point: for open path, any interior repeat indicates improper overlap.
+        // For closed rings (first==last), the final repeat is expected and checked separately in ring validation.
+        if (i != 0 && i != nPts - 1) {
+          return false;
+        }
+      }
+      seen.add(key);
+    }
     return true;
+  }
+
+  private static String roundForKey(double v) {
+    // Stable key for point coincidence checks (tolerate tiny numeric noise in WKT parses)
+    return String.format(java.util.Locale.ROOT, "%.9f", Math.round(v * 1e9) / 1e9);
   }
 }
