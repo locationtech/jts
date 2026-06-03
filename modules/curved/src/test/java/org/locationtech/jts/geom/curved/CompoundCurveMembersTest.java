@@ -144,4 +144,18 @@ public class CompoundCurveMembersTest extends GeometryTestCase {
     assertEquals(3, member0.getNumPoints());
     assertEquals(2, member1.getNumPoints());
   }
+
+  /** M-LEN-CC verification (green alongside the red meter marker in
+   *  CurveAwarenessSpecTest). Length sums the analytical (or chord)
+   *  lengths of the typed members. */
+  public void testLengthSumsMemberLengths() throws Exception {
+    // line segment 10 units + half-circle R=5 arc length π*5
+    Geometry g = new CurvedWKTReader().read(
+        "COMPOUNDCURVE ((0 0, 10 0), CIRCULARSTRING (10 0, 15 5, 20 0))");
+    CompoundCurve cc = (CompoundCurve) g;
+    double expected = 10.0 + Math.PI * 5.0;
+    assertEquals(expected, cc.getLength(), 1e-9);
+    // Also via the Geometry path (the one the meter exercises)
+    assertEquals(expected, g.getLength(), 1e-9);
+  }
 }
