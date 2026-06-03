@@ -160,12 +160,43 @@ public class CurveAwarenessSpecTest extends GeometryTestCase {
         + "LineString); got " + boundary.getGeometryType() + ".");
   }
 
-  /** B-MS: MultiSurface.getBoundary() returns a MultiCurve. */
+  /**
+   * B-MS: MultiSurface.getBoundary() returns a MultiCurve (preserving curved ring members
+   * from any CurvePolygon members).
+   *
+   * <p>RED-FIRST SEAM IDENTIFICATION (RGR for B-MS, tightly coupled follow-up to B-CP):
+   * <ul>
+   *   <li>Interface seam: MultiPolygon.getBoundary() (core:95) iterates member polys,
+   *       calls polygon.getBoundary() (which for CP now returns curve LS or MultiCurve
+   *       thanks to B-CP), then always does createMultiLineString on flattened children.
+   *       MultiSurface must override to produce MultiCurve when curved boundaries present.</li>
+   *   <li>Collection seam: need to handle the 3 cases a poly boundary can return:
+   *       - LinearRing (plain 0-hole Polygon or linear CP)
+   *       - MultiLineString (plain Polygon with holes)
+   *       - curve LineString (0-hole CurvePolygon: CC/CS) or MultiCurve (CP with holes)
+   *       Must flatten MLS/MC children into the overall list of "rings".</li>
+   *   <li>Return type / Option A seam: for pure-linear MultiSurface (all Polygon members),
+   *       ideally return plain MultiLineString for compat (like B-CP's allLinearRings check).
+   *       When any member is CurvePolygon (or any collected child ! LinearRing), return
+   *       MultiCurve (is-a MLS, getGeometryType()="MultiCurve" as the red test asserts).</li>
+   *   <li>Factory seam: prefer CurvedGeometryFactory.createMultiCurve if getFactory() is one;
+   *       else new MultiCurve(arr, f). Same pattern as B-CP and CurvePolygon ctor paths.</li>
+   *   <li>No core change: pure jts-curved (MultiSurface lives here). BoundaryOp routes
+   *       non-linestrings to geom.getBoundary(), so surfaces hit this.</li>
+   *   <li>Cross with B-CP: now that CP.getBoundary() can return non-MLS (curve or MC),
+   *       the old MultiPolygon collection logic would have produced wrong container or
+   *       lost curve types; B-MS must re-collect aware of the new possible boundary types.</li>
+   * </ul>
+   * Green will add minimal override. Verification elsewhere; meter red test left with
+   * explicit fail("TAG: B-MS...") per epic (delete only on ship).
+   */
   public void test_B_MS_multiSurfaceBoundaryIsMultiCurve() throws Exception {
     Geometry g = read(
         "MULTISURFACE (((0 0, 10 0, 10 10, 0 10, 0 0)), "
         + "CURVEPOLYGON (COMPOUNDCURVE (CIRCULARSTRING (20 0, 25 5, 30 0), (30 0, 20 0))))");
     Geometry boundary = g.getBoundary();
+    // Red probe: today inherits MultiPolygon logic -> always MultiLineString (even
+    // though second member CP produces a curve boundary after B-CP).
     fail("B-MS: MultiSurface.getBoundary() should be a MultiCurve preserving curved "
         + "ring members; got " + boundary.getGeometryType() + ".");
   }

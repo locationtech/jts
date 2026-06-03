@@ -13,8 +13,14 @@ package org.locationtech.jts.geom.curved;
 
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.LinearRing;
+import org.locationtech.jts.geom.MultiLineString;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Polygon;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /** A collection of {@link Polygon} and {@link CurvePolygon} members. */
 public class MultiSurface extends MultiPolygon implements Linearizable {
@@ -27,6 +33,50 @@ public class MultiSurface extends MultiPolygon implements Linearizable {
   @Override
   public String getGeometryType() {
     return "MultiSurface";
+  }
+
+  @Override
+  public Geometry getBoundary() {
+    if (isEmpty()) {
+      return getFactory().createMultiLineString();
+    }
+    List<LineString> all = new ArrayList<>();
+    boolean sawCurveMember = false;
+    for (int i = 0; i < getNumGeometries(); i++) {
+      Polygon p = (Polygon) getGeometryN(i);
+      if (p instanceof CurvePolygon) sawCurveMember = true;
+      Geometry b = p.getBoundary();
+      if (b instanceof MultiLineString || b instanceof MultiCurve) {
+        for (int j = 0; j < b.getNumGeometries(); j++) {
+          LineString r = (LineString) b.getGeometryN(j);
+          all.add(r);
+          if (!(r instanceof LinearRing)) sawCurveMember = true;
+        }
+      } else if (b instanceof LineString) {
+        LineString r = (LineString) b;
+        all.add(r);
+        if (!(r instanceof LinearRing)) sawCurveMember = true;
+      }
+    }
+    LineString[] arr = all.toArray(new LineString[0]);
+    // Soundness (refactor): for pure-linear MultiSurface (no CurvePolygon members and
+    // all collected pieces are LinearRings) return plain MLS to match super contract.
+    // Otherwise (or when any curved) return MultiCurve container (preserves identity
+    // for curve-aware callers, is-a MLS so most code continues to work).
+    if (!sawCurveMember) {
+      boolean allRings = true;
+      for (LineString r : arr) {
+        if (!(r instanceof LinearRing)) { allRings = false; break; }
+      }
+      if (allRings) {
+        return getFactory().createMultiLineString(arr);
+      }
+    }
+    GeometryFactory f = getFactory();
+    if (f instanceof CurvedGeometryFactory) {
+      return ((CurvedGeometryFactory) f).createMultiCurve(arr);
+    }
+    return new MultiCurve(arr, f);
   }
 
   @Override

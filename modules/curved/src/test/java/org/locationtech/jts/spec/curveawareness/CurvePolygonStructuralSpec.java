@@ -297,4 +297,38 @@ public class CurvePolygonStructuralSpec extends GeometryTestCase {
     Geometry bArc = cpArc.getBoundary();
     assertEquals("CircularString", bArc.getGeometryType());
   }
+
+  /**
+   * Green verification for B-MS (MultiSurface boundary returns MultiCurve when
+   * any member is CurvePolygon). Lives here so the meter red test in
+   * CurveAwarenessSpecTest remains untouched (explicit fail kept per RGR "don't
+   * integrate yet").
+   */
+  public void test_B_MS_multiSurfaceBoundaryPreservesCurvedRings() throws Exception {
+    CurvedWKTReader r = new CurvedWKTReader(new CurvedGeometryFactory());
+    // Mix of plain poly + CP (0-hole compound) -- after B-CP the CP contributes
+    // a curve to the collected boundary.
+    org.locationtech.jts.geom.Geometry ms = r.read(
+        "MULTISURFACE (((0 0, 10 0, 10 10, 0 10, 0 0)), "
+        + "CURVEPOLYGON (COMPOUNDCURVE (CIRCULARSTRING (20 0, 25 5, 30 0), (30 0, 20 0))))");
+    org.locationtech.jts.geom.Geometry b = ms.getBoundary();
+    assertEquals("B-MS green: boundary must be MultiCurve (not plain MLS)",
+        "MultiCurve", b.getGeometryType());
+    // At least one child should be the curve (CompoundCurve) from the CP member
+    boolean sawCurve = false;
+    for (int i = 0; i < b.getNumGeometries(); i++) {
+      if (b.getGeometryN(i) instanceof CompoundCurve || b.getGeometryN(i) instanceof CircularString) {
+        sawCurve = true; break;
+      }
+    }
+    assertTrue("B-MS green: collected boundary must preserve at least one curved ring member", sawCurve);
+
+    // Soundness: pure-linear MultiSurface (no CurvePolygon members) should return plain
+    // MultiLineString (compat with super) rather than MultiCurve.
+    org.locationtech.jts.geom.Geometry pure = r.read(
+        "MULTISURFACE (((0 0, 10 0, 10 10, 0 10, 0 0)), ((20 0, 30 0, 30 10, 20 10, 20 0)))");
+    org.locationtech.jts.geom.Geometry bPure = pure.getBoundary();
+    assertEquals("B-MS refactor soundness: pure linear MS boundary must be MultiLineString",
+        "MultiLineString", bPure.getGeometryType());
+  }
 }
