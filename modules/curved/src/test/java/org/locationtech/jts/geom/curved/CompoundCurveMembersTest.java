@@ -158,4 +158,29 @@ public class CompoundCurveMembersTest extends GeometryTestCase {
     // Also via the Geometry path (the one the meter exercises)
     assertEquals(expected, g.getLength(), 1e-9);
   }
+
+  /** B-CC verification (green alongside red meter marker).
+   *  Open CompoundCurve boundary must be MultiPoint of its true structural
+   *  endpoints (first of first member, last of last member). Closed yields
+   *  empty (standard lineal rule). */
+  public void testBoundaryForOpenAndClosedCompoundCurves() throws Exception {
+    // Open mixed (from the spec meter case)
+    CompoundCurve open = (CompoundCurve) new CurvedWKTReader().read(
+        "COMPOUNDCURVE ((0 0, 10 0), CIRCULARSTRING (10 0, 15 5, 20 0))");
+    Geometry bOpen = open.getBoundary();
+    assertEquals("MultiPoint", bOpen.getGeometryType());
+    assertEquals(2, bOpen.getNumGeometries());
+    assertEquals(0.0, bOpen.getGeometryN(0).getCoordinate().x, 1e-9);
+    assertEquals(0.0, bOpen.getGeometryN(0).getCoordinate().y, 1e-9);
+    assertEquals(20.0, bOpen.getGeometryN(1).getCoordinate().x, 1e-9);
+    assertEquals(0.0, bOpen.getGeometryN(1).getCoordinate().y, 1e-9);
+
+    // Closed overall (ends match) -> empty boundary per lineal rules
+    // (two arcs that form a loop back to start)
+    CompoundCurve closed = (CompoundCurve) new CurvedWKTReader().read(
+        "COMPOUNDCURVE (CIRCULARSTRING (0 0, 5 5, 10 0), CIRCULARSTRING (10 0, 5 -5, 0 0))");
+    Geometry bClosed = closed.getBoundary();
+    assertTrue("closed CC should have empty boundary", bClosed.isEmpty());
+    assertEquals("MultiPoint", bClosed.getGeometryType());
+  }
 }

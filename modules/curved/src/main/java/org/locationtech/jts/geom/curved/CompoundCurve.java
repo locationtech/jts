@@ -76,6 +76,53 @@ public class CompoundCurve extends LineString implements Linearizable {
   }
 
   /**
+   * B-CC guard: explicit override asserting the standard lineal boundary contract
+   * for structural CompoundCurve.
+   *
+   * <p>CompoundCurve is a 1D lineal (per SFA/SQL-MM). Therefore it inherits
+   * LineString's boundary semantics via BoundaryOp:
+   * <ul>
+   *   <li>Open (first coord != last coord): MultiPoint( startPoint, endPoint )</li>
+   *   <li>Closed (or empty): empty MultiPoint (or startPoint for certain
+   *       BoundaryNodeRule configurations on valence-2 closed endpoints).</li>
+   * </ul>
+   *
+   * <p>RED-FIRST SEAM IDENTIFICATION (RGR for B-CC):
+   * <ul>
+   *   <li>Seam: because CompoundCurve extends LineString, getBoundary() was
+   *       inherited and "just worked" on the concatenated control seq (whose
+   *       endpoints are the true overall start/end thanks to member concat
+   *       dropping only internal junctions).</li>
+   *   <li>Why explicit guard now: with Phase-1 structural members (getNumCurves,
+   *       getCurveN, copyInternal etc.), we want the boundary contract to be
+   *       first-class and asserted in the subclass. This prevents accidental
+   *       regression if the parent seq view or LinearString boundary logic
+   *       ever changes, and documents the intent (curved lineals deliberately
+   *       use point boundaries, not "arc boundaries").</li>
+   *   <li>Endpoints: the overall curve start is first vertex of first member;
+   *       end is last vertex of last member. The parent seq view matches this,
+   *       so super.getBoundary() is semantically and numerically identical.</li>
+   *   <li>No core change (BoundaryOp stays in core; we just opt into its
+   *       logic explicitly). Pure jts-curved.</li>
+   *   <li>CS gets the same for free (also extends LineString); an explicit
+   *       guard there is symmetric but out of scope for this TAG.</li>
+   * </ul>
+   * Green: the one-line delegation below (with structural comment). Verification
+   * lives in CompoundCurveMembersTest (open/closed cases, coord checks).
+   * Meter red marker left with fail("TAG: B-CC...") per §5 (delete on ship).
+   */
+  @Override
+  public Geometry getBoundary() {
+    // B-CC guard: deliberately use (and assert) the inherited LineString /
+    // BoundaryOp lineal boundary rules for this structural CompoundCurve.
+    // The coord seq passed to super already encodes the correct overall
+    // endpoints (member concatenation preserves first-of-first and
+    // last-of-last). This override makes the contract visible and robust
+    // against future internal representation changes.
+    return super.getBoundary();
+  }
+
+  /**
    * M-LEN-CC: CompoundCurve.getLength sums the lengths of its members.
    *
    * <p>For {@link CircularString} members this is the analytical arc length

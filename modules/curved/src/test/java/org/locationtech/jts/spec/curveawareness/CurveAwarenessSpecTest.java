@@ -58,6 +58,7 @@ public class CurveAwarenessSpecTest extends GeometryTestCase {
   // F-CP, F-MC, F-MS landed (structural composites + subtype preservation in copy/ctor/reader/writer).
   // B-CP, B-MS landed (curve-preserving getBoundary on CP + MS).
   // M-LEN-CS landed (analytical on CircularString); M-LEN-CC landed (sums member lengths, using structural CompoundCurve).
+  // B-CC landed (explicit getBoundary guard asserting lineal endpoint/empty semantics on structural CC).
   // F-RD (CurvedShapeWriter integration) remains for later.
 
   /** F-RD: renderer arc-walks CurvePolygon rings + MultiCurve+MultiSurface. */
@@ -239,7 +240,15 @@ public class CurveAwarenessSpecTest extends GeometryTestCase {
         + "ring members; got " + boundary.getGeometryType() + ".");
   }
 
-  /** B-CC: open CompoundCurve boundary = its 2 endpoints; closed = empty. */
+  /**
+   * B-CC: open CompoundCurve boundary = its 2 endpoints (as MultiPoint);
+   * closed CompoundCurve boundary = empty (per standard lineal rules).
+   *
+   * <p>Now guarded by explicit override in CompoundCurve (B-CC RGR); the
+   * fail("TAG:...") marker is retained per RGR / epic §5 convention —
+   * delete the whole method in the ship commit. The pre-existing assert
+   * exercises the open case returning MultiPoint.
+   */
   public void test_B_CC_openCompoundCurveBoundaryIsTwoEndpoints() throws Exception {
     Geometry g = read("COMPOUNDCURVE ((0 0, 10 0), CIRCULARSTRING (10 0, 15 5, 20 0))");
     Geometry boundary = g.getBoundary();
