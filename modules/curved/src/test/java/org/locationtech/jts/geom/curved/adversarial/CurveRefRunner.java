@@ -33,8 +33,9 @@ import org.locationtech.jts.geom.Coordinate;
  * <p>
  * This enables adversarial/regression tests for the curve module (see
  * CurveCounterexampleHunter and the red TAGs in CurveAwarenessSpecTest) that
- * can later consume certified exports from the NetTopologySuite.Proofs Rocq
- * development (arc/curve theories) the same way the orientation work does.
+ * consume certified exports from the NetTopologySuite.Proofs Rocq
+ * development (arc/curve theories, see Proofs#64 for the native length/sweep/
+ * in-arc primitives) the same way the orientation work does.
  */
 public final class CurveRefRunner {
 

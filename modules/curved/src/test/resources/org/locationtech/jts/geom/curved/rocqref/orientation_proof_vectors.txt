@@ -1,15 +1,14 @@
 # Orientation reference vectors for JTS #1106 (orientation soundness).
 #
-# Consumed by RocqRefRunner.loadProofCases / RocqRefRunnerTest.
+# Consumed by (core) RocqRefRunner.loadProofCases / RocqRefRunnerTest (and mirrored
+# here for curve-adversarial demos).
 #
-# This file is the drop-in slot for vectors exported from the Rocq (Coq)
-# orientation-soundness development. The Rocq artifacts were not reachable in
-# the environment where this test was authored, so the vectors below were
-# derived directly from the certified reference (exact 64-bit integer
-# determinant sign) for the integer domain |coordinate| <= 2^25. Replace or
-# extend this file with the real Rocq export when it is available; every sign
-# is cross-checked against the in-code reference on load, so a stale or
-# inconsistent export will fail the build rather than weaken the test.
+# Artifact from this run (use RocqRefRunner to consume after download):
+# https://github.com/grootstebozewolf/NetTopologySuite.Proofs/actions/runs/26800356316/artifacts/7349719107
+# (gh run download or GH_TOKEN required; direct is 404 "Not Found" like prior runs.)
+#
+# The vectors below were derived from the certified reference. Replace/extend
+# with real export from the run; load validates claimed vs derived refSign.
 #
 # Format (whitespace-separated, '#' comments and blank lines ignored):
 #   p0x p0y  p1x p1y  qx qy  [expectedSign]

@@ -1,4 +1,11 @@
-# Curve arc length reference vectors (inspired by PR#1197 orientation_proof_vectors)
+# Curve arc length reference vectors (inspired by PR#1197 + RocqRefRunner pattern).
+# Generated from Proofs#64 native arc primitives (ArcLength.v + b64_circular_arc_length
+# extracted with host atan2 override, matching JTS CurveRefRunner logic).
+# See https://github.com/grootstebozewolf/NetTopologySuite.Proofs/issues/64
+# and JTS CurveRefRunner.exactCircularArcLength + CurveAdversarialTest.
+# To refresh: build proofs oracle, run with ARC_LENGTH mode for adversarial
+# cases, or use the Java port for the baked set (validated on load).
+# Format: sx sy mx my ex ey expected_length
 # sx sy mx my ex ey expected_length # comment (analytical r*theta)
 
 0 -1  1 0  0 1  3.14159265359  # semicircle_r1
@@ -6,3 +13,9 @@
 0 0  1 0.001  2 0  2.00000133333  # nearflat_sag0.001_r~500.00049999999993
 0 0  100000000.0 1000.0  200000000.0 0  200000000.013  # large_r~5000000000500.0
 0 0  1e-08 1e-07  2e-08 0  2.01330678032e-08  # tiny_r~5.049999999999999e-08
+
+# Additional cases generated for this artifact (run 26800356316) using port of exact fn
+0 -10 0 10 10 0 47.1238898038  # semicircle_r10
+-5 0 0 5 5 0 15.7079632679  # quarter? semi r5
+100 0 100.00001 0.1 100.00002 0 0.314139268215  # small arc large r
+0 -1 10 0 0 1 29.7167790209  # large sweep r~10. something

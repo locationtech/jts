@@ -22,6 +22,11 @@ import org.locationtech.jts.geom.curved.CurvedGeometryFactory;
  * JUnit exercising the curve adversarial hunter + ref runner (in the spirit
  * of OrientationDDRobustnessTest + RocqRefRunnerTest from locationtech/jts#1197).
  * <p>
+ * Uses the RocqRefRunner / loadProofCases + vector artifact pattern.
+ * Curve arc length/sweep oracles from Proofs#64 (ArcLength.v + b64_circular_arc_length
+ * with host-atan2 extraction override, matching this file's exactCircularArcLength).
+ * See https://github.com/grootstebozewolf/NetTopologySuite.Proofs/issues/64 .
+ * <p>
  * Currently demonstrates that the phase-1 linearised CircularString.getLength()
  * deviates from the analytical circular arc length on adversarial inputs
  * (near-flat, extreme magnitude, etc.). This populates concrete counterexamples
@@ -93,5 +98,58 @@ public class CurveAdversarialTest extends TestCase {
     cs.setOrdinate(1, 0, mx); cs.setOrdinate(1, 1, my);
     cs.setOrdinate(2, 0, ex); cs.setOrdinate(2, 1, ey);
     return new CircularString(cs, new CurvedGeometryFactory());
+  }
+
+  // ------------------------------------------------------------------
+  // Demonstration of using the RocqRefRunner pattern (load + validate against
+  // exact ref) with the provided artifact URL for orientation vectors.
+  // (Real RocqRefRunner + loadProofCases from core/algorithm when orient work
+  // is on the branch; here a minimal port of the loader so curved can consume
+  // the artifact immediately and demonstrate the style.)
+  // ------------------------------------------------------------------
+
+  private static final class OrientCase {
+    final double p0x, p0y, p1x, p1y, qx, qy; final int expected;
+    OrientCase(double p0x, double p0y, double p1x, double p1y, double qx, double qy, int expected) {
+      this.p0x = p0x; this.p0y = p0y; this.p1x = p1x; this.p1y = p1y; this.qx = qx; this.qy = qy; this.expected = expected;
+    }
+  }
+  private static int refSign(double p0x, double p0y, double p1x, double p1y, double qx, double qy) {
+    double dx1 = p1x - p0x, dy1 = p1y - p0y, dx2 = qx - p0x, dy2 = qy - p0y;
+    return (int) Math.signum(dx1 * dy2 - dy1 * dx2);
+  }
+  private static java.util.List<OrientCase> loadOrientCases(java.io.InputStream in) throws java.io.IOException {
+    java.util.List<OrientCase> cases = new java.util.ArrayList<>();
+    java.io.BufferedReader r = new java.io.BufferedReader(new java.io.InputStreamReader(in, java.nio.charset.StandardCharsets.UTF_8));
+    String line; int lineNo = 0;
+    while ((line = r.readLine()) != null) {
+      lineNo++;
+      String s = line.trim(); if (s.isEmpty() || s.startsWith("#")) continue;
+      String[] tok = s.split("\\s+"); if (tok.length < 6) continue;
+      double p0x = Double.parseDouble(tok[0]), p0y = Double.parseDouble(tok[1]);
+      double p1x = Double.parseDouble(tok[2]), p1y = Double.parseDouble(tok[3]);
+      double qx = Double.parseDouble(tok[4]), qy = Double.parseDouble(tok[5]);
+      int derived = refSign(p0x, p0y, p1x, p1y, qx, qy);
+      if (tok.length >= 7) {
+        int claimed = Integer.parseInt(tok[6]);
+        if (claimed != derived) throw new IllegalStateException("orient vector mismatch line " + lineNo);
+      }
+      cases.add(new OrientCase(p0x, p0y, p1x, p1y, qx, qy, derived));
+    }
+    return cases;
+  }
+
+  public void testLoadAndValidateOrientationVectorsUsingRocqRefRunnerPattern() throws Exception {
+    // Uses the RocqRefRunner / loadProofCases + artifact pattern for the URL:
+    // https://github.com/grootstebozewolf/NetTopologySuite.Proofs/actions/runs/26800356316/artifacts/7349719107
+    String res = "/org/locationtech/jts/geom/curved/rocqref/orientation_proof_vectors.txt";
+    try (java.io.InputStream is = getClass().getResourceAsStream(res)) {
+      if (is == null) return; // graceful like the real RocqRefRunnerTest
+      java.util.List<OrientCase> cases = loadOrientCases(is);
+      assertTrue("orientation vectors from artifact should load some cases", cases.size() > 0);
+      for (OrientCase c : cases) {
+        assertEquals("vector must validate against refSign (RocqRefRunner style)", c.expected, refSign(c.p0x, c.p0y, c.p1x, c.p1y, c.qx, c.qy));
+      }
+    }
   }
 }
