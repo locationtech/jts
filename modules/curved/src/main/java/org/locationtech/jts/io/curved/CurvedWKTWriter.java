@@ -18,6 +18,7 @@ import java.util.Locale;
 
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.curved.CircularString;
 import org.locationtech.jts.geom.curved.CompoundCurve;
 import org.locationtech.jts.geom.curved.CurvePolygon;
 import org.locationtech.jts.io.Ordinate;
