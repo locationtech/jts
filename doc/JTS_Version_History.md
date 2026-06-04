@@ -26,6 +26,7 @@ Distributions for older JTS versions can be obtained at the
 * Add `CoverageCleaner` (#1126)
 * Add `MinimumBoundingTriangle` (#1160)
 * Add `DirectedHausdorffDistance` class (#1182)
+* Structural `CurvePolygon` (F-CP, Option A) in `jts-curved` — `CurvePolygon` shell/holes are `LineString` (CircularString/CompoundCurve); `getExteriorRing()` etc return densified `LinearRing` views per legacy contract; new `getExteriorCurve()`/`getInteriorCurveN()` for structural. WKT reader/writer preserve tags. Enables F-MC/F-MS. (stacked on #1194; see #1195)
 
 ### Functionality Improvements
 

@@ -79,12 +79,12 @@ algorithm program. Known limitations:
   concatenation of control points on read. The writer emits this flat
   form too, and the reader accepts both the flat form and the OGC
   member-structured form on input.
-- **`CurvePolygon` / `MultiSurface` round-trip degrades inner curve
-  members.** Re-reading a written `MULTISURFACE(CURVEPOLYGON(...))`
-  yields `MultiSurface[Polygon]` rather than
-  `MultiSurface[CurvePolygon]`, because the writer does not yet emit
-  inner-member tags. Tests use `Linearizable.toLinear(...)` for
-  structural-fidelity comparison.
+- **`MultiSurface` / `MultiCurve` inner curved member tags** (F-MS / F-MC):
+  direct `CURVEPOLYGON` / `CIRCULARSTRING` members inside `MULTISURFACE` /
+  `MULTICURVE` are emitted with tags (F-CP + F-MS/F-MC enablement). Re-reading
+  a top-level `CURVEPOLYGON` with curved rings now preserves structure (F-CP
+  landed). Tests for composites use `Linearizable.toLinear(...)` where needed
+  for fidelity. (See `CurvePolygonStructuralSpec` for contract.)
 - **Validation is best-effort.** Structural rules (Triangle 4-point
   ring, CircularString odd point count, CompoundCurve member
   connectivity, Tin triangle-only patches) are not enforced.

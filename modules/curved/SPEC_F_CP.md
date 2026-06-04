@@ -27,71 +27,62 @@ lands the chosen option.
 That decision lives in epic §7 risk #1 and surfaces here as the
 `FCP-DOVE` red test.
 
-## The dovetail decision
+## The dovetail decision (resolved)
 
-`CurvePolygon` inherits `Polygon.getExteriorRing()` which is typed
-`LinearRing`. A structural CurvePolygon's actual shell is a
-`CompoundCurve` (or `CircularString` / `LineString`). The two facts
-can't both be true at runtime. We pick one of:
+**Chosen: Option A — legacy fallback.**
 
-| Option | What `getExteriorRing()` returns | New accessor | Trade-off |
-|---|---|---|---|
-| **A — legacy fallback** | `LinearRing` of densified chord coordinates at a default tolerance | `getExteriorCurve()` returns the structural Curve | Old callers keep working unchanged; they see a polyline approximation. Two-tier API: structural-aware callers use the new method, legacy callers stay on the inherited one. Trade-off is that "the same geometry" answers two different questions on the same instance. |
-| **B — widen return type** | `LineString` (`CompoundCurve` extends `LineString`) | none — the existing method is enough | Single source of truth, no API doubling. Breaks every caller that does `(LinearRing) p.getExteriorRing()` or that relies on `LinearRing`-specific API (very rare in third-party code, ubiquitous in JTS's own internals). Requires sweeping `jts-core` for casts. |
-| **C — fail-fast** | throws `UnsupportedOperationException` | `getExteriorCurve()` returns the structural Curve | Loudest diagnostic; forces every caller to migrate. Most painful interim period because *any* third-party code that touches a CurvePolygon via the Polygon API blows up at runtime. Probably only acceptable behind a feature flag. |
+`CurvePolygon` (post F-CP) inherits `Polygon.getExteriorRing()` which
+returns a `LinearRing` view of the densified chords at default tolerance
+(0.0). Curve-aware callers use the new `getExteriorCurve()` /
+`getInteriorCurveN(int)` to obtain the structural `LineString`
+(`CircularString` / `CompoundCurve` / `LineString`).
 
-### Where we lean, today
+See implementation in `CurvePolygon` (structural ctors + fields,
+`copyInternal`, `reverseInternal`, `toLinear`, `normalize` overrides)
+and `CurvedWKT*` (reader collects structural rings; writer emits tagged
+curved rings inside CURVEPOLYGON).
 
-**Option A** is the lowest-friction landing for Phase 1: it keeps the
-existing Polygon API contract intact for callers that don't know about
-curves, and gives curve-aware callers a clean structural accessor. The
-default tolerance for the linearised view becomes a `CurvedGeometryFactory`-
-level setting (consistent with how `Linearizable.toLinear(0.0)` already
-treats a zero-tolerance request as "implementation default"). The cost
-is the two-tier API; we accept it as the price of not breaking jts-core.
+### Why A (for Phase 1)
 
-The argument **against** Option A is real: `getExteriorRing().getNumPoints()`
-on a CurvePolygon now returns a tolerance-dependent count, which is a
-subtle correctness landmine for code that compares ring point counts as
-identity checks. Worth a release-note bullet.
+- Keeps the existing `Polygon` API contract intact for legacy callers
+  (including all of jts-core and third-party code that casts to
+  `LinearRing` or calls `getNumPoints` etc on rings).
+- Gives structural access via two new methods.
+- Lowest friction; no core sweep, no runtime explosions.
+- Trade-off (documented): two-tier API and tolerance-dependent counts on
+  the legacy view. See release notes.
 
-**Option B** is the principled answer if we're willing to do a
-core-wide audit. The actual count of `(LinearRing)` casts on results of
-`getExteriorRing()` inside `jts-core` is the deciding number; if it's
-small enough to clean up in one PR, B becomes attractive again.
+(B and C were ruled out for Phase 1 per epic §7 risk #1 and SPEC
+discussion; they remain options for a future breaking 2.0 if desired.)
 
-**Option C** is the right answer behind a feature flag — useful for
-strict pipelines that want to know they aren't accidentally feeding a
-CurvePolygon to non-curve-aware code.
+### What was deferred / noted
 
-### What we are deferring
+- Default linearisation tolerance (implementation chose 0.0 meaning
+  "factory default", consistent with `Linearizable.toLinear(0.0)`).
+- `getCoordinates()` continues to return the densified view (to match
+  the legacy ring contract); structural control points via the curve
+  accessors.
+- Holes treated uniformly with shell.
+- `equalsExact` / R-EQ remains view-based (structural curves do not
+  affect it); explicit `test_FCP_EQ` and doc in `CurvePolygon` javadoc.
+  Full arc-aware equality deferred to R-EQ TAG.
+- Release note recommended for the tolerance-dependent ring metrics.
 
-- The default linearisation tolerance value (if A wins). Likely
-  parameterised on the `PrecisionModel`'s scale; precise value is an
-  implementation PR decision.
-- Whether `getCoordinates()` returns the structural control points or
-  the linearised chord coords. Either choice has the same Polygon-API
-  contract issue as `getExteriorRing()`. Suggest matching the choice
-  made for `getExteriorRing()` to avoid two-tier-API-within-two-tier-API.
-- Holes: same three options apply to `getInteriorRingN(int)`. We pick
-  once and apply uniformly.
+## Implementation status
 
-## Smallest concrete next step
+**Landed** under Option A in the F-CP implementation PR (stacked on
+#1194). The `CurvePolygonStructuralSpec` red-test methods were deleted
+by the feat commit (per epic convention); `test_FCP_DOVE_*` and
+`test_FCP_EQ_*` remain as executable documentation of the chosen
+contract and equality semantics.
 
-1. **Maintainer ack on the option.** A one-line "Option A / B / C"
-   reply on the epic issue is enough.
-2. **PR `arch:` commit** updating this file to delete the unselected
-   rows and record the choice as decided.
-3. **Implementation PR** (separate) starts from there:
-   - Update `CurvePolygon` (`CurvedGeometryFactory` constructors,
-     `copyInternal`, `toLinear`).
-   - Update `CurvedWKTReader.readCurvePolygonText` to build a
-     structural CurvePolygon.
-   - Update `CurvedWKTWriter` to emit COMPOUNDCURVE / CIRCULARSTRING
-     tags inside the body.
-   - Delete the methods in `CurvePolygonStructuralSpec` that the
-     implementation makes pass (the test class shrinks; the
-     `FCP-DOVE` method goes with the others).
+## Smallest concrete next step (done)
+
+1. Maintainer ack on Option A (see epic #1195 and PR #1194 thread).
+2. `arch:` commit (this update) recorded the decision.
+3. Implementation PR landed the structural `CurvePolygon` (Option A),
+   reader/writer updates, overrides for preservation, shrinking of the
+   red-test spec (kept DOVE/EQ as docs), plus verification tests.
 
 ## Pre-requisite that's already landed
 
