@@ -127,7 +127,10 @@ When the proofs side closes the relevant gaps and supplies oracles/vectors, V-CP
 - **COV** — `CoverageUnion` / `CoverageBoundary` on `CurvePolygon` coverages preserve shared arcs as `CIRCULARSTRING` segments in the result.
 
 ### Snapping / Precision (PRC-SN)
-- **PRC-SN** — Snap-to-grid / precision model on a `CircularString` snaps the three control points and preserves the arc (if the resulting R/C/sweep is still valid on the grid); otherwise densifies. (See proofs for `CURVE_SNAP_DECISION` oracle.)
+- **PRC-SN** — Snap-to-grid / precision model on a `CircularString` snaps the three control points and preserves the arc (if the resulting R/C/sweep is still valid on the grid); otherwise densifies. (See proofs for `CURVE_SNAP_DECISION` / `CURVE_SNAP_INVARIANTS_EXACT` oracle + HOLE_PRECISION_AUDIT for #979 interaction.)
+  - Fresh oracle from artifact: https://github.com/grootstebozewolf/NetTopologySuite.Proofs/actions/runs/26928081635/artifacts/7402195928 (JTS#979 precision-collapse + power-of-two hot-pixel; also curve snap soundness).
+  - Vectors: modules/curved/src/test/resources/.../rocqref/curve_snap_vectors.txt (refreshed header citing this run; cases cross-checked vs exact Q snap+centre-on-grid).
+  - Ties to V-CP: arc self-intersect/validity under fixed PM must not be poisoned by precision collapse of small features or arc centres. See also updated hole979_hunt.txt and driver.ml CURVE_SNAP_* + HOLE_* modes.
 
 ### TestBuilder integration (TB-*)
 - **TB-T** — Dedicated tools in JTSTestBuilder for `CompoundCurve` and `CurvePolygon` (sibling to `CircularStringTool` etc.).

@@ -143,10 +143,19 @@ public class CompoundCurve extends LineString implements Linearizable {
         if (!m.isSimple()) return false;
       }
     }
-    // Cross checks between non-adjacent members (conservative using control chords for now)
+    // Cross checks between non-adjacent members (use arc-aware for V-CS/V-CP when possible)
     for (int i = 0; i < n; i++) {
       for (int j = i + 2; j < n; j++) {
-        if (getCurveN(i).intersects(getCurveN(j))) return false;
+        LineString mi = getCurveN(i);
+        LineString mj = getCurveN(j);
+        if (mi instanceof CircularString && mj instanceof CircularString) {
+          // use the analytical cross (reuses arcsIntersectProper + circle etc)
+          double[] a1 = extractArcControls((CircularString) mi);
+          double[] a2 = extractArcControls((CircularString) mj);
+          if (CircularString.arcsIntersectProper(a1, a2)) return false;
+        } else if (mi.intersects(mj)) {
+          return false;
+        }
       }
     }
     // Detect improper point revisits across the whole (similar to CS for loop-back cases)
@@ -160,6 +169,13 @@ public class CompoundCurve extends LineString implements Linearizable {
       seen.add(key);
     }
     return true;
+  }
+
+  private static double[] extractArcControls(CircularString cs) {
+    org.locationtech.jts.geom.CoordinateSequence csq = cs.getCoordinateSequence();
+    return new double[] {
+      csq.getX(0), csq.getY(0), csq.getX(1), csq.getY(1), csq.getX(2), csq.getY(2)
+    };
   }
 
   private static String roundKey(double v) {

@@ -1,0 +1,19 @@
+# Curve snap / PRC-SN grid-friendly decision vectors (for #66 SnapRounding + curve epic JTS#1195).
+# Format per line: <scale> <x0> <y0> <x1> <y1> <x2> <y2> <DECISION>
+# scale: grid scale for FIXED PM (e.g. 1); DECISION: PRESERVE | DENSIFY | DEGEN
+# These are reference cases from proofs oracle (CURVE_SNAP_DECISION / CURVE_SNAP_INVARIANTS_EXACT modes)
+# or hand-curated + hunter. Loaded by CurveSnapRefRunner / tests for isSound() + reduce decision.
+# Cross-checks the isGridFriendly(CS/CC, pm) + CurvedPrecisionReducer vs exact Q snap+circumcentre.
+# Generated/verified using oracle-bin-linux from GH run 26928081635 / art 7402195928
+# (JTS#979 precision-collapse + power-of-two hot-pixel soundness, claude/jts979-precision-collapse;
+#  full exact Q impl in driver.ml for CURVE_SNAP_* + HOLE_* + updated hotpixel/arc for 979).
+# See https://github.com/grootstebozewolf/NetTopologySuite.Proofs/actions/runs/26928081635/artifacts/7402195928
+# and JTS CurvedPrecisionReducerTest + CurveSnapAdversarialTest (0 counterexamples on safe cases).
+# Note: large-coord case (1e8) omitted from isSound vectors (double circum loses precision vs exact Q oracle);
+# such cases are for hunter to surface (where JTS double decision may diverge from oracle, as intended for PRC-SN harden).
+# To refresh: use bin with CURVE_SNAP_DECISION mode + gen script or JTS hunter; assert isSound on grid-safe subset.
+# Fresh oracle installed from artifact; BuildID c92b40c2868a5e2b222facea1f5da77066bb2297 .
+1 0 0 5 5 10 0 PRESERVE
+1 0.1 0.1 0.2 0.5 0.3 0.1 DENSIFY
+1 0 0 1 1 2 0 PRESERVE
+10 0 0 0.5 0.5 1 0 PRESERVE
