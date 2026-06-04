@@ -21,25 +21,27 @@ import org.locationtech.jts.geom.Polygon;
  * A polygon whose rings may be straight, circular, or compound curves.
  *
  * <p>Option A (F-CP / FCP-DOVE per SPEC_F_CP.md): legacy {@code getExteriorRing()}
- * and {@code getInteriorRingN(i)} return {@link LinearRing} views obtained by
- * linearising at default tolerance (0.0); curve-aware code uses
- * {@link #getExteriorCurve()} / {@link #getInteriorCurveN(int)} to obtain the
- * structural {@link LineString} (which may be a {@link CircularString} or
- * {@link CompoundCurve}).
+ * and {@code getInteriorRingN(i)} return {@link LinearRing} views obtained from
+ * the control-point polyline of the structural ring (phase-1 linear view).
+ * {@code toLinear(0.0)} (and thus the legacy ring views) currently return the
+ * raw control points with <b>no arc tessellation</b>; the {@code tolerance}
+ * parameter is accepted for {@link Linearizable} compatibility but is a no-op
+ * in phase 1. Curve-aware code uses {@link #getExteriorCurve()} /
+ * {@link #getInteriorCurveN(int)} to obtain the structural {@link LineString}
+ * (which may be a {@link CircularString} or {@link CompoundCurve}).
  *
  * <p><b>Equality / identity semantics (EPIC §7 risk, R-EQ TAG):</b>
  * {@code equalsExact} (and by extension structural equality for use in
  * collections via {@link #equals(Object)} / {@link #hashCode()}) is
  * inherited from {@link Polygon} without override. It compares only the
- * densified {@link LinearRing} views (the chord approximations created at
- * construction time via {@code toLinear(0.0)}). The structural curves
- * (shell/holes) are <i>not</i> consulted. Consequently:
+ * control-point {@link LinearRing} views (via {@code toLinear(0.0)}). The
+ * structural curves (shell/holes) are <i>not</i> consulted. Consequently:
  * <ul>
- *   <li>Two {@code CurvePolygon}s whose curves densify to identical rings
- *       (same control points at tol=0) compare equal via {@code equalsExact},
- *       even if the curves themselves differ in type or parameters.</li>
+ *   <li>Two {@code CurvePolygon}s whose control polylines are identical
+ *       compare equal via {@code equalsExact}, even if the curves themselves
+ *       differ in type or parameters.</li>
  *   <li>A {@code CurvePolygon} never {@code equalsExact}s a plain
- *       {@code Polygon} (even with identical flattened rings), because
+ *       {@code Polygon} (even with identical control points), because
  *       {@link Polygon#isEquivalentClass(Geometry)} (inherited) requires
  *       exact class name match. (Contrast with {@code LineString} subclasses,
  *       where {@code isEquivalentClass} is lenient via {@code instanceof}.)

@@ -76,6 +76,16 @@ public class WKTCompoundCurveTest extends GeometryTestCase {
     assertTrue(g.isEmpty());
   }
 
+  public void testWriteEmpty() throws Exception {
+    Geometry empty = new CurvedWKTReader().read("COMPOUNDCURVE EMPTY");
+    String written = new CurvedWKTWriter().write(empty);
+    assertTrue("empty CompoundCurve should emit EMPTY, was: " + written,
+        written.toUpperCase().contains("EMPTY"));
+    Geometry roundtripped = new CurvedWKTReader().read(written);
+    assertTrue(roundtripped.isEmpty());
+    assertEquals(TYPENAME_COMPOUNDCURVE, roundtripped.getGeometryType());
+  }
+
   public void testWKTRoundTripXY() throws Exception {
     String wkt = "COMPOUNDCURVE ((5 3, 5 13), CIRCULARSTRING (5 13, 7 15, 9 13))";
     Geometry g = new CurvedWKTReader().read(wkt);

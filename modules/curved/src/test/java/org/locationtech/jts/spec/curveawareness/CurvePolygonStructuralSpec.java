@@ -28,42 +28,22 @@ import junit.textui.TestRunner;
 import test.jts.GeometryTestCase;
 
 /**
- * Focused red-test suite for sub-issue <strong>F-CP</strong> of the SFA Curve
- * Awareness epic (locationtech/jts#1195): <em>structural CurvePolygon</em> —
- * a {@code CurvePolygon} whose shell and holes are {@code CompoundCurve}s
- * (and/or {@code CircularString}s) rather than flat {@code LinearRing}s.
+ * Focused spec suite (post-ship) for sub-issue <strong>F-CP</strong> of the SFA Curve
+ * Awareness epic (locationtech/jts#1195): <em>structural CurvePolygon</em>.
  *
- * <p>The single {@code test_F_CP_*} method in {@link CurveAwarenessSpecTest}
- * documents the headline gap. This spec drills into the sub-questions an
- * F-CP implementation must answer:
+ * <p>The implementation landed under Option A. The original red-test methods
+ * were deleted per epic convention (see the feat commit and SPEC_F_CP.md).
+ * What remains are two executable documentation tests:
+ * <ul>
+ *   <li>{@link #test_FCP_DOVE_legacyPolygonApiContractDecision()} — records the
+ *       chosen Option A dovetail contract (legacy Polygon API returns densified
+ *       LinearRing views; new curve accessors expose structure).</li>
+ *   <li>{@link #test_FCP_EQ_equalityIsViewBasedNotStructural()} — records that
+ *       {@code equalsExact} remains view-based (phase-1; structural curves do
+ *       not participate; R-EQ is deferred).</li>
+ * </ul>
  *
- * <ol>
- *   <li><b>FCP-S</b>: shell is exposed as a Curve, not a LinearRing.</li>
- *   <li><b>FCP-MEM</b>: the shell preserves member subtypes (CircularString
- *       vs LineString segments).</li>
- *   <li><b>FCP-H</b>: interior rings (holes) are also Curves per spec.</li>
- *   <li><b>FCP-CP</b>: {@code copyInternal()} preserves shell + holes as
- *       Curves, not as flat LinearRings.</li>
- *   <li><b>FCP-TL</b>: {@code toLinear(tolerance)} returns a flat
- *       {@code Polygon} assembled from each ring's own linearisation.</li>
- *   <li><b>FCP-WKT</b>: WKT round-trip preserves the structural ring tag
- *       (no degradation through write→read).</li>
- *   <li><b>FCP-DOVE</b>: dovetail with the legacy {@code Polygon} API —
- *       the design-decision question called out in epic §7 risk #1. See
- *       {@link #test_FCP_DOVE_legacyPolygonApiContractDecision()}.</li>
- * </ol>
- *
- * <p>Per the epic convention, every {@code fail("FCP-…: …")} message names
- * the sub-issue tag. When F-CP lands, delete the methods covered by the
- * implementation (do not edit them green); the remaining-method count in
- * this class is the live progress meter for the F-CP sub-surface, paralleling
- * the role of {@link CurveAwarenessSpecTest} at the epic level.
- *
- * <p><b>Status:</b> red against current main + {@code feature/sfa-curve-extension-points}.
- * Today's Phase-1 stand-in collapses CurvePolygon rings to flat LinearRings
- * on read (see {@link
- * org.locationtech.jts.io.curved.CurvedWKTReader#readCurvePolygonText
- * CurvedWKTReader.readCurvePolygonText}), so every assertion below fails.
+ * <p>Main epic progress is tracked in {@link CurveAwarenessSpecTest}.
  */
 public class CurvePolygonStructuralSpec extends GeometryTestCase {
 
@@ -108,46 +88,18 @@ public class CurvePolygonStructuralSpec extends GeometryTestCase {
   // ============================================================
 
   /**
-   * <b>Dovetail decision point</b>. CurvePolygon extends {@link Polygon} in
-   * the current type hierarchy, so a structural F-CP implementation must
-   * decide what {@link Polygon#getExteriorRing()} returns when the actual
-   * shell is a CompoundCurve. Three live options:
+   * Executable documentation of the landed Option A contract (see SPEC_F_CP.md
+   * and the F-CP implementation PR).
    *
-   * <table>
-   *   <tr><th>Option</th><th>{@code getExteriorRing()}</th><th>Trade-off</th></tr>
-   *   <tr>
-   *     <td>A — legacy fallback</td>
-   *     <td>{@code LinearRing} of densified chord coordinates</td>
-   *     <td>Old callers keep working but see a polyline approximation;
-   *         needs a new {@code getExteriorCurve()} for the structural
-   *         {@code CompoundCurve}.</td>
-   *   </tr>
-   *   <tr>
-   *     <td>B — widen return type</td>
-   *     <td>{@code LineString} ({@code CompoundCurve} extends LineString)</td>
-   *     <td>Direct access to the structural shell, but breaks every caller
-   *         that does {@code (LinearRing) p.getExteriorRing()} or relies on
-   *         {@code LinearRing}-specific API.</td>
-   *   </tr>
-   *   <tr>
-   *     <td>C — fail-fast</td>
-   *     <td>throws {@code UnsupportedOperationException}</td>
-   *     <td>Forces every caller to migrate; loudest diagnostic; most painful
-   *         interim period.</td>
-   *   </tr>
-   * </table>
+   * <p>CurvePolygon extends {@link Polygon}, so {@code getExteriorRing()} must
+   * return a {@code LinearRing} for legacy callers. Option A returns a
+   * {@code LinearRing} built from the control-point polyline of the structural
+   * ring (phase-1 "linear view"; {@code toLinear(0.0)} currently returns the
+   * raw control points with no arc tessellation — tolerance is a no-op in
+   * phase 1). Curve-aware code uses {@code getExteriorCurve()}.
    *
-   * <p>This red test does not pick a winner. It asserts only that
-   * <em>some</em> structural accessor exists, by name: either
-   * {@code getExteriorCurve()} as a new method (option A), or the current
-   * {@code getExteriorRing()} returning a Curve (option B), or any other
-   * named accessor that the chosen design adds. The chosen design plugs in
-   * here; whatever lands, this test then turns green and gets deleted per
-   * the epic convention.
-   *
-   * <p>Smallest concrete next step before F-CP code goes in: pick A, B,
-   * or C and write the {@code DESIGN-FCP.md} entry. The companion file
-   * {@code modules/curved/spec/SPEC_F_CP.md} captures the trade-offs.
+   * <p>The table below is retained for historical context (the three options
+   * considered in the spike). The implementation chose A.
    */
   public void test_FCP_DOVE_legacyPolygonApiContractDecision() throws Exception {
     CurvePolygon cp = readCurvePolygon(WKT_CP_COMPOUND_SHELL_WITH_HOLE);
@@ -182,7 +134,7 @@ public class CurvePolygonStructuralSpec extends GeometryTestCase {
     // Arc-shelled CP (structural shell is a CircularString)
     CurvePolygon cpCurved = readCurvePolygon(WKT_CP_ARC_SHELL);
 
-    // Equivalent CP constructed using the densified view as its "structural"
+    // Equivalent CP constructed using the control-point view as its "structural"
     // (i.e. a plain LinearRing; the legacy ctor path)
     LinearRing viewShell = cpCurved.getExteriorRing();
     CurvePolygon cpViewBased = new CurvePolygon(viewShell, new LinearRing[0], cpCurved.getFactory());
@@ -208,52 +160,4 @@ public class CurvePolygonStructuralSpec extends GeometryTestCase {
         cpCurved.getExteriorRing().equalsExact(plain.getExteriorRing()));
   }
 
-  // ============================================================
-  // Helpers — abstract over the chosen accessor so the FCP-DOVE
-  // decision can flip in one place without rewriting every test.
-  // ============================================================
-
-  /**
-   * Returns the structural shell of the given CurvePolygon. On this
-   * Option-A spike branch the helper delegates to
-   * {@link CurvePolygon#getExteriorCurve()}; on the Option-B branch it
-   * would call the widened {@code getExteriorRing()}; on the Option-C
-   * branch it would also call {@code getExteriorCurve()} after
-   * {@code getExteriorRing()} starts throwing.
-   */
-  private static Geometry structuralShellOf(CurvePolygon cp) {
-    LineString curve = cp.getExteriorCurve();
-    return curve != null ? curve : cp.getExteriorRing();
-  }
-
-  private static Geometry structuralHoleOf(CurvePolygon cp, int i) {
-    try {
-      // Prefer structural if available (our impl + option A)
-      return cp.getInteriorCurveN(i);
-    } catch (Exception e) {
-      return cp.getInteriorRingN(i);
-    }
-  }
-
-  /**
-   * Returns the number of segments in a structural CompoundCurve shell.
-   * Bridges to the new {@code getNumCurves()} accessor introduced on
-   * {@code feature/sfa-curve-compoundcurve-members}; until F-CP lands and
-   * pulls that accessor onto the merge target, falls back to a count of 1.
-   */
-  private static int numMembers(CompoundCurve cc) {
-    try {
-      return (Integer) CompoundCurve.class.getMethod("getNumCurves").invoke(cc);
-    } catch (Exception e) {
-      return 1;
-    }
-  }
-
-  private static LineString memberOf(CompoundCurve cc, int i) {
-    try {
-      return (LineString) CompoundCurve.class.getMethod("getCurveN", int.class).invoke(cc, i);
-    } catch (Exception e) {
-      return cc;
-    }
-  }
 }

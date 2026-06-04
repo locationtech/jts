@@ -104,6 +104,11 @@ public class CurvedWKTWriter extends WKTWriter {
     writer.write(cc.getGeometryType().toUpperCase(Locale.ROOT));
     writer.write(" ");
     appendOrdinateText(outputOrdinates, writer);
+    if (cc.isEmpty()) {
+      writer.write(" ");
+      writer.write(WKTConstants.EMPTY);
+      return;
+    }
     writer.write(" (");
     appendSequenceText(cc.getCoordinateSequence(), outputOrdinates, useFormatting,
         level, false, writer, formatter);

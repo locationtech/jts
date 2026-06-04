@@ -32,10 +32,19 @@ That decision lives in epic §7 risk #1 and surfaces here as the
 **Chosen: Option A — legacy fallback.**
 
 `CurvePolygon` (post F-CP) inherits `Polygon.getExteriorRing()` which
-returns a `LinearRing` view of the densified chords at default tolerance
-(0.0). Curve-aware callers use the new `getExteriorCurve()` /
-`getInteriorCurveN(int)` to obtain the structural `LineString`
-(`CircularString` / `CompoundCurve` / `LineString`).
+returns a `LinearRing` view built from the control-point polyline of the
+structural ring (phase-1 linear view). Curve-aware callers use the new
+`getExteriorCurve()` / `getInteriorCurveN(int)` to obtain the structural
+`LineString` (`CircularString` / `CompoundCurve` / `LineString`).
+
+**Phase-1 note on linearisation:** `toLinear(tolerance)` (and thus the
+legacy ring views) currently return the raw control points; there is no
+arc tessellation / densification. The `tolerance` parameter is accepted
+for the `Linearizable` interface contract but is a no-op in phase 1.
+Real arc-aware densification (honouring tolerance with chord error or
+segment count) is deferred to later phases that need geometric accuracy
+(e.g. area, buffer, predicates). The "linear view" here is the control
+polyline required to satisfy the `Polygon` parent contract.
 
 See implementation in `CurvePolygon` (structural ctors + fields,
 `copyInternal`, `reverseInternal`, `toLinear`, `normalize` overrides)
@@ -49,8 +58,8 @@ curved rings inside CURVEPOLYGON).
   `LinearRing` or calls `getNumPoints` etc on rings).
 - Gives structural access via two new methods.
 - Lowest friction; no core sweep, no runtime explosions.
-- Trade-off (documented): two-tier API and tolerance-dependent counts on
-  the legacy view. See release notes.
+- Trade-off (documented): two-tier API; the legacy view is a control
+  polyline (not a true arc tessellation). See release notes.
 
 (B and C were ruled out for Phase 1 per epic §7 risk #1 and SPEC
 discussion; they remain options for a future breaking 2.0 if desired.)
