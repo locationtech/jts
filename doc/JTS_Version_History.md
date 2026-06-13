@@ -57,6 +57,7 @@ Distributions for older JTS versions can be obtained at the
 * Add Voronoi snapping heuristic to fix invalid diagram topology (#1174)
 * Fix `LineSegment.project` to handle segments projecting onto a single endpoint (#1179)
 * Fix DD equals and compareTo (#1186)
+* Fix `RelateNG.computeLineEnds` incorrectly skipping boundary points for disjoint line components (#1175)
 
 ### Performance Improvements
 
