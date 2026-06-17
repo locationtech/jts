@@ -39,6 +39,28 @@ public class LinearLocationTest
 
   public LinearLocationTest(String name) { super(name); }
 
+  public void testEqualsValuesConsistentWithCompareTo() throws Exception
+  {
+    LinearLocation loc = new LinearLocation(1, 2, 0.5);
+    LinearLocation locSame = new LinearLocation(1, 2, 0.5);
+    // two locations the compareTo orders as equal must also be equals()
+    assertTrue(loc.compareTo(locSame) == 0);
+    assertEquals(loc, locSame);
+  }
+
+  public void testEqualsHashCodeContract() throws Exception
+  {
+    LinearLocation loc = new LinearLocation(1, 2, 0.5);
+    LinearLocation locSame = new LinearLocation(1, 2, 0.5);
+    // equal objects must report equal hash codes (Object.equals/hashCode contract)
+    assertEquals(loc.hashCode(), locSame.hashCode());
+    // and must therefore deduplicate in hash-based collections
+    java.util.Set<LinearLocation> set = new java.util.HashSet<LinearLocation>();
+    set.add(loc);
+    set.add(locSame);
+    assertEquals(1, set.size());
+  }
+
   public void testZeroLengthLineString() throws Exception
   {
     Geometry line = reader.read("LINESTRING (10 0, 10 0)");
