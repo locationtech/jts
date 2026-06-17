@@ -184,13 +184,13 @@ Update [Javadoc on JTS Github IO](http://locationtech.github.io/jts/javadoc/):
    git commit -m "JTS 1.19.0 javadocs"
    ```
 
-### Post release
+### Post-release actions
 
 Update master to the next release version:
 
 1. Set the version number in Java class: [`org.locationtech.jts.JTSVersion`](https://github.com/locationtech/jts/blob/master/modules/core/src/main/java/org/locationtech/jts/JTSVersion.java)
    
-   Change release version:
+   Change release version: (e.g.)
    
    ```
    public static final int MAJOR = 1;
@@ -228,9 +228,9 @@ Update master to the next release version:
    git push
    ```  
    
-4. Add a new version entry to the [Version History](https://github.com/locationtech/jts/blob/master/doc/JTS_Version_History.md)
+4. Add a new empty version entry to the [Version History](https://github.com/locationtech/jts/blob/master/doc/JTS_Version_History.md), ready to record revisions
 
-### Announcing
+### Announcing the new release
 
 * Message to [JTS Dev mail list](https://accounts.eclipse.org/mailing-list/jts-dev)
 * Comment on [Gitter channel](https://gitter.im/locationtech/jts)
