@@ -79,6 +79,36 @@ public class OrientedCoordinateArray
     return comp;
   }
 
+  /**
+   * Tests whether this oriented coordinate array is equal to another,
+   * i.e. represents the same coordinate sequence up to orientation.
+   * This is consistent with {@link #compareTo(Object)}.
+   *
+   * @param o the object to compare to
+   * @return true if the arrays are equal (orientation-independently)
+   */
+  public boolean equals(Object o)
+  {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    return compareTo(o) == 0;
+  }
+
+  public int hashCode()
+  {
+    // Walk the points in canonical orientation order (as compareTo does),
+    // so an array and its reverse -- which are equal here -- hash equally.
+    int dir = orientation ? 1 : -1;
+    int limit = orientation ? pts.length : -1;
+    int i = orientation ? 0 : pts.length - 1;
+    int result = 17;
+    while (i != limit) {
+      result = 31 * result + pts[i].hashCode();
+      i += dir;
+    }
+    return result;
+  }
+
   private static int compareOriented(Coordinate[] pts1,
                                      boolean orientation1,
                                      Coordinate[] pts2,

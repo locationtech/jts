@@ -12,6 +12,7 @@
 package org.locationtech.jts.operation.relateng;
 
 import java.util.Comparator;
+import java.util.Objects;
 
 import org.locationtech.jts.algorithm.PolygonNodeTopology;
 import org.locationtech.jts.geom.Coordinate;
@@ -182,7 +183,29 @@ class NodeSection implements Comparable<NodeSection>
     
     return compareWithNull(v1, o.v1);
   }
-  
+
+  /**
+   * Tests whether this section is equal to another,
+   * i.e. has the same parent geometry, dimension, element id, ring id
+   * and edge vertices.
+   * Like {@link #compareTo(NodeSection)}, sections are assumed to be
+   * at the same node point, and this is consistent with that ordering.
+   *
+   * @param o the object to compare to
+   * @return true if the sections are equal
+   */
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    return compareTo((NodeSection) o) == 0;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(isA, dim, id, ringId, v0, v1);
+  }
+
   private static int compareWithNull(Coordinate v0, Coordinate v1) {
     if (v0 == null) {
       if (v1 == null) 
