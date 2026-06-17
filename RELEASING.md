@@ -218,8 +218,23 @@ Update master to the next release version:
    ```
    <version>1.20.1-SNAPSHOT</version>
    ```
-
-4. Compile the project to test the changes.
+   At this point `git status` should show the following:
+   
+   ```
+   modified:   build-tools/pom.xml
+	modified:   modules/app/pom.xml
+	modified:   modules/core/pom.xml
+	modified:   modules/core/src/main/java/org/locationtech/jts/JTSVersion.java
+	modified:   modules/example/pom.xml
+	modified:   modules/io/common/pom.xml
+	modified:   modules/io/ora/pom.xml
+	modified:   modules/io/pom.xml
+	modified:   modules/lab/pom.xml
+	modified:   modules/pom.xml
+	modified:   modules/tests/pom.xml
+	modified:   pom.xml
+   ```
+5. Compile the project to test the changes.
    
    ```
    mvn clean install
