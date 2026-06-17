@@ -97,6 +97,10 @@ public class KMLReader {
         this.attributeNames = attributeNames == null
                 ? Collections.emptySet()
                 : new HashSet<>(attributeNames);
+        // Disable DTDs completely (prevents DOCTYPE declarations)
+        inputFactory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
+        // Prevent external entity expansion from DTDs
+        inputFactory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
     }
 
     /**
