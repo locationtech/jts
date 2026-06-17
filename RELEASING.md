@@ -220,7 +220,7 @@ Update master to the next release version:
    mvn clean install
    ```
  
-3. Compile to test, and commit this change.
+3. Compile the project to test the changes.  If correct, commit the updates to initiate the next version:
 
    ```
    git add .
