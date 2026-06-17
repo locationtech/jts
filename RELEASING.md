@@ -190,7 +190,7 @@ Update master to the next release version:
 
 1. Set the version number in Java class: [`org.locationtech.jts.JTSVersion`](https://github.com/locationtech/jts/blob/master/modules/core/src/main/java/org/locationtech/jts/JTSVersion.java)
    
-   Change release version: (e.g.)
+   Change release version from (e.g.):
    
    ```
    public static final int MAJOR = 1;
@@ -199,7 +199,7 @@ Update master to the next release version:
    private static final String RELEASE_INFO = "";
    ```
    
-   To next SNAPSHOT version:
+   To the next SNAPSHOT version:
    
    ```
    public static final int MAJOR = 1;
@@ -214,13 +214,20 @@ Update master to the next release version:
    mvn versions:set -DnewVersion=1.20.0-SNAPSHOT
    ```
    
-3. Edit ``build-tools/pom.xml`` by hand, and compile to test.
+3. Edit ``build-tools/pom.xml`` manually to update tbe main `<version ` entry:
+   ```
+   <version>1.20.1-SNAPSHOT</version>
+   ```
+
+4. Compile the project to test the changes.
    
    ```
    mvn clean install
    ```
+   The mvn execution log should show the new version, and the build artifacts in the `target` directories
+   should be stamped with the new version number. 
  
-3. Compile the project to test the changes.  If correct, commit the updates to initiate the next version:
+6. If the build is good, commit the updates to initiate the next version:
 
    ```
    git add .
@@ -228,7 +235,7 @@ Update master to the next release version:
    git push
    ```  
    
-4. Add a new empty version entry to the [Version History](https://github.com/locationtech/jts/blob/master/doc/JTS_Version_History.md), ready to record revisions
+5. Add a new empty version entry to the [Version History](https://github.com/locationtech/jts/blob/master/doc/JTS_Version_History.md), ready to record revisions
 
 ### Announcing the new release
 
