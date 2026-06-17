@@ -76,6 +76,10 @@ Distributions for older JTS versions can be obtained at the
 * Add Layer List Zoom to Geometry button
 * Add Layer List Copy Geometry button
 
+## JTS TestRunner
+### Functionality Improvements
+* Process XML tests in a stable order (sorted by filename)
+
 # Version 1.20.0
 
 *Release Date: 09/18/2024*
