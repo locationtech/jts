@@ -184,10 +184,12 @@ implements GeometryFunction, Comparable
    */
   @Override
   public int hashCode() {
+    // Must use the same fields as equals() (the function signature:
+    // name, parameter types, return type). Parameter names are not part
+    // of equality, so they must not contribute to the hash code.
     final int prime = 31;
     int result = 1;
     result = prime * result + ((name == null) ? 0 : name.hashCode());
-    result = prime * result + Arrays.hashCode(parameterNames);
     result = prime * result + Arrays.hashCode(parameterTypes);
     result = prime * result + ((returnType == null) ? 0 : returnType.hashCode());
     return result;

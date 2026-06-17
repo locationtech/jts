@@ -78,6 +78,10 @@ Distributions for older JTS versions can be obtained at the
 * Add Layer List Zoom to Geometry button
 * Add Layer List Copy Geometry button
 
+### Bug Fixes
+
+* Fix `BaseGeometryFunction.hashCode` to be consistent with `equals` (exclude parameter names)
+
 ## JTS TestRunner
 ### Functionality Improvements
 * Process XML tests in a stable order (sorted by filename)
