@@ -58,6 +58,8 @@ Distributions for older JTS versions can be obtained at the
 * Fix `LineSegment.project` to handle segments projecting onto a single endpoint (#1179)
 * Fix DD equals and compareTo (#1186)
 * Fix `RelateNG.computeLineEnds` incorrectly skipping boundary points for disjoint line components (#1175)
+* Add `equals` and `hashCode` consistent with `compareTo` for value-semantics `Comparable` classes (`LinearLocation`, `EdgeIntersection`, `NodeSection`, `OrientedCoordinateArray`) (#1184)
+* Add `DD.hashCode` consistent with `DD.equals` (#1186)
 
 ### Performance Improvements
 
@@ -79,6 +81,10 @@ Distributions for older JTS versions can be obtained at the
 ### Bug Fixes
 
 * Fix `BaseGeometryFunction.hashCode` to be consistent with `equals` (exclude parameter names)
+
+## JTS TestRunner
+### Functionality Improvements
+* Process XML tests in a stable order (sorted by filename)
 
 # Version 1.20.0
 

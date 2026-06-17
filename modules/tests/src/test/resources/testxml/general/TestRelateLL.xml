@@ -391,4 +391,17 @@
 </test>
 </case>
 
+<case>
+  <desc>LmL - disjoint with interior endpoints.  See https://github.com/locationtech/jts/issues/1175</desc>
+  <a>
+    LINESTRING (10 10, 20 20)
+  </a>
+  <b>
+    MULTILINESTRING ((0 0, 1 0), (1 0, 2 0), (-1 0, 0 0))
+  </b>
+<test>
+  <op name="relate" arg3="FF1FF0102" arg1="A" arg2="B"> true </op>
+</test>
+</case>
+
 </run>
