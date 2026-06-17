@@ -11,6 +11,7 @@
  */
 package org.locationtech.jts.geom.curved;
 
+import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
@@ -99,7 +100,22 @@ public class CurvePolygon extends Polygon implements Linearizable {
     LineString flat = (s instanceof Linearizable)
         ? (LineString) ((Linearizable) s).toLinear(0.0)
         : s;
-    return f.createLinearRing(flat.getCoordinates());
+    Coordinate[] pts = flat.getCoordinates();
+    // A curved ring's control polyline must have enough points to form a
+    // non-degenerate ring. A full-circle CIRCULARSTRING has only 3 control
+    // points (start, antipode, start), whose linear view collapses to a
+    // degenerate "there-and-back" ring; producing it silently would yield an
+    // invalid CurvePolygon. Reject it with a clear message rather than building
+    // an invalid geometry. (Arc tessellation, which would produce a valid ring,
+    // is deferred to a later phase.)
+    if (pts.length > 0 && pts.length < 4) {
+      throw new IllegalArgumentException(
+          "Cannot derive a linear ring view from a curved shell/hole with only " + pts.length
+          + " control points (e.g. a full-circle CIRCULARSTRING): the control polyline collapses to a "
+          + "degenerate ring. Arc tessellation that would produce a valid ring is not available in this "
+          + "phase; supply a curve with at least 3 distinct control points (4 coordinates with closure).");
+    }
+    return f.createLinearRing(pts);
   }
 
   private static LinearRing[] deriveLinearRings(LineString[] hs, GeometryFactory f) {
@@ -153,11 +169,14 @@ public class CurvePolygon extends Polygon implements Linearizable {
   @Override
   public void normalize() {
     // Normalize the legacy LinearRing views (shell/holes) per Polygon contract (Option A).
-    // The structural curves (source of truth for arcs) are left unchanged; their densified
-    // views are normalized. This avoids losing curved identity while keeping legacy API
-    // behaviour (e.g. normalized() rings for getExteriorRing etc.).
-    // Full arc-aware structural normalization (e.g. consistent orientation of CircularString
-    // members) is deferred; see review notes for SPEC_F_CP.md alignment.
+    // toLinear() reads these same inherited rings, so getExteriorRing()/getInteriorRingN()
+    // and toLinear(0) stay consistent across normalize().
+    //
+    // The structural curves (getExteriorCurve()/getInteriorCurveN(), the source of truth for
+    // arcs) are intentionally left unchanged: super.normalize() may scroll a ring to its lowest
+    // vertex, which is not well defined for arc control points (it would break arc-triple
+    // grouping). So after normalize() the structural curve may start at a different vertex than
+    // the linear view. Full arc-aware structural normalization is deferred; see SPEC_F_CP.md.
     super.normalize();
   }
 
@@ -177,17 +196,18 @@ public class CurvePolygon extends Polygon implements Linearizable {
   public Geometry toLinear(double tolerance) {
     GeometryFactory f = getFactory();
     if (isEmpty() || structuralShell == null) return f.createPolygon();
-    LineString shellFlat = (structuralShell instanceof Linearizable)
-        ? (LineString) ((Linearizable) structuralShell).toLinear(tolerance)
-        : structuralShell;
-    LinearRing shell = f.createLinearRing(shellFlat.getCoordinates());
-    LinearRing[] holeRings = new LinearRing[structuralHoles.length];
-    for (int i = 0; i < structuralHoles.length; i++) {
-      LineString h = structuralHoles[i];
-      LineString hflat = (h instanceof Linearizable)
-          ? (LineString) ((Linearizable) h).toLinear(tolerance)
-          : h;
-      holeRings[i] = f.createLinearRing(hflat.getCoordinates());
+    // Phase 1: no arc tessellation. The control-point linear view is exactly the
+    // inherited Polygon's rings (derived from the structural curves at
+    // construction). Returning those -- rather than re-deriving from the
+    // structural curves -- keeps toLinear() consistent with getExteriorRing() /
+    // getInteriorRingN() through normalize(), which canonicalizes the inherited
+    // rings in place but cannot scroll/reorient the structural arcs (deferred).
+    // The {@code tolerance} parameter is accepted for Linearizable compatibility
+    // but is a no-op in phase 1.
+    LinearRing shell = (LinearRing) getExteriorRing().copy();
+    LinearRing[] holeRings = new LinearRing[getNumInteriorRing()];
+    for (int i = 0; i < holeRings.length; i++) {
+      holeRings[i] = (LinearRing) getInteriorRingN(i).copy();
     }
     return f.createPolygon(shell, holeRings);
   }
