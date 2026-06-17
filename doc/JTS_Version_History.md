@@ -59,6 +59,7 @@ Distributions for older JTS versions can be obtained at the
 * Fix DD equals and compareTo (#1186)
 * Fix `RelateNG.computeLineEnds` incorrectly skipping boundary points for disjoint line components (#1175)
 * Add `equals` and `hashCode` consistent with `compareTo` for value-semantics `Comparable` classes (`LinearLocation`, `EdgeIntersection`, `NodeSection`, `OrientedCoordinateArray`) (#1184)
+* Add `DD.hashCode` consistent with `DD.equals` (#1186)
 
 ### Performance Improvements
 
@@ -76,6 +77,10 @@ Distributions for older JTS versions can be obtained at the
 * Add Layer style presets
 * Add Layer List Zoom to Geometry button
 * Add Layer List Copy Geometry button
+
+## JTS TestRunner
+### Functionality Improvements
+* Process XML tests in a stable order (sorted by filename)
 
 # Version 1.20.0
 

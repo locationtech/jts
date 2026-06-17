@@ -12,6 +12,7 @@
 package org.locationtech.jts.math;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * Implements extended-precision floating-point numbers 
@@ -992,7 +993,16 @@ public strictfp final class DD
     DD dd = (DD) o;
     return hi == dd.hi && lo == dd.lo;
   }
-  
+
+  public int hashCode()
+  {
+    // equals() compares hi/lo with ==, under which -0.0 and +0.0 are equal,
+    // whereas Double.hashCode distinguishes them. Adding 0.0 normalizes
+    // -0.0 to +0.0 (and leaves every other value unchanged) so that equal
+    // values always hash equally.
+    return Objects.hash(hi + 0.0, lo + 0.0);
+  }
+
   /**
    * Tests whether this value is greater than another <tt>DoubleDouble</tt> value.
    * @param y a DoubleDouble value

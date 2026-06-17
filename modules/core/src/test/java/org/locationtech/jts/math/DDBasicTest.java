@@ -30,6 +30,31 @@ public class DDBasicTest
 
   public DDBasicTest(String name) { super(name); }
 
+  public void testEqualsHashCodeContract()
+  {
+    DD a = new DD(1.5, 1e-20);
+    DD b = new DD(1.5, 1e-20);
+    assertTrue(a.equals(b));
+    // equal objects must report equal hash codes
+    assertEquals(a.hashCode(), b.hashCode());
+    java.util.Set<DD> set = new java.util.HashSet<DD>();
+    set.add(a);
+    set.add(b);
+    assertEquals(1, set.size());
+  }
+
+  public void testEqualsHashCodeSignedZero()
+  {
+    // equals() compares hi/lo with ==, so -0.0 and +0.0 are equal;
+    // hashCode() must agree even though Double.hashCode distinguishes them.
+    // A mixed sign (one component -0.0, the other +0.0) is the case that
+    // a naive Objects.hash(hi, lo) gets wrong.
+    DD posZero = new DD(0.0, 0.0);
+    DD negZero = new DD(-0.0, 0.0);
+    assertTrue(posZero.equals(negZero));
+    assertEquals(posZero.hashCode(), negZero.hashCode());
+  }
+
   public void testNaN()
   {
   	assertTrue(DD.valueOf(1).divide(DD.valueOf(0)).isNaN());

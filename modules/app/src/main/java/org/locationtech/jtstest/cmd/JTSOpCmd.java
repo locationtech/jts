@@ -174,7 +174,7 @@ public class JTSOpCmd {
   "  -eachb          execute op on each element of B",
   "  -index          index the B geometries",
   "  -repeat         repeat the operation N times",
-  "  -where cond v   output geometry where operation result matches condition and value.",
+  "  -where cond val output geometry where operation result matches condition and value.",
   "                     Conditions are: eq, ne, ge, gt, le, lt",
   "  -validate       validate the result of each operation",
   "  -geomfunc       specifies class providing geometry operations",
