@@ -214,7 +214,7 @@ Update master to the next release version:
    mvn versions:set -DnewVersion=1.20.0-SNAPSHOT
    ```
    
-3. Edit ``build-tools/pom.xml`` manually to update tbe main `<version ` entry:
+3. Edit ``build-tools/pom.xml`` manually to update the main `<version ` entry:
    ```
    <version>1.20.1-SNAPSHOT</version>
    ```
