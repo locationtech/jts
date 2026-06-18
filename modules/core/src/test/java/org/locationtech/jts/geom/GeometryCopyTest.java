@@ -28,7 +28,7 @@ public class GeometryCopyTest extends GeometryTestCase {
     int SRID = 123;
     g.setSRID(SRID );
     
-    Object DATA = new Integer(999);
+    Object DATA = Integer.valueOf(999);
     g.setUserData(DATA);
     
     Geometry copy = g.copy();

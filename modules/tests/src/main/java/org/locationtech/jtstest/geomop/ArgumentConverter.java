@@ -54,7 +54,7 @@ public class ArgumentConverter
     else if (destClass == Integer.class || destClass == int.class) {
       // try as an int
       try {
-        return new Integer(src);
+        return Integer.valueOf(src);
       }
       catch (NumberFormatException e) {
         // eat this exception - it will be reported below

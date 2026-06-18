@@ -678,7 +678,7 @@ class IndexedGeometry
     index = new STRtree();
     for (int i = 0; i < geoms.size(); i++) {
       Geometry comp = geoms.get(i);
-      index.insert(comp.getEnvelopeInternal(), new Integer(i));
+      index.insert(comp.getEnvelopeInternal(), Integer.valueOf(i));
     }
   }
   
