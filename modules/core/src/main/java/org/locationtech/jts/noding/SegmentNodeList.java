@@ -224,7 +224,7 @@ public class SegmentNodeList
    * (and including) the two intersections.
    * The label for the new edge is the same as the label for the parent edge.
    */
-  private SegmentString createSplitEdge(SegmentNode ei0, SegmentNode ei1)
+  protected SegmentString createSplitEdge(SegmentNode ei0, SegmentNode ei1)
   {
     Coordinate[] pts = createSplitEdgePts(ei0, ei1);
     return new NodedSegmentString(pts, edge.getData());
@@ -240,7 +240,7 @@ public class SegmentNodeList
    * @param ei1 the end node of the split edge
    * @return the points for the split edge
    */
-  private Coordinate[] createSplitEdgePts(SegmentNode ei0, SegmentNode ei1) {
+  protected Coordinate[] createSplitEdgePts(SegmentNode ei0, SegmentNode ei1) {
 //Debug.println("\ncreateSplitEdge"); Debug.print(ei0); Debug.print(ei1);
     int npts = ei1.segmentIndex - ei0.segmentIndex + 2;
 

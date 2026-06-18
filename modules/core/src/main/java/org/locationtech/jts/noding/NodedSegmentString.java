@@ -66,9 +66,21 @@ public class NodedSegmentString
     }
   }
 
-  private SegmentNodeList nodeList = new SegmentNodeList(this);
+  private SegmentNodeList nodeList = createNodeList();
   private Coordinate[] pts;
   private Object data;
+
+  /**
+   * Creates the {@link SegmentNodeList} backing this segment string. Subclasses
+   * (e.g. an arc-aware segment string) may override this to supply a node list
+   * that builds curve-preserving split edges. Called during construction, so it
+   * must not depend on subclass fields not yet initialised.
+   *
+   * @return the node list for this segment string
+   */
+  protected SegmentNodeList createNodeList() {
+    return new SegmentNodeList(this);
+  }
 
   /**
    * Creates a instance from a list of vertices and optional data object.
