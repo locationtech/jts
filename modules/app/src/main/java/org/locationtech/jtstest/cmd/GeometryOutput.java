@@ -82,23 +82,23 @@ public class GeometryOutput {
     return writer.write(geom);
   }
   
-  public static String writeSummary(String label,
+  public static String summary(String label,
       Geometry g)
   {
     if (g == null) return "";
     return String.format("%s: %s (%d)", label, g.getGeometryType().toUpperCase(), g.getNumPoints());
   }
 
-  public static String writeSummary(String label,
+  public static String summary(String label,
       List<Geometry> geoms)
   {
     if (geoms == null) return "";
     int nVert = getNumPoints(geoms);
     String geomTypes = getTypesSummary(geoms);
-    return writeSummary(label, geoms.size(), geomTypes, nVert);
+    return summary(label, geoms.size(), geomTypes, nVert);
   }
 
-  public static String writeSummary(String label,
+  public static String summary(String label,
       int numGeoms, String geomTypes, int numVert)
   {
     return String.format("%s : %d %s, %d vertices", label, numGeoms, geomTypes, numVert);

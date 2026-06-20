@@ -296,7 +296,7 @@ public class JTSOpRunner {
     String header = "";
     for (int i = 0; i < numGeom; i++) {
       Geometry comp = geomA == null ? null : geomA.get(i);
-      String hdr =  GeometryOutput.writeSummary(SYM_A + "[" + i + "]", comp);
+      String hdr =  GeometryOutput.summary(SYM_A + "[" + i + "]", comp);
       if (geomB == null) {
         executeFunction(comp, fun, hdr);
       }
@@ -311,7 +311,7 @@ public class JTSOpRunner {
     List<Integer> targetB = geomIndexB.query(geomA);
     for (int index : targetB) {
       Geometry gb = geomB.get(index);
-      String hdr = header + ", " + GeometryOutput.writeSummary(symGeom2 + "[" + index + "]", gb);
+      String hdr = header + ", " + GeometryOutput.summary(symGeom2 + "[" + index + "]", gb);
       fun.setB(gb);
       executeFunction(geomA, fun, hdr);
     }
@@ -533,13 +533,13 @@ public class JTSOpRunner {
     
     String srcname = "";
     if (source != null) srcname = " -- " + source;
-    printlnInfo( GeometryOutput.writeSummary(label, geom) + srcname);
+    printlnInfo( GeometryOutput.summary(label, geom) + srcname);
   }
   
   private void printGeometrySummary(String label, Geometry geom) {
     // short-circuit to avoid cost
     if (! isVerbose) return;
-    printlnInfo( GeometryOutput.writeSummary(label, geom));
+    printlnInfo( GeometryOutput.summary(label, geom));
   }
   
   private static String fileInfo(String filename, int limit, int offset) {
