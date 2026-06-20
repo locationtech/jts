@@ -39,7 +39,10 @@ public class GeometryOutput {
     this.out = out;
   }
   
-  public void printGeometry(Geometry geom, int srid, String outputFormat) {
+  public void write(Geometry geom, int srid, String outputFormat) {
+    if (geom == null) return;
+    if (outputFormat == null) return;
+
     String txt = null;
     if (outputFormat.equalsIgnoreCase(CommandOptions.FORMAT_WKT)
         || outputFormat.equalsIgnoreCase(CommandOptions.FORMAT_TXT)) {
@@ -79,23 +82,23 @@ public class GeometryOutput {
     return writer.write(geom);
   }
   
-  public static String writeGeometrySummary(String label,
+  public static String writeSummary(String label,
       Geometry g)
   {
     if (g == null) return "";
     return String.format("%s: %s (%d)", label, g.getGeometryType().toUpperCase(), g.getNumPoints());
   }
 
-  public static String writeGeometrySummary(String label,
+  public static String writeSummary(String label,
       List<Geometry> geoms)
   {
     if (geoms == null) return "";
     int nVert = getNumPoints(geoms);
     String geomTypes = getTypesSummary(geoms);
-    return writeGeometrySummary(label, geoms.size(), geomTypes, nVert);
+    return writeSummary(label, geoms.size(), geomTypes, nVert);
   }
 
-  public static String writeGeometrySummary(String label,
+  public static String writeSummary(String label,
       int numGeoms, String geomTypes, int numVert)
   {
     return String.format("%s : %d %s, %d vertices", label, numGeoms, geomTypes, numVert);
