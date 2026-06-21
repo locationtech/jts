@@ -44,6 +44,14 @@ import test.jts.GeometryTestCase;
  * </ul>
  *
  * <p>Main epic progress is tracked in {@link CurveAwarenessSpecTest}.
+ *
+ * <p>Oracle note: F-CP is a <em>structural</em> foundation TAG (curved rings are
+ * preserved through the {@code CurvePolygon} type, with the Option A dovetail for
+ * the legacy Polygon API). Its contract is about representation and API shape, not
+ * a geometric quantity the NetTopologySuite.Proofs oracle computes, so there is no
+ * oracle vector pin here. The arc geometry these structures carry is oracle-pinned
+ * on the downstream numeric TAGs (M-AREA-CP area, C-AREA centroid, V-CP validity,
+ * R-PR relate, etc.).
  */
 public class CurvePolygonStructuralSpec extends GeometryTestCase {
 
