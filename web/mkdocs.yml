@@ -1,0 +1,121 @@
+# Project information
+site_name: JTS Topology Suite
+site_description: JTS Project
+site_dir: target/html
+site_url: https://locationtech.github.io/jts/
+
+# Repository
+repo_name: jts
+repo_url: http://github.com/locationtech/jts
+edit_uri: edit/master/web/docs
+
+# Copyright
+copyright: Copyright &copy; 2001 - 2025 Martin Davis and others
+
+# extra_css:
+#  - assets/stylesheets/extra.css
+
+# Configuration
+theme:
+  name: material
+  language: en
+  custom_dir: overrides
+  logo: assets/images/jts_logo.png
+  favicon: assets/images/jts_logo.png
+  icon:
+    repo: fontawesome/brands/github
+  palette:
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: blue
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+  features:
+    - toc.follow
+    - navigation.tracking
+    - navigation.top
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.prune
+    - navigation.indexes
+    - navigation.footer
+    - header.autohide
+    - content.tabs.link
+    - content.code.copy
+    - content.action.view
+    - content.action.edit
+    - announce.dismiss
+
+# Plugins - install using: pip3 install -r requirements.txt
+plugins:
+  - search
+
+# Customizations
+extra:
+  version:
+    provider: mike
+    default: stable
+    alias: true
+  homepage: http://github.com/locationtech/jts/
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/locationtech/jts/
+
+# For use with --strict to produce failures on build warnings
+validation:
+  nav:
+    omitted_files: warn
+    not_found: warn
+    absolute_links: warn
+  links:
+    not_found: warn
+    absolute_links: warn
+    unrecognized_links: warn
+
+# Extensions
+# - These are carefully chosen to work with pandoc markdown support for whole document translation
+markdown_extensions:
+  - admonition
+  - attr_list
+  - def_list
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+#       options:
+#         custom_icons:
+#           - overrides/.icons
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.smartsymbols
+  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - tables
+  - md_in_html
+
+# Page tree
+nav:
+  - 'Home':
+    - index.md
+    - 'User Guide': user/index.md
+    - 'Features': features.md
+    - 'FAQ': faq.md
+    - 'Technical Reference': technical/index.md
