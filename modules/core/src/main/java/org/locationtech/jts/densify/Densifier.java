@@ -11,6 +11,8 @@
  */
 package org.locationtech.jts.densify;
 
+import java.util.Iterator;
+
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateList;
 import org.locationtech.jts.geom.CoordinateSequence;
@@ -57,14 +59,30 @@ public class Densifier {
 	}
 
 	/**
+	 * Densifies a geometry using a given distance tolerance, and respecting the
+	 * input geometry's {@link PrecisionModel}.
+	 * 
+	 * @param geom              the geometry to densify
+	 * @param distanceTolerance the distance tolerance to densify
+	 * @param interpolator      The segment interpolator to use
+	 * @return the densified geometry
+	 */
+	public static Geometry densify(Geometry geom, double distanceTolerance, SegmentInterpolator interpolator) {
+		Densifier densifier = new Densifier(geom);
+		densifier.setInterpolator(interpolator);
+		densifier.setDistanceTolerance(distanceTolerance);
+		return densifier.getResultGeometry();
+	}
+
+	/**
 	 * Densifies a list of coordinates.
 	 * 
 	 * @param pts the coordinate list
 	 * @param distanceTolerance the densify tolerance
 	 * @return the densified coordinate sequence
 	 */
-	private static Coordinate[] densifyPoints(Coordinate[] pts,
-			double distanceTolerance, PrecisionModel precModel) {
+	private static Coordinate[] densifyPoints(Coordinate[] pts, double distanceTolerance, PrecisionModel precModel,
+			SegmentInterpolator interpolator) {
 		LineSegment seg = new LineSegment();
 		CoordinateList coordList = new CoordinateList();
 		for (int i = 0; i < pts.length - 1; i++) {
@@ -78,15 +96,10 @@ public class Densifier {
 			  continue;
 			
 			// densify the segment
-			int densifiedSegCount = (int) Math.ceil(len / distanceTolerance);
-			double densifiedSegLen = len / densifiedSegCount;
-			for (int j = 1; j < densifiedSegCount; j++) {
-				double segFract = (j * densifiedSegLen) / len;
-				Coordinate p = seg.pointAlong(segFract);
-				if(!Double.isNaN(seg.p0.z) && !Double.isNaN(seg.p1.z)) {
-					p.setZ(seg.p0.z + segFract * (seg.p1.z - seg.p0.z));
-				}
-        		precModel.makePrecise(p);
+			Iterator<Coordinate> it = interpolator.densifySegment(seg, pts, i, distanceTolerance);
+			while (it.hasNext()) {
+				Coordinate p = it.next();
+				precModel.makePrecise(p);
 				coordList.add(p, false);
 			}
 		}
@@ -99,6 +112,8 @@ public class Densifier {
 	private Geometry inputGeom;
 
 	private double distanceTolerance;
+
+	private SegmentInterpolator interpolator = new StraightSteppingSegmentInterpolator();
 
 	/**
 	 * Indicates whether areas should be topologically validated.
@@ -136,30 +151,44 @@ public class Densifier {
 	public void setValidate(boolean isValidated) {
 	  this.isValidated  = isValidated;
 	}
-	
+
+	/**
+	 * Sets the interpolator used to generate new points for each segment
+	 * 
+	 * @param interpolator the interpolator to use
+	 */
+	public void setInterpolator(SegmentInterpolator interpolator) {
+		this.interpolator = interpolator;
+	}
+
 	/**
 	 * Gets the densified geometry.
 	 * 
 	 * @return the densified geometry
 	 */
 	public Geometry getResultGeometry() {
-		return (new DensifyTransformer(distanceTolerance, isValidated)).transform(inputGeom);
+		return (new DensifyTransformer(distanceTolerance, isValidated, interpolator)).transform(inputGeom);
 	}
 
 	static class DensifyTransformer extends GeometryTransformer {
-	  double distanceTolerance;
-    private boolean isValidated;
-	  
-	  DensifyTransformer(double distanceTolerance, boolean isValidated) {
-	    this.distanceTolerance = distanceTolerance;
-	    this.isValidated = isValidated;
-    }
-	  
-		protected CoordinateSequence transformCoordinates(
-				CoordinateSequence coords, Geometry parent) {
+		double distanceTolerance;
+		private boolean isValidated;
+		SegmentInterpolator interpolator;
+
+		DensifyTransformer(double distanceTolerance, boolean isValidated) {
+			this(distanceTolerance, isValidated, new StraightSteppingSegmentInterpolator());
+		}
+
+		DensifyTransformer(double distanceTolerance, boolean isValidated, SegmentInterpolator interpolator) {
+			this.distanceTolerance = distanceTolerance;
+			this.isValidated = isValidated;
+			this.interpolator = interpolator;
+		}
+
+		protected CoordinateSequence transformCoordinates(CoordinateSequence coords, Geometry parent) {
 			Coordinate[] inputPts = coords.toCoordinateArray();
-			Coordinate[] newPts = Densifier
-					.densifyPoints(inputPts, distanceTolerance, parent.getPrecisionModel());
+			Coordinate[] newPts = Densifier.densifyPoints(inputPts, distanceTolerance, parent.getPrecisionModel(),
+					interpolator);
 			// prevent creation of invalid linestrings
 			if (parent instanceof LineString && newPts.length == 1) {
 				newPts = new Coordinate[0];
