@@ -133,7 +133,7 @@ public class GeoJsonWriter {
     writer.flush();
   }
 
-  private Map<String, Object> create(Geometry geometry, boolean encodeCRS) {
+  protected Map<String, Object> create(Geometry geometry, boolean encodeCRS) {
 
     Map<String, Object> result = new LinkedHashMap<String, Object>();
     result.put(GeoJsonConstants.NAME_TYPE, geometry.getGeometryType());
