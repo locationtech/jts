@@ -1,0 +1,8 @@
+# Curve arc length reference vectors (inspired by PR#1197 orientation_proof_vectors)
+# sx sy mx my ex ey expected_length # comment (analytical r*theta)
+
+0 -1  1 0  0 1  3.14159265359  # semicircle_r1
+1 0  0.70710678 0.70710678  0 1  1.57079632679  # quarter_r1
+0 0  1 0.001  2 0  2.00000133333  # nearflat_sag0.001_r~500.00049999999993
+0 0  100000000.0 1000.0  200000000.0 0  200000000.013  # large_r~5000000000500.0
+0 0  1e-08 1e-07  2e-08 0  2.01330678032e-08  # tiny_r~5.049999999999999e-08

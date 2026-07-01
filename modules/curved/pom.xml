@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.locationtech.jts</groupId>
+        <artifactId>jts-modules</artifactId>
+        <version>1.20.1-SNAPSHOT</version>
+    </parent>
+    <groupId>org.locationtech.jts</groupId>
+    <artifactId>jts-curved</artifactId>
+    <name>${project.groupId}:${project.artifactId}</name>
+    <packaging>jar</packaging>
+
+    <description>
+        OGC SFA / ISO 19125-2 extended geometry types (CircularString,
+        CompoundCurve, CurvePolygon, MultiCurve, MultiSurface, Triangle,
+        PolyhedralSurface, Tin) and the corresponding WKT readers/writers.
+        Built on top of the extension hooks in jts-core; opt-in.
+    </description>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                  <archive>
+                    <manifestEntries>
+                      <Automatic-Module-Name>org.locationtech.jts.curved</Automatic-Module-Name>
+                    </manifestEntries>
+                    <manifestSections>
+                      <manifestSection>
+                        <name>org.locationtech.jts.curved</name>
+                        <manifestEntries>
+                          <Sealed>true</Sealed>
+                        </manifestEntries>
+                      </manifestSection>
+                    </manifestSections>
+                  </archive>
+                </configuration>
+            </plugin>
+            <plugin>
+                <!-- Spec / red-test suites under spec/curveawareness/ are
+                     intentionally red and document deferred behaviour
+                     (see issue #1195 §11). They run on demand with
+                     `mvn -pl modules/curved test -Dtest=<SpecClassName>`. -->
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>**/spec/curveawareness/*.java</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.locationtech.jts</groupId>
+            <artifactId>jts-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.locationtech.jts</groupId>
+            <artifactId>jts-core</artifactId>
+            <version>${project.version}</version>
+            <classifier>tests</classifier>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>

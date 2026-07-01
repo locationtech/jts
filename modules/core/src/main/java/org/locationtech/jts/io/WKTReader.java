@@ -80,9 +80,34 @@ import org.locationtech.jts.util.AssertionFailedException;
  * <li>The reader uses <tt>Double.parseDouble</tt> to perform the conversion of ASCII
  * numbers to floating point.  This means it supports the Java
  * syntax for floating point literals (including scientific notation).
- * <li><tt>NaN</tt>, <tt>Inf</tt> and <tt>-Inf</tt> ordinate symbols are supported (case-insensitive), 
+ * <li><tt>NaN</tt>, <tt>Inf</tt> and <tt>-Inf</tt> ordinate symbols are supported (case-insensitive),
  * which convert to the corresponding IEE-754 value
  * </ul>
+ * <h3>Extension</h3>
+ * <p>This class is designed to be subclassed to support OGC SFA / ISO
+ * 19125-2 extended geometry types (such as {@code CIRCULARSTRING},
+ * {@code COMPOUNDCURVE}, {@code CURVEPOLYGON}, {@code TRIANGLE},
+ * {@code POLYHEDRALSURFACE}, {@code TIN}). Subclasses should override
+ * {@link #readOtherGeometryText} to recognise additional type keywords,
+ * and may compose their implementation from the protected helpers
+ * exposed by this class:
+ * <ul>
+ * <li>tokenizer helpers: {@link #getNextEmptyOrOpener},
+ *     {@link #getNextCloserOrComma}, {@link #getNextWord},
+ *     {@link #lookAheadWord};
+ * <li>coordinate helpers: {@link #getCoordinate},
+ *     {@link #getCoordinateSequence},
+ *     {@link #createCoordinateSequenceEmpty};
+ * <li>nested-geometry helpers: {@link #readLineStringText},
+ *     {@link #readLinearRingText}, {@link #readPolygonText},
+ *     {@link #readMultiPolygonText}, and the 3-arg form of
+ *     {@link #readGeometryTaggedText} for dispatching on a known type;
+ * <li>error helper: {@link #parseErrorWithLine};
+ * <li>fields: {@link #geometryFactory}, {@link #csFactory}.
+ * </ul>
+ * The default implementation of {@link #readOtherGeometryText} throws
+ * a {@link ParseException}, preserving the historical behaviour for
+ * direct (non-extending) callers.
  * <h3>Syntax</h3>
  * The following syntax specification describes the version of Well-Known Text
  * supported by JTS.
@@ -178,8 +203,18 @@ public class WKTReader
   private static final String INF_SYMBOL = "Inf";
   private static final String NEG_INF_SYMBOL = "-Inf";
 
-  private GeometryFactory geometryFactory;
-  private CoordinateSequenceFactory csFactory;
+  /**
+   * The factory used to construct the {@link Geometry} return values.
+   * Exposed as {@code protected} so that extension subclasses (see
+   * {@link #readOtherGeometryText}) can construct geometries with the
+   * same factory the reader is parameterised with.
+   */
+  protected GeometryFactory geometryFactory;
+  /**
+   * The {@link CoordinateSequenceFactory} of {@link #geometryFactory}.
+   * Exposed as {@code protected} for the same reason.
+   */
+  protected CoordinateSequenceFactory csFactory;
   private static CoordinateSequenceFactory csFactoryXYZM = CoordinateArraySequenceFactory.instance();
   private PrecisionModel precisionModel;
 
@@ -328,7 +363,7 @@ public class WKTReader
    *@throws  IOException     if an I/O error occurs
    *@throws  ParseException  if an unexpected token was encountered
    */
-  private Coordinate getCoordinate(StreamTokenizer tokenizer, EnumSet<Ordinate> ordinateFlags, boolean tryParen)
+  protected Coordinate getCoordinate(StreamTokenizer tokenizer, EnumSet<Ordinate> ordinateFlags, boolean tryParen)
       throws IOException, ParseException
   {
     boolean opened = false;
@@ -389,7 +424,7 @@ public class WKTReader
    *@throws  IOException     if an I/O error occurs
    *@throws  ParseException  if an unexpected token was encountered
    */
-  private CoordinateSequence getCoordinateSequence(StreamTokenizer tokenizer, EnumSet<Ordinate> ordinateFlags, int minSize, boolean isRing)
+  protected CoordinateSequence getCoordinateSequence(StreamTokenizer tokenizer, EnumSet<Ordinate> ordinateFlags, int minSize, boolean isRing)
           throws IOException, ParseException {
     if (getNextEmptyOrOpener(tokenizer).equals(WKTConstants.EMPTY))
       return createCoordinateSequenceEmpty(ordinateFlags);
@@ -426,7 +461,7 @@ public class WKTReader
     return true;
   }
 
-  private CoordinateSequence createCoordinateSequenceEmpty(EnumSet<Ordinate> ordinateFlags)
+  protected CoordinateSequence createCoordinateSequenceEmpty(EnumSet<Ordinate> ordinateFlags)
       throws IOException, ParseException {
     return csFactory.create(0, toDimension(ordinateFlags), ordinateFlags.contains(Ordinate.M) ? 1 : 0);
   }
@@ -553,7 +588,7 @@ S  */
    *@throws  IOException     if an I/O error occurs
    * @param  tokenizer        tokenizer over a stream of text in Well-known Text
    */
-  private static String getNextEmptyOrOpener(StreamTokenizer tokenizer) throws IOException, ParseException {
+  protected static String getNextEmptyOrOpener(StreamTokenizer tokenizer) throws IOException, ParseException {
     String nextWord = getNextWord(tokenizer);
     if (nextWord.equalsIgnoreCase(WKTConstants.Z)) {
       //z = true;
@@ -614,7 +649,7 @@ S  */
    *@throws  ParseException  if the next token is not a word
    *@throws  IOException     if an I/O error occurs
    */
-  private static String lookAheadWord(StreamTokenizer tokenizer) throws IOException, ParseException {
+  protected static String lookAheadWord(StreamTokenizer tokenizer) throws IOException, ParseException {
     String nextWord = getNextWord(tokenizer);
     tokenizer.pushBack();
     return nextWord;
@@ -628,7 +663,7 @@ S  */
    *@throws  IOException     if an I/O error occurs
    * @param  tokenizer        tokenizer over a stream of text in Well-known Text
    */
-  private static String getNextCloserOrComma(StreamTokenizer tokenizer) throws IOException, ParseException {
+  protected static String getNextCloserOrComma(StreamTokenizer tokenizer) throws IOException, ParseException {
     String nextWord = getNextWord(tokenizer);
     if (nextWord.equals(COMMA) || nextWord.equals(R_PAREN)) {
       return nextWord;
@@ -661,7 +696,7 @@ S  */
    *@throws  IOException     if an I/O error occurs
    * @param  tokenizer        tokenizer over a stream of text in Well-known Text
    */
-  private static String getNextWord(StreamTokenizer tokenizer) throws IOException, ParseException {
+  protected static String getNextWord(StreamTokenizer tokenizer) throws IOException, ParseException {
     int type = tokenizer.nextToken();
     switch (type) {
     case StreamTokenizer.TT_WORD:
@@ -704,7 +739,7 @@ S  */
    * @param msg a description of what was expected
    * @throws AssertionFailedException if an invalid token is encountered
    */
-  private static ParseException parseErrorWithLine(StreamTokenizer tokenizer, String msg)
+  protected static ParseException parseErrorWithLine(StreamTokenizer tokenizer, String msg)
   {
     return new ParseException(msg + " (line " + tokenizer.lineno() + ")");
   }
@@ -754,7 +789,7 @@ S  */
     return readGeometryTaggedText(tokenizer, type, ordinateFlags);
   }
 
-  private Geometry readGeometryTaggedText(StreamTokenizer tokenizer, String type, EnumSet<Ordinate> ordinateFlags)
+  protected Geometry readGeometryTaggedText(StreamTokenizer tokenizer, String type, EnumSet<Ordinate> ordinateFlags)
           throws IOException, ParseException {
 
     if (ordinateFlags.size() == 2) {
@@ -798,13 +833,46 @@ S  */
     else if (isTypeName(tokenizer, type, WKTConstants.GEOMETRYCOLLECTION)) {
       return readGeometryCollectionText(tokenizer, ordinateFlags);
     }
+    return readOtherGeometryText(tokenizer, type, ordinateFlags);
+  }
+
+  /**
+   * Hook for subclasses to read geometry types that the core JTS WKT
+   * reader does not recognise (extended OGC SFA / ISO 19125-2 types
+   * such as {@code CIRCULARSTRING}, {@code COMPOUNDCURVE},
+   * {@code CURVEPOLYGON}, {@code MULTICURVE}, {@code MULTISURFACE},
+   * {@code TRIANGLE}, {@code POLYHEDRALSURFACE}, {@code TIN}, etc.).
+   * <p>
+   * The default implementation throws a {@link ParseException} with
+   * the unknown-type message, preserving the previous behaviour.
+   *
+   * @param tokenizer    tokenizer positioned just after the type keyword
+   * @param type         the type keyword that was read (already uppercased)
+   * @param ordinateFlags the dimensional ordinates parsed for this geometry
+   * @return the decoded geometry
+   * @throws IOException     if an I/O error occurs
+   * @throws ParseException  if an unexpected token was encountered
+   */
+  protected Geometry readOtherGeometryText(StreamTokenizer tokenizer, String type, EnumSet<Ordinate> ordinateFlags)
+      throws IOException, ParseException {
     throw parseErrorWithLine(tokenizer, "Unknown geometry type: " + type);
   }
 
-  private boolean isTypeName(StreamTokenizer tokenizer, String type, String typeName) throws ParseException {
+  /**
+   * Returns whether the parsed {@code type} keyword (already uppercased,
+   * with the Z/M/ZM modifier optionally appended) matches the canonical
+   * {@code typeName}. Throws {@link ParseException} when the suffix is
+   * non-empty and not a recognised dimension modifier, so callers do not
+   * need to defend against that case themselves.
+   * <p>
+   * Promoted from {@code private} to {@code protected} so that subclasses
+   * implementing {@link #readOtherGeometryText} can share a single canonical
+   * keyword/modifier matcher rather than rolling their own.
+   */
+  protected boolean isTypeName(StreamTokenizer tokenizer, String type, String typeName) throws ParseException {
     if (! type.startsWith(typeName))
       return false;
-    
+
     String modifiers = type.substring(typeName.length());
     boolean isValidMod = modifiers.length() <= 2 &&
         (modifiers.length() == 0
@@ -814,7 +882,7 @@ S  */
     if (! isValidMod) {
       throw parseErrorWithLine(tokenizer, "Invalid dimension modifiers: " + type);
     }
-    
+
     return true;
   }
 
@@ -843,7 +911,7 @@ S  */
    *@throws  IOException     if an I/O error occurs
    *@throws  ParseException  if an unexpected token was encountered
    */
-  private LineString readLineStringText(StreamTokenizer tokenizer, EnumSet<Ordinate> ordinateFlags) throws IOException, ParseException {
+  protected LineString readLineStringText(StreamTokenizer tokenizer, EnumSet<Ordinate> ordinateFlags) throws IOException, ParseException {
     return geometryFactory.createLineString(getCoordinateSequence(tokenizer, ordinateFlags, LineString.MINIMUM_VALID_SIZE, false));
   }
 
@@ -859,7 +927,7 @@ S  */
    *      do not form a closed linestring, or if an unexpected token was
    *      encountered
    */
-  private LinearRing readLinearRingText(StreamTokenizer tokenizer, EnumSet<Ordinate> ordinateFlags)
+  protected LinearRing readLinearRingText(StreamTokenizer tokenizer, EnumSet<Ordinate> ordinateFlags)
     throws IOException, ParseException
   {
     return geometryFactory.createLinearRing(getCoordinateSequence(tokenizer, ordinateFlags, LinearRing.MINIMUM_VALID_SIZE, true));
@@ -918,7 +986,7 @@ S  */
    *      token was encountered.
    *@throws  IOException     if an I/O error occurs
    */
-  private Polygon readPolygonText(StreamTokenizer tokenizer, EnumSet<Ordinate> ordinateFlags) throws IOException, ParseException {
+  protected Polygon readPolygonText(StreamTokenizer tokenizer, EnumSet<Ordinate> ordinateFlags) throws IOException, ParseException {
     String nextToken = getNextEmptyOrOpener(tokenizer);
     if (nextToken.equals(WKTConstants.EMPTY)) {
         return geometryFactory.createPolygon(createCoordinateSequenceEmpty(ordinateFlags));
@@ -974,7 +1042,7 @@ S  */
    *@throws  IOException     if an I/O error occurs
    *@throws  ParseException  if an unexpected token was encountered
    */
-  private MultiPolygon readMultiPolygonText(StreamTokenizer tokenizer, EnumSet<Ordinate> ordinateFlags) throws IOException, ParseException {
+  protected MultiPolygon readMultiPolygonText(StreamTokenizer tokenizer, EnumSet<Ordinate> ordinateFlags) throws IOException, ParseException {
     String nextToken = getNextEmptyOrOpener(tokenizer);
     if (nextToken.equals(WKTConstants.EMPTY)) {
       return geometryFactory.createMultiPolygon();

@@ -26,6 +26,7 @@ import org.locationtech.jts.io.WKBHexFileReader;
 import org.locationtech.jts.io.WKBReader;
 import org.locationtech.jts.io.WKTFileReader;
 import org.locationtech.jts.io.WKTReader;
+import org.locationtech.jts.io.curved.CurvedWKTReader;
 import org.locationtech.jts.io.gml2.GMLReader;
 import org.locationtech.jtstest.testbuilder.io.shapefile.Shapefile;
 import org.locationtech.jtstest.util.FileUtil;
@@ -117,7 +118,7 @@ public class IOUtil
       boolean isStrict)
   throws ParseException, IOException 
   {
-    WKTReader reader = new WKTReader(geomFact);
+    WKTReader reader = new CurvedWKTReader(geomFact);
     WKTFileReader fileReader = new WKTFileReader(new StringReader(wkt), reader);
     fileReader.setStrictParsing(isStrict);
     List geomList = fileReader.read();
