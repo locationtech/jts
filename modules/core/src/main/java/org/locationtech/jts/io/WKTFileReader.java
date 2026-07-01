@@ -122,22 +122,19 @@ public class WKTFileReader
 	public List read() 
 	throws IOException, ParseException 
 	{
-    // do this here so that constructors don't throw exceptions
-    if (file != null)
-      reader = new FileReader(file);
-    
-		count = 0;
-		try {
-			BufferedReader bufferedReader = new BufferedReader(reader);
-			try {
-				return read(bufferedReader);
-			} finally {
-				bufferedReader.close();
-			}
-		} finally {
-			reader.close();
-		}
-	}
+        Reader inputReader;
+        if (file != null) {
+            inputReader = new FileReader(file);
+        } else {
+            inputReader = reader;
+        }
+
+        count = 0;
+        try (BufferedReader bufferedReader = new BufferedReader(inputReader)) {
+            return read(bufferedReader);
+        }
+
+    }
 	
   private List read(BufferedReader bufferedReader) 
       throws IOException, ParseException {
