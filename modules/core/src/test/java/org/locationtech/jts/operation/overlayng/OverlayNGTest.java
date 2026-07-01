@@ -489,6 +489,15 @@ public class OverlayNGTest extends OverlayNGTestCase {
     Geometry actual = intersection(a, b);
     checkEqual(expected, actual);    
   }
- 
+
+  /**
+   * Tests that overlay produces stable (non-rotated) results.
+   * See https://github.com/locationtech/jts/issues/865
+   */
+  public void testRingsNonRotated() {
+    Geometry a = read("POLYGON ((1 9, 9 9, 9 1, 1 1, 1 9))");
+    Geometry actual = intersection(a, a);
+    checkEqualExact(a, actual);
+  }
   
 }
