@@ -30,7 +30,9 @@ import javax.swing.text.JTextComponent;
 
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.curved.CurvedGeometryFactory;
 import org.locationtech.jts.io.WKTReader;
+import org.locationtech.jts.io.curved.CurvedWKTReader;
 
 
 /**
@@ -221,8 +223,8 @@ public class GeometryInputDialog extends JDialog {
     Geometry parseGeometry(JTextComponent txt, Color clr) {
         try {
             WKTReader rdr =
-                new WKTReader(
-                    new GeometryFactory(JTSTestBuilder.model().getPrecisionModel(), 0));
+                new CurvedWKTReader(
+                    new CurvedGeometryFactory(JTSTestBuilder.model().getPrecisionModel(), 0));
             Geometry g = rdr.read(txt.getText());
             txtError.setText("");
             return g;

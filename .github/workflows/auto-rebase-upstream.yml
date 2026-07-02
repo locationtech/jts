@@ -1,0 +1,274 @@
+name: Auto-rebase saga branches
+
+# Two-stage scheduled rebase chain.
+#
+# Stage 1 ("rebase-master"): rebase this fork's master onto
+#   locationtech/jts:master, force-push on success, open/update a
+#   "Auto-rebase conflict on master" issue on failure.
+#
+# Stage 2 ("rebase-saga", matrix, needs: stage 1): for every saga
+#   branch in the matrix, rebase onto the (now upstream-current) fork
+#   master, force-push on success, open/update a per-branch conflict
+#   issue on failure. Branches run in parallel; one branch's conflict
+#   doesn't block the others (fail-fast: false).
+#
+# RULE-OUT spike branches (F-CP-spike-optionB, F-CP-spike-optionC) are
+# intentionally NOT in the matrix — they're frozen records of failed
+# experiments and force-pushing would erase the audit trail. Add them
+# below if you decide they should follow master.
+#
+# All knobs are in the env block; the matrix list below is the second
+# place to edit when the saga grows.
+
+on:
+  schedule:
+    - cron: '0 6 * * *'   # 06:00 UTC daily
+  workflow_dispatch:       # manual trigger from the Actions tab
+
+permissions:
+  contents: write
+  issues: write
+
+env:
+  UPSTREAM_REPO: locationtech/jts
+  UPSTREAM_BRANCH: master
+  CONFLICT_LABEL: upstream-rebase-conflict
+
+jobs:
+  # ---------------------------------------------------------------
+  # Stage 1: fork master  <-  locationtech/jts:master
+  # ---------------------------------------------------------------
+  rebase-master:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout master with full history
+        uses: actions/checkout@v4
+        with:
+          ref: master
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure git identity
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Add upstream remote and fetch
+        run: |
+          git remote remove upstream 2>/dev/null || true
+          git remote add upstream "https://github.com/${UPSTREAM_REPO}.git"
+          git fetch upstream "${UPSTREAM_BRANCH}"
+
+      - name: Attempt rebase
+        id: rebase
+        run: |
+          set +e
+          git rebase "upstream/${UPSTREAM_BRANCH}"
+          RC=$?
+          if [ $RC -ne 0 ]; then
+            CONFLICTS=$(git diff --name-only --diff-filter=U)
+            git rebase --abort
+            {
+              echo "status=conflict"
+              echo "conflicts<<EOF"
+              echo "$CONFLICTS"
+              echo "EOF"
+            } >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "status=clean" >> "$GITHUB_OUTPUT"
+
+      - name: Force-push if ahead of origin
+        if: steps.rebase.outputs.status == 'clean'
+        run: |
+          if ! git diff --quiet origin/master..HEAD; then
+            git push --force-with-lease origin HEAD:master
+          fi
+
+      - name: Ensure conflict label exists
+        if: steps.rebase.outputs.status == 'conflict'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh label create "${CONFLICT_LABEL}" \
+            --description "Auto-rebase against ${UPSTREAM_REPO} hit a conflict" \
+            --color "B60205" \
+          || true
+
+      - name: Open or update master conflict issue
+        if: steps.rebase.outputs.status == 'conflict'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CONFLICTS: ${{ steps.rebase.outputs.conflicts }}
+        run: |
+          UPSTREAM_SHA=$(git rev-parse "upstream/${UPSTREAM_BRANCH}")
+          TITLE_PREFIX="Auto-rebase conflict on master"
+          BODY_FILE=$(mktemp)
+          cat > "$BODY_FILE" <<EOF
+          The scheduled rebase of \`master\` onto \`upstream/${UPSTREAM_BRANCH}\` (${UPSTREAM_REPO}) hit a conflict and was aborted. \`master\` is unchanged.
+
+          **Upstream HEAD:** \`${UPSTREAM_SHA}\`
+          **Workflow run:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+          **Conflicting paths:**
+          \`\`\`
+          ${CONFLICTS}
+          \`\`\`
+
+          Resolve locally:
+          \`\`\`
+          git fetch upstream
+          git checkout master
+          git rebase upstream/${UPSTREAM_BRANCH}
+          # resolve files, then:
+          git add -A && git rebase --continue
+          git push --force-with-lease origin master
+          \`\`\`
+
+          This issue auto-updates on each subsequent failed run. Close it once the rebase has been resolved manually.
+          EOF
+          EXISTING=$(gh issue list \
+            --label "${CONFLICT_LABEL}" \
+            --state open \
+            --search "${TITLE_PREFIX}" \
+            --json number,title \
+            --jq ".[] | select(.title | startswith(\"${TITLE_PREFIX}\")) | .number" \
+            | head -1)
+          if [ -n "$EXISTING" ]; then
+            gh issue comment "$EXISTING" --body-file "$BODY_FILE"
+          else
+            gh issue create \
+              --title "${TITLE_PREFIX} ($(date -u +%Y-%m-%d))" \
+              --label "${CONFLICT_LABEL}" \
+              --body-file "$BODY_FILE"
+          fi
+
+  # ---------------------------------------------------------------
+  # Stage 2: every saga branch  <-  fork master
+  # Runs after stage 1 so each saga branch sees the freshly updated
+  # master. fail-fast: false so one branch's conflict doesn't block
+  # the others.
+  # ---------------------------------------------------------------
+  rebase-saga:
+    needs: rebase-master
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        branch:
+          - feature/sfa-curve-AT-NS-spike
+          - feature/sfa-curve-F-CP-spike
+          - feature/sfa-curve-F-CP-spike-optionA
+          - feature/sfa-curve-F-MC-F-MS-spike
+          - feature/sfa-curve-PRC-SN-spike
+          - feature/sfa-curve-R-EQ-spike
+          - feature/sfa-curve-buffer-spike
+          - feature/sfa-curve-clothoid-playground
+          - feature/sfa-curve-compoundcurve-members
+          - feature/sfa-curve-extension-points
+          - feature/sfa-curve-multisurface-function
+          - feature/sfa-curve-testbuilder-ui
+          - feature/sfa-curve-tin-tool
+          - feature/sfa-curve-toLinear-densification
+          - feature/sfa-curve-triangle-tool
+    steps:
+      - name: Checkout ${{ matrix.branch }}
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.branch }}
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure git identity
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Fetch latest master
+        run: git fetch origin master
+
+      - name: Attempt rebase onto origin/master
+        id: rebase
+        run: |
+          set +e
+          git rebase origin/master
+          RC=$?
+          if [ $RC -ne 0 ]; then
+            CONFLICTS=$(git diff --name-only --diff-filter=U)
+            git rebase --abort
+            {
+              echo "status=conflict"
+              echo "conflicts<<EOF"
+              echo "$CONFLICTS"
+              echo "EOF"
+            } >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "status=clean" >> "$GITHUB_OUTPUT"
+
+      - name: Force-push if ahead of origin
+        if: steps.rebase.outputs.status == 'clean'
+        run: |
+          BRANCH="${{ matrix.branch }}"
+          if ! git diff --quiet "origin/${BRANCH}..HEAD"; then
+            git push --force-with-lease origin "HEAD:${BRANCH}"
+          fi
+
+      - name: Ensure conflict label exists
+        if: steps.rebase.outputs.status == 'conflict'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh label create "${CONFLICT_LABEL}" \
+            --description "Auto-rebase against ${UPSTREAM_REPO} hit a conflict" \
+            --color "B60205" \
+          || true
+
+      - name: Open or update conflict issue for ${{ matrix.branch }}
+        if: steps.rebase.outputs.status == 'conflict'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CONFLICTS: ${{ steps.rebase.outputs.conflicts }}
+          BRANCH: ${{ matrix.branch }}
+        run: |
+          MASTER_SHA=$(git rev-parse origin/master)
+          TITLE_PREFIX="Auto-rebase conflict on ${BRANCH}"
+          BODY_FILE=$(mktemp)
+          cat > "$BODY_FILE" <<EOF
+          The scheduled rebase of \`${BRANCH}\` onto fresh \`origin/master\` hit a conflict and was aborted. \`${BRANCH}\` is unchanged.
+
+          **Master HEAD:** \`${MASTER_SHA}\`
+          **Workflow run:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+          **Conflicting paths:**
+          \`\`\`
+          ${CONFLICTS}
+          \`\`\`
+
+          Resolve locally:
+          \`\`\`
+          git fetch origin
+          git checkout ${BRANCH}
+          git rebase origin/master
+          # resolve files, then:
+          git add -A && git rebase --continue
+          git push --force-with-lease origin ${BRANCH}
+          \`\`\`
+
+          This issue auto-updates on each subsequent failed run. Close it once the rebase has been resolved manually.
+          EOF
+          EXISTING=$(gh issue list \
+            --label "${CONFLICT_LABEL}" \
+            --state open \
+            --search "${TITLE_PREFIX}" \
+            --json number,title \
+            --jq ".[] | select(.title | startswith(\"${TITLE_PREFIX}\")) | .number" \
+            | head -1)
+          if [ -n "$EXISTING" ]; then
+            gh issue comment "$EXISTING" --body-file "$BODY_FILE"
+          else
+            gh issue create \
+              --title "${TITLE_PREFIX} ($(date -u +%Y-%m-%d))" \
+              --label "${CONFLICT_LABEL}" \
+              --body-file "$BODY_FILE"
+          fi
