@@ -12,6 +12,8 @@
 
 package org.locationtech.jts.shape.random;
 
+import java.util.Random;
+
 import org.locationtech.jts.algorithm.locate.IndexedPointInAreaLocator;
 import org.locationtech.jts.algorithm.locate.PointOnGeometryLocator;
 import org.locationtech.jts.geom.Coordinate;
@@ -34,6 +36,7 @@ extends GeometricShapeBuilder
 {
   protected Geometry maskPoly = null;
   private PointOnGeometryLocator extentLocator;
+  private Random random = new Random();
 
   /**
    * Create a shape factory which will create shapes using the default
@@ -53,6 +56,18 @@ extends GeometricShapeBuilder
   public RandomPointsBuilder(GeometryFactory geomFact)
   {
   	super(geomFact);
+  }
+
+  /**
+   * Sets the random number generator used to generate point coordinates.
+   * This enables reproducible results by providing a {@link Random}
+   * with a fixed seed.
+   *
+   * @param random the random number generator to use
+   */
+  public void setRandom(Random random)
+  {
+  	this.random = random;
   }
 
   /**
@@ -99,8 +114,8 @@ extends GeometricShapeBuilder
   
   protected Coordinate createRandomCoord(Envelope env)
   {
-    double x = env.getMinX() + env.getWidth() * Math.random();
-    double y = env.getMinY() + env.getHeight() * Math.random();
+    double x = env.getMinX() + env.getWidth() * random.nextDouble();
+    double y = env.getMinY() + env.getHeight() * random.nextDouble();
     return createCoord(x, y);
   }
 
