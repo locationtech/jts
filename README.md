@@ -74,6 +74,7 @@ If you are interested in contributing to JTS please read the [**Contributing Gui
 * [**NetTopologySuite**](https://github.com/NetTopologySuite/NetTopologySuite) - .NET
 * [**JSTS**](https://github.com/bjornharrtell/jsts) - JavaScript
 * [**dart_jts**](https://github.com/moovida/dart_jts) - Dart
+* [**KTS**](https://github.com/mipastgt/kts) - Kotlin-Multiplatform
 
 ### Via GEOS
 * [**Shapely**](https://github.com/Toblerity/Shapely) - Python wrapper of GEOS
