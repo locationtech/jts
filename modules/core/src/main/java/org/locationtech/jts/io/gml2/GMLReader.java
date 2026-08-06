@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -105,6 +106,14 @@ public class GMLReader
 
 		fact.setNamespaceAware(false);
 		fact.setValidating(false);
+		// Harden against XXE: disable DOCTYPE/DTDs and external entities (JAXP secure processing).
+		// GML input is frequently untrusted (files, WFS responses, uploads); the default SAX parser
+		// resolves external entities, enabling file disclosure and SSRF.
+		fact.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+		fact.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+		fact.setFeature("http://xml.org/sax/features/external-general-entities", false);
+		fact.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+		fact.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
 
 		SAXParser parser = fact.newSAXParser();
 
