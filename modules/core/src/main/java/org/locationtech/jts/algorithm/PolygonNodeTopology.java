@@ -142,8 +142,8 @@ public class PolygonNodeTopology
    * @return true if vector P has angle greater than Q
    */
   private static boolean isAngleGreater(Coordinate origin, Coordinate p, Coordinate q) {      
-    int quadrantP = quadrant(origin, p);
-    int quadrantQ = quadrant(origin, q);
+    int quadrantP = Quadrant.quadrant(origin, p);
+    int quadrantQ = Quadrant.quadrant(origin, q);
 
     /**
      * If the vectors are in different quadrants, 
@@ -170,8 +170,8 @@ public class PolygonNodeTopology
    * @return a negative integer, zero, or a positive integer as this vector P has angle less than, equal to, or greater than vector Q
    */
   public static int compareAngle(Coordinate origin, Coordinate p, Coordinate q) {      
-    int quadrantP = quadrant(origin, p);
-    int quadrantQ = quadrant(origin, q);
+    int quadrantP = Quadrant.quadrant(origin, p);
+    int quadrantQ = Quadrant.quadrant(origin, q);
 
     /**
      * If the vectors are in different quadrants, 
@@ -190,11 +190,6 @@ public class PolygonNodeTopology
     default: return 0;
     }
   }
-  
-  private static int quadrant(Coordinate origin, Coordinate p) {
-    double dx = p.getX() - origin.getX();
-    double dy = p.getY() - origin.getY();
-    return Quadrant.quadrant(dx,  dy);
-  }
+
 
 }

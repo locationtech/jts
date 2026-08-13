@@ -34,6 +34,9 @@ public class Quadrant
    * Returns the quadrant of a directed line segment (specified as x and y
    * displacements, which cannot both be 0).
    * 
+   * If the segment coordinates are available it is more robust
+   * to use {@link #quadrant(Coordinate, Coordinate). 
+   * 
    * @throws IllegalArgumentException if the displacements are both 0
    */
   public static int quadrant(double dx, double dy)
