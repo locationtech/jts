@@ -1,3 +1,14 @@
+/*
+ * Copyright (c) 2026 Vivid Solutions.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v2.0
+ * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
+ * and the Eclipse Distribution License is available at
+ *
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ */
 package org.locationtech.jts.io.gml2;
 
 import java.io.File;
@@ -38,15 +49,18 @@ public class GMLReaderXXETest extends GeometryTestCase {
             "<?xml version=\"1.0\"?>\n"
           + "<!DOCTYPE foo [ <!ENTITY xxe SYSTEM \"" + secretFile.toURI() + "\"> ]>\n"
           + "<gml:Point><gml:coordinates>&xxe;</gml:coordinates></gml:Point>";
+      String observed;
       try {
-        new GMLReader().read(gml, null);
+        observed = String.valueOf(new GMLReader().read(gml, null));
       }
       catch (Exception e) {
-        // The parser may legitimately reject the input; it must never expose the
-        // external file's content (which would prove the entity was resolved).
-        assertFalse("GMLReader resolved an external entity (XXE): " + e.getMessage(),
-            String.valueOf(e.getMessage()).contains(secret));
+        // The parser may legitimately reject the input. Either way the external
+        // file's content must not appear, neither in the parsed geometry nor in
+        // the message of the exception raised while parsing it.
+        observed = String.valueOf(e.getMessage());
       }
+      assertFalse("GMLReader resolved an external entity (XXE): " + observed,
+          observed.contains(secret));
     }
     finally {
       secretFile.delete();

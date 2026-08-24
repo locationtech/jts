@@ -106,14 +106,19 @@ public class GMLReader
 
 		fact.setNamespaceAware(false);
 		fact.setValidating(false);
-		// Harden against XXE: disable DOCTYPE/DTDs and external entities (JAXP secure processing).
-		// GML input is frequently untrusted (files, WFS responses, uploads); the default SAX parser
-		// resolves external entities, enabling file disclosure and SSRF.
-		fact.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-		fact.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
-		fact.setFeature("http://xml.org/sax/features/external-general-entities", false);
-		fact.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
-		fact.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+		// Harden against XXE. GML input is frequently untrusted (files, WFS responses,
+		// uploads) and the default SAX parser resolves external entities, which allows
+		// file disclosure and SSRF. Rejecting the DOCTYPE covers it: without one there is
+		// no internal or external subset, so no entity can be declared in the first place.
+		//
+		// Android's parser rejects every feature name outside the SAX namespace and does
+		// not resolve external references in the first place, so it is skipped. Anywhere
+		// else the features are set without a guard: a parser that cannot be configured
+		// should fail here rather than parse untrusted input without the hardening.
+		if (!"org.apache.harmony.xml.parsers.SAXParserFactoryImpl".equals(fact.getClass().getName())) {
+			fact.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+			fact.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+		}
 
 		SAXParser parser = fact.newSAXParser();
 
