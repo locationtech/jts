@@ -15,6 +15,9 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import javax.xml.XMLConstants;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -26,6 +29,8 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXNotRecognizedException;
+import org.xml.sax.SAXNotSupportedException;
 import org.xml.sax.helpers.DefaultHandler;
 
 
@@ -106,18 +111,14 @@ public class GMLReader
 
 		fact.setNamespaceAware(false);
 		fact.setValidating(false);
-		// Harden against XXE. GML input is frequently untrusted (files, WFS responses,
-		// uploads) and the default SAX parser resolves external entities, which allows
-		// file disclosure and SSRF. Rejecting the DOCTYPE covers it: without one there is
-		// no internal or external subset, so no entity can be declared in the first place.
-		//
-		// Android's parser rejects every feature name outside the SAX namespace and does
-		// not resolve external references in the first place, so it is skipped. Anywhere
-		// else the features are set without a guard: a parser that cannot be configured
-		// should fail here rather than parse untrusted input without the hardening.
-		if (!"org.apache.harmony.xml.parsers.SAXParserFactoryImpl".equals(fact.getClass().getName())) {
+		// Harden against XXE, as GML is often read from untrusted sources.
+		try {
 			fact.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
 			fact.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+		}
+		catch (SAXNotRecognizedException | SAXNotSupportedException | ParserConfigurationException e) {
+			Logger.getLogger(GMLReader.class.getName())
+					.log(Level.WARNING, "SAX parser does not support XXE hardening", e);
 		}
 
 		SAXParser parser = fact.newSAXParser();

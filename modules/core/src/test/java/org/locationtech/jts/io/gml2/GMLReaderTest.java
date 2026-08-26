@@ -1,6 +1,8 @@
 package org.locationtech.jts.io.gml2;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -125,5 +127,38 @@ public class GMLReaderTest extends GeometryTestCase {
     Geometry expected = read(wktExpected);
     checkEqual(expected, g);
     assertEquals("SRID incorrect - ", srid, g.getSRID());
+  }
+
+  public void testExternalEntityIsNotResolved() throws Exception {
+    File secretFile = File.createTempFile("jts-xxe", ".txt");
+    String secret = "JTS-XXE-CANARY-SECRET";
+    Files.write(secretFile.toPath(), secret.getBytes("UTF-8"));
+    try {
+      String gml = "<?xml version=\"1.0\"?>\n"
+          + "<!DOCTYPE foo [ <!ENTITY xxe SYSTEM \"" + secretFile.toURI() + "\"> ]>\n"
+          + "<gml:Point><gml:coordinates>&xxe;</gml:coordinates></gml:Point>";
+      String observed;
+      try {
+        observed = String.valueOf(new GMLReader().read(gml, null));
+      }
+      catch (Exception e) {
+        observed = String.valueOf(e.getMessage());
+      }
+      assertFalse(observed.contains(secret));
+    }
+    finally {
+      secretFile.delete();
+    }
+  }
+
+  public void testDoctypeIsRejected() throws Exception {
+    String gml = "<?xml version=\"1.0\"?>\n<!DOCTYPE foo>\n"
+        + "<gml:Point><gml:coordinates>5,10</gml:coordinates></gml:Point>";
+    try {
+      new GMLReader().read(gml, null);
+      fail("expected a DOCTYPE to be rejected");
+    }
+    catch (Exception e) {
+    }
   }
 }
