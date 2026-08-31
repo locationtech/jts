@@ -97,9 +97,8 @@ public class EdgeIntersection
   {
     if (this.segmentIndex < segmentIndex) return -1;
     if (this.segmentIndex > segmentIndex) return 1;
-    if (this.dist < dist) return -1;
-    if (this.dist > dist) return 1;
-    return 0;
+    // Double.compare is used to ensure consistency with equals/hashCode for NaN
+    return Double.compare(this.dist, dist);
   }
 
   public boolean isEndPoint(int maxSegmentIndex)

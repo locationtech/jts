@@ -47,4 +47,19 @@ public class EdgeIntersectionTest extends TestCase {
     set.add(eiSame);
     assertEquals(1, set.size());
   }
+
+  public void testEqualsHashCodeConsistentWithNaN() {
+    EdgeIntersection zero = new EdgeIntersection(new Coordinate(1, 2), 0, 0.0);
+    EdgeIntersection nan = new EdgeIntersection(new Coordinate(1, 2), 0, Double.NaN);
+    EdgeIntersection half = new EdgeIntersection(new Coordinate(1, 2), 0, 0.5);
+
+    // NaN must only be equal to itself, not to arbitrary other values (transitivity)
+    assertFalse(zero.equals(nan));
+    assertFalse(nan.equals(half));
+    assertFalse(zero.equals(half));
+    assertEquals(nan, new EdgeIntersection(new Coordinate(1, 2), 0, Double.NaN));
+
+    // equals/hashCode contract must hold even when NaN is involved
+    assertEquals(nan.hashCode(), new EdgeIntersection(new Coordinate(1, 2), 0, Double.NaN).hashCode());
+  }
 }

@@ -61,6 +61,22 @@ public class LinearLocationTest
     assertEquals(1, set.size());
   }
 
+  public void testEqualsHashCodeConsistentWithNaN() throws Exception
+  {
+    LinearLocation zero = new LinearLocation(0, 0, 0.0);
+    LinearLocation nan = new LinearLocation(0, 0, Double.NaN);
+    LinearLocation half = new LinearLocation(0, 0, 0.5);
+
+    // NaN must only be equal to itself, not to arbitrary other values (transitivity)
+    assertFalse(zero.equals(nan));
+    assertFalse(nan.equals(half));
+    assertFalse(zero.equals(half));
+    assertEquals(nan, new LinearLocation(0, 0, Double.NaN));
+
+    // equals/hashCode contract must hold even when NaN is involved
+    assertEquals(nan.hashCode(), new LinearLocation(0, 0, Double.NaN).hashCode());
+  }
+
   public void testZeroLengthLineString() throws Exception
   {
     Geometry line = reader.read("LINESTRING (10 0, 10 0)");
