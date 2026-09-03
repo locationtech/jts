@@ -33,6 +33,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <commons-secure-xml-version>1.0.0</commons-secure-xml-version>
         <junit-version>4.13.1</junit-version>
         <jdom-version>2.0.6.1</jdom-version>
         <jump.version>1.2</jump.version>
@@ -107,6 +108,11 @@
                 <version>${junit-version}</version>
             </dependency>
             <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-secure-xml</artifactId>
+                <version>${commons-secure-xml-version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.jdom</groupId>
                 <artifactId>jdom2</artifactId>
                 <version>${jdom-version}</version>
@@ -147,6 +153,24 @@
             <id>central.maven.org</id>
             <name>Central Maven repository</name>
             <url>https://central.maven.org/maven2</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <!-- Repeat the super POM's Central so it is queried before the staging repository. -->
+        <repository>
+            <id>central</id>
+            <name>Central Repository</name>
+            <url>https://repo.maven.apache.org/maven2</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <!-- TODO: remove once Commons Secure XML 1.0.0 is on Central. -->
+        <repository>
+            <id>apache.commons.staging</id>
+            <name>Apache Commons Secure XML 1.0.0 release candidate</name>
+            <url>https://repository.apache.org/content/repositories/orgapachecommons-1962/</url>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
@@ -214,6 +238,11 @@
                 <plugin>
                   <artifactId>maven-checkstyle-plugin</artifactId>
                   <version>3.1.2</version>
+                </plugin>
+                <plugin>
+                    <groupId>de.thetaphi</groupId>
+                    <artifactId>forbiddenapis</artifactId>
+                    <version>3.10</version>
                 </plugin>
                 <plugin>
                     <artifactId>maven-compiler-plugin</artifactId>
@@ -308,6 +337,9 @@
                     <header>${project.name} ${project.version}</header>
                     <overview></overview>
                     <excludePackageNames>org.locationtech.jtsexample.*,org.locationtech.jtstest,org.locationtech.jtstest.*</excludePackageNames>
+                    <links>
+                        <link>https://javadoc.io/doc/org.apache.commons/commons-secure-xml/${commons-secure-xml-version}</link>
+                    </links>
                     <groups>
                         <group>
                             <title>Core - Geometry</title>
