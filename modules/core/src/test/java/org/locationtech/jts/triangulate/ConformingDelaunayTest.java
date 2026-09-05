@@ -46,6 +46,33 @@ public class ConformingDelaunayTest extends TestCase {
   	runDelaunay(wkt, lineWKT, true, expectedTri);
   }
   
+  /**
+   * Constraints forming a triangle whose vertices are the sites.
+   * The obtuse angle causes the long edge to be split (by design),
+   * but the result must not contain degenerate (zero-area) triangles.
+   *
+   * see https://github.com/locationtech/jts/issues/1190
+   */
+  public void testTriangleConstraints_JTS_1190()
+  throws ParseException
+  {
+    String wkt = "MULTIPOINT ((-221.72957795130824 -26.56505117707799), (-149.72957795130824 -26.56505117707799), (0 -90))";
+    String lineWKT = "MULTILINESTRING ((-221.72957795130824 -26.56505117707799, -149.72957795130824 -26.56505117707799), (-149.72957795130824 -26.56505117707799, 0 -90), (0 -90, -221.72957795130824 -26.56505117707799))";
+    Geometry sites = reader.read(wkt);
+    Geometry constraints = reader.read(lineWKT);
+
+    ConformingDelaunayTriangulationBuilder builder = new ConformingDelaunayTriangulationBuilder();
+    builder.setSites(sites);
+    builder.setConstraints(constraints);
+    Geometry result = builder.getTriangles(new GeometryFactory());
+
+    assertTrue(result.getNumGeometries() > 0);
+    for (int i = 0; i < result.getNumGeometries(); i++) {
+      assertTrue("Zero-area triangle in conforming Delaunay triangulation",
+          result.getGeometryN(i).getArea() > 0);
+    }
+  }
+
 	static final double COMPARISON_TOLERANCE = 1.0e-7;
 	
   void runDelaunay(String sitesWKT, String constraintsWKT, boolean computeTriangles, String expectedWKT)
