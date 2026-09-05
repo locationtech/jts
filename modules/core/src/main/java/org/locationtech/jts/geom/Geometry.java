@@ -1737,6 +1737,53 @@ public abstract class Geometry
   }
 
   /**
+   * Computes the coordinate dimension of a <code>Geometry</code>, based on the
+   * coordinate dimensions of its {@link CoordinateSequence}s
+   * (i.e. 2 for XY, 3 for XYZ or XYM, or 4 for XYZM).
+   * For a {@link GeometryCollection} this is the maximum coordinate dimension
+   * over all of its elements.
+   * Empty geometries (or empty elements of a collection) are assumed
+   * to have coordinate dimension 2, and do not affect the result
+   * unless all elements are empty.
+   *
+   * @param  g the <code>Geometry</code> to get the coordinate dimension of
+   * @return the coordinate dimension of the geometry (2, 3 or 4)
+   */
+  public static int getCoordinateDimension(Geometry g) {
+    if (g instanceof Point) {
+      return coordinateSequenceDimension(((Point) g).getCoordinateSequence());
+    }
+    if (g instanceof LineString) {
+      return coordinateSequenceDimension(((LineString) g).getCoordinateSequence());
+    }
+    if (g instanceof Polygon) {
+      Polygon poly = (Polygon) g;
+      int dimension = 2;
+      LinearRing shell = poly.getExteriorRing();
+      if (shell != null) {
+        dimension = coordinateSequenceDimension(shell.getCoordinateSequence());
+      }
+      for (int i = 0; i < poly.getNumInteriorRing(); i++) {
+        dimension = Math.max(dimension, coordinateSequenceDimension(poly.getInteriorRingN(i).getCoordinateSequence()));
+      }
+      return dimension;
+    }
+    if (g instanceof GeometryCollection) {
+      GeometryCollection gc = (GeometryCollection) g;
+      int dimension = 2;
+      for (int i = 0; i < gc.getNumGeometries(); i++) {
+        dimension = Math.max(dimension, getCoordinateDimension(gc.getGeometryN(i)));
+      }
+      return dimension;
+    }
+    return 2;
+  }
+
+  private static int coordinateSequenceDimension(CoordinateSequence seq) {
+    return seq.size() > 0 ? seq.getDimension() : 2;
+  }
+
+  /**
    * Tests whether this is an instance of a general {@link GeometryCollection},
    * rather than a homogeneous subclass.
    *
