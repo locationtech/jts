@@ -89,9 +89,9 @@ class RelatePointLocator {
     }
     
     if (polygons != null) {
-      polyLocator = isPrepared 
-          ? new IndexedPointInAreaLocator[polygons.size()]
-              : new SimplePointInAreaLocator[polygons.size()];
+      // Use the declared interface array type so Android ART can verify
+      // the assignment (concrete-array ternary is Object[] under ART; #1192)
+      polyLocator = new PointOnGeometryLocator[polygons.size()];
     }
   }
 
