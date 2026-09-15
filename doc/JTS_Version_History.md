@@ -65,6 +65,7 @@ Distributions for older JTS versions can be obtained at the
 * Fix `OverlayEdge` to include first point when adding coordinates (#1187)
 * Make `HalfEdge.compareAngularDirection` more robust (#1224)
 * Improve `Quadrant` computation robustness by using vector endpoints (#1226)
+* Fix NaN handling in `LinearLocation` and `EdgeIntersection` `compareTo` (#1229)
 
 ### Performance Improvements
 
