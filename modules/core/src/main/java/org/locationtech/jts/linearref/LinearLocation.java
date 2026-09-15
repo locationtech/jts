@@ -330,10 +330,8 @@ public class LinearLocation
     if (segmentIndex < other.segmentIndex) return -1;
     if (segmentIndex > other.segmentIndex) return 1;
     // same segment, so compare segment fraction
-    if (segmentFraction < other.segmentFraction) return -1;
-    if (segmentFraction > other.segmentFraction) return 1;
-    // same location
-    return 0;
+    // Double.compare is used to ensure consistency with equals/hashCode for NaN
+    return Double.compare(segmentFraction, other.segmentFraction);
   }
 
   /**
