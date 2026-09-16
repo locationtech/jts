@@ -14,6 +14,7 @@ package org.locationtech.jts.geom.util;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.locationtech.jts.geom.CircularString;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryCollection;
 import org.locationtech.jts.geom.GeometryFilter;
@@ -54,6 +55,8 @@ public class GeometryExtracter
 	  return null;
 	else if (clz.isAssignableFrom(Point.class))
 	  return Geometry.TYPENAME_POINT;
+	else if (clz == CircularString.class)
+	  return Geometry.TYPENAME_CIRCULARSTRING;
 	else if (clz.isAssignableFrom(LineString.class))
 	  return Geometry.TYPENAME_LINESTRING;
 	else if (clz.isAssignableFrom(LinearRing.class))
