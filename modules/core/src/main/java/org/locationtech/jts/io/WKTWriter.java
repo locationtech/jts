@@ -17,6 +17,7 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.EnumSet;
 
+import org.locationtech.jts.geom.CircularString;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateSequence;
 import org.locationtech.jts.geom.Geometry;
@@ -451,6 +452,10 @@ public class WKTWriter
       appendLinearRingTaggedText((LinearRing) geometry, outputOrdinates, useFormatting,
               level, writer, formatter);
     }
+    else if (geometry instanceof CircularString) {
+      appendCircularStringTaggedText((CircularString) geometry, outputOrdinates, useFormatting,
+              level, writer, formatter);
+    }
     else if (geometry instanceof LineString) {
       appendLineStringTaggedText((LineString) geometry, outputOrdinates, useFormatting,
               level, writer, formatter);
@@ -523,6 +528,22 @@ public class WKTWriter
     writer.write(" ");
     appendOrdinateText(outputOrdinates, writer);
     appendSequenceText(lineString.getCoordinateSequence(), outputOrdinates, useFormatting,
+            level, false, writer, formatter);
+  }
+
+  /**
+   * Converts a {@link CircularString} to CIRCULARSTRING tagged text
+   * using control points (not the linearized vertices).
+   */
+  private void appendCircularStringTaggedText(
+          CircularString circularString, EnumSet<Ordinate> outputOrdinates, boolean useFormatting,
+          int level, Writer writer, OrdinateFormat formatter)
+    throws IOException
+  {
+    writer.write(WKTConstants.CIRCULARSTRING);
+    writer.write(" ");
+    appendOrdinateText(outputOrdinates, writer);
+    appendSequenceText(circularString.getControlPointSequence(), outputOrdinates, useFormatting,
             level, false, writer, formatter);
   }
 

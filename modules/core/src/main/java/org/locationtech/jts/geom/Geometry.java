@@ -161,6 +161,7 @@ public abstract class Geometry
   protected static final int TYPECODE_POLYGON = 5;
   protected static final int TYPECODE_MULTIPOLYGON = 6;
   protected static final int TYPECODE_GEOMETRYCOLLECTION = 7;
+  protected static final int TYPECODE_CIRCULARSTRING = 8;
   
   public static final String TYPENAME_POINT = "Point";
   public static final String TYPENAME_MULTIPOINT = "MultiPoint";
@@ -170,6 +171,7 @@ public abstract class Geometry
   public static final String TYPENAME_POLYGON = "Polygon";
   public static final String TYPENAME_MULTIPOLYGON = "MultiPolygon";
   public static final String TYPENAME_GEOMETRYCOLLECTION = "GeometryCollection";
+  public static final String TYPENAME_CIRCULARSTRING = "CircularString";
   
   private final static GeometryComponentFilter geometryChangedFilter = new GeometryComponentFilter() {
     public void filter(Geometry geom) {
