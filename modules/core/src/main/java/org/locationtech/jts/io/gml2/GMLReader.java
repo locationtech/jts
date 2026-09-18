@@ -19,6 +19,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import org.apache.commons.xml.secure.SecureSAXParserFactory;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryCollection;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -49,9 +50,15 @@ import org.xml.sax.helpers.DefaultHandler;
  *
  * The reader ignores namespace prefixes, 
  * and disables both the validation and namespace options on the <tt>SAXParser</tt>.
- * This class requires the presence of a SAX Parser available via the 
- * {@link javax.xml.parsers.SAXParserFactory#newInstance()}
- * method.
+ * <p>
+ * The parser is created by {@link SecureSAXParserFactory} from Apache Commons Secure XML,
+ * so external DTDs and external entities are never resolved
+ * and internal entity expansion is bounded,
+ * whichever SAX implementation is on the classpath.
+ * See its <a href="https://commons.apache.org/proper/commons-secure-xml/apidocs/org/apache/commons/xml/secure/package-summary.html">package documentation</a>
+ * for the guarantees
+ * and the <a href="https://commons.apache.org/proper/commons-secure-xml/threat_model.html#Downstream_Responsibility">threat model</a>
+ * for what remains the caller's responsibility.
  * <p>
  * A specification of the GML XML format 
  * can be found at the OGC web site: <a href='http://www.opengeospatial.org/'>http://www.opengeospatial.org/</a>.
@@ -101,7 +108,7 @@ public class GMLReader
 	 * @throws IOException
 	 */
 	public Geometry read(Reader reader, GeometryFactory geometryFactory) throws SAXException, IOException, ParserConfigurationException{
-		SAXParserFactory fact = SAXParserFactory.newInstance();
+		SAXParserFactory fact = SecureSAXParserFactory.newInstance();
 
 		fact.setNamespaceAware(false);
 		fact.setValidating(false);

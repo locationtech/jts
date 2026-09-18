@@ -33,6 +33,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <commons-secure-xml-version>1.0.0</commons-secure-xml-version>
         <junit-version>4.13.1</junit-version>
         <jdom-version>2.0.6.1</jdom-version>
         <jump.version>1.2</jump.version>
@@ -105,6 +106,11 @@
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
                 <version>${junit-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-secure-xml</artifactId>
+                <version>${commons-secure-xml-version}</version>
             </dependency>
             <dependency>
                 <groupId>org.jdom</groupId>
@@ -216,6 +222,11 @@
                   <version>3.1.2</version>
                 </plugin>
                 <plugin>
+                    <groupId>de.thetaphi</groupId>
+                    <artifactId>forbiddenapis</artifactId>
+                    <version>3.10</version>
+                </plugin>
+                <plugin>
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>3.8.1</version>
                 </plugin>
@@ -308,6 +319,9 @@
                     <header>${project.name} ${project.version}</header>
                     <overview></overview>
                     <excludePackageNames>org.locationtech.jtsexample.*,org.locationtech.jtstest,org.locationtech.jtstest.*</excludePackageNames>
+                    <links>
+                        <link>https://javadoc.io/doc/org.apache.commons/commons-secure-xml/${commons-secure-xml-version}</link>
+                    </links>
                     <groups>
                         <group>
                             <title>Core - Geometry</title>
