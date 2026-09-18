@@ -24,6 +24,8 @@ import junit.textui.TestRunner;
 public class WKTReaderParseErrorTest
     extends TestCase
 {
+  private static final int MAXIMUM_NESTING_DEPTH = 1000;
+
   public static void main(String args[]) {
     TestRunner.run(WKTReaderParseErrorTest.class);
   }
@@ -155,6 +157,15 @@ public class WKTReaderParseErrorTest
     readWithParseException("GEOMETRYCOLLECTION ()");
     readWithParseException("GEOMETRYCOLLECTION");  
   }
+
+  public void testNestedGeometryCollection() throws IOException
+  {
+    String wkt = "POINT (0 0)";
+    for (int i = 0; i <= MAXIMUM_NESTING_DEPTH; i++) {
+      wkt = "GEOMETRYCOLLECTION (" + wkt + ")";
+    }
+    readWithParseException(wkt);
+  }
   
   public void testEmptyComponents() throws ParseException, IOException {
     readWithInvalidException("POLYGON( EMPTY, (1 1,2 2,1 2,1 1))");
@@ -190,4 +201,3 @@ public class WKTReaderParseErrorTest
     fail();  
   }
 }
-
