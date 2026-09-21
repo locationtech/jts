@@ -1,8 +1,12 @@
 package org.locationtech.jts.geom.util;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.LinearRing;
+import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
 
@@ -30,6 +34,23 @@ public class GeometryExtracterTest extends TestCase {
 		// verify that nested geometries are extracted
 		List points = GeometryExtracter.extract(gc, Geometry.TYPENAME_POINT);
 		assertEquals(2, points.size());
+
+		List<LineString> byClassLines = GeometryExtracter.extractByClass(gc, LineString.class);
+		assertEquals(3, byClassLines.size());
+
+		// verify LinearRing.class only extracts rings
+		List<LinearRing> byClassRings = GeometryExtracter.extractByClass(gc, LinearRing.class);
+		assertEquals(1, byClassRings.size());
+
+		// verify Point.class extracts nested points
+		List<Point> byClassPoints = GeometryExtracter.extractByClass(gc, Point.class);
+		assertEquals(2, byClassPoints.size());
+
+		// verify "write into user-provided collection" works with a supertype
+		List<Geometry> out = new ArrayList<Geometry>();
+		List<Point> returned = GeometryExtracter.extractByClass(gc, Point.class, out);
+		assertEquals(2, returned.size());
+		assertEquals(2, out.size());
 	}
 
 }
