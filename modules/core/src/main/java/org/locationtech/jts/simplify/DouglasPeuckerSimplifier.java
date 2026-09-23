@@ -18,6 +18,7 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.geom.util.GeometryFixer;
 import org.locationtech.jts.geom.util.GeometryTransformer;
 
 /**
@@ -190,14 +191,8 @@ static class DPTransformer
   /**
    * Creates a valid area geometry from one that possibly has
    * bad topology (i.e. self-intersections).
-   * Since buffer can handle invalid topology, but always returns
-   * valid geometry, constructing a 0-width buffer "corrects" the
-   * topology.
-   * Note this only works for area geometries, since buffer always returns
-   * areas.  This also may return empty geometries, if the input
-   * has no actual area.  
-   * If the input is empty or is not polygonal, 
-   * this ensures that POLYGON EMPTY is returned.
+   * GeometryFixer is used to correct the topology while preserving
+   * as much of the input geometry as possible.
    *
    * @param rawAreaGeom an area geometry possibly containing self-intersections
    * @return a valid area geometry
@@ -207,7 +202,13 @@ static class DPTransformer
     boolean isValidArea = rawAreaGeom.getDimension() == 2 && rawAreaGeom.isValid();
     // if geometry is invalid then make it valid
   	if (isEnsureValidTopology && ! isValidArea)
-  		return rawAreaGeom.buffer(0.0);
+    {
+      Geometry fixed = GeometryFixer.fix(rawAreaGeom);
+      // Preserve the historical result type for collapsed polygonal output.
+      if (fixed.isEmpty() && rawAreaGeom.getDimension() < 2)
+        return rawAreaGeom.getFactory().createPolygon();
+      return fixed;
+    }
   	return rawAreaGeom;
   }
 }
