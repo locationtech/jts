@@ -20,6 +20,7 @@ import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.PrecisionModel;
+import org.locationtech.jts.geom.util.GeometryFixer;
 import org.locationtech.jts.geom.util.GeometryTransformer;
 
 /**
@@ -183,11 +184,8 @@ public class Densifier {
 
 		/**
 		 * Creates a valid area geometry from one that possibly has bad topology
-		 * (i.e. self-intersections). Since buffer can handle invalid topology, but
-		 * always returns valid geometry, constructing a 0-width buffer "corrects"
-		 * the topology. Note this only works for area geometries, since buffer
-		 * always returns areas. This also may return empty geometries, if the input
-		 * has no actual area.
+		 * (i.e. self-intersections). GeometryFixer is used to correct the topology
+		 * while preserving as much of the input geometry as possible.
 		 * 
 		 * @param roughAreaGeom
 		 *          an area geometry possibly containing self-intersections
@@ -196,7 +194,7 @@ public class Densifier {
 		private Geometry createValidArea(Geometry roughAreaGeom) {
 		  // if valid no need to process to make valid
 		  if (! isValidated || roughAreaGeom.isValid()) return roughAreaGeom;
-			return roughAreaGeom.buffer(0.0);
+			return GeometryFixer.fix(roughAreaGeom);
 		}
 	}
 

@@ -69,6 +69,13 @@ public class DensifierTest extends GeometryTestCase {
         10, "POLYGON ((10 10, 10 20, 10 30, 20 30, 30 30, 30 20, 30 10, 20 10, 10 10))");
   }
 
+  public void testInvalidPolygonFixed() {
+    checkDensify(
+        "POLYGON ((0 0, 10 0, 10 10, 0 10, 0 0), (20 20, 22 20, 22 22, 20 22, 20 20))",
+        100,
+        "MULTIPOLYGON (((0 0, 10 0, 10 10, 0 10, 0 0)), ((20 20, 22 20, 22 22, 20 22, 20 20)))");
+  }
+
   public void testLineDensify3D() {
     checkDensifyXYZ("POLYGON Z((10 30 10, 30 30 10, 30 10 15, 10 10 10, 10 30 20))",
             10, "POLYGON Z((10 30 10, 20 30 10, 30 30 10, 30 20 12.5, 30 10 15, 20 10 12.5, 10 10 10, 10 20 15, 10 30 20))");
