@@ -95,30 +95,58 @@ class DouglasPeuckerLineSimplifier
 
   private LineSegment seg = new LineSegment();
 
-  private void simplifySection(int i, int j)
+  /**
+   * Douglas-Peucker section simplification using an explicit stack.
+   * <p>
+   * The classic recursive form can throw {@link StackOverflowError} on long,
+   * highly oscillatory linework where the furthest vertex is always adjacent
+   * to one endpoint (depth O(n)). An explicit stack keeps the same left-then-right
+   * split order while bounding memory by heap rather than the JVM call stack
+   * (see JTS #1127).
+   */
+  private void simplifySection(int i0, int j0)
   {
-    if((i+1) == j) {
-      return;
-    }
-    seg.p0 = pts[i];
-    seg.p1 = pts[j];
-    double maxDistance = -1.0;
-    int maxIndex = i;
-    for (int k = i + 1; k < j; k++) {
-      double distance = seg.distance(pts[k]);
-      if (distance > maxDistance) {
-        maxDistance = distance;
-        maxIndex = k;
+    // Pair stack: [i, j, i, j, ...]. Worst-case depth is O(n).
+    int[] stack = new int[Math.max(4, pts.length * 2)];
+    int top = 0;
+    stack[top++] = i0;
+    stack[top++] = j0;
+
+    while (top > 0) {
+      int j = stack[--top];
+      int i = stack[--top];
+      if ((i + 1) == j) {
+        continue;
       }
-    }
-    if (maxDistance <= distanceTolerance) {
-      for(int k = i + 1; k < j; k++) {
-        usePt[k] = false;
+      seg.p0 = pts[i];
+      seg.p1 = pts[j];
+      double maxDistance = -1.0;
+      int maxIndex = i;
+      for (int k = i + 1; k < j; k++) {
+        double distance = seg.distance(pts[k]);
+        if (distance > maxDistance) {
+          maxDistance = distance;
+          maxIndex = k;
+        }
       }
-    }
-    else {
-      simplifySection(i, maxIndex);
-      simplifySection(maxIndex, j);
+      if (maxDistance <= distanceTolerance) {
+        for (int k = i + 1; k < j; k++) {
+          usePt[k] = false;
+        }
+      }
+      else {
+        // Grow if needed (should not for size 2*n, but stay safe).
+        if (top + 4 > stack.length) {
+          int[] grown = new int[stack.length * 2];
+          System.arraycopy(stack, 0, grown, 0, top);
+          stack = grown;
+        }
+        // Push right then left so left is processed first (same as recursion).
+        stack[top++] = maxIndex;
+        stack[top++] = j;
+        stack[top++] = i;
+        stack[top++] = maxIndex;
+      }
     }
   }
 
