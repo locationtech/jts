@@ -15,6 +15,10 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.xml.XMLConstants;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -25,6 +29,8 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXNotRecognizedException;
+import org.xml.sax.SAXNotSupportedException;
 import org.xml.sax.helpers.DefaultHandler;
 
 
@@ -105,6 +111,15 @@ public class GMLReader
 
 		fact.setNamespaceAware(false);
 		fact.setValidating(false);
+		// Harden against XXE, as GML is often read from untrusted sources.
+		try {
+			fact.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+			fact.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+		}
+		catch (SAXNotRecognizedException | SAXNotSupportedException | ParserConfigurationException e) {
+			Logger.getLogger(GMLReader.class.getName())
+					.log(Level.WARNING, "SAX parser does not support XXE hardening", e);
+		}
 
 		SAXParser parser = fact.newSAXParser();
 
