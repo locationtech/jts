@@ -732,6 +732,17 @@ public class WKTWriter
   }
 
   /**
+   * Appends the {@code EMPTY} token, inserting a separator after any dimensional
+   * marker written by {@link #appendOrdinateText}.
+   */
+  private void appendEmptyText(EnumSet<Ordinate> outputOrdinates, Writer writer) throws IOException {
+    if (outputOrdinates.contains(Ordinate.Z) || outputOrdinates.contains(Ordinate.M)) {
+      writer.write(" ");
+    }
+    writer.write(WKTConstants.EMPTY);
+  }
+
+  /**
    *  Appends all members of a <code>CoordinateSequence</code> to the stream. Each {@code Coordinate} is separated from
    *  another using a colon, the ordinates of a {@code Coordinate} are separated by a space.
    *
@@ -748,7 +759,7 @@ public class WKTWriter
     throws IOException
   {
     if (seq.size() == 0) {
-      writer.write(WKTConstants.EMPTY);
+      appendEmptyText(outputOrdinates, writer);
     }
     else {
       if (indentFirst) indent(useFormatting, level, writer);
@@ -785,7 +796,7 @@ public class WKTWriter
     throws IOException
   {
     if (polygon.isEmpty()) {
-      writer.write(WKTConstants.EMPTY);
+      appendEmptyText(outputOrdinates, writer);
     }
     else {
       if (indentFirst) indent(useFormatting, level, writer);
@@ -817,7 +828,7 @@ public class WKTWriter
     throws IOException
   {
     if (multiPoint.getNumGeometries() == 0) {
-      writer.write(WKTConstants.EMPTY);
+      appendEmptyText(outputOrdinates, writer);
     }
     else {
       writer.write("(");
@@ -850,7 +861,7 @@ public class WKTWriter
     throws IOException
   {
     if (multiLineString.getNumGeometries() == 0) {
-      writer.write(WKTConstants.EMPTY);
+      appendEmptyText(outputOrdinates, writer);
     }
     else {
       int level2 = level;
@@ -885,7 +896,7 @@ public class WKTWriter
     throws IOException
   {
     if (multiPolygon.getNumGeometries() == 0) {
-      writer.write(WKTConstants.EMPTY);
+      appendEmptyText(outputOrdinates, writer);
     }
     else {
       int level2 = level;
@@ -920,7 +931,7 @@ public class WKTWriter
     throws IOException
   {
     if (geometryCollection.getNumGeometries() == 0) {
-      writer.write(WKTConstants.EMPTY);
+      appendEmptyText(outputOrdinates, writer);
     }
     else {
       int level2 = level;
