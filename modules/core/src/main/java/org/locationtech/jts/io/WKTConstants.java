@@ -20,6 +20,7 @@ package org.locationtech.jts.io;
 public class WKTConstants {
 
   public static final String GEOMETRYCOLLECTION = "GEOMETRYCOLLECTION";
+  public static final String CIRCULARSTRING = "CIRCULARSTRING";
   public static final String LINEARRING = "LINEARRING";
   public static final String LINESTRING = "LINESTRING";
   public static final String MULTIPOLYGON = "MULTIPOLYGON";

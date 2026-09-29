@@ -21,6 +21,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Locale;
 
+import org.locationtech.jts.geom.CircularString;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateSequence;
 import org.locationtech.jts.geom.CoordinateSequenceFactory;
@@ -92,13 +93,15 @@ import org.locationtech.jts.util.AssertionFailedException;
  * <blockquote><pre>
  * <i>WKTGeometry:</i> one of<i>
  *
- *       WKTPoint  WKTLineString  WKTLinearRing  WKTPolygon
+ *       WKTPoint  WKTLineString  WKTCircularString  WKTLinearRing  WKTPolygon
  *       WKTMultiPoint  WKTMultiLineString  WKTMultiPolygon
  *       WKTGeometryCollection</i>
  *
  * <i>WKTPoint:</i> <b>POINT</b><i>[Dimension]</i> <b>( </b><i>Coordinate</i> <b>)</b>
  *
  * <i>WKTLineString:</i> <b>LINESTRING</b><i>[Dimension]</i> <i>CoordinateSequence</i>
+ *
+ * <i>WKTCircularString:</i> <b>CIRCULARSTRING</b><i>[Dimension]</i> <i>CoordinateSequence</i>
  *
  * <i>WKTLinearRing:</i> <b>LINEARRING</b><i>[Dimension]</i> <i>CoordinateSequence</i>
  *
@@ -146,6 +149,8 @@ import org.locationtech.jts.util.AssertionFailedException;
  * POINT EMPTY
  * LINESTRING (0 0, 0 1, 1 2)
  * LINESTRING EMPTY
+ * CIRCULARSTRING (0 0, 1 1, 1 0)
+ * CIRCULARSTRING EMPTY
  * POLYGON ((0 0, 1 0, 1 1, 0 1, 0 0))
  * POLYGON ((0 0, 4 0, 4 4, 0 4, 0 0), (1 1, 1 2, 2 2, 2 1, 1 1))
  * POLYGON EMPTY
@@ -777,6 +782,9 @@ S  */
     if (isTypeName(tokenizer, type, WKTConstants.POINT)) {
       return readPointText(tokenizer, ordinateFlags);
     }
+    else if (isTypeName(tokenizer, type, WKTConstants.CIRCULARSTRING)) {
+      return readCircularStringText(tokenizer, ordinateFlags);
+    }
     else if (isTypeName(tokenizer, type, WKTConstants.LINESTRING)) {
       return readLineStringText(tokenizer, ordinateFlags);
     }
@@ -845,6 +853,20 @@ S  */
    */
   private LineString readLineStringText(StreamTokenizer tokenizer, EnumSet<Ordinate> ordinateFlags) throws IOException, ParseException {
     return geometryFactory.createLineString(getCoordinateSequence(tokenizer, ordinateFlags, LineString.MINIMUM_VALID_SIZE, false));
+  }
+
+  /**
+   * Creates a {@link CircularString} using the next token in the stream.
+   *
+   * @param tokenizer tokenizer over a stream of SQL/MM Well-known Text
+   * @return a CircularString specified by the next token in the stream
+   * @throws IOException if an I/O error occurs
+   * @throws ParseException if an unexpected token was encountered
+   */
+  private CircularString readCircularStringText(StreamTokenizer tokenizer, EnumSet<Ordinate> ordinateFlags)
+      throws IOException, ParseException {
+    return geometryFactory.createCircularString(
+        getCoordinateSequence(tokenizer, ordinateFlags, CircularString.MINIMUM_VALID_SIZE, false));
   }
 
   /**

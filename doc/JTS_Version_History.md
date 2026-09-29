@@ -26,6 +26,7 @@ Distributions for older JTS versions can be obtained at the
 * Add `CoverageCleaner` (#1126)
 * Add `MinimumBoundingTriangle` (#1160)
 * Add `DirectedHausdorffDistance` class (#1182)
+* Add `CircularString` (ISO SQL/MM) with thin `ExactCurve` / `ExactCircularArc` and WKT support (#133)
 
 ### Functionality Improvements
 

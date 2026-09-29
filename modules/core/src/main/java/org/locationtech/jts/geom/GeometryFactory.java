@@ -622,6 +622,39 @@ public class GeometryFactory
   }
 
   /**
+   * Constructs an empty {@link CircularString} geometry.
+   *
+   * @return an empty CircularString
+   */
+  public CircularString createCircularString() {
+    return createCircularString(getCoordinateSequenceFactory().create(new Coordinate[]{}));
+  }
+
+  /**
+   * Creates a CircularString using the given control-point Coordinates.
+   * A null or empty array creates an empty CircularString.
+   * Non-empty input must have an odd number of points &gt;= 3.
+   *
+   * @param coordinates control points without null elements, or an empty array, or null
+   * @return the created CircularString
+   */
+  public CircularString createCircularString(Coordinate[] coordinates) {
+    return createCircularString(coordinates != null ? getCoordinateSequenceFactory().create(coordinates) : null);
+  }
+
+  /**
+   * Creates a CircularString using the given control-point CoordinateSequence.
+   * A null or empty CoordinateSequence creates an empty CircularString.
+   * Non-empty input must have an odd number of points &gt;= 3.
+   *
+   * @param coordinates a CoordinateSequence of control points (possibly empty), or null
+   * @return the created CircularString
+   */
+  public CircularString createCircularString(CoordinateSequence coordinates) {
+    return new CircularString(coordinates, this);
+  }
+
+  /**
    * Creates an empty atomic geometry of the given dimension.
    * If passed a dimension of -1 will create an empty {@link GeometryCollection}.
    * 
