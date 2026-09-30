@@ -78,6 +78,8 @@ import org.locationtech.jts.geom.PrecisionModel;
  */
 public class WKBReader
 {
+  private static final int MAXIMUM_NESTING_DEPTH = 1000;
+
   /**
    * Converts a hexadecimal string to a byte array.
    * The hexadecimal digit symbols are case-insensitive.
@@ -189,7 +191,7 @@ public class WKBReader
      */
     this.maxNumFieldValue = maxCoordNum;
     dis.setInStream(is);
-    return readGeometry(0);
+    return readGeometry(0, 0);
   }
   
   private int readNumField(String fieldName) throws IOException, ParseException {
@@ -201,7 +203,7 @@ public class WKBReader
     return num;
   }
   
-  private Geometry readGeometry(int SRID)
+  private Geometry readGeometry(int SRID, int nestingDepth)
   throws IOException, ParseException
   {
 
@@ -276,16 +278,16 @@ public class WKBReader
        geom = readPolygon(ordinateFlags);
         break;
       case WKBConstants.wkbMultiPoint :
-        geom = readMultiPoint(SRID);
+        geom = readMultiPoint(SRID, nestingDepth);
         break;
       case WKBConstants.wkbMultiLineString :
-        geom = readMultiLineString(SRID);
+        geom = readMultiLineString(SRID, nestingDepth);
         break;
      case WKBConstants.wkbMultiPolygon :
-        geom = readMultiPolygon(SRID);
+        geom = readMultiPolygon(SRID, nestingDepth);
         break;
       case WKBConstants.wkbGeometryCollection :
-        geom = readGeometryCollection(SRID);
+        geom = readGeometryCollection(SRID, nestingDepth);
         break;
       default: 
         throw new ParseException("Unknown WKB type " + geometryType);
@@ -349,12 +351,12 @@ public class WKBReader
     return factory.createPolygon(shell, holes);
   }
 
-  private MultiPoint readMultiPoint(int SRID) throws IOException, ParseException
+  private MultiPoint readMultiPoint(int SRID, int nestingDepth) throws IOException, ParseException
   {
     int numGeom = readNumField(FIELD_NUMELEMS);
     Point[] geoms = new Point[numGeom];
     for (int i = 0; i < numGeom; i++) {
-      Geometry g = readGeometry(SRID);
+      Geometry g = readGeometry(SRID, nestingDepth + 1);
       if (! (g instanceof Point))
         throw new ParseException(INVALID_GEOM_TYPE_MSG + "MultiPoint");
       geoms[i] = (Point) g;
@@ -362,12 +364,12 @@ public class WKBReader
     return factory.createMultiPoint(geoms);
   }
 
-  private MultiLineString readMultiLineString(int SRID) throws IOException, ParseException
+  private MultiLineString readMultiLineString(int SRID, int nestingDepth) throws IOException, ParseException
   {
     int numGeom = readNumField(FIELD_NUMELEMS);
     LineString[] geoms = new LineString[numGeom];
     for (int i = 0; i < numGeom; i++) {
-      Geometry g = readGeometry(SRID);
+      Geometry g = readGeometry(SRID, nestingDepth + 1);
       if (! (g instanceof LineString))
         throw new ParseException(INVALID_GEOM_TYPE_MSG + "MultiLineString");
       geoms[i] = (LineString) g;
@@ -375,13 +377,13 @@ public class WKBReader
     return factory.createMultiLineString(geoms);
   }
 
-  private MultiPolygon readMultiPolygon(int SRID) throws IOException, ParseException
+  private MultiPolygon readMultiPolygon(int SRID, int nestingDepth) throws IOException, ParseException
   {
     int numGeom = readNumField(FIELD_NUMELEMS);
     Polygon[] geoms = new Polygon[numGeom];
 
     for (int i = 0; i < numGeom; i++) {
-      Geometry g = readGeometry(SRID);
+      Geometry g = readGeometry(SRID, nestingDepth + 1);
       if (! (g instanceof Polygon))
         throw new ParseException(INVALID_GEOM_TYPE_MSG + "MultiPolygon");
       geoms[i] = (Polygon) g;
@@ -389,12 +391,17 @@ public class WKBReader
     return factory.createMultiPolygon(geoms);
   }
 
-  private GeometryCollection readGeometryCollection(int SRID) throws IOException, ParseException
+  private GeometryCollection readGeometryCollection(int SRID, int nestingDepth)
+      throws IOException, ParseException
   {
+    if (nestingDepth >= MAXIMUM_NESTING_DEPTH) {
+      throw new ParseException("GeometryCollection nesting depth exceeds maximum of "
+          + MAXIMUM_NESTING_DEPTH);
+    }
     int numGeom = readNumField(FIELD_NUMELEMS);
     Geometry[] geoms = new Geometry[numGeom];
     for (int i = 0; i < numGeom; i++) {
-      geoms[i] = readGeometry(SRID);
+      geoms[i] = readGeometry(SRID, nestingDepth + 1);
     }
     return factory.createGeometryCollection(geoms);
   }
