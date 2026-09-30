@@ -91,6 +91,10 @@ public class Point
     return 0;
   }
 
+  public int getCoordinateDimension() {
+    return getCoordinateDimension(coordinates);
+  }
+
   public int getBoundaryDimension() {
     return Dimension.FALSE;
   }

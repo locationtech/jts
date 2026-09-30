@@ -7,7 +7,7 @@ import junit.textui.TestRunner;
 import test.jts.GeometryTestCase;
 
 /**
- * Tests for {@link Geometry#getCoordinateDimension(Geometry)}.
+ * Tests for {@link Geometry#getCoordinateDimension()}.
  */
 public class GeometryCoordinateDimensionTest extends GeometryTestCase {
   public static void main(String args[]) {
@@ -72,7 +72,7 @@ public class GeometryCoordinateDimensionTest extends GeometryTestCase {
 
   private void checkDimension(String wkt, int expectedDimension) {
     Geometry geom = read(strictReader, wkt);
-    int actual = Geometry.getCoordinateDimension(geom);
+    int actual = geom.getCoordinateDimension();
     assertEquals(expectedDimension, actual);
   }
 }
