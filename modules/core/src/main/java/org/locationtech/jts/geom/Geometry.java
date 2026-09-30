@@ -564,6 +564,34 @@ public abstract class Geometry
   public abstract int getDimension();
 
   /**
+   * Returns the coordinate dimension of this geometry,
+   * based on the dimension of its {@link CoordinateSequence}s
+   * (i.e. 2 for XY, 3 for XYZ or XYM, or 4 for XYZM).
+   * A coordinate dimension of 3 does not distinguish XYZ from XYM;
+   * use {@link CoordinateSequence#hasZ()} and {@link CoordinateSequence#hasM()}
+   * to determine which ordinates are present.
+   * For a {@link GeometryCollection} this is the maximum coordinate dimension
+   * over all of its elements.
+   * An empty collection has coordinate dimension 2.
+   * <p>
+   * Empty geometries report the dimension of their (empty)
+   * coordinate sequences, so e.g. <code>POINT Z EMPTY</code> read from WKT
+   * has coordinate dimension 3.
+   * Note that empty geometries created by {@link GeometryFactory}
+   * (e.g. via {@link GeometryFactory#createPoint()}) may report
+   * a coordinate dimension of 3, since that is the default
+   * dimension of their coordinate sequences.
+   * <p>
+   * Note that this is a different concept to the topological
+   * dimension returned by {@link #getDimension()}.
+   *
+   * @return the coordinate dimension of this geometry (2, 3 or 4)
+   *
+   * @see #getDimension()
+   */
+  public abstract int getCoordinateDimension();
+
+  /**
    * Tests whether an atomic geometry or any element of a collection
    * has the specified dimension.
    * In particular, this can be used with mixed-dimension {@link GeometryCollection}s

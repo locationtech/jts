@@ -165,6 +165,14 @@ public class Polygon
     return 2;
   }
 
+  public int getCoordinateDimension() {
+    int dimension = shell.getCoordinateDimension();
+    for (int i = 0; i < holes.length; i++) {
+      dimension = Math.max(dimension, holes[i].getCoordinateDimension());
+    }
+    return dimension;
+  }
+
   public int getBoundaryDimension() {
     return 1;
   }
