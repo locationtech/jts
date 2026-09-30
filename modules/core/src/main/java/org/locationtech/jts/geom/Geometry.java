@@ -567,6 +567,9 @@ public abstract class Geometry
    * Returns the coordinate dimension of this geometry,
    * based on the dimension of its {@link CoordinateSequence}s
    * (i.e. 2 for XY, 3 for XYZ or XYM, or 4 for XYZM).
+   * A coordinate dimension of 3 does not distinguish XYZ from XYM;
+   * use {@link CoordinateSequence#hasZ()} and {@link CoordinateSequence#hasM()}
+   * to determine which ordinates are present.
    * For a {@link GeometryCollection} this is the maximum coordinate dimension
    * over all of its elements.
    * An empty collection has coordinate dimension 2.
