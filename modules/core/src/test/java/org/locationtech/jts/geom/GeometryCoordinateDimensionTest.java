@@ -58,6 +58,22 @@ public class GeometryCoordinateDimensionTest extends GeometryTestCase {
     checkDimension("POINT EMPTY", 2);
   }
 
+  public void testEmptyPointZ() {
+    checkDimension("POINT Z EMPTY", 3);
+  }
+
+  public void testEmptyPointZM() {
+    checkDimension("POINT ZM EMPTY", 4);
+  }
+
+  public void testEmptyLineStringZ() {
+    checkDimension("LINESTRING Z EMPTY", 3);
+  }
+
+  public void testGeometryCollectionEmptyZ() {
+    checkDimension("GEOMETRYCOLLECTION (POINT Z EMPTY, LINESTRING EMPTY)", 3);
+  }
+
   public void testMultiPolygonXYZM() {
     checkDimension("MULTIPOLYGON ZM (((1 9 2 3, 9 9 2 3, 9 1 2 3, 1 1 2 3, 1 9 2 3)))", 4);
   }

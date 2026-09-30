@@ -569,9 +569,15 @@ public abstract class Geometry
    * (i.e. 2 for XY, 3 for XYZ or XYM, or 4 for XYZM).
    * For a {@link GeometryCollection} this is the maximum coordinate dimension
    * over all of its elements.
-   * Empty geometries (or empty elements of a collection) are assumed
-   * to have coordinate dimension 2, and do not affect the result
-   * unless all elements are empty.
+   * An empty collection has coordinate dimension 2.
+   * <p>
+   * Empty geometries report the dimension of their (empty)
+   * coordinate sequences, so e.g. <code>POINT Z EMPTY</code> read from WKT
+   * has coordinate dimension 3.
+   * Note that empty geometries created by {@link GeometryFactory}
+   * (e.g. via {@link GeometryFactory#createPoint()}) may report
+   * a coordinate dimension of 3, since that is the default
+   * dimension of their coordinate sequences.
    * <p>
    * Note that this is a different concept to the topological
    * dimension returned by {@link #getDimension()}.
@@ -1753,17 +1759,6 @@ public abstract class Geometry
     if (g.isGeometryCollection()) {
       throw new IllegalArgumentException("Operation does not support GeometryCollection arguments");
     }
-  }
-
-  /**
-   * Returns the size of a coordinate sequence's dimension, 
-   * treating an empty sequence as having dimension 2.
-   *
-   * @param seq the coordinate sequence
-   * @return the coordinate dimension of the sequence
-   */
-  static int getCoordinateDimension(CoordinateSequence seq) {
-    return seq.size() > 0 ? seq.getDimension() : 2;
   }
 
   /**

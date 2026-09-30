@@ -92,7 +92,7 @@ public class Point
   }
 
   public int getCoordinateDimension() {
-    return getCoordinateDimension(coordinates);
+    return coordinates.getDimension();
   }
 
   public int getBoundaryDimension() {

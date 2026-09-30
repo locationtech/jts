@@ -114,7 +114,7 @@ public class LineString
   }
 
   public int getCoordinateDimension() {
-    return getCoordinateDimension(points);
+    return points.getDimension();
   }
 
   public int getBoundaryDimension() {
