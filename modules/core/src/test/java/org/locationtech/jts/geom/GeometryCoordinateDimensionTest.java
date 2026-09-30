@@ -1,5 +1,18 @@
+/*
+ * Copyright (c) 2026 Matthew de Detrich.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
+ * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
+ * and the Eclipse Distribution License is available at
+ *
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ */
+
 package org.locationtech.jts.geom;
 
+import org.locationtech.jts.geom.impl.CoordinateArraySequenceFactory;
 import org.locationtech.jts.geom.impl.PackedCoordinateSequenceFactory;
 import org.locationtech.jts.io.WKTReader;
 
@@ -24,6 +37,16 @@ public class GeometryCoordinateDimensionTest extends GeometryTestCase {
 
   private static WKTReader strictReader() {
     WKTReader reader = new WKTReader(geomFact);
+    reader.setIsOldJtsCoordinateSyntaxAllowed(false);
+    return reader;
+  }
+
+  static GeometryFactory arrayGeomFact = new GeometryFactory(CoordinateArraySequenceFactory.instance());
+
+  static WKTReader arrayStrictReader = arrayStrictReader();
+
+  private static WKTReader arrayStrictReader() {
+    WKTReader reader = new WKTReader(arrayGeomFact);
     reader.setIsOldJtsCoordinateSyntaxAllowed(false);
     return reader;
   }
@@ -86,8 +109,28 @@ public class GeometryCoordinateDimensionTest extends GeometryTestCase {
     checkDimension("GEOMETRYCOLLECTION (POINT EMPTY, LINESTRING EMPTY)", 2);
   }
 
+  public void testArraySequenceXY() {
+    checkDimension(arrayStrictReader, "POINT (1 2)", 2);
+  }
+
+  public void testArraySequenceEmptyPointZ() {
+    checkDimension(arrayStrictReader, "POINT Z EMPTY", 3);
+  }
+
+  /**
+   * Empty geometries created by the factory use the
+   * default coordinate sequence dimension (3).
+   */
+  public void testArraySequenceFactoryEmptyPoint() {
+    assertEquals(3, arrayGeomFact.createPoint().getCoordinateDimension());
+  }
+
   private void checkDimension(String wkt, int expectedDimension) {
-    Geometry geom = read(strictReader, wkt);
+    checkDimension(strictReader, wkt, expectedDimension);
+  }
+
+  private void checkDimension(WKTReader reader, String wkt, int expectedDimension) {
+    Geometry geom = read(reader, wkt);
     int actual = geom.getCoordinateDimension();
     assertEquals(expectedDimension, actual);
   }
