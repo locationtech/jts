@@ -165,6 +165,25 @@ public class DouglasPeuckerSimplifierTest
         "POLYGON EMPTY"
         );
   }
+
+  /**
+   * High-frequency zig-zag forces O(n) recursion depth in classic recursive
+   * Douglas-Peucker (each split peels one vertex). Matches the failure mode
+   * in JTS #1127 (noisy GPS tracks). Explicit-stack implementation must
+   * complete without StackOverflowError and keep every vertex at tolerance 0.
+   */
+  public void testLongUnbalancedLineDoesNotStackOverflow() {
+    int n = 5000;
+    StringBuilder sb = new StringBuilder("LINESTRING (0 0");
+    for (int i = 1; i < n; i++) {
+      // alternate height so the furthest vertex is always adjacent to an endpoint
+      sb.append(", ").append(i).append(i % 2 == 0 ? " 0" : " 1");
+    }
+    sb.append(")");
+    Geometry geom = read(sb.toString());
+    Geometry result = DouglasPeuckerSimplifier.simplify(geom, 0.0);
+    assertEquals(n, result.getNumPoints());
+  }
   
   private void checkDP(String wkt, double tolerance, String wktExpected) {
     Geometry geom = read(wkt);
