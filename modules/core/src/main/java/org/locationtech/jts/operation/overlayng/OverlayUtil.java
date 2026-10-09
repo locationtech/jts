@@ -407,7 +407,7 @@ class OverlayUtil {
       isConsistent = isDifferenceAreaConsistent(areaA, areaB, areaResult, AREA_HEURISTIC_TOLERANCE);
       break;
     case OverlayNG.SYMDIFFERENCE:
-      isConsistent = isLess(areaResult, areaA + areaB, AREA_HEURISTIC_TOLERANCE);
+      isConsistent = isSymDifferenceAreaConsistent(areaA, areaB, areaResult, AREA_HEURISTIC_TOLERANCE);
       break;
     case OverlayNG.UNION:
       isConsistent = isLess(areaA, areaResult, AREA_HEURISTIC_TOLERANCE) 
@@ -433,6 +433,30 @@ class OverlayUtil {
       return false;
     double areaDiffMin = areaA - areaB - tolFrac * areaA;
     return areaResult > areaDiffMin;
+  }
+
+  /**
+   * Tests if the area of a symmetric difference is within the possible range.
+   * It cannot be greater than the sum of the input areas,
+   * and it cannot be less than the difference of the input areas.
+   * The lower bound is relaxed by a fraction of the larger input area,
+   * so that nearly identical inputs (whose areas differ only by rounding)
+   * can still produce an empty result.
+   * This is a heuristic which will only detect gross overlay errors
+   * (such as an inverted result with negative area).
+   * 
+   * @param areaA the area of A
+   * @param areaB the area of B
+   * @param areaResult the result area
+   * @param tolFrac the area tolerance fraction
+   * 
+   * @return true if the symmetric difference area is consistent.
+   */
+  private static boolean isSymDifferenceAreaConsistent(double areaA, double areaB, double areaResult, double tolFrac) {
+    if (! isLess(areaResult, areaA + areaB, tolFrac))
+      return false;
+    double areaSymDiffMin = Math.abs(areaA - areaB) - tolFrac * Math.max(areaA, areaB);
+    return areaResult >= areaSymDiffMin;
   }
 
   private static boolean isLess(double v1, double v2, double tol) {
