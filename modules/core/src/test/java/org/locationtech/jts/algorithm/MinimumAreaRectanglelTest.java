@@ -70,6 +70,22 @@ public class MinimumAreaRectanglelTest extends GeometryTestCase {
     checkMinRectangle("POLYGON ((3 8, 6 8, 9 5, 7 3, 3 1, 2 4, 3 8))", 
         "POLYGON ((0.2 6.6, 6.6 9.8, 9.4 4.2, 3 1, 0.2 6.6))");
   }
+
+  /**
+   * Convex-hint API: static factory and public instance method (JTS #1149).
+   * Result must match the non-hint path for a convex polygon.
+   */
+  public void testConvexHintStaticAndInstance() {
+    String wkt = "POLYGON ((3 8, 6 8, 9 5, 7 3, 3 1, 2 4, 3 8))";
+    Geometry geom = read(wkt);
+    Geometry expected = MinimumAreaRectangle.getMinimumRectangle(geom);
+
+    Geometry viaStatic = MinimumAreaRectangle.getMinimumRectangle(geom, true);
+    checkEqual(expected, viaStatic, TOL);
+
+    Geometry viaInstance = new MinimumAreaRectangle(geom, true).getMinimumRectangle();
+    checkEqual(expected, viaInstance, TOL);
+  }
   
   /**
    * Failure case from https://trac.osgeo.org/postgis/ticket/5163
