@@ -118,7 +118,7 @@ class OverlayEdgeRing {
   
   private void computeRing(Coordinate[] ringPts, GeometryFactory geometryFactory) {
     if (ring != null) return;   // don't compute more than once
-    ring = geometryFactory.createLinearRing(ringPts);
+    ring = geometryFactory.createLinearRing(OverlayUtil.copyCoordinates(ringPts));
     isHole = Orientation.isCCW(ring.getCoordinates());
   }
 
