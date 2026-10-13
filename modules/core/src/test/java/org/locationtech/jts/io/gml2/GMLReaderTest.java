@@ -1,6 +1,8 @@
 package org.locationtech.jts.io.gml2;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -125,5 +127,34 @@ public class GMLReaderTest extends GeometryTestCase {
     Geometry expected = read(wktExpected);
     checkEqual(expected, g);
     assertEquals("SRID incorrect - ", srid, g.getSRID());
+  }
+
+  public void testExternalCoordinatesNotIncluded() throws Exception {
+    File coordinates = File.createTempFile("coordinates", ".txt");
+    try {
+      Files.write(coordinates.toPath(), "5,10".getBytes("UTF-8"));
+      String gml = "<!DOCTYPE Point [ <!ENTITY coordinates SYSTEM \"" + coordinates.toURI() + "\"> ]>"
+          + "<gml:Point><gml:coordinates>&coordinates;</gml:coordinates></gml:Point>";
+      try {
+        new GMLReader().read(gml, null);
+        fail("external coordinates should not be included");
+      }
+      catch (SAXException expected) {
+      }
+    }
+    finally {
+      coordinates.delete();
+    }
+  }
+
+  public void testDoctypeIsRejected() throws Exception {
+    String gml = "<?xml version=\"1.0\"?>\n<!DOCTYPE foo>\n"
+        + "<gml:Point><gml:coordinates>5,10</gml:coordinates></gml:Point>";
+    try {
+      new GMLReader().read(gml, null);
+      fail("expected a DOCTYPE to be rejected");
+    }
+    catch (Exception e) {
+    }
   }
 }
