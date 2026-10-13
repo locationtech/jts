@@ -21,6 +21,7 @@ import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.io.ParseException;
 
+import javax.xml.XMLConstants;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
@@ -56,6 +57,8 @@ public class KMLReader {
     private static final String COORDINATES = "coordinates";
     private static final String OUTER_BOUNDARY_IS = "outerBoundaryIs";
     private static final String INNER_BOUNDARY_IS = "innerBoundaryIs";
+
+    private static final String ENTITY_EXPANSION_LIMIT = "jdk.xml.entityExpansionLimit";
 
     private static final String NO_ELEMENT_ERROR = "No element %s found in %s";
 
@@ -97,10 +100,29 @@ public class KMLReader {
         this.attributeNames = attributeNames == null
                 ? Collections.emptySet()
                 : new HashSet<>(attributeNames);
-        // Disable DTDs completely (prevents DOCTYPE declarations)
-        inputFactory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
-        // Prevent external entity expansion from DTDs
-        inputFactory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
+        // KML does not require DOCTYPE
+        boolean disallowDtd = setProperty(XMLInputFactory.SUPPORT_DTD, false);
+        if (!disallowDtd) {
+            throw new IllegalStateException("Parser does not support DOCTYPE restrictions");
+        }
+        setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
+        setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+        setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+        if (inputFactory.isPropertySupported(ENTITY_EXPANSION_LIMIT)
+                && "0".equals(String.valueOf(inputFactory.getProperty(ENTITY_EXPANSION_LIMIT)))) {
+            inputFactory.setProperty(ENTITY_EXPANSION_LIMIT, "64000");
+        }
+        inputFactory.setXMLResolver((publicID, systemID, baseURI, namespace) -> {
+            throw new XMLStreamException("External entity resolution is not allowed: " + systemID);
+        });
+    }
+
+    private boolean setProperty(String name, Object value) {
+        if (inputFactory.isPropertySupported(name)) {
+            inputFactory.setProperty(name, value);
+            return true;
+        }
+        return false;
     }
 
     /**
