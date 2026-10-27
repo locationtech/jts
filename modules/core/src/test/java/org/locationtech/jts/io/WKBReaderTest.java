@@ -30,6 +30,8 @@ import org.locationtech.jts.geom.impl.PackedCoordinateSequenceFactory;
  */
 public class WKBReaderTest  extends TestCase
 {
+  private static final int MAXIMUM_NESTING_DEPTH = 1000;
+
   public static void main(String args[]) {
     TestRunner.run(WKBReaderTest.class);
   }
@@ -209,6 +211,15 @@ public class WKBReaderTest  extends TestCase
     Geometry lastSubGeometry = geometryCollection.getGeometryN(geometryCollection.getNumGeometries() - 1);
     assertTrue(lastSubGeometry instanceof Polygon);
     assertEquals(2029, lastSubGeometry.getSRID());
+  }
+
+  public void testNestedGeometryCollection() throws ParseException
+  {
+    String wkb = "01010000000000000000000000000000000000000000";
+    for (int i = 0; i <= MAXIMUM_NESTING_DEPTH; i++) {
+      wkb = "010700000001000000" + wkb;
+    }
+    checkWKBParseException(wkb);
   }
 
   /**

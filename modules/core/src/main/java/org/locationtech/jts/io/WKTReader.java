@@ -171,6 +171,8 @@ import org.locationtech.jts.util.AssertionFailedException;
  */
 public class WKTReader
 {
+  private static final int MAXIMUM_NESTING_DEPTH = 1000;
+
   private static final String COMMA = ",";
   private static final String L_PAREN = "(";
   private static final String R_PAREN = ")";
@@ -284,7 +286,7 @@ public class WKTReader
   public Geometry read(Reader reader) throws ParseException {
     StreamTokenizer tokenizer = createTokenizer(reader);
     try {
-      return readGeometryTaggedText(tokenizer);
+      return readGeometryTaggedText(tokenizer, 0);
     }
     catch (IOException e) {
       throw new ParseException(e.toString());
@@ -738,7 +740,7 @@ S  */
    *@throws  IOException     if an I/O error occurs
    * @param  tokenizer        tokenizer over a stream of text in Well-known Text
    */
-  private Geometry readGeometryTaggedText(StreamTokenizer tokenizer) throws IOException, ParseException {
+  private Geometry readGeometryTaggedText(StreamTokenizer tokenizer, int nestingDepth) throws IOException, ParseException {
     String type;
 
     EnumSet<Ordinate> ordinateFlags = EnumSet.of(Ordinate.X, Ordinate.Y);
@@ -751,10 +753,11 @@ S  */
     } else if (type.endsWith(WKTConstants.M)) {
       ordinateFlags.add(Ordinate.M);
     }
-    return readGeometryTaggedText(tokenizer, type, ordinateFlags);
+    return readGeometryTaggedText(tokenizer, type, ordinateFlags, nestingDepth);
   }
 
-  private Geometry readGeometryTaggedText(StreamTokenizer tokenizer, String type, EnumSet<Ordinate> ordinateFlags)
+  private Geometry readGeometryTaggedText(StreamTokenizer tokenizer, String type, EnumSet<Ordinate> ordinateFlags,
+      int nestingDepth)
           throws IOException, ParseException {
 
     if (ordinateFlags.size() == 2) {
@@ -796,7 +799,7 @@ S  */
       return readMultiPolygonText(tokenizer, ordinateFlags);
     }
     else if (isTypeName(tokenizer, type, WKTConstants.GEOMETRYCOLLECTION)) {
-      return readGeometryCollectionText(tokenizer, ordinateFlags);
+      return readGeometryCollectionText(tokenizer, ordinateFlags, nestingDepth);
     }
     throw parseErrorWithLine(tokenizer, "Unknown geometry type: " + type);
   }
@@ -1002,14 +1005,19 @@ S  */
    *      token was encountered
    *@throws  IOException     if an I/O error occurs
    */
-  private GeometryCollection readGeometryCollectionText(StreamTokenizer tokenizer, EnumSet<Ordinate> ordinateFlags) throws IOException, ParseException {
+  private GeometryCollection readGeometryCollectionText(StreamTokenizer tokenizer, EnumSet<Ordinate> ordinateFlags,
+      int nestingDepth) throws IOException, ParseException {
+    if (nestingDepth >= MAXIMUM_NESTING_DEPTH) {
+      throw new ParseException("GeometryCollection nesting depth exceeds maximum of "
+          + MAXIMUM_NESTING_DEPTH);
+    }
     String nextToken = getNextEmptyOrOpener(tokenizer);
     if (nextToken.equals(WKTConstants.EMPTY)) {
       return geometryFactory.createGeometryCollection();
     }
     List<Geometry> geometries = new ArrayList<Geometry>();
     do {
-      Geometry geometry = readGeometryTaggedText(tokenizer);
+      Geometry geometry = readGeometryTaggedText(tokenizer, nestingDepth + 1);
       geometries.add(geometry);
       nextToken = getNextCloserOrComma(tokenizer);
     } while (nextToken.equals(COMMA));
@@ -1019,4 +1027,3 @@ S  */
   }
 
 }
-
