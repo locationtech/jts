@@ -109,10 +109,33 @@ public class TrianglePredicate
   }
 
   /**
-   * Tests if a point is inside the circle defined by 
-   * the triangle with vertices a, b, c (oriented counter-clockwise). 
-   * This method uses more robust computation.
-   * 
+   * The unit roundoff for IEEE 754 double precision (round-to-nearest-even):
+   * the largest value for which {@code 1.0 + DOUBLE_EPS == 1.0}.
+   * This is Shewchuk's <tt>epsilon</tt>, computed by the <tt>exactinit()</tt>
+   * bisection in the original (C) predicates code.
+   */
+  private static final double DOUBLE_EPS = 0x1.0p-53;
+
+  /**
+   * A filter bound for the in-circle determinant,
+   * following Shewchuk's "Stage A" error analysis
+   * (iccerrboundA = (10 + 96 * epsilon) * epsilon).
+   * If the magnitude of the determinant computed in double precision
+   * exceeds this bound (scaled by the permanent of the matrix)
+   * the sign of the determinant is certain to be correct.
+   */
+  private static final double IN_CIRCLE_ERR_BOUND =
+      (10.0 + 96.0 * DOUBLE_EPS) * DOUBLE_EPS;
+
+  /**
+   * Tests if a point is inside the circle defined by
+   * the triangle with vertices a, b, c (oriented counter-clockwise).
+   * This method uses robust computation:
+   * the predicate is evaluated in double precision,
+   * and an error bound determines whether the computed sign is certain to be correct.
+   * If it is not, the predicate is re-evaluated using extended-precision
+   * {@link DD} arithmetic.
+   *
    * @param a a vertex of the triangle
    * @param b a vertex of the triangle
    * @param c a vertex of the triangle
@@ -120,12 +143,42 @@ public class TrianglePredicate
    * @return true if this point is inside the circle defined by the points a, b, c
    */
   public static boolean isInCircleRobust(
-      Coordinate a, Coordinate b, Coordinate c, 
-      Coordinate p) 
+      Coordinate a, Coordinate b, Coordinate c,
+      Coordinate p)
   {
-    //checkRobustInCircle(a, b, c, p);
-//    return isInCircleNonRobust(a, b, c, p);       
-    return isInCircleNormalized(a, b, c, p);       
+    double adx = a.x - p.x;
+    double ady = a.y - p.y;
+    double bdx = b.x - p.x;
+    double bdy = b.y - p.y;
+    double cdx = c.x - p.x;
+    double cdy = c.y - p.y;
+
+    double bdxcdy = bdx * cdy;
+    double cdxbdy = cdx * bdy;
+    double alift = adx * adx + ady * ady;
+
+    double cdxady = cdx * ady;
+    double adxcdy = adx * cdy;
+    double blift = bdx * bdx + bdy * bdy;
+
+    double adxbdy = adx * bdy;
+    double bdxady = bdx * ady;
+    double clift = cdx * cdx + cdy * cdy;
+
+    double disc = alift * (bdxcdy - cdxbdy)
+                + blift * (cdxady - adxcdy)
+                + clift * (adxbdy - bdxady);
+
+    double permanent = (Math.abs(bdxcdy) + Math.abs(cdxbdy)) * alift
+                     + (Math.abs(cdxady) + Math.abs(adxcdy)) * blift
+                     + (Math.abs(adxbdy) + Math.abs(bdxady)) * clift;
+    double errBound = IN_CIRCLE_ERR_BOUND * permanent;
+
+    if (disc > errBound || -disc > errBound) {
+      return disc > 0;
+    }
+    //-- result is uncertain, so evaluate with extended precision
+    return isInCircleDDNormalized(a, b, c, p);
   }
 
   /**

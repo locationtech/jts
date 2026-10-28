@@ -64,6 +64,11 @@ public class VoronoiTest extends GeometryTestCase {
     checkVoronoiValid(wkt);    
   }
   
+  //-- see https://github.com/locationtech/jts/issues/20
+  public void testNearCoincidentSitesJTS20() {
+    checkVoronoiValid("01040000000700000001010000000f8b33e3d97742c038c453588d0423c001010000001171d6d1b45d42c06adc1693e78c22c001010000001c8b33e3d97742c062c453588d0423c00101000000afa5c71fda7742c04b93c61d8e0423c00101000000b0cddcb4b57942c026476887d7b122c00101000000e0678421dc7642c0f7736021e1fb22c00101000000e32fd565018d42c0c7ea1222167c22c0");
+  }
+
   //-- see https://github.com/libgeos/geos/issues/1040
   public void testCocircularSitesGEOS1040() {
     checkVoronoiValid("MULTIPOINT ((6.6584 53.583000000000006), (6.6576 53.583600000000004), (6.657 53.5848), (6.6572000000000005 53.5842))");
@@ -74,6 +79,19 @@ public class VoronoiTest extends GeometryTestCase {
     checkVoronoiValid("MULTIPOINT ((18.68285714285716 100.105), (16.046428571428578 100.105), (13.41 100.105), (13.41 102.46300000000001), (13.41 104.82100000000001), (13.41 107.179), (13.41 109.537), (13.41 111.89500000000001), (16.04642857142857 111.89500000000001), (18.682857142857145 111.89500000000001))");
   }
   
+  /**
+   * Nearly cocircular sites give adjacent Delaunay triangles with
+   * almost-identical circumcentres, which can produce invalid Voronoi cells.
+   *
+   * see https://github.com/locationtech/jts/issues/1171
+   */
+  public void testCocircularSitesJTS1171() {
+    //-- Example 1 (same sites as GEOS 1040)
+    checkVoronoiValid("MULTIPOINT ((6.6584 53.583000000000006), (6.6576 53.583600000000004), (6.657 53.5848), (6.6572000000000005 53.5842))");
+    //-- Example 2 (subset of the GEOS 955 sites)
+    checkVoronoiValid("MULTIPOINT ((18.68285714285716 100.105), (13.41 104.82100000000001), (13.41 107.179), (18.682857142857145 111.89500000000001))");
+  }
+
   /**
    * Sets of nearly cocircular sites generally produce invalid raw Voronoi diagrams.
    * They are fixed by the vertex snapping heuristic.
