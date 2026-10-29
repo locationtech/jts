@@ -176,6 +176,20 @@ public class IsValidTest extends GeometryTestCase {
   public void testPolygonHoleWithRepeatedHolePointTouch() {
     checkValid( "POLYGON ((50 90, 10 10, 90 10, 50 90), (50 90, 50 90, 60 40, 60 40, 40 40, 50 90))");
   }
+
+  public void testPolygonHolesInConcaveShell() {
+    checkValidIndexedShell( "POLYGON ((10 10, 10 90, 40 90, 40 30, 60 30, 60 90, 90 90, 90 10, 10 10), (15 70, 25 70, 25 80, 15 80, 15 70), (70 50, 80 50, 80 60, 70 60, 70 50), (45 15, 55 15, 55 25, 45 25, 45 15), (40 50, 30 45, 30 55, 40 50))");
+  }
+
+  public void testPolygonHoleOutsideShellInConcavity() {
+    checkInvalidIndexedShell(TopologyValidationError.HOLE_OUTSIDE_SHELL,
+        "POLYGON ((10 10, 10 90, 40 90, 40 30, 60 30, 60 90, 90 90, 90 10, 10 10), (45 60, 55 60, 55 80, 45 80, 45 60))");
+  }
+
+  public void testPolygonHoleOutsideShellInConcavityTouch() {
+    checkInvalidIndexedShell(TopologyValidationError.HOLE_OUTSIDE_SHELL,
+        "POLYGON ((10 10, 10 90, 40 90, 40 30, 60 30, 60 90, 90 90, 90 10, 10 10), (15 70, 25 70, 25 80, 15 80, 15 70), (70 50, 80 50, 80 60, 70 60, 70 50), (40 50, 50 45, 50 55, 40 50))");
+  }
   
   //=============================================
   
@@ -192,6 +206,20 @@ public class IsValidTest extends GeometryTestCase {
 
   private void checkInvalid(String wkt) {
     checkValid(false, wkt);
+  }
+  
+  private void checkValidIndexedShell(String wkt) {
+    assertNull( validateIndexedShell(wkt) );
+  }
+
+  private void checkInvalidIndexedShell(int expectedErrType, String wkt) {
+    assertEquals( expectedErrType, validateIndexedShell(wkt).getErrorType() );
+  }
+
+  private TopologyValidationError validateIndexedShell(String wkt) {
+    IsValidOp validOp = new IsValidOp(read(wkt));
+    validOp.setMinHolesIndexedShell(0);
+    return validOp.getValidationError();
   }
   
   private void checkInvalid(int exepctedErrType, String wkt) {
