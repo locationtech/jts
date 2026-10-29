@@ -1167,13 +1167,14 @@ public strictfp final class DD
   
   
   /**
-   * Extracts the significant digits in the decimal representation of the argument.
+   * Extracts the significant digits in the decimal representation of the absolute value of this number.
    * A decimal point may be optionally inserted in the string of digits
    * (as long as its position lies within the extracted digits
    * - if not, the caller must prepend or append the appropriate zeroes and decimal point).
    * 
-   * @param y the number to extract ( >= 0)
-   * @param decimalPointPos the position in which to insert a decimal point
+   * @param insertDecimalPoint whether to insert a decimal point in the string of digits
+   * @param magnitude a 1-element array which receives the decimal magnitude
+   *   (base-10 exponent) of the number
    * @return the string containing the significant digits and possibly a decimal point
    */
   private String extractSignificantDigits(boolean insertDecimalPoint, int[] magnitude)
