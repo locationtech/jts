@@ -101,6 +101,8 @@ public class TestReader
     public TestRun createTestRun(File testFile, int runIndex) {
         try {
             SAXBuilder builder = new SAXBuilder( );
+            // test files do not require DOCTYPE
+            builder.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
             builder.setJDOMFactory(new LocatedJDOMFactory());
             Document document = builder.build(new FileInputStream(testFile));
             Element runElement = document.getRootElement();
