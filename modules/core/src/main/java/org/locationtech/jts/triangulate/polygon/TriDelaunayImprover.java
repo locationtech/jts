@@ -86,8 +86,8 @@ class TriDelaunayImprover {
   /**
    * Does a flip of the common edge of two Tris if the Delaunay condition is not met.
    * 
-   * @param tri0 a Tri
-   * @param tri1 a Tri
+   * @param tri a Tri
+   * @param index the index of the edge of tri to test
    * @return true if the triangles were flipped
    */
   private boolean improveNonDelaunay(Tri tri, int index) {

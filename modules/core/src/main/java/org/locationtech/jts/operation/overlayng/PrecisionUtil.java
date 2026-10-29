@@ -142,13 +142,13 @@ public class PrecisionUtil
    * for 3 digits of precision the scale factor is 1;
    * for 2 digits of precision the scale factor is 0.1. 
    * <p>
-   * Rounding to the scale factor can be performed with {@link PrecisionModel#round}
+   * Rounding to the scale factor can be performed with {@link PrecisionModel#makePrecise(double)}
    * 
    * @param value a number to be rounded
    * @param precisionDigits the number of digits of precision required
    * @return scale factor which provides the required number of digits of precision 
    * 
-   * @see PrecisionModel.round
+   * @see PrecisionModel#makePrecise(Coordinate)
    */
   private static double precisionScale(
       double value, int precisionDigits)
