@@ -75,9 +75,9 @@ public class DirectedEdge
     this.edgeDirection = edgeDirection;
     p0 = from.getCoordinate();
     p1 = directionPt;
+    quadrant = Quadrant.quadrant(p0, p1);
     double dx = p1.x - p0.x;
     double dy = p1.y - p0.y;
-    quadrant = Quadrant.quadrant(dx, dy);
     angle = Math.atan2(dy, dx);
     //Assert.isTrue(! (dx == 0 && dy == 0), "EdgeEnd with identical endpoints found");
   }

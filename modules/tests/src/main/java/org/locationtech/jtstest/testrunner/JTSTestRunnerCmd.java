@@ -278,6 +278,8 @@ public class JTSTestRunnerCmd {
         testFiles.addAll(StringUtil.fromCommaDelimitedString(testFilesString));
       }
     }
+    //-- ensure test file processing order is stable
+    testFiles.sort(null);
     return testFiles;
   }
   

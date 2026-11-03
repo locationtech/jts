@@ -147,7 +147,7 @@ class OverlayEdge extends HalfEdge {
    */
   public void addCoordinates(CoordinateList coords)
   {
-    boolean isFirstEdge = coords.size() > 0;
+    boolean isFirstEdge = coords.isEmpty();
     if (direction) {
       int startIndex = 1;
       if (isFirstEdge) startIndex = 0;

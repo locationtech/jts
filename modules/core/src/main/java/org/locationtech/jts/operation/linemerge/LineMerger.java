@@ -23,7 +23,6 @@ import org.locationtech.jts.planargraph.GraphComponent;
 import org.locationtech.jts.planargraph.Node;
 import org.locationtech.jts.util.Assert;
 
-
 /**
  * Merges a collection of linear components to form maximal-length linestrings. 
  * <p> 
@@ -37,12 +36,14 @@ import org.locationtech.jts.util.Assert;
  * was derived.
  * <p>
  * Any dimension of Geometry is handled - the constituent linework is extracted to 
- * form the edges. The edges must be correctly noded; that is, they must only meet
- * at their endpoints.  The LineMerger will accept non-noded input
- * but will not merge non-noded edges.
- * <p>
- * Input lines which are empty or contain only a single unique coordinate are not included
+ * form the edges. Input lines which are empty or contain only a single unique coordinate are not included
  * in the merging.
+ * <p>
+ * Only the line endpoints are considered during merging.
+ * If the lines are not fully noded (i.e. they cross or touch at non-endpoints)
+ * those crossings will be present in the output.
+ * If the output is required to be simple (non-self-intersecting) the input
+ * must be correctly noded.
  *
  * @version 1.7
  */

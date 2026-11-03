@@ -125,7 +125,7 @@ public class SpatialPartition {
   private STRtree createIndex(Geometry[] geoms) {
     STRtree index = new STRtree();
     for (int i = 0; i < geoms.length; i++) {
-      index.insert(geoms[i].getEnvelopeInternal(), new Integer(i));
+      index.insert(geoms[i].getEnvelopeInternal(), Integer.valueOf(i));
     }
     return index;
   }

@@ -94,6 +94,23 @@ public class EdgeGraphTest extends TestCase {
     checkNodeValid(e1);
   }
 
+  public void testCompareRobust() {
+    EdgeGraph graph = new EdgeGraph();
+    HalfEdge e1 = addEdge(graph, 1, 1, 0, 0.5);
+    addEdge(graph, 1, 1, 0, 0.49999999999999994);
+    addEdge(graph, 1, 1, 0, 1);
+
+    HalfEdge eUpper = findEdge(graph, 1, 1, 0, 0.5);
+    HalfEdge eLower = findEdge(graph, 1, 1, 0, 0.49999999999999994);
+    assertTrue("edges with distinct direction points must not compare equal", 
+    		eUpper.compareTo(eLower) != 0);
+    assertTrue("edge comparison must be antisymmetric", 
+    		eUpper.compareTo(eLower) == -eLower.compareTo(eUpper));
+
+    checkNodeValid(e1);
+    checkNextPrev(graph);
+  }
+  
   //==================================================
   
   private void checkEdgeRing(EdgeGraph graph, Coordinate p,

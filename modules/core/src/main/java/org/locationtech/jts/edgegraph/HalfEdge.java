@@ -106,20 +106,6 @@ public class HalfEdge {
    * @return the destination coordinate
    */
   public Coordinate dest() { return sym.orig; }
-
-  /**
-   * The X component of the direction vector.
-   * 
-   * @return the X component of the direction vector
-   */
-  double directionX() { return directionPt().getX() - orig.getX(); }
-  
-  /**
-   * The Y component of the direction vector.
-   * 
-   * @return the Y component of the direction vector
-   */
-  double directionY() { return directionPt().getY() - orig.getY(); }
   
   /**
    * Gets the direction point of this edge.
@@ -385,7 +371,7 @@ public class HalfEdge {
    * When applied to a list of edges originating at the same point,
    * this produces a CCW ordering of the edges around the point.
    * <p>
-   * Using the obvious algorithm of computing the angle is not robust,
+   * Simply comparing the computed angles is not robust,
    * since the angle calculation is susceptible to roundoff error.
    * A robust algorithm is:
    * <ul>
@@ -399,18 +385,14 @@ public class HalfEdge {
    * </ul>
    */
   public int compareAngularDirection(HalfEdge e)
-  {
-    double dx = directionX();
-    double dy = directionY();
-    double dx2 = e.directionX();
-    double dy2 = e.directionY();
-    
+  {    
+  	//assert: orig(0).equals2D( e.orig() )
     // same vector
-    if (dx == dx2 && dy == dy2)
+    if (directionPt().equals2D(e.directionPt()))
       return 0;
     
-    int quadrant = Quadrant.quadrant(dx, dy);
-    int quadrant2 = Quadrant.quadrant(dx2, dy2);
+    int quadrant = Quadrant.quadrant(orig(), directionPt());
+    int quadrant2 = Quadrant.quadrant(e.orig(), e.directionPt());
 
     /**
      * If the direction vectors are in different quadrants, 

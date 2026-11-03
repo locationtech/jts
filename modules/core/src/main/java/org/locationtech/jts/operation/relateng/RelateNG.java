@@ -395,7 +395,8 @@ public class RelateNG
       return false;
     }
     
-    boolean hasExteriorIntersection = false;
+    boolean hasInteriorExteriorIntersection = false;
+    boolean hasBoundaryExteriorIntersection = false;
     Iterator geomi = new GeometryCollectionIterator(geom.getGeometry());
     while (geomi.hasNext()) {
       Geometry elem = (Geometry) geomi.next();
@@ -403,21 +404,26 @@ public class RelateNG
         continue;
       
       if (elem instanceof LineString) {
-        //-- once an intersection with target exterior is recorded, skip further known-exterior points
-        if (hasExteriorIntersection 
+        //-- once intersections with target exterior are recorded for both line-interior and line-boundary ends,
+        //-- skip further known-exterior line components (optimization)
+        if (hasInteriorExteriorIntersection && hasBoundaryExteriorIntersection
             && elem.getEnvelopeInternal().disjoint(geomTarget.getEnvelope()))
           continue;
        
         LineString line = (LineString) elem;
         Coordinate e0 = line.getCoordinateN(0);
-        hasExteriorIntersection |= computeLineEnd(geom, isA, e0, geomTarget, topoComputer);
+        int loc0 = computeLineEnd(geom, isA, e0, geomTarget, topoComputer);
+        if (loc0 == Location.INTERIOR) hasInteriorExteriorIntersection = true;
+        else if (loc0 == Location.BOUNDARY) hasBoundaryExteriorIntersection = true;
         if (topoComputer.isResultKnown()) {
           return true;
         }
 
         if (! line.isClosed()) {
           Coordinate e1 = line.getCoordinateN(line.getNumPoints() - 1);
-          hasExteriorIntersection |= computeLineEnd(geom, isA, e1, geomTarget, topoComputer);          
+          int loc1 = computeLineEnd(geom, isA, e1, geomTarget, topoComputer);
+          if (loc1 == Location.INTERIOR) hasInteriorExteriorIntersection = true;
+          else if (loc1 == Location.BOUNDARY) hasBoundaryExteriorIntersection = true;
           if (topoComputer.isResultKnown()) {
             return true;
           }
@@ -438,22 +444,26 @@ public class RelateNG
    * @param pt
    * @param geomTarget
    * @param topoComputer
-   * @return true if the line endpoint is in the exterior of the target
+   * @return the location of the line endpoint (INTERIOR or BOUNDARY) if it is in the exterior of the target,
+   *   otherwise Location.NONE
    */
-  private boolean computeLineEnd(RelateGeometry geom, boolean isA, Coordinate pt,
+  private int computeLineEnd(RelateGeometry geom, boolean isA, Coordinate pt,
       RelateGeometry geomTarget, TopologyComputer topoComputer) {
     int locDimLineEnd = geom.locateLineEndWithDim(pt);
     int dimLineEnd = DimensionLocation.dimension(locDimLineEnd, topoComputer.getDimension(isA));
     //-- skip line ends which are in a GC area
     if (dimLineEnd != Dimension.L)
-      return false;
+      return Location.NONE;
     int locLineEnd = DimensionLocation.location(locDimLineEnd);
     
     int locDimTarget = geomTarget.locateWithDim(pt);
     int locTarget = DimensionLocation.location(locDimTarget);
     int dimTarget = DimensionLocation.dimension(locDimTarget, topoComputer.getDimension(! isA));
     topoComputer.addLineEndOnGeometry(isA, locLineEnd, locTarget, dimTarget, pt);
-    return locTarget == Location.EXTERIOR;
+    if (locTarget == Location.EXTERIOR) {
+      return locLineEnd;
+    }
+    return Location.NONE;
   }
 
   private boolean computeAreaVertex(RelateGeometry geom, boolean isA, RelateGeometry geomTarget, TopologyComputer topoComputer) {

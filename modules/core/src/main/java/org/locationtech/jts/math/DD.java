@@ -12,6 +12,7 @@
 package org.locationtech.jts.math;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * Implements extended-precision floating-point numbers 
@@ -992,7 +993,16 @@ public strictfp final class DD
     DD dd = (DD) o;
     return hi == dd.hi && lo == dd.lo;
   }
-  
+
+  public int hashCode()
+  {
+    // equals() compares hi/lo with ==, under which -0.0 and +0.0 are equal,
+    // whereas Double.hashCode distinguishes them. Adding 0.0 normalizes
+    // -0.0 to +0.0 (and leaves every other value unchanged) so that equal
+    // values always hash equally.
+    return Objects.hash(hi + 0.0, lo + 0.0);
+  }
+
   /**
    * Tests whether this value is greater than another <tt>DoubleDouble</tt> value.
    * @param y a DoubleDouble value
@@ -1157,13 +1167,14 @@ public strictfp final class DD
   
   
   /**
-   * Extracts the significant digits in the decimal representation of the argument.
+   * Extracts the significant digits in the decimal representation of the absolute value of this number.
    * A decimal point may be optionally inserted in the string of digits
    * (as long as its position lies within the extracted digits
    * - if not, the caller must prepend or append the appropriate zeroes and decimal point).
    * 
-   * @param y the number to extract ( >= 0)
-   * @param decimalPointPos the position in which to insert a decimal point
+   * @param insertDecimalPoint whether to insert a decimal point in the string of digits
+   * @param magnitude a 1-element array which receives the decimal magnitude
+   *   (base-10 exponent) of the number
    * @return the string containing the significant digits and possibly a decimal point
    */
   private String extractSignificantDigits(boolean insertDecimalPoint, int[] magnitude)

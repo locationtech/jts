@@ -163,7 +163,7 @@ public class GeometryMethodOperation
     if (destClass == Integer.class || destClass == int.class) {
       // try as an int
       try {
-        convArg[0] = new Integer(srcStr);
+        convArg[0] = Integer.valueOf(srcStr);
         return true;
       }
       catch (NumberFormatException e) {

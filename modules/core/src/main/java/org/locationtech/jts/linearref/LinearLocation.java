@@ -12,6 +12,8 @@
 
 package org.locationtech.jts.linearref;
 
+import java.util.Objects;
+
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.LineSegment;
@@ -328,10 +330,26 @@ public class LinearLocation
     if (segmentIndex < other.segmentIndex) return -1;
     if (segmentIndex > other.segmentIndex) return 1;
     // same segment, so compare segment fraction
-    if (segmentFraction < other.segmentFraction) return -1;
-    if (segmentFraction > other.segmentFraction) return 1;
-    // same location
-    return 0;
+    // Double.compare is used to ensure consistency with equals/hashCode for NaN
+    return Double.compare(segmentFraction, other.segmentFraction);
+  }
+
+  /**
+   * Tests whether this location is equal to another,
+   * i.e. has the same component index, segment index and segment fraction.
+   * This is consistent with {@link #compareTo(Object)}.
+   *
+   * @param o the object to compare to
+   * @return true if the locations are equal
+   */
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    return compareTo(o) == 0;
+  }
+
+  public int hashCode() {
+    return Objects.hash(componentIndex, segmentIndex, segmentFraction);
   }
 
   /**

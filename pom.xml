@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.locationtech.jts</groupId>
     <artifactId>jts</artifactId>
-    <version>1.20.1-SNAPSHOT</version>
+    <version>1.21.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>JTS Topology Suite</name>
@@ -34,7 +34,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <junit-version>4.13.1</junit-version>
-        <jdom-version>2.0.6</jdom-version>
+        <jdom-version>2.0.6.1</jdom-version>
         <jump.version>1.2</jump.version>
         <json-simple-version>1.1.1</json-simple-version>
         <sde-version>9.1</sde-version>
@@ -42,7 +42,7 @@
         <!-- build environment target versions -->
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <pmd.version>6.36.0</pmd.version>
+        <pmd.version>7.22.0</pmd.version>
         <checkstyle.version>8.44</checkstyle.version>
         <!--cast, deprecation, divzero, empty, fallthrough, finally, overrides, path, serial, and unchecked -->
         <lint>unchecked</lint>
@@ -125,7 +125,7 @@
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
-                <version>3.7</version>
+                <version>3.18.0</version>
             </dependency>
             <dependency>
                 <groupId>com.oracle.database.jdbc</groupId>
@@ -241,7 +241,7 @@
                 </plugin>
                 <plugin>
                   <artifactId>maven-pmd-plugin</artifactId>
-                  <version>3.14.0</version>
+                  <version>3.28.0</version>
                 </plugin>
                 <plugin>
                   <artifactId>maven-project-info-reports-plugin</artifactId>

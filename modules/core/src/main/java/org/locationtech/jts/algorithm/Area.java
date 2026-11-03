@@ -93,21 +93,15 @@ public class Area {
      * Based on the Shoelace formula.
      * http://en.wikipedia.org/wiki/Shoelace_formula
      */
-    Coordinate p0 = ring.createCoordinate();
-    Coordinate p1 = ring.createCoordinate();
-    Coordinate p2 = ring.createCoordinate();
-    ring.getCoordinate(0, p1);
-    ring.getCoordinate(1, p2);
-    double x0 = p1.x;
-    p2.x -= x0;
+    double x0 = ring.getX(0);
+    double yPrev = ring.getY(0);
+    double yCurr = ring.getY(1);
     double sum = 0.0;
     for (int i = 1; i < n - 1; i++) {
-      p0.y = p1.y;
-      p1.x = p2.x;
-      p1.y = p2.y;
-      ring.getCoordinate(i + 1, p2);
-      p2.x -= x0;
-      sum += p1.x * (p0.y - p2.y);
+      double yNext = ring.getY(i + 1);
+      sum += (ring.getX(i) - x0) * (yPrev - yNext);
+      yPrev = yCurr;
+      yCurr = yNext;
     }
     return sum / 2.0;
   }

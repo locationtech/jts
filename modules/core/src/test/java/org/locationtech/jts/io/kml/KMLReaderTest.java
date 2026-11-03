@@ -177,6 +177,11 @@ public class KMLReaderTest extends TestCase {
         checkExceptionThrown("<Polygon><innerBoundaryIs><LinearRing></LinearRing></innerBoundaryIs></Polygon>", "No element coordinates found in innerBoundaryIs");
     }
 
+    public void testDoctypeIgnored() {
+        checkParsingResult("<!DOCTYPE Point><Point><coordinates>1.0,1.0</coordinates></Point>",
+                "POINT (1 1)", new Map[]{null});
+    }
+
     public void testUnknownGeometryType() {
         checkExceptionThrown("<StrangePoint></StrangePoint>", "Unknown KML geometry type StrangePoint");
     }

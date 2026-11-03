@@ -36,6 +36,9 @@ Distributions for older JTS versions can be obtained at the
 * Add auto-tolerance to `MaximumInscribedCircle` and `LargestEmptyCircle` (#1128)
 * Add `KdTree` methods `nearestNeighbor` and `nearestNeighbors` (#1114)
 * Allow `WKTReader` to read `Inf` and `-Inf` ordinates (#1166, #1167)
+* Fix `KMLReader` XML parser security hole (#1204)
+* Add `setRandom(Random)` to `RandomPointsBuilder` and `RandomPointsInGridBuilder` (#1214)
+* Use `GeometryFixer` for `DouglasPeuckerSimplifier` and `Densifier` repairs (#1235)
 
 ### Bug Fixes
 
@@ -57,6 +60,13 @@ Distributions for older JTS versions can be obtained at the
 * Add Voronoi snapping heuristic to fix invalid diagram topology (#1174)
 * Fix `LineSegment.project` to handle segments projecting onto a single endpoint (#1179)
 * Fix DD equals and compareTo (#1186)
+* Fix `RelateNG.computeLineEnds` incorrectly skipping boundary points for disjoint line components (#1175)
+* Add `equals` and `hashCode` consistent with `compareTo` for value-semantics `Comparable` classes (`LinearLocation`, `EdgeIntersection`, `NodeSection`, `OrientedCoordinateArray`) (#1184)
+* Add `DD.hashCode` consistent with `DD.equals` (#1186)
+* Fix `OverlayEdge` to include first point when adding coordinates (#1187)
+* Make `HalfEdge.compareAngularDirection` more robust (#1224)
+* Improve `Quadrant` computation robustness by using vector endpoints (#1226)
+* Fix NaN handling in `LinearLocation` and `EdgeIntersection` `compareTo` (#1229)
 
 ### Performance Improvements
 
@@ -74,6 +84,14 @@ Distributions for older JTS versions can be obtained at the
 * Add Layer style presets
 * Add Layer List Zoom to Geometry button
 * Add Layer List Copy Geometry button
+
+### Bug Fixes
+
+* Fix `BaseGeometryFunction.hashCode` to be consistent with `equals` (exclude parameter names)
+
+## JTS TestRunner
+### Functionality Improvements
+* Process XML tests in a stable order (sorted by filename)
 
 # Version 1.20.0
 

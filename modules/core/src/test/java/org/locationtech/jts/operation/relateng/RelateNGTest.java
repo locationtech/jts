@@ -218,6 +218,22 @@ public class RelateNGTest extends RelateNGTestCase {
   }
   
   /**
+   * Case from https://github.com/locationtech/jts/issues/1175
+   * Tests that boundary points for disjoint line components are not skipped
+   * by the exterior intersection optimization in computeLineEnds().
+   * The optimization must track interior and boundary exterior intersections separately.
+   */
+  public void testLineDisjointMultiLineWithBoundaryInExterior_JTS1175() {
+    String a = "LINESTRING(10 10,20 20)";
+    String b = "MULTILINESTRING((0 0,1 0),(1 0,2 0),(-1 0,0 0))";
+    checkRelate(a, b, "FF1FF0102");
+    checkRelate(b, a, "FF1FF0102");
+    checkIntersectsDisjoint(a, b, false);
+    checkContainsWithin(a, b, false);
+    checkTouches(a, b, false);
+  }
+  
+  /**
    * Case from https://github.com/locationtech/jts/issues/270
    * Strictly, the lines cross, since their interiors intersect
    * according to the Orientation predicate.

@@ -12,6 +12,7 @@
 package org.locationtech.jts.geomgraph;
 
 import java.io.PrintStream;
+import java.util.Objects;
 
 import org.locationtech.jts.geom.Coordinate;
 
@@ -62,6 +63,27 @@ public class EdgeIntersection
     EdgeIntersection other = (EdgeIntersection) obj;
     return compare(other.segmentIndex, other.dist);
   }
+
+  /**
+   * Tests whether this intersection is at the same location
+   * (segment index and distance) as another.
+   * This is consistent with {@link #compareTo(Object)}.
+   *
+   * @param o the object to compare to
+   * @return true if this intersection is at the same location as the argument
+   */
+  public boolean equals(Object o)
+  {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    return compareTo(o) == 0;
+  }
+
+  public int hashCode()
+  {
+    return Objects.hash(segmentIndex, dist);
+  }
+
   /**
    * Comparison with segment and distance.
    *
@@ -75,9 +97,8 @@ public class EdgeIntersection
   {
     if (this.segmentIndex < segmentIndex) return -1;
     if (this.segmentIndex > segmentIndex) return 1;
-    if (this.dist < dist) return -1;
-    if (this.dist > dist) return 1;
-    return 0;
+    // Double.compare is used to ensure consistency with equals/hashCode for NaN
+    return Double.compare(this.dist, dist);
   }
 
   public boolean isEndPoint(int maxSegmentIndex)

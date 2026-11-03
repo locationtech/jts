@@ -184,13 +184,13 @@ Update [Javadoc on JTS Github IO](http://locationtech.github.io/jts/javadoc/):
    git commit -m "JTS 1.19.0 javadocs"
    ```
 
-### Post release
+### Post-release actions
 
 Update master to the next release version:
 
 1. Set the version number in Java class: [`org.locationtech.jts.JTSVersion`](https://github.com/locationtech/jts/blob/master/modules/core/src/main/java/org/locationtech/jts/JTSVersion.java)
    
-   Change release version:
+   Change release version from (e.g.):
    
    ```
    public static final int MAJOR = 1;
@@ -199,7 +199,7 @@ Update master to the next release version:
    private static final String RELEASE_INFO = "";
    ```
    
-   To next SNAPSHOT version:
+   To the next SNAPSHOT version:
    
    ```
    public static final int MAJOR = 1;
@@ -214,13 +214,35 @@ Update master to the next release version:
    mvn versions:set -DnewVersion=1.20.0-SNAPSHOT
    ```
    
-3. Edit ``build-tools/pom.xml`` by hand, and compile to test.
+3. Edit ``build-tools/pom.xml`` manually to update the main `<version ` entry:
+   ```
+   <version>1.20.1-SNAPSHOT</version>
+   ```
+   At this point `git status` should show the following:
+   
+   ```
+   modified:   build-tools/pom.xml
+	modified:   modules/app/pom.xml
+	modified:   modules/core/pom.xml
+	modified:   modules/core/src/main/java/org/locationtech/jts/JTSVersion.java
+	modified:   modules/example/pom.xml
+	modified:   modules/io/common/pom.xml
+	modified:   modules/io/ora/pom.xml
+	modified:   modules/io/pom.xml
+	modified:   modules/lab/pom.xml
+	modified:   modules/pom.xml
+	modified:   modules/tests/pom.xml
+	modified:   pom.xml
+   ```
+5. Compile the project to test the changes.
    
    ```
    mvn clean install
    ```
+   The mvn execution log should show the new version, and the build artifacts in the `target` directories
+   should be stamped with the new version number. 
  
-3. Compile to test, and commit this change.
+6. If the build is good, commit the updates to initiate the next version:
 
    ```
    git add .
@@ -228,9 +250,9 @@ Update master to the next release version:
    git push
    ```  
    
-4. Add a new version entry to the [Version History](https://github.com/locationtech/jts/blob/master/doc/JTS_Version_History.md)
+5. Add a new empty version entry to the [Version History](https://github.com/locationtech/jts/blob/master/doc/JTS_Version_History.md), ready to record revisions
 
-### Announcing
+### Announcing the new release
 
 * Message to [JTS Dev mail list](https://accounts.eclipse.org/mailing-list/jts-dev)
 * Comment on [Gitter channel](https://gitter.im/locationtech/jts)

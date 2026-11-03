@@ -12,6 +12,8 @@
 
 package org.locationtech.jts.shape.random;
 
+import java.util.Random;
+
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -32,6 +34,7 @@ extends GeometricShapeBuilder
 {
 	private boolean isConstrainedToCircle = false;
 	private double gutterFraction = 0;
+	private Random random = new Random();
 	
   /**
    * Create a builder which will create shapes using the default
@@ -51,6 +54,18 @@ extends GeometricShapeBuilder
   public RandomPointsInGridBuilder(GeometryFactory geomFact)
   {
   	super(geomFact);
+  }
+
+  /**
+   * Sets the random number generator used to generate point coordinates.
+   * This enables reproducible results by providing a {@link Random}
+   * with a fixed seed.
+   *
+   * @param random the random number generator to use
+   */
+  public void setRandom(Random random)
+  {
+  	this.random = random;
   }
 
   /**
@@ -126,18 +141,18 @@ extends GeometricShapeBuilder
   
   private Coordinate randomPointInGridCell(double orgX, double orgY, double xLen, double yLen)
   {
-    double x = orgX + xLen * Math.random();
-    double y = orgY + yLen * Math.random();
+    double x = orgX + xLen * random.nextDouble();
+    double y = orgY + yLen * random.nextDouble();
     return createCoord(x, y);
   }
 
-  private static Coordinate randomPointInCircle(double orgX, double orgY, double width, double height)
+  private Coordinate randomPointInCircle(double orgX, double orgY, double width, double height)
   {
   	double centreX = orgX + width/2;
   	double centreY = orgY + height/2;
-  		
-  	double rndAng = 2 * Math.PI * Math.random();
-  	double rndRadius = Math.random();
+
+  	double rndAng = 2 * Math.PI * random.nextDouble();
+  	double rndRadius = random.nextDouble();
     // use square root of radius, since area is proportional to square of radius
     double rndRadius2 = Math.sqrt(rndRadius);
   	double rndX = width/2 * rndRadius2 * Math.cos(rndAng); 

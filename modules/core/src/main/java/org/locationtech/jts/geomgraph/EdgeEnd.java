@@ -57,9 +57,9 @@ public class EdgeEnd
   {
     this.p0 = p0;
     this.p1 = p1;
+    quadrant = Quadrant.quadrant(p0, p1);
     dx = p1.x - p0.x;
     dy = p1.y - p0.y;
-    quadrant = Quadrant.quadrant(dx, dy);
     Assert.isTrue(! (dx == 0 && dy == 0), "EdgeEnd with identical endpoints found");
   }
 

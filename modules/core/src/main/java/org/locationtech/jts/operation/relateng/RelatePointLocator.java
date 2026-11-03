@@ -203,7 +203,7 @@ class RelatePointLocator {
    * takes into account the SFS Boundary Determination Rule.
    *
    * @param p the point to locate
-   * @return the {@link Location} of the point relative to the input Geometry
+   * @return the {@link DimensionLocation} of the point relative to the input Geometry
    */
   public int locateWithDim(Coordinate p) {
     return locateWithDim(p, false, null);
@@ -219,8 +219,9 @@ class RelatePointLocator {
    *
    * @param p the coordinate to locate
    * @param isNode whether the coordinate is a node (on an edge) of the geometry
-   * @param polygon 
-   * @return the {@link Location} of the point relative to the input Geometry
+   * @param parentPolygonal the polygon the point is a node of (may be null if isNode is false)
+   * @return the dimension and location of the point relative to the input Geometry,
+   *   as a {@link DimensionLocation} code
    */
   private int locateWithDim(Coordinate p, boolean isNode, Geometry parentPolygonal)
   {

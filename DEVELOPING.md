@@ -30,15 +30,15 @@ The JTS build chain uses Maven.  Build commands are executed at the project root
 
 ## Quality Assurance
 
-JTS build verify stage includes pmd, checkstyle and more:
+* JTS build verify stage includes pmd, checkstyle and more:
 
         mvn verify
 
-To skip QA checks:
+  * Verify but skip QA checks:
 
         mvn verify -Dpmd.skip=true -Dcheckstyle.skip=true
 
-To browse QA errors:
+* Browse QA errors:
        
         mvn site:site
         open modules/core/target/site/index.html
@@ -151,7 +151,7 @@ The XML test format can be executed using the **JTS TestRunner**, or imported in
   
 ### Run Configurations
 
-* **JTS TestRunner** - for executing XML tests:
+* **JTS TestRunner** - executes XML tests:
 
   Field | Value
   ------|------
@@ -161,7 +161,7 @@ The XML test format can be executed using the **JTS TestRunner**, or imported in
   Program arguments | `validate general`
   Working directory | `${workspace_loc:jts-tests/src/test/resources/testxml}`
 
-* **JTS TestBuilder** - for viewing and processing geometry with JTS
+* **JTS TestBuilder** - a GUI to view and process geometry with JTS
 
   Field | Value
   ------|------
@@ -169,6 +169,17 @@ The XML test format can be executed using the **JTS TestRunner**, or imported in
   Project | `jts-app`
   Main class | `org.locationtech.jtstest.testbuilder.JTSTestBuilder`
   Program arguments (optional) | `-geomfunc <classname> ...`
-  VM args | `-Xmx1000M`
+  VM args | `-Xmx1000M` (or larger memory alloc)
   VM args (optional, for Mac) | `-Dswing.defaultlaf=javax.swing.plaf.metal.MetalLookAndFeel`
   Working directory | Default
+
+* **JTSOp** - excutes JTS operations on various input sources
+
+  Field | Value
+  ------|------
+  Type | Java Application
+  Project | `jts-app`
+  Main class | `org.locationtech.jtstest.cmd.JTSOpCmd`
+  Program arguments (optional) | see JTSOp documentation
+  VM args | `-Xmx10000M`
+  Working directory | Default, or as required
