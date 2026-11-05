@@ -240,7 +240,7 @@ class LineBuilder {
     edge.addCoordinates(pts);
     
     Coordinate[] ptsOut = pts.toCoordinateArray(isForward);
-    LineString line = geometryFactory.createLineString(ptsOut);
+    LineString line = geometryFactory.createLineString(OverlayUtil.copyCoordinates(ptsOut));
     return line;
   }
   

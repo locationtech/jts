@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateArrays;
+import org.locationtech.jts.geom.Coordinates;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -322,6 +324,25 @@ class OverlayUtil {
     return geometryFactory.buildGeometry(geomList);
   }
 
+  /**
+   * Copies coordinates with consistent spatial dimension and measures.
+   * The copies allow result Z values to be populated without modifying input coordinates.
+   *
+   * @param coordinates the coordinates to copy
+   * @return copied coordinates with consistent dimension and measures
+   */
+  static Coordinate[] copyCoordinates(Coordinate[] coordinates) {
+    int spatialDimension = 2;
+    int measures = 0;
+    for (Coordinate coordinate : coordinates) {
+      int coordinateMeasures = Coordinates.measures(coordinate);
+      spatialDimension = Math.max(spatialDimension, Coordinates.dimension(coordinate) - coordinateMeasures);
+      measures = Math.max(measures, coordinateMeasures);
+    }
+    Coordinate[] copy = CoordinateArrays.copyDeep(coordinates);
+    return CoordinateArrays.enforceConsistency(copy, spatialDimension + measures, measures);
+  }
+
   static Geometry toLines(OverlayGraph graph, boolean isOutputEdges, GeometryFactory geomFact) {
     List<LineString> lines = new ArrayList<LineString>();
     for (OverlayEdge edge : graph.getEdges()) {
@@ -329,7 +350,7 @@ class OverlayUtil {
       if (! includeEdge) continue;
       //Coordinate[] pts = getCoords(nss);
       Coordinate[] pts = edge.getCoordinatesOriented();
-      LineString line = geomFact.createLineString(pts);
+      LineString line = geomFact.createLineString(copyCoordinates(pts));
       line.setUserData(labelForResult(edge) );
       lines.add(line);
     }
