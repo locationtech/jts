@@ -224,7 +224,6 @@ public class IsValidTest extends GeometryTestCase {
     Geometry geom = read(wkt);
     IsValidOp validOp = new IsValidOp(geom);
     TopologyValidationError err = validOp.getValidationError();
-    // validate through both indexed and non-indexed versions
     assertEquals( exepctedErrType, err.getErrorType() );
     assertEquals( exepctedErrType, validateIndexedShell(wkt).getErrorType() );
   }
