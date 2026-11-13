@@ -1108,6 +1108,28 @@
   <test><op name="within"     arg1="A" arg2="B"> false </op></test>
 </case>
 
+<!-- ================  EMPTY hole ============== -->
+
+<case>
+  <desc>P/L - Polygon with empty hole VS Polygon with empty hole</desc>
+  <a>
+    POLYGON ((1 1, 2 1, 2 2, 1 1), EMPTY)
+  </a>
+  <b>
+    POLYGON ((1 2, 2 1, 1 1, 1 2), EMPTY)
+  </b>
+  <test><op name="relate" arg3="212111212" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> false </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> false </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> false </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> true </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> true </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> false </op></test>
+</case>
 
 
 
