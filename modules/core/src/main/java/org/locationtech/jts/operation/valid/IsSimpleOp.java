@@ -209,6 +209,7 @@ public class IsSimpleOp
     Set<Coordinate> points = new HashSet<Coordinate>();
     for (int i = 0; i < mp.getNumGeometries(); i++) {
       Point pt = (Point) mp.getGeometryN(i);
+      if (pt.isEmpty()) continue;
       Coordinate p = pt.getCoordinate();
       if (points.contains(p)) {
         nonSimplePts.add(p);
