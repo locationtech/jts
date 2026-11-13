@@ -493,6 +493,9 @@ public class RelateNG
           return true;
         }
         for (int j = 0; j < poly.getNumInteriorRing(); j++) {
+        	LinearRing hole = poly.getInteriorRingN(j);
+        	if (hole.isEmpty())
+        		continue;
           hasExteriorIntersection |= computeAreaVertex(geom, isA, poly.getInteriorRingN(j), geomTarget, topoComputer);        
           if (topoComputer.isResultKnown()) {
             return true;
@@ -504,7 +507,7 @@ public class RelateNG
   }
 
   private boolean computeAreaVertex(RelateGeometry geom, boolean isA, LinearRing ring, RelateGeometry geomTarget, TopologyComputer topoComputer) {
-    //TODO: use extremal (highest) point to ensure one is on boundary of polygon cluster
+  	//TODO: use extremal (highest) point to ensure one is on boundary of polygon cluster
     Coordinate pt = ring.getCoordinate();
     
     int locArea = geom.locateAreaVertex(pt);

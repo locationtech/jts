@@ -678,6 +678,13 @@ public class RelateNGTest extends RelateNGTestCase {
     }  
   }
   
+  public void testEmptyHole() {
+    String a = "POLYGON ((1 1, 2 1, 2 2, 1 1), EMPTY)";
+    String b = "POLYGON ((1 2, 2 1, 1 1, 1 2), EMPTY)";
+    checkIntersectsDisjoint(a, b, true);
+    checkContainsWithin(a, b, false);
+  }
+  
   //================  Prepared Relate  ==============
   
   public void testPreparedAA() {
