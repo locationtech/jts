@@ -67,6 +67,7 @@ Distributions for older JTS versions can be obtained at the
 * Make `HalfEdge.compareAngularDirection` more robust (#1224)
 * Improve `Quadrant` computation robustness by using vector endpoints (#1226)
 * Fix NaN handling in `LinearLocation` and `EdgeIntersection` `compareTo` (#1229)
+* Fix RelateNG empty hole handling (#1256)
 
 ### Performance Improvements
 
