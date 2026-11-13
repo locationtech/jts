@@ -11,11 +11,13 @@
  */
 package org.locationtech.jts.operation.valid;
 
+import org.locationtech.jts.algorithm.locate.IndexedPointInAreaLocator;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryCollection;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.LinearRing;
+import org.locationtech.jts.geom.Location;
 import org.locationtech.jts.geom.MultiPoint;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Point;
@@ -32,6 +34,13 @@ public class IsValidOp
 {
   private static final int MIN_SIZE_LINESTRING = 2;
   private static final int MIN_SIZE_RING = 4;
+  /**
+   * Polygons with at least this many holes use an indexed shell locator
+   * to check that holes are inside the shell.
+   * Building the index costs about as much as scanning the shell for 20 holes
+   * (see IsValidHolesInShellPerfTest).
+   */
+  private static final int MIN_HOLES_INDEXED_SHELL = 20;
 
   /**
    * Tests whether a {@link Geometry} is valid.
@@ -70,6 +79,8 @@ public class IsValidOp
    * (the ESRI SDE model)
    */
   private boolean isInvertedRingValid = false;
+  
+  private int minHolesIndexedShell = MIN_HOLES_INDEXED_SHELL;
   
   private TopologyValidationError validErr;
 
@@ -115,6 +126,17 @@ public class IsValidOp
   public void setSelfTouchingRingFormingHoleValid(boolean isValid)
   {
     isInvertedRingValid = isValid;
+  }
+
+  /**
+   * Sets the number of holes at which a polygon uses an indexed shell locator.
+   * Allows testing the indexed code path with small polygons.
+   *
+   * @param minHoles the minimum number of holes to use an indexed shell locator
+   */
+  void setMinHolesIndexedShell(int minHoles)
+  {
+    minHolesIndexedShell = minHoles;
   }
 
   /**
@@ -438,6 +460,10 @@ public class IsValidOp
     
     LinearRing shell = poly.getExteriorRing();
     boolean isShellEmpty = shell.isEmpty();
+    IndexedPointInAreaLocator shellLocator = null;
+    if (! isShellEmpty && poly.getNumInteriorRing() >= minHolesIndexedShell) {
+      shellLocator = new IndexedPointInAreaLocator(shell);
+    }
     
     for (int i = 0; i < poly.getNumInteriorRing(); i++) {
       LinearRing hole = poly.getInteriorRingN(i);
@@ -448,7 +474,7 @@ public class IsValidOp
         invalidPt = hole.getCoordinate();
       }
       else {
-        invalidPt = findHoleOutsideShellPoint(hole, shell);
+        invalidPt = findHoleOutsideShellPoint(hole, shell, shellLocator);
       }
       if (invalidPt != null) {
         logInvalid(TopologyValidationError.HOLE_OUTSIDE_SHELL,
@@ -467,9 +493,11 @@ public class IsValidOp
    * 
    * @param hole the hole to test
    * @param shell the polygon shell to test against
+   * @param shellLocator the indexed locator for the shell, or null to scan the shell
    * @return a hole point outside the shell, or null if it is inside
    */
-  private Coordinate findHoleOutsideShellPoint(LinearRing hole, LinearRing shell) {
+  private Coordinate findHoleOutsideShellPoint(LinearRing hole, LinearRing shell,
+      IndexedPointInAreaLocator shellLocator) {
     Coordinate holePt0 = hole.getCoordinateN(0);
     /**
      * If hole envelope is not covered by shell, it must be outside
@@ -478,6 +506,12 @@ public class IsValidOp
       //TODO: find hole pt outside shell env
       return holePt0;
     
+    if (shellLocator != null) {
+      int loc = shellLocator.locate(holePt0);
+      if (loc == Location.EXTERIOR) return holePt0;
+      if (loc == Location.INTERIOR) return null;
+      //-- hole point is on the shell, so check which side of the shell the hole edge from it goes
+    }
     if (PolygonTopologyAnalyzer.isRingNested(hole, shell))
       return null;  
     //TODO: find hole point outside shell
