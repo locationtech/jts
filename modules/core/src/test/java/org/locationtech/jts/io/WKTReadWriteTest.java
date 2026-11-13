@@ -54,6 +54,12 @@ public class WKTReadWriteTest extends TestCase {
     checkReadWrite("LINESTRING EMPTY");
   }
 
+  public void testReadCircularString() {
+    checkReadWrite("CIRCULARSTRING (10 14, 6 10, 14 10)");
+    checkReadWrite("CIRCULARSTRING (0 0, 1 0, 1 1, 0 1, 0 0)");
+    checkReadWrite("CIRCULARSTRING EMPTY");
+  }
+
   public void testReadLinearRing() {
     checkReadWrite("LINEARRING (10 10, 20 20, 30 40, 10 10)");
     checkReadWrite("LINEARRING EMPTY");
