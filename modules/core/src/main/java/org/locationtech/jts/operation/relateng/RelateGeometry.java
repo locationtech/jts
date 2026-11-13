@@ -262,12 +262,12 @@ class RelateGeometry {
   public boolean isSelfNodingRequired() {
     if (geom instanceof Point
         || geom instanceof MultiPoint
-        || geom instanceof Polygon
+        //|| geom instanceof Polygon
         || geom instanceof MultiPolygon)
         return false;
     //-- a GC with a single polygon does not need noding
-    if (hasAreas && geom.getNumGeometries() == 1) 
-      return false;
+    //if (hasAreas && geom.getNumGeometries() == 1) 
+    //  return false;
     //-- GCs with only points do not need noding
     if (! hasAreas && ! hasLines)
       return false;

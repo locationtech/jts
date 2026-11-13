@@ -542,6 +542,18 @@ public class RelateNGTest extends RelateNGTestCase {
     //checkTouches(false, a, b);
   }
   
+  public void testPolygonsShellsEqualHoleTouch() {
+    String a = "POLYGON ((0 0, 4 0, 4 4, 0 4, 0 0), (2 0, 1 1, 3 1, 2 0))";
+    String b = "POLYGON ((0 0, 4 0, 4 4, 0 4, 0 0))";
+    //checkRelate(a, b, "2FF11F2F2");
+    //checkIntersectsDisjoint(a, b, true);
+    //checkContainsWithin(a, b, true);
+    checkCoversCoveredBy(b, a, true);
+    //checkCoversCoveredBy(false, a, b);
+    //checkOverlaps(true, a, b);
+    //checkTouches(false, a, b);
+  }
+  
   public void testValidateRelateAA_86() {
     String a = "POLYGON ((170 120, 300 120, 250 70, 120 70, 170 120))";
     String b = "POLYGON ((150 150, 410 150, 280 20, 20 20, 150 150), (170 120, 330 120, 260 50, 100 50, 170 120))";
