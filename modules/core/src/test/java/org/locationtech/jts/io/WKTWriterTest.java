@@ -199,4 +199,42 @@ public class WKTWriterTest extends TestCase {
       assertEquals(7.0, lineZM.getPointN(1).getCoordinate().getZ());
       assertEquals(8.0, lineZM.getPointN(1).getCoordinate().getM());
   }
+
+  /**
+   * Nested empty geometries with dimensional markers must keep the marker and
+   * {@code EMPTY} as separate tokens so that {@link WKTReader} can parse the output.
+   */
+  public void testWriteNestedEmptyDimensionalGeometry() throws ParseException {
+    WKTReader reader = new WKTReader();
+    WKTWriter writer4 = new WKTWriter(4);
+
+    Geometry geometryZ = reader.read(
+        "GEOMETRYCOLLECTION Z ("
+            + "LINESTRING Z (0 0 1, 1 1 2), "
+            + "MULTILINESTRING Z EMPTY)");
+    String writtenZ = writer4.write(geometryZ);
+    assertTrue(writtenZ.contains("MULTILINESTRING Z EMPTY"));
+    assertFalse(writtenZ.contains("ZEMPTY"));
+    reader.read(writtenZ);
+
+    WKTWriter writerM = new WKTWriter(3);
+    writerM.setOutputOrdinates(Ordinate.createXYM());
+    Geometry geometryM = reader.read(
+        "GEOMETRYCOLLECTION M ("
+            + "LINESTRING M (0 0 1, 1 1 2), "
+            + "MULTILINESTRING M EMPTY)");
+    String writtenM = writerM.write(geometryM);
+    assertTrue(writtenM.contains("MULTILINESTRING M EMPTY"));
+    assertFalse(writtenM.contains("MEMPTY"));
+    reader.read(writtenM);
+
+    Geometry geometryZM = reader.read(
+        "GEOMETRYCOLLECTION ZM ("
+            + "LINESTRING ZM (0 0 1 2, 1 1 2 3), "
+            + "MULTILINESTRING ZM EMPTY)");
+    String writtenZM = writer4.write(geometryZM);
+    assertTrue(writtenZM.contains("MULTILINESTRING ZM EMPTY"));
+    assertFalse(writtenZM.contains("ZMEMPTY"));
+    reader.read(writtenZM);
+  }
 }
