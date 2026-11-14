@@ -16,6 +16,7 @@ import java.util.List;
 
 import org.locationtech.jts.algorithm.PointLocation;
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateArrays;
 import org.locationtech.jts.geom.Dimension;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryCollection;
@@ -109,9 +110,12 @@ class AdjacentEdgeLocator {
   }
 
   private void addRing(LinearRing ring, boolean requireCW) {
-    //TODO: remove repeated points?
-    Coordinate[] pts = RelateGeometry.orient(ring.getCoordinates(), requireCW);  
-    ringList.add(pts);
+  	Coordinate[] pts = ring.getCoordinates();
+  	if (CoordinateArrays.hasRepeatedPoints(pts)) {
+  		pts = CoordinateArrays.removeRepeatedPoints(pts);
+  	}
+    Coordinate[] ptsOrient = RelateGeometry.orient(pts, requireCW);  
+    ringList.add(ptsOrient);
   }
 
 }
