@@ -620,4 +620,28 @@ GEOMETRYCOLLECTION (POLYGON ((1 9, 5 9, 6 6, 1 5, 1 9), (2 6, 4 8, 6 6, 2 6)), P
   <test><op name="within"     arg1="B" arg2="A"> true </op></test>
 </case>
 
+<case>
+  <!-- https://github.com/libgeos/geos/issues/1602 -->
+  <desc>P/GC:A, test point is on boundary of two polygons, one of which is a repeated point</desc>
+  <a>
+    POINT (11 11)
+  </a>
+  <b>
+    GEOMETRYCOLLECTION (POLYGON ((10 10, 11 10, 11 11, 11 11, 10 11, 10 10)), POLYGON ((11 10, 12 10, 12 11, 11 11, 11 10)))
+  </b>
+  <test><op name="intersects" arg1="A" arg2="B"> true </op></test>
+</case>
+
+<case>
+  <!-- https://github.com/libgeos/geos/issues/1602 -->
+  <desc>A/GC:A, test polygon is a member of the collection, other member has a repeated point</desc>
+  <a>
+    POLYGON ((3 3, 0 8, 2 5, 3 3))
+  </a>
+  <b>
+    GEOMETRYCOLLECTION (POLYGON ((3 3, 0 8, 2 5, 3 3)), POLYGON ((3 3, 0 8, 2 5, 2 5, 3 3)))
+  </b>
+  <test><op name="relate" arg1="A" arg2="B" arg3="2FFF1FFF2"> true </op></test>
+</case>
+
 </run>
