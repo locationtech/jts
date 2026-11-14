@@ -107,6 +107,8 @@ class AdjacentEdgeLocator {
   }
 
   private void addRing(LinearRing ring, boolean requireCW) {
+  	if (ring.isEmpty())
+  		return;
   	Coordinate[] pts = ring.getCoordinates();
   	if (CoordinateArrays.hasRepeatedPoints(pts)) {
   		pts = CoordinateArrays.removeRepeatedPoints(pts);

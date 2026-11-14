@@ -1,6 +1,6 @@
 <run>
   <desc>
-    Test relate predicates against cases containing EMPTY geometries.
+    Test relate predicates against cases containing EMPTY geometries, elements, or components.
   </desc>
 
 <!-- ================  POINT ============== -->
@@ -1108,10 +1108,33 @@
   <test><op name="within"     arg1="A" arg2="B"> false </op></test>
 </case>
 
+<!-- ================  EMPTY elements ============== -->
+
+<case>
+  <desc>P/GC - Point VS GeoemtryCollection with empty Polygon</desc>
+  <a>
+    POINT (1 0.5)
+  </a>
+  <b>
+    GEOMETRYCOLLECTION (POLYGON ((1 0, 1 1, 0 1, 0 0, 1 0)), POLYGON ((2 0, 2 1, 1 1, 1 0, 2 0)), POLYGON EMPTY)
+  </b>
+  <test><op name="relate" arg3="0FFFFF212" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> true </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> false </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> false </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> true </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> true </op></test>
+</case>
+
 <!-- ================  EMPTY hole ============== -->
 
 <case>
-  <desc>P/L - Polygon with empty hole VS Polygon with empty hole</desc>
+  <desc>A/A - Polygon with empty hole VS Polygon with empty hole</desc>
   <a>
     POLYGON ((1 1, 2 1, 2 2, 1 1), EMPTY)
   </a>
