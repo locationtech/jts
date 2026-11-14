@@ -77,9 +77,6 @@ class AdjacentEdgeLocator {
   }
 
   private NodeSection createSection(Coordinate p, Coordinate prev, Coordinate next) {
-    if (prev.distance(p) == 0 || next.distance(p) == 0) {
-      System.out.println("Found zero-length section segment");
-    };
     NodeSection ns = new NodeSection(true, Dimension.A, 1, 0, null, false, prev, p, next);
     return ns;
   }
