@@ -80,6 +80,22 @@ public class OverlayNGRobustTest extends GeometryTestCase {
     OverlayNG.overlay(geom1, geom2, OverlayNG.UNION, pm);
   }
   
+  /**
+   * The first snapping attempt for this input produces an inverted polygon
+   * (with negative area), which the area check must reject for a symmetric difference.
+   * The retry with a larger snap tolerance gives the correct result,
+   * which is the polygon, since the line has no area.
+   * 
+   * See https://github.com/locationtech/jts/issues/1239
+   */
+  public void testSymDifferencePolygonLineInvertedResult() {
+    Geometry a = read("POLYGON ((20.58 46.965, 27.52 53.905, 28.52 54.914, 20.58 46.965))");
+    Geometry b = read("LINESTRING (27.519999973297118 53.90499997329712, 52.192 78.577, 27.519 53.904, 28.519999999 54.913999999, 39.599 65.984)");
+    Geometry result = OverlayNGRobust.overlay(a, b, OverlayNG.SYMDIFFERENCE);
+    assertTrue("result is valid", result.isValid());
+    assertEquals(a.getArea(), result.getArea(), 1e-6);
+  }
+  
   // MD 2020-09-14 There is no known test case that requires Snap-Rounding to succeed.
   
   public static void checkUnionSuccess(Geometry a, Geometry b) {
