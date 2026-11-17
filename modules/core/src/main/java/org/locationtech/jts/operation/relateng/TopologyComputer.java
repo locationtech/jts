@@ -118,7 +118,7 @@ class TopologyComputer {
    * Indicates whether the input geometries require self-noding 
    * for correct evaluation of specific spatial predicates. 
    * Self-noding is required for geometries which may 
-   * have self-crossing linework,
+   * have self-crossing or non-noded self-touching linework,
    * or may have lines lying in the boundary of an area.
    * This causes the coordinates of nodes created by 
    * crossing segments to be computed explicitly.
@@ -128,14 +128,11 @@ class TopologyComputer {
    * identical to one of the crossed segments.
    * 
    * Currently, requiring self-noding prevents noder caching.
-   * So it it important to limit the cases which require self-noding.
-   * Currently self-noding is required for:
-   * <ul>
-   * <li>A geoms which require self-noding (lines or GCs, except for single-polygon GCs)
-   * <li>B geoms which are mixed A/L GCs
-   * </ul>
-   * Note that linear B inputs do not require self-noding in all cases.
-   * In particular, if A is polygonal then predicates with linear B do not require self-noding.
+   * So it is more efficient to limit the cases which require self-noding.
+   * However, avoiding self-noding needs to be conservative, to ensure 
+   * correct predicate evaluation.
+   * Currently self-noding is required for most geometry containing
+   * edges, except for the (common) case of polygonal geometries with no holes. 
    * 
    * @return true if self-noding is required
    */
@@ -143,13 +140,10 @@ class TopologyComputer {
     if (! predicate.requireSelfNoding())
       return false;
     
-    if (geomA.isSelfNodingRequired()) 
+    if (geomA.isSelfNodingRequired() 
+    		|| geomB.isSelfNodingRequired()) 
       return true;
     
-    //-- if B is a mixed GC with A and L require full noding
-    if (geomB.hasAreaAndLine())
-      return true;
-
     return false;
   }
   

@@ -542,6 +542,79 @@ public class RelateNGTest extends RelateNGTestCase {
     //checkTouches(false, a, b);
   }
   
+  //-----------  Tests for self-noding -----------------
+  
+  // see https://github.com/libgeos/geos/issues/1558
+  public void testSelfNodingPolygonWithHole() {
+    String a = "POLYGON ((0 0, 4 0, 4 4, 0 4, 0 0), (2 0, 1 1, 3 1, 2 0))";
+    String b = "POLYGON ((0 0, 4 0, 4 4, 0 4, 0 0))";
+    checkRelate(a, b, "2FF11F2F2");
+    checkIntersectsDisjoint(a, b, true);
+    checkContainsWithin(a, b, false);
+    checkContainsWithin(b, a, true);
+    checkCoversCoveredBy(a, b, false);
+    checkCoversCoveredBy(b, a, true);
+    checkOverlaps(b, a, false);
+    checkTouches(a, b, false);
+  }
+  
+  public void testSelfNodingMultiPolygonWithHole() {
+    String a = "MULTIPOLYGON (((0 0, 4 0, 4 4, 0 4, 0 0), (2 0, 1 1, 3 1, 2 0)))";
+    String b = "POLYGON ((0 0, 4 0, 4 4, 0 4, 0 0))";
+    checkRelate(a, b, "2FF11F2F2");
+    checkIntersectsDisjoint(a, b, true);
+    checkContainsWithin(a, b, false);
+    checkContainsWithin(b, a, true);
+    checkCoversCoveredBy(a, b, false);
+    checkCoversCoveredBy(b, a, true);
+    checkOverlaps(b, a, false);
+    checkTouches(a, b, false);
+  }
+  
+  // see https://github.com/libgeos/geos/issues/1597
+  public void testSelfNodingNestedGC() {
+    String a = "GEOMETRYCOLLECTION(GEOMETRYCOLLECTION(LINESTRING(0 0,10 10), POLYGON((-2 -1,4 -1,4 6,-2 6,-2 -1))))";
+    String b = "LINESTRING(0 0,10 10)";
+    checkRelate(a, b, "102001FF2");
+    checkIntersectsDisjoint(a, b, true);
+    checkContainsWithin(a, b, true);
+    checkContainsWithin(b, a, false);
+    checkCoversCoveredBy(a, b, true);
+    checkCoversCoveredBy(b, a, false);
+    checkOverlaps(b, a, false);
+    checkTouches(a, b, false);
+  }
+  
+  // see https://github.com/libgeos/geos/issues/1595
+  public void testSelfNodingBOverlappingPolygons() {
+    String a = "POLYGON((0 0,10 0,10 10,0 10,0 0))";
+    String b = "GEOMETRYCOLLECTION(POLYGON((0 0,10 0,10 10,0 10,0 0)), POLYGON((5 -5,15 -5,15 5,5 5,5 -5)))";
+    checkRelate(a, b, "2FF11F212");
+    checkIntersectsDisjoint(a, b, true);
+    checkContainsWithin(a, b, false);
+    checkContainsWithin(b, a, true);
+    checkCoversCoveredBy(a, b, false);
+    checkCoversCoveredBy(b, a, true);
+    checkOverlaps(b, a, false);
+    checkTouches(a, b, false);
+  }
+  
+  // see https://github.com/libgeos/geos/issues/1595
+  public void testSelfNodingBLines() {
+    String a = "POLYGON((0 0,10 0,0 10,0 0))";
+    String b = "MULTILINESTRING((0 0,10 0,0 10,0 0),(2 -5,2 0))";
+    checkRelate(a, b, "FF210F102");
+    checkIntersectsDisjoint(a, b, true);
+    checkContainsWithin(a, b, false);
+    checkContainsWithin(b, a, false);
+    checkCoversCoveredBy(a, b, false);
+    checkCoversCoveredBy(b, a, false);
+    checkOverlaps(b, a, false);
+    checkTouches(a, b, true);
+  }
+  
+  //-------------------------------------------
+  
   public void testValidateRelateAA_86() {
     String a = "POLYGON ((170 120, 300 120, 250 70, 120 70, 170 120))";
     String b = "POLYGON ((150 150, 410 150, 280 20, 20 20, 150 150), (170 120, 330 120, 260 50, 100 50, 170 120))";

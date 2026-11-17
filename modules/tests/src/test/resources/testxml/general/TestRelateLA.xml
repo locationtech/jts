@@ -187,6 +187,19 @@
 </case>
 
 <case>
+<!-- https://github.com/libgeos/geos/issues/1595 -->
+<desc>mLA - ring of polygon plus touching line</desc>
+  <a>
+    MULTILINESTRING((0 0,10 0,0 10,0 0),(2 -5,2 0))
+  </a>
+  <b>
+    POLYGON((0 0,10 0,0 10,0 0))
+  </b>
+  <test><op name="relate" arg1="A" arg2="B" arg3="F11F002F2">true</op></test>
+  <test><op name="relate" arg1="B" arg2="A" arg3="FF210F102">true</op></test>
+</case>
+
+<case>
 <desc>LA - closed line / empty polygon</desc>
   <a>
     LINESTRING(110 60, 20 150, 200 150, 110 60)
