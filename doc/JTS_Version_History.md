@@ -69,6 +69,7 @@ Distributions for older JTS versions can be obtained at the
 * Fix NaN handling in `LinearLocation` and `EdgeIntersection` `compareTo` (#1229)
 * Fix `RelateNG` empty hole handling (#1256)
 * Fix `RelateNG` handling of repeated points in GeometryCollections (#1257)
+* Fix `RelateNG` strategy for avoiding self-noding (#1259)
 
 ### Performance Improvements
 
