@@ -644,4 +644,75 @@ GEOMETRYCOLLECTION (POLYGON ((1 9, 5 9, 6 6, 1 5, 1 9), (2 6, 4 8, 6 6, 2 6)), P
   <test><op name="relate" arg1="A" arg2="B" arg3="2FFF1FFF2"> true </op></test>
 </case>
 
+<case>
+  <!-- https://github.com/libgeos/geos/issues/1595 -->
+  <desc>GC:A/mA - polygon, overlapping polygons with one equal </desc>
+  <a>
+    POLYGON((0 0,10 0,10 10,0 10,0 0))
+  </a>
+  <b>
+    GEOMETRYCOLLECTION(POLYGON((0 0,10 0,10 10,0 10,0 0)), POLYGON((5 -5,15 -5,15 5,5 5,5 -5)))
+  </b>
+  <test><op name="relate" arg3="2FF11F212" arg1="A" arg2="B"> true </op></test>
+  <test><op name="relate" arg3="212F11FF2" arg1="B" arg2="A"> true </op></test>
+ 
+  <test><op name="contains"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> true </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> false </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> false </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> true </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> true </op></test>
+  
+  <test><op name="contains"   arg1="B" arg2="A"> true </op></test>
+  <test><op name="coveredBy"  arg1="B" arg2="A"> false </op></test>
+  <test><op name="covers"     arg1="B" arg2="A"> true </op></test>
+  <test><op name="crosses"    arg1="B" arg2="A"> false </op></test>
+  <test><op name="disjoint"   arg1="B" arg2="A"> false </op></test>
+  <test><op name="equalsTopo" arg1="B" arg2="A"> false </op></test>
+  <test><op name="intersects" arg1="B" arg2="A"> true </op></test>
+  <test><op name="overlaps"   arg1="B" arg2="A"> false </op></test>
+  <test><op name="touches"    arg1="B" arg2="A"> false </op></test>
+  <test><op name="within"     arg1="B" arg2="A"> false </op></test>
+</case>
+
+<case>
+  <!-- https://github.com/libgeos/geos/issues/1597 -->
+  <desc>GC:AL/A - polygon with line, equal line </desc>
+  <a>
+    GEOMETRYCOLLECTION(GEOMETRYCOLLECTION(
+      LINESTRING(0 0,10 10), POLYGON((-2 -1,4 -1,4 6,-2 6,-2 -1))))
+  </a>
+  <b>
+    LINESTRING(0 0,10 10)
+  </b>
+  <test><op name="relate" arg3="102001FF2" arg1="A" arg2="B"> true </op></test>
+  <test><op name="relate" arg3="10F00F212" arg1="B" arg2="A"> true </op></test>
+ 
+  <test><op name="contains"   arg1="A" arg2="B"> true </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> false </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> true </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> false </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> true </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> false </op></test>
+  
+  <test><op name="contains"   arg1="B" arg2="A"> false </op></test>
+  <test><op name="coveredBy"  arg1="B" arg2="A"> true </op></test>
+  <test><op name="covers"     arg1="B" arg2="A"> false </op></test>
+  <test><op name="crosses"    arg1="B" arg2="A"> false </op></test>
+  <test><op name="disjoint"   arg1="B" arg2="A"> false </op></test>
+  <test><op name="equalsTopo" arg1="B" arg2="A"> false </op></test>
+  <test><op name="intersects" arg1="B" arg2="A"> true </op></test>
+  <test><op name="overlaps"   arg1="B" arg2="A"> false </op></test>
+  <test><op name="touches"    arg1="B" arg2="A"> false </op></test>
+  <test><op name="within"     arg1="B" arg2="A"> true </op></test>
+</case>
+
 </run>

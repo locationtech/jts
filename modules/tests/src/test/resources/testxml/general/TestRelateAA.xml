@@ -232,6 +232,48 @@
 </case>
 
 <case>
+  <desc>AA - A with hole, B shell equal</desc>
+  <a>
+    POLYGON ((0 0, 4 0, 4 4, 0 4, 0 0), (2 0, 1 1, 3 1, 2 0))
+  </a>
+  <b>
+    POLYGON ((0 0, 4 0, 4 4, 0 4, 0 0))
+  </b>
+  <test><op name="relate" arg3="2FF11F2F2" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> true </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> false </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> false </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> true </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> true </op></test>
+</case>
+
+<case>
+  <desc>mA/A - mA with single polygon with hole, B shell equal</desc>
+  <a>
+    MULTIPOLYGON (((0 0, 4 0, 4 4, 0 4, 0 0), (2 0, 1 1, 3 1, 2 0)))
+  </a>
+  <b>
+    POLYGON ((0 0, 4 0, 4 4, 0 4, 0 0))
+  </b>
+  <test><op name="relate" arg3="2FF11F2F2" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> true </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> false </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> false </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> true </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> true </op></test>
+</case>
+
+<case>
   <desc>A/mA A-shells overlapping B-shell at A-vertex</desc>
   <a>
     POLYGON ((100 60, 140 100, 100 140, 60 100, 100 60))

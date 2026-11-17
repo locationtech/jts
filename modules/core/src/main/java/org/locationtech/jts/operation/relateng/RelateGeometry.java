@@ -33,6 +33,7 @@ import org.locationtech.jts.geom.MultiPoint;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.geom.Polygonal;
 import org.locationtech.jts.geom.util.ComponentCoordinateExtracter;
 import org.locationtech.jts.geom.util.PointExtracter;
 
@@ -252,29 +253,45 @@ class RelateGeometry {
   /**
    * Indicates whether the geometry requires self-noding 
    * for correct evaluation of specific spatial predicates. 
-   * Self-noding is required for geometries which may self-cross
-   * - i.e. lines, and overlapping elements in GeometryCollections.
-   * Self-noding is not required for polygonal geometries,
-   * since they can only touch at vertices.
+   * Generally self-noding is required for geometries contain
+   * edges (polygons or lines).
+   * However, polygonal geometries which 
+   * do not contain holes do not need to be self-noded,
+   * This is a relatively common case, so is worth checking.
+   * Self-noding is not required
+   * because while they may self-touch at a vertex and an edge,
+   * that vertex will be noded against the other geometry.
+   * (The only situation where this doesn't happen is when the vertex 
+   * is in a hole, and the other geometry has an identical shell.
+   * See https://github.com/libgeos/geos/issues/1558).  
    * 
    * @return true if self-noding is required for this geometry
    */
   public boolean isSelfNodingRequired() {
-    if (geom instanceof Point
-        || geom instanceof MultiPoint
-        //|| geom instanceof Polygon
-        || geom instanceof MultiPolygon)
-        return false;
-    //-- a GC with a single polygon does not need noding
-    //if (hasAreas && geom.getNumGeometries() == 1) 
-    //  return false;
-    //-- GCs with only points do not need noding
-    if (! hasAreas && ! hasLines)
+    //-- Geometries with only points do not need noding
+    if (geom.getDimension() == 0)
       return false;
+    
+    if (isPolygonalNoHoles(geom))
+    	return false;
+    //TODO: avoid self-noding GC with single polygon
     return true;
   }
 
-  /**
+  private static boolean isPolygonalNoHoles(Geometry geom) {
+  	if (! (geom instanceof Polygonal)) {
+  		return false;
+  	}
+  	//-- test if any polygon element has a hole
+  	for (int i = 0; i < geom.getNumGeometries(); i++) {
+  		Polygon poly = (Polygon) geom.getGeometryN(i);
+  		if (poly.getNumInteriorRing() > 0)
+  			return false;
+  	}
+  	return true;
+	}
+
+	/**
    * Tests whether the geometry has polygonal topology.
    * This is not the case if it is a GeometryCollection 
    * containing more than one polygon (since they may overlap
