@@ -252,29 +252,32 @@ class RelateGeometry {
   
   /**
    * Indicates whether the geometry requires self-noding 
-   * for correct evaluation of specific spatial predicates. 
-   * Generally self-noding is required for geometries contain
-   * edges (polygons or lines).
-   * However, polygonal geometries which 
-   * do not contain holes do not need to be self-noded,
-   * This is a relatively common case, so is worth checking.
+   * for correct evaluation of spatial predicates which need it. 
+   * <p>
+   * Generally self-noding is required for geometries containing
+   * edges (i.e. polygons or lines).
+   * However, polygonal geometries which do not contain holes 
+   * do not need to be self-noded.
+   * This is a relatively common case, so is worth checking for efficiency.
    * Self-noding is not required
-   * because while they may self-touch at a vertex and an edge,
-   * that vertex will be noded against the other geometry.
-   * (The only situation where this doesn't happen is when the vertex 
-   * is in a hole, and the other geometry has an identical shell.
-   * See https://github.com/libgeos/geos/issues/1558).  
+   * because while MultiPolygon elements may self-touch at a vertex and an edge,
+   * that vertex is noded against the other predicate input geometry.
+   * The situation where this doesn't hold is when
+   * a hole vertex touches the shell, 
+   * and the other geometry has an identical shell.
+   * Thus the presence of holes indicates self-noding is required.  
    * 
    * @return true if self-noding is required for this geometry
    */
   public boolean isSelfNodingRequired() {
     //-- Geometries with only points do not need noding
-    if (geom.getDimension() == 0)
+    if (! hasEdges())
       return false;
     
+    // See https://github.com/libgeos/geos/issues/1558
     if (isPolygonalNoHoles(geom))
     	return false;
-    //TODO: avoid self-noding GC with single polygon
+    //TODO: could avoid self-noding GC with single polygon with no holes
     return true;
   }
 

@@ -128,14 +128,11 @@ class TopologyComputer {
    * identical to one of the crossed segments.
    * 
    * Currently, requiring self-noding prevents noder caching.
-   * So it it important to limit the cases which require self-noding.
-   * Currently self-noding is required for:
-   * <ul>
-   * <li>A geoms which require self-noding (lines or GCs or single polygons with holes)
-   * <li>B geoms which are mixed A/L GCs
-   * </ul>
-   * Note that linear B inputs do not require self-noding in all cases.
-   * In particular, if A is polygonal then predicates with linear B do not require self-noding.
+   * So it is more efficient to limit the cases which require self-noding.
+   * However, avoiding self-noding needs to be conservative, to ensure 
+   * correct predicate evaluation.
+   * Currently self-noding is required for most geometry containing
+   * edges, except for the (common) case of polygonal geometries with no holes. 
    * 
    * @return true if self-noding is required
    */
@@ -147,11 +144,6 @@ class TopologyComputer {
     		|| geomB.isSelfNodingRequired()) 
       return true;
     
-    //-- if B is a mixed GC with A and L require full noding
-    /*
-    if (geomB.hasAreaAndLine())
-      return true;
-     */
     return false;
   }
   
