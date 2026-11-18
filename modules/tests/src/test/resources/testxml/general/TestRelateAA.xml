@@ -287,4 +287,25 @@
 <test>  <op name="intersects" arg1="A" arg2="B">   true   </op></test>
 </case>
 
+<case>
+  <desc>A/mA - A equal to one eleent of mA, touching at vertex and edge</desc>
+  <a>
+    POLYGON ((1 5, 5 5, 5 1, 1 1, 1 5))
+  </a>
+  <b>
+    MULTIPOLYGON (((1 5, 5 5, 5 1, 1 1, 1 5)), ((1 8, 5 8, 3 5, 1 8)))
+  </b>
+  <test><op name="relate" arg3="2FFF1F212" arg1="A" arg2="B"> true </op></test>
+  <test><op name="contains"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B"> true </op></test>
+  <test><op name="covers"     arg1="A" arg2="B"> false </op></test>
+  <test><op name="crosses"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B"> false </op></test>
+  <test><op name="intersects" arg1="A" arg2="B"> true </op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B"> false </op></test>
+  <test><op name="touches"    arg1="A" arg2="B"> false </op></test>
+  <test><op name="within"     arg1="A" arg2="B"> true </op></test>
+</case>
+
 </run>

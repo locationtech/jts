@@ -256,16 +256,11 @@ class RelateGeometry {
    * <p>
    * Generally self-noding is required for geometries containing
    * edges (i.e. polygons or lines).
-   * However, polygonal geometries which do not contain holes 
+   * However, a single polygon which does not contain holes 
    * do not need to be self-noded.
-   * This is a relatively common case, so is worth checking for efficiency.
-   * Self-noding is not required
-   * because while MultiPolygon elements may self-touch at a vertex and an edge,
-   * that vertex is noded against the other predicate input geometry.
-   * The situation where this doesn't hold is when
-   * a hole vertex touches the shell, 
-   * and the other geometry has an identical shell.
-   * Thus the presence of holes indicates self-noding is required.  
+   * Self-noding is not required because the shell of a valid Polygon cannot self-touch
+   * (whereas valid MultiPolygons and holes can self-touch.)
+   * This is a relatively common case, so is worth checking for efficiency. 
    * 
    * @return true if self-noding is required for this geometry
    */
@@ -275,23 +270,22 @@ class RelateGeometry {
       return false;
     
     // See https://github.com/libgeos/geos/issues/1558
-    if (isPolygonalNoHoles(geom))
+    if (isSinglePolygonNoHoles(geom))
     	return false;
     //TODO: could avoid self-noding GC with single polygon with no holes
     return true;
   }
 
-  private static boolean isPolygonalNoHoles(Geometry geom) {
+  private static boolean isSinglePolygonNoHoles(Geometry geom) {
   	if (! (geom instanceof Polygonal)) {
   		return false;
   	}
-  	//-- test if any polygon element has a hole
-  	for (int i = 0; i < geom.getNumGeometries(); i++) {
-  		Polygon poly = (Polygon) geom.getGeometryN(i);
-  		if (poly.getNumInteriorRing() > 0)
-  			return false;
-  	}
-  	return true;
+  	if (geom.getNumGeometries() > 1)
+  		return false;
+  	
+		Polygon poly = (Polygon) geom.getGeometryN(0);
+		boolean hasHole = poly.getNumInteriorRing() > 0;
+  	return ! hasHole;
 	}
 
 	/**
