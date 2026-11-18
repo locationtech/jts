@@ -12,6 +12,7 @@
 package org.locationtech.jts.operation.relateng;
 
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.IntersectionMatrix;
 
 import test.jts.GeometryTestCase;
 
@@ -63,12 +64,26 @@ public abstract class RelateNGTestCase extends GeometryTestCase {
   protected void checkRelate(String wkta, String wktb, String expectedValue) {
     Geometry a = read(wkta);
     Geometry b = read(wktb);
-    RelateMatrixPredicate pred = new RelateMatrixPredicate();
+    
+    checkRelate(a, b, expectedValue);
+    
+    String imTrans = IntersectionMatrix.transpose(expectedValue);
+    checkRelate(b, a, imTrans);
+ }
+
+  protected void checkRelateNoTranspose(String wkta, String wktb, String expectedValue) {
+    Geometry a = read(wkta);
+    Geometry b = read(wktb);
+    checkRelate(a, b, expectedValue);
+ }
+
+	private void checkRelate(Geometry a, Geometry b, String expectedValue) {
+		RelateMatrixPredicate pred = new RelateMatrixPredicate();
     TopologyPredicate predTrace = trace(pred);
     RelateNG.relate(a, b, predTrace);
     String actualVal = pred.getIM().toString();
     assertEquals(expectedValue, actualVal);
- } 
+	} 
   
   protected void checkRelateMatches(String wkta, String wktb, String pattern, boolean expectedValue) {
     TopologyPredicate pred = RelatePredicate.matches(pattern);
