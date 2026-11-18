@@ -599,6 +599,19 @@ public class RelateNGTest extends RelateNGTestCase {
     checkTouches(a, b, false);
   }
   
+  public void testSelfNodingMultiPolygonTouch() {
+    String a = "MULTIPOLYGON (((1 5, 5 5, 5 1, 1 1, 1 5)), ((1 8, 5 8, 3 5, 1 8)))";
+    String b = "POLYGON ((1 5, 5 5, 5 1, 1 1, 1 5))";
+    //checkRelate(a, b, "2FF11F212");
+    checkIntersectsDisjoint(a, b, true);
+    checkContainsWithin(a, b, true);
+    checkContainsWithin(b, a, false);
+    checkCoversCoveredBy(a, b, true);
+    checkCoversCoveredBy(b, a, false);
+    checkOverlaps(b, a, false);
+    checkTouches(a, b, false);
+  }
+  
   // see https://github.com/libgeos/geos/issues/1595
   public void testSelfNodingBLines() {
     String a = "POLYGON((0 0,10 0,0 10,0 0))";
