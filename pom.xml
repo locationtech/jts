@@ -141,18 +141,6 @@
         </dependencies>
     </dependencyManagement>
 
-    <!-- Repositories for Dependencies -->
-    <repositories>
-        <repository>
-            <id>central.maven.org</id>
-            <name>Central Maven repository</name>
-            <url>https://central.maven.org/maven2</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
-
     <profiles>
         <profile>
             <id>release</id>
