@@ -147,6 +147,20 @@ public class IsSimpleTest
       BoundaryNodeRule.MOD2_BOUNDARY_RULE,
       "MULTIPOINT((1 2), (1 4), (1 5))");
   }
+
+  public void testMultiPointWithEmptyElements() {
+    String wkt = "MULTIPOINT (EMPTY, EMPTY, (1 2))";
+    Geometry g = read(wkt);
+    assertTrue(g.isSimple());
+    assertTrue(IsSimpleOp.isSimple(g));
+    checkIsSimple(wkt, BoundaryNodeRule.MOD2_BOUNDARY_RULE, true);
+    checkIsSimpleAll(wkt, BoundaryNodeRule.MOD2_BOUNDARY_RULE, "MULTIPOINT EMPTY");
+
+    String wktRepeated = "MULTIPOINT (EMPTY, EMPTY, (1 2), (1 2))";
+    checkIsSimple(wktRepeated, BoundaryNodeRule.MOD2_BOUNDARY_RULE, false, new Coordinate(1, 2));
+    checkIsSimpleAll(wktRepeated, BoundaryNodeRule.MOD2_BOUNDARY_RULE, "MULTIPOINT ((1 2))");
+  }
+
   public void testGeometryCollectionAll() {
     checkIsSimpleAll("GEOMETRYCOLLECTION(MULTILINESTRING ((10 20, 90 20), (10 30, 90 30), (50 40, 50 10)), " +
       "MULTIPOINT((1 1), (1 2), (1 2), (1 3), (1 4), (1 4), (1 5), (1 5)))",
