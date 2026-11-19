@@ -71,6 +71,7 @@ Distributions for older JTS versions can be obtained at the
 * Fix `RelateNG` handling of repeated points in GeometryCollections (#1257)
 * Fix `RelateNG` strategy for avoiding self-noding (#1259)
 * Fix `RelateNG` self-noding check for MultiPolygons (#1260)
+* Fix `IsSimpleOp` for empty MultiPoint elements (#1245)
 
 ### Performance Improvements
 
