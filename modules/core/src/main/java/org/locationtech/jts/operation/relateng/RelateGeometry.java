@@ -54,7 +54,6 @@ class RelateGeometry {
   private Set<Coordinate> uniquePoints;
   private BoundaryNodeRule boundaryNodeRule;
   private RelatePointLocator locator;
-  private int elementId = 0;
   private boolean hasPoints;
   private boolean hasLines;
   private boolean hasAreas;
@@ -351,18 +350,33 @@ class RelateGeometry {
    * Extract RelateSegmentStrings from the geometry which 
    * intersect a given envelope.  
    * If the envelope is null all edges are extracted.
-   * @param geomA 
    * 
-   * @param env the envelope to extract around (may be null)
+   * @param isA the input parameter
+   * @param env the envelope to extract over (null to extract all segStrings)
    * @return a list of RelateSegmentStrings
    */
   public List<RelateSegmentString> extractSegmentStrings(boolean isA, Envelope env) {
     List<RelateSegmentString> segStrings = new ArrayList<RelateSegmentString>();
-    extractSegmentStrings(isA, env, geom, segStrings);
+    extractSegmentStrings(isA, env, geom, 0, segStrings);
     return segStrings;
   }
   
-  private void extractSegmentStrings(boolean isA, Envelope env, Geometry geom, List<RelateSegmentString> segStrings) {
+  /**
+   * Extracts RelateSegmentStrings from the linework of geometry 
+   * (which may be atomic or a collection,
+   * in which case this is called recursively).
+   * The elementId is the index of atomic geometries scanned.
+   * It is initially passed in as 0. 
+   * 
+   * @param isA the input parameter
+   * @param env the envelope to extract over (null to extract all segStrings)
+   * @param geom the geometry to extract from
+   * @param elementId the geometry element id
+   * @param segStrings the extracted segstrings
+   * @return the updated element id
+   */
+  private int extractSegmentStrings(boolean isA, Envelope env, Geometry geom, 
+  		int elementId, List<RelateSegmentString> segStrings) {
     //-- record if parent is MultiPolygon
     MultiPolygon parentPolygonal = null;
     if (geom instanceof MultiPolygon) {
@@ -372,23 +386,24 @@ class RelateGeometry {
     for (int i = 0; i < geom.getNumGeometries(); i++) {
       Geometry g = geom.getGeometryN(i);
       if (g instanceof GeometryCollection) {
-        extractSegmentStrings(isA, env, g, segStrings);
+      	elementId = extractSegmentStrings(isA, env, g, elementId, segStrings);
       }
       else {
-        extractSegmentStringsFromAtomic(isA, g, parentPolygonal, env, segStrings);
+      	elementId++;
+      	extractSegmentStringsFromAtomic(isA, g, parentPolygonal, env, elementId, segStrings);
       }
     }
+    return elementId;
   }
   
   private void extractSegmentStringsFromAtomic(boolean isA, Geometry geom, MultiPolygon parentPolygonal, Envelope env, 
-      List<RelateSegmentString> segStrings) {
+      final int elementId, List<RelateSegmentString> segStrings) {
     if (geom.isEmpty())
       return;
     boolean doExtract = env == null || env.intersects(geom.getEnvelopeInternal());
     if (! doExtract)
       return;
     
-    elementId++;
     if (geom instanceof LineString) {
       RelateSegmentString ss = RelateSegmentString.createLine(geom.getCoordinates(), isA, elementId, this);
       segStrings.add(ss);
@@ -396,15 +411,15 @@ class RelateGeometry {
     else if (geom instanceof Polygon) {
       Polygon poly = (Polygon) geom;
       Geometry parentPoly = parentPolygonal != null ? parentPolygonal : poly;
-      extractRingToSegmentString(isA, poly.getExteriorRing(), 0, env, parentPoly, segStrings);
+      extractRingToSegmentString(isA, poly.getExteriorRing(), 0, env, parentPoly, elementId,segStrings);
       for (int i = 0; i < poly.getNumInteriorRing(); i++) {
-        extractRingToSegmentString(isA, poly.getInteriorRingN(i), i+1, env, parentPoly, segStrings);        
+        extractRingToSegmentString(isA, poly.getInteriorRingN(i), i+1, env, parentPoly, elementId, segStrings);        
       }
     }
   }
 
   private void extractRingToSegmentString(boolean isA, LinearRing ring, int ringId, Envelope env,
-      Geometry parentPoly, List<RelateSegmentString> segStrings) {
+      Geometry parentPoly, int elementId, List<RelateSegmentString> segStrings) {
     if (ring.isEmpty())
       return;
     if (env != null && ! env.intersects(ring.getEnvelopeInternal()))
