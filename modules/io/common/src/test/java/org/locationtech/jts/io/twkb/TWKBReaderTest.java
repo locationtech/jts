@@ -105,6 +105,46 @@ public class TWKBReaderTest {
         testReadAll(testSupport.getGeometryCollections());
     }
 
+    public @Test void testNegativeMemberCount() {
+        checkParseException("0500FFFFFFFF0F");
+        checkParseException("0600FFFFFFFF0F");
+        checkParseException("0700FFFFFFFF0F");
+    }
+
+    public @Test void testPointCountTooLarge() {
+        checkParseException("0200FFFFFFFF07");
+        checkParseException("0200FFFFFFFF03");
+        checkParseException("0400FFFFFFFF03");
+    }
+
+    public @Test void testRingCountTooLarge() {
+        checkParseException("0300FFFFFFFF0700");
+    }
+
+    public @Test void testMemberCountTooLarge() {
+        checkParseException("0500FFFFFFFF07");
+        checkParseException("0600FFFFFFFF07");
+        checkParseException("0700FFFFFFFF07");
+    }
+
+    public @Test void testInvalidGeometryType() {
+        checkParseException("0000");
+        checkParseException("0800");
+    }
+
+    public @Test void testVarintTooLong() {
+        checkParseException("0200FFFFFFFFFFFF");
+    }
+
+    private void checkParseException(String encodedHex) {
+        try {
+            reader.read(WKBReader.hexToBytes(encodedHex));
+            fail("Expected ParseException for " + encodedHex);
+        } catch (ParseException e) {
+            // expected
+        }
+    }
+
     private void testReadAll(List<TWKBTestData> testData) throws ParseException {
         for (TWKBTestData d : testData) {
             testRead(d);

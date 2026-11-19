@@ -44,6 +44,10 @@ public class TWKBReader {
     private static final GeometryFactory DEFAULT_FACTORY = new GeometryFactory(
         PackedCoordinateSequenceFactory.DOUBLE_FACTORY);
 
+    private static final String FIELD_NPOINTS = "npoints";
+    private static final String FIELD_NRINGS = "nrings";
+    private static final String FIELD_NMEMBERS = "nmembers";
+
     private GeometryFactory geometryFactory;
 
     public TWKBReader() {
@@ -60,7 +64,10 @@ public class TWKBReader {
     }
 
     public Geometry read(byte[] bytes) throws ParseException {
-        return read(new ByteArrayInputStream(bytes));
+        // Every point, ring and member takes at least one byte,
+        // so a count can not be larger than the input size.
+        // This avoids OOM exceptions due to malformed input.
+        return read(new DataInputStream(new ByteArrayInputStream(bytes)), bytes.length);
     }
 
     public Geometry read(InputStream in) throws ParseException {
@@ -68,25 +75,46 @@ public class TWKBReader {
     }
 
     public Geometry read(DataInput in) throws ParseException {
+        // can't tell size of input, but MAX_VALUE should be safe
+        return read(in, Integer.MAX_VALUE);
+    }
+
+    private Geometry read(DataInput in, int maxCount) throws ParseException {
         try {
-            return read(geometryFactory, in);
+            return read(geometryFactory, in, maxCount);
         } catch (IOException ex) {
             throw new ParseException("Unexpected IOException caught: " + ex.getMessage());
+        } catch (IllegalArgumentException ex) {
+            throw new ParseException("Invalid TWKB: " + ex.getMessage());
         }
     }
 
-    private static Geometry read(GeometryFactory factory, DataInput in) throws IOException {
+    private static Geometry read(GeometryFactory factory, DataInput in, int maxCount)
+        throws IOException, ParseException {
         Objects.requireNonNull(factory, "GeometryFactory is null");
         Objects.requireNonNull(in, "DataInput is null");
 
         TWKBHeader header = readHeader(in);
-        return readGeometryBody(factory, header, in);
+        return readGeometryBody(factory, header, in, maxCount);
     }
 
-    private static TWKBHeader readHeader(DataInput in) throws IOException {
+    private static int readCount(DataInput in, int maxCount, String fieldName)
+        throws IOException, ParseException {
+        // count is an unsigned varint, but Java has only signed int
+        final int count = Varint.readUnsignedVarInt(in);
+        if (count < 0 || count > maxCount) {
+            throw new ParseException(fieldName + " value is too large");
+        }
+        return count;
+    }
+
+    private static TWKBHeader readHeader(DataInput in) throws IOException, ParseException {
         Objects.requireNonNull(in);
         final int typeAndPrecisionHeader = in.readByte() & 0xFF;
         final int geometryTypeCode = typeAndPrecisionHeader & 0b00001111;
+        if (geometryTypeCode < 1 || geometryTypeCode > 7) {
+            throw new ParseException("Unknown TWKB geometry type: " + geometryTypeCode);
+        }
         final GeometryType geometryType = GeometryType.valueOf(geometryTypeCode);
         final int precision = Varint.zigzagDecode((typeAndPrecisionHeader & 0b11110000) >> 4);
         final int metadata_header = in.readByte() & 0xFF;
@@ -127,7 +155,7 @@ public class TWKBReader {
     }
 
     private static Geometry readGeometryBody(GeometryFactory factory, TWKBHeader header,
-        DataInput in) throws IOException {
+        DataInput in, int maxCount) throws IOException, ParseException {
         final GeometryType geometryType = header.geometryType();
         if (header.isEmpty()) {
             return geometryType.createEmpty(factory);
@@ -139,17 +167,18 @@ public class TWKBReader {
             case POINT:
                 return readPoint(factory, in, header);
             case LINESTRING:
-                return readLineString(factory, in, header, new long[header.getDimensions()]);
+                return readLineString(factory, in, header, new long[header.getDimensions()],
+                    maxCount);
             case POLYGON:
-                return readPolygon(factory, in, header, new long[header.getDimensions()]);
+                return readPolygon(factory, in, header, new long[header.getDimensions()], maxCount);
             case MULTIPOINT:
-                return readMultiPoint(factory, in, header);
+                return readMultiPoint(factory, in, header, maxCount);
             case MULTILINESTRING:
-                return readMultiLineString(factory, in, header);
+                return readMultiLineString(factory, in, header, maxCount);
             case MULTIPOLYGON:
-                return readMultiPolygon(factory, in, header);
+                return readMultiPolygon(factory, in, header, maxCount);
             case GEOMETRYCOLLECTION:
-                return readGeometryCollection(factory, in, header);
+                return readGeometryCollection(factory, in, header, maxCount);
             default:
                 throw new IllegalStateException();
         }
@@ -169,15 +198,16 @@ public class TWKBReader {
     }
 
     private static LineString readLineString(GeometryFactory factory, DataInput in,
-        TWKBHeader header, long[] prev) throws IOException {
-        CoordinateSequence coordinates = readCoordinateSequence(factory, in, header, prev);
+        TWKBHeader header, long[] prev, int maxCount) throws IOException, ParseException {
+        CoordinateSequence coordinates = readCoordinateSequence(factory, in, header, prev,
+            maxCount);
         return factory.createLineString(coordinates);
     }
 
     private static LinearRing readLinearRing(GeometryFactory factory, DataInput in,
-        TWKBHeader header, long[] prev) throws IOException {
+        TWKBHeader header, long[] prev, int maxCount) throws IOException, ParseException {
 
-        CoordinateSequence seq = readCoordinateSequence(factory, in, header, prev);
+        CoordinateSequence seq = readCoordinateSequence(factory, in, header, prev, maxCount);
         if (!CoordinateSequences.isRing(seq)) {
             seq = CoordinateSequences.ensureValidRing(factory.getCoordinateSequenceFactory(), seq);
         }
@@ -185,22 +215,22 @@ public class TWKBReader {
     }
 
     private static Polygon readPolygon(GeometryFactory factory, DataInput in, TWKBHeader header,
-        long[] prev) throws IOException {
-        final int nrings = Varint.readUnsignedVarInt(in);
+        long[] prev, int maxCount) throws IOException, ParseException {
+        final int nrings = readCount(in, maxCount, FIELD_NRINGS);
         if (nrings == 0) {
             return factory.createPolygon();// unlikely, empty check already performed?
         }
-        LinearRing shell = readLinearRing(factory, in, header, prev);
+        LinearRing shell = readLinearRing(factory, in, header, prev, maxCount);
         LinearRing[] holes = new LinearRing[nrings - 1];
         for (int h = 0; h < nrings - 1; h++) {
-            holes[h] = readLinearRing(factory, in, header, prev);
+            holes[h] = readLinearRing(factory, in, header, prev, maxCount);
         }
         return factory.createPolygon(shell, holes);
     }
 
     private static MultiPoint readMultiPoint(GeometryFactory factory, DataInput in,
-        TWKBHeader header) throws IOException {
-        final int nmembers = Varint.readUnsignedVarInt(in);
+        TWKBHeader header, int maxCount) throws IOException, ParseException {
+        final int nmembers = readCount(in, maxCount, FIELD_NMEMBERS);
         if (header.hasIdList()) {
             skipIdList(nmembers, in);
         }
@@ -210,43 +240,43 @@ public class TWKBReader {
     }
 
     private static MultiLineString readMultiLineString(GeometryFactory factory, DataInput in,
-        TWKBHeader header) throws IOException {
-        final int nmembers = Varint.readUnsignedVarInt(in);
+        TWKBHeader header, int maxCount) throws IOException, ParseException {
+        final int nmembers = readCount(in, maxCount, FIELD_NMEMBERS);
         if (header.hasIdList()) {
             skipIdList(nmembers, in);
         }
         LineString[] lineStrings = new LineString[nmembers];
         long[] prev = new long[header.getDimensions()];
         for (int mN = 0; mN < nmembers; mN++) {
-            lineStrings[mN] = readLineString(factory, in, header, prev);
+            lineStrings[mN] = readLineString(factory, in, header, prev, maxCount);
         }
         return factory.createMultiLineString(lineStrings);
     }
 
     private static Geometry readMultiPolygon(GeometryFactory factory, DataInput in,
-        TWKBHeader header) throws IOException {
-        final int nmembers = Varint.readUnsignedVarInt(in);
+        TWKBHeader header, int maxCount) throws IOException, ParseException {
+        final int nmembers = readCount(in, maxCount, FIELD_NMEMBERS);
         if (header.hasIdList()) {
             skipIdList(nmembers, in);
         }
         long[] prev = new long[header.getDimensions()];
         Polygon[] polygons = new Polygon[nmembers];
         for (int mN = 0; mN < nmembers; mN++) {
-            polygons[mN] = readPolygon(factory, in, header, prev);
+            polygons[mN] = readPolygon(factory, in, header, prev, maxCount);
         }
         return factory.createMultiPolygon(polygons);
     }
 
     private static Geometry readGeometryCollection(GeometryFactory factory, DataInput in,
-        TWKBHeader header) throws IOException {
+        TWKBHeader header, int maxCount) throws IOException, ParseException {
 
-        final int nmembers = Varint.readUnsignedVarInt(in);
+        final int nmembers = readCount(in, maxCount, FIELD_NMEMBERS);
         if (header.hasIdList()) {
             skipIdList(nmembers, in);
         }
         Geometry[] geometries = new Geometry[nmembers];
         for (int geomN = 0; geomN < nmembers; geomN++) {
-            geometries[geomN] = read(factory, in);
+            geometries[geomN] = read(factory, in, maxCount);
         }
         return factory.createGeometryCollection(geometries);
     }
@@ -274,16 +304,20 @@ public class TWKBReader {
     }
 
     private static CoordinateSequence readCoordinateSequence(GeometryFactory factory, DataInput in,
-        TWKBHeader header, long[] prev) throws IOException {
-        final int size = Varint.readUnsignedVarInt(in);
+        TWKBHeader header, long[] prev, int maxCount) throws IOException, ParseException {
+        final int size = readCount(in, maxCount, FIELD_NPOINTS);
         return readCoordinateSequence(factory, in, size, header, prev);
     }
 
     private static CoordinateSequence readCoordinateSequence(GeometryFactory factory, DataInput in,
-        int size, TWKBHeader header, long[] prev) throws IOException {
+        int size, TWKBHeader header, long[] prev) throws IOException, ParseException {
 
-        CoordinateSequence sequence = createCoordinateSequence(factory, size, header);
         final int dimensions = header.getDimensions();
+        // size * dimensions must not overflow in the coordinate sequence
+        if (size > Integer.MAX_VALUE / dimensions) {
+            throw new ParseException(FIELD_NPOINTS + " value is too large");
+        }
+        CoordinateSequence sequence = createCoordinateSequence(factory, size, header);
         for (int coordIndex = 0; coordIndex < size; coordIndex++) {
             for (int ordinateIndex = 0; ordinateIndex < dimensions; ordinateIndex++) {
                 int precision = header.getPrecision(ordinateIndex);
