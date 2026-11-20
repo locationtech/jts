@@ -550,6 +550,7 @@ public class RelateNG
   private void computeEdgesMutual(List<RelateSegmentString> edgesB, Envelope envInt, EdgeSegmentIntersector intersector) {
     //-- in prepared mode the A edge index is reused
     if (edgeMutualInt == null) {  
+    	// in prepared mode all A edges are extracted so they are present in index
       Envelope envExtract = geomA.isPrepared() ? null : envInt;
       List<RelateSegmentString> edgesA = geomA.extractSegmentStrings(GEOM_A, envExtract);
       edgeMutualInt = new MCIndexSegmentSetMutualIntersector(edgesA, envExtract);
