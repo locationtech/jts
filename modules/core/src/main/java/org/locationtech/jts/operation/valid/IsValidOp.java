@@ -80,8 +80,6 @@ public class IsValidOp
    */
   private boolean isInvertedRingValid = false;
   
-  private int minHolesIndexedShell = MIN_HOLES_INDEXED_SHELL;
-  
   private TopologyValidationError validErr;
 
   /**
@@ -126,17 +124,6 @@ public class IsValidOp
   public void setSelfTouchingRingFormingHoleValid(boolean isValid)
   {
     isInvertedRingValid = isValid;
-  }
-
-  /**
-   * Sets the number of holes at which a polygon uses an indexed shell locator.
-   * Allows testing the indexed code path with small polygons.
-   *
-   * @param minHoles the minimum number of holes to use an indexed shell locator
-   */
-  void setMinHolesIndexedShell(int minHoles)
-  {
-    minHolesIndexedShell = minHoles;
   }
 
   /**
@@ -461,7 +448,7 @@ public class IsValidOp
     LinearRing shell = poly.getExteriorRing();
     boolean isShellEmpty = shell.isEmpty();
     IndexedPointInAreaLocator shellLocator = null;
-    if (! isShellEmpty && poly.getNumInteriorRing() >= minHolesIndexedShell) {
+    if (! isShellEmpty && poly.getNumInteriorRing() >= MIN_HOLES_INDEXED_SHELL) {
       shellLocator = new IndexedPointInAreaLocator(shell);
     }
     

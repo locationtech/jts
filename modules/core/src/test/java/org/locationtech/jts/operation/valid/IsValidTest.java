@@ -11,11 +11,18 @@
  */
 package org.locationtech.jts.operation.valid;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LinearRing;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.io.WKTReader;
+import org.locationtech.jts.util.GeometricShapeFactory;
 
 import junit.textui.TestRunner;
 import test.jts.GeometryTestCase;
@@ -27,6 +34,7 @@ public class IsValidTest extends GeometryTestCase {
 
   private PrecisionModel precisionModel = new PrecisionModel();
   private GeometryFactory geometryFactory = new GeometryFactory(precisionModel, 0);
+  private GeometricShapeFactory shapeFactory = new GeometricShapeFactory(geometryFactory);
   WKTReader reader = new WKTReader(geometryFactory);
 
   public static void main(String args[]) {
@@ -202,22 +210,14 @@ public class IsValidTest extends GeometryTestCase {
     Geometry geom = read(wkt);
     boolean isValid = geom.isValid();
     assertEquals( isExpectedValid, isValid );
-    TopologyValidationError indexedCheck = validateIndexedShell(wkt);
-    if (isExpectedValid) {
-      assertNull( indexedCheck );
-    } else {
-      assertNotNull( indexedCheck );
-    }
+    // force the indexed hole check to also run
+    Geometry withExtraHoles = withExtraHoles(geom);
+    if (withExtraHoles != null)
+      assertEquals( isExpectedValid, withExtraHoles.isValid() );
   }
 
   private void checkInvalid(String wkt) {
     checkValid(false, wkt);
-  }
-
-  private TopologyValidationError validateIndexedShell(String wkt) {
-    IsValidOp validOp = new IsValidOp(read(wkt));
-    validOp.setMinHolesIndexedShell(0);
-    return validOp.getValidationError();
   }
   
   private void checkInvalid(int exepctedErrType, String wkt) {
@@ -225,6 +225,27 @@ public class IsValidTest extends GeometryTestCase {
     IsValidOp validOp = new IsValidOp(geom);
     TopologyValidationError err = validOp.getValidationError();
     assertEquals( exepctedErrType, err.getErrorType() );
-    assertEquals( exepctedErrType, validateIndexedShell(wkt).getErrorType() );
+    // force the indexed hole check to also run
+    Geometry withExtraHoles = withExtraHoles(geom);
+    if (withExtraHoles != null)
+      assertEquals( exepctedErrType, new IsValidOp(withExtraHoles).getValidationError().getErrorType() );
+  }
+  
+  private Geometry withExtraHoles(Geometry geom) {
+    //-- add enough tiny holes in the middle of the geometry to trigger the indexed hole check
+    if (! (geom instanceof Polygon) || ((Polygon) geom).getNumInteriorRing() == 0)
+      return null;
+    Polygon poly = (Polygon) geom;
+    Point center = poly.getInteriorPoint();
+    double size = center.distance(poly.getBoundary()) / 1e6;
+    List<LinearRing> holes = new ArrayList<>();
+    for (int i = 0; i < poly.getNumInteriorRing(); i++)
+      holes.add(poly.getInteriorRingN(i));
+    shapeFactory.setSize(size);
+    for (int i = 0; i < 100; i++) {
+      shapeFactory.setCentre(new Coordinate(center.getX() + (2 * i - 100) * size, center.getY()));
+      holes.add(shapeFactory.createCircle().getExteriorRing());
+    }
+    return geometryFactory.createPolygon(poly.getExteriorRing(), GeometryFactory.toLinearRingArray(holes));
   }
 }
