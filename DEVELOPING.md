@@ -122,7 +122,7 @@ The XML test format can be executed using the **JTS TestRunner**, or imported in
   5. Press *Find unresolved properties* to define:
      
      * property `checkstyle.header.file` value: Absolute path to `src/main/resources/jts/header.txt`
-     * property `checkstyle.header.file`value: Absolute path to `src/main/resources/jts/suppressions.xml`
+     * property `checkstyle.suppressions.file`value: Absolute path to `src/main/resources/jts/suppressions.xml`
 
   6. From the *Main* tab:
      
