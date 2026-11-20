@@ -29,35 +29,46 @@ class EdgeSetIntersector {
   private Envelope envelope;
   private List<MonotoneChain> monoChains = new ArrayList<MonotoneChain>();
   private int idCounter = 0;
+	private boolean hasAEdges;
+	private boolean hasBEdges;
   
   public EdgeSetIntersector(List<RelateSegmentString> edgesA, List<RelateSegmentString> edgesB, Envelope env) {
     this.envelope = env;
-    addEdges(edgesA);
-    addEdges(edgesB);
+    hasAEdges = addEdges(edgesA);
+    hasBEdges = addEdges(edgesB);
     // build index to ensure thread-safety
     index.build();
   }
 
-  private void addEdges(Collection<RelateSegmentString> segStrings)
+  private boolean addEdges(Collection<RelateSegmentString> segStrings)
   {
+  	int itemCount = 0;
     for (SegmentString ss : segStrings) {
-      addToIndex(ss);
+    	itemCount += addToIndex(ss);
     }
+    return itemCount > 0;
   }
 
-  private void addToIndex(SegmentString segStr)
+  private int addToIndex(SegmentString segStr)
   {
+  	int itemCount = 0;
     List<MonotoneChain> segChains = MonotoneChainBuilder.getChains(segStr.getCoordinates(), segStr);
     for (MonotoneChain mc : segChains ) {
       if (envelope == null || envelope.intersects(mc.getEnvelope())) {
         mc.setId(idCounter ++);
         index.insert(mc.getEnvelope(), mc);
         monoChains.add(mc);
+        itemCount++;
       }
     }
+    return itemCount;
   }
   
   public void process(EdgeSegmentIntersector intersector) {
+  	//-- linework from both inputs must be in tree to do processing
+  	if (! (hasAEdges && hasBEdges))
+  		return;
+  	
     MonotoneChainOverlapAction overlapAction = new EdgeSegmentOverlapAction(intersector);
 
     for (MonotoneChain queryChain : monoChains) {

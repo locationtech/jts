@@ -42,7 +42,10 @@ public class MCIndexSegmentSetMutualIntersector implements SegmentSetMutualInter
   */
   private STRtree index = new STRtree();
   private double overlapTolerance = 0.0;
-  private Envelope envelope = null;
+  /**
+   * Chains outside this envelope are not processed
+   */
+  private Envelope constraintEnvelope = null;
 
   /**
    * Constructs a new intersector for a given set of {@link SegmentString}s.
@@ -54,9 +57,16 @@ public class MCIndexSegmentSetMutualIntersector implements SegmentSetMutualInter
     initBaseSegments(baseSegStrings);
   }
 
+  /**
+   * Constructs a new intersector for a given set of {@link SegmentString}s,
+   * limiting the linework processed to lie inside a constraint envelope.
+   * 
+   * @param baseSegStrings the base segment strings to intersect
+   * @param env the constraint envelope
+   */
   public MCIndexSegmentSetMutualIntersector(Collection baseSegStrings, Envelope env)
   {
-    this.envelope  = env;
+    this.constraintEnvelope  = env;
     initBaseSegments(baseSegStrings);
   }
 
@@ -91,7 +101,7 @@ public class MCIndexSegmentSetMutualIntersector implements SegmentSetMutualInter
     List segChains = MonotoneChainBuilder.getChains(segStr.getCoordinates(), segStr);
     for (Iterator i = segChains.iterator(); i.hasNext(); ) {
       MonotoneChain mc = (MonotoneChain) i.next();
-      if (envelope == null || envelope.intersects(mc.getEnvelope())) {
+      if (constraintEnvelope == null || constraintEnvelope.intersects(mc.getEnvelope())) {
         index.insert(mc.getEnvelope(overlapTolerance), mc);
       }
     }
@@ -107,6 +117,13 @@ public class MCIndexSegmentSetMutualIntersector implements SegmentSetMutualInter
    */
   public void process(Collection segStrings, SegmentIntersector segInt)
   {
+  	/**
+  	 * Optimization: Avoid creating monotone chains if nothing to intersect them against.
+  	 * This can happen if no chains overlap the constraint envelope
+  	 */
+  	if (index.isEmpty())
+  		return;
+  	
   	List monoChains = new ArrayList();
     for (Iterator i = segStrings.iterator(); i.hasNext(); ) {
       addToMonoChains((SegmentString) i.next(), monoChains);
@@ -123,7 +140,7 @@ public class MCIndexSegmentSetMutualIntersector implements SegmentSetMutualInter
     List segChains = MonotoneChainBuilder.getChains(segStr.getCoordinates(), segStr);
     for (Iterator i = segChains.iterator(); i.hasNext(); ) {
       MonotoneChain mc = (MonotoneChain) i.next();
-      if (envelope == null || envelope.intersects(mc.getEnvelope())) {
+      if (constraintEnvelope == null || constraintEnvelope.intersects(mc.getEnvelope())) {
         monoChains.add(mc);
       }
     }
