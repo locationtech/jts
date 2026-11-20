@@ -115,7 +115,7 @@ The XML test format can be executed using the **JTS TestRunner**, or imported in
 
   2. From the *Local check configuration* tab use *new* to create a check configuration.
 
-  3. Setup a *Project Relative Configuration* named `jts`, selecting ``build-tools/src/main/resources/jts/checkstyle.xml``
+  3. Setup a *Project Relative Configuration* named `jts`, selecting ``jts/build-tools/src/main/resources/jts/checkstyle.xml``
      
   4. Press *Additional properties* to open the *Additional Checkstyle configuration file properties* dialog.
   
