@@ -11,11 +11,18 @@
  */
 package org.locationtech.jts.operation.valid;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LinearRing;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.io.WKTReader;
+import org.locationtech.jts.util.GeometricShapeFactory;
 
 import junit.textui.TestRunner;
 import test.jts.GeometryTestCase;
@@ -27,6 +34,7 @@ public class IsValidTest extends GeometryTestCase {
 
   private PrecisionModel precisionModel = new PrecisionModel();
   private GeometryFactory geometryFactory = new GeometryFactory(precisionModel, 0);
+  private GeometricShapeFactory shapeFactory = new GeometricShapeFactory(geometryFactory);
   WKTReader reader = new WKTReader(geometryFactory);
 
   public static void main(String args[]) {
@@ -176,6 +184,20 @@ public class IsValidTest extends GeometryTestCase {
   public void testPolygonHoleWithRepeatedHolePointTouch() {
     checkValid( "POLYGON ((50 90, 10 10, 90 10, 50 90), (50 90, 50 90, 60 40, 60 40, 40 40, 50 90))");
   }
+
+  public void testPolygonHolesInConcaveShell() {
+    checkValid( "POLYGON ((10 10, 10 90, 40 90, 40 30, 60 30, 60 90, 90 90, 90 10, 10 10), (15 70, 25 70, 25 80, 15 80, 15 70), (70 50, 80 50, 80 60, 70 60, 70 50), (45 15, 55 15, 55 25, 45 25, 45 15), (40 50, 30 45, 30 55, 40 50))");
+  }
+
+  public void testPolygonHoleOutsideShellInConcavity() {
+    checkInvalid(TopologyValidationError.HOLE_OUTSIDE_SHELL,
+        "POLYGON ((10 10, 10 90, 40 90, 40 30, 60 30, 60 90, 90 90, 90 10, 10 10), (45 60, 55 60, 55 80, 45 80, 45 60))");
+  }
+
+  public void testPolygonHoleOutsideShellInConcavityTouch() {
+    checkInvalid(TopologyValidationError.HOLE_OUTSIDE_SHELL,
+        "POLYGON ((10 10, 10 90, 40 90, 40 30, 60 30, 60 90, 90 90, 90 10, 10 10), (15 70, 25 70, 25 80, 15 80, 15 70), (70 50, 80 50, 80 60, 70 60, 70 50), (40 50, 50 45, 50 55, 40 50))");
+  }
   
   //=============================================
   
@@ -188,6 +210,10 @@ public class IsValidTest extends GeometryTestCase {
     Geometry geom = read(wkt);
     boolean isValid = geom.isValid();
     assertEquals( isExpectedValid, isValid );
+    // force the indexed hole check to also run
+    Geometry withExtraHoles = withExtraHoles(geom);
+    if (withExtraHoles != null)
+      assertEquals( isExpectedValid, withExtraHoles.isValid() );
   }
 
   private void checkInvalid(String wkt) {
@@ -199,5 +225,27 @@ public class IsValidTest extends GeometryTestCase {
     IsValidOp validOp = new IsValidOp(geom);
     TopologyValidationError err = validOp.getValidationError();
     assertEquals( exepctedErrType, err.getErrorType() );
+    // force the indexed hole check to also run
+    Geometry withExtraHoles = withExtraHoles(geom);
+    if (withExtraHoles != null)
+      assertEquals( exepctedErrType, new IsValidOp(withExtraHoles).getValidationError().getErrorType() );
+  }
+  
+  private Geometry withExtraHoles(Geometry geom) {
+    //-- add enough tiny holes in the middle of the geometry to trigger the indexed hole check
+    if (! (geom instanceof Polygon) || ((Polygon) geom).getNumInteriorRing() == 0)
+      return null;
+    Polygon poly = (Polygon) geom;
+    Point center = poly.getInteriorPoint();
+    double size = center.distance(poly.getBoundary()) / 1e6;
+    List<LinearRing> holes = new ArrayList<>();
+    for (int i = 0; i < poly.getNumInteriorRing(); i++)
+      holes.add(poly.getInteriorRingN(i));
+    shapeFactory.setSize(size);
+    for (int i = 0; i < 100; i++) {
+      shapeFactory.setCentre(new Coordinate(center.getX() + (2 * i - 100) * size, center.getY()));
+      holes.add(shapeFactory.createCircle().getExteriorRing());
+    }
+    return geometryFactory.createPolygon(poly.getExteriorRing(), GeometryFactory.toLinearRingArray(holes));
   }
 }
