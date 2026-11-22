@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Martin Davis.
+ * Copyright (c) 2026 Martin Davis.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -12,7 +12,6 @@
 package org.locationtech.jts.operation.relateng;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.locationtech.jts.geom.Envelope;
@@ -22,60 +21,108 @@ import org.locationtech.jts.index.chain.MonotoneChainOverlapAction;
 import org.locationtech.jts.index.hprtree.HPRtree;
 import org.locationtech.jts.noding.SegmentString;
 
+/**
+ * An edge intersector which extracts monotone chains from two geometries,
+ * and intersects all segments they contain 
+ * (except pairs of identical segments from a single geometry).
+ * In order to detect self-intersections,
+ * segments are evaluated for intersection even if they are in the same geometry,
+ * 
+ * The primary geometry chains are cached to allow them to be reused
+ * for multiple intersection processes.
+ * This improves performance for large primary geometries. 
+ */
 class EdgeSetIntersector {
 
-  private HPRtree index = new HPRtree();
-  private Envelope envelope;
-  private List<MonotoneChain> monoChains = new ArrayList<MonotoneChain>();
-  private int idCounter = 0;
-	private boolean hasAEdges;
-	private boolean hasBEdges;
+	private List<MonotoneChain> monoChainsA;
   
-  public EdgeSetIntersector(List<RelateSegmentString> edgesA, List<RelateSegmentString> edgesB, Envelope env) {
-    this.envelope = env;
-    hasAEdges = addEdges(edgesA);
-    hasBEdges = addEdges(edgesB);
-    // build index to ensure thread-safety
-    index.build();
+  public EdgeSetIntersector(List<RelateSegmentString> edgesA) {
+  	monoChainsA = createMonotoneChains(edgesA);
   }
 
-  private boolean addEdges(Collection<RelateSegmentString> segStrings)
+  private static List<MonotoneChain> createMonotoneChains(List<RelateSegmentString> segStrings)
   {
-  	int itemCount = 0;
+  	return createMonotoneChains(segStrings, 0, null);
+  }
+  
+  private static List<MonotoneChain> createMonotoneChains(List<RelateSegmentString> segStrings, int chainId, Envelope envelope)
+  {
+  	List<MonotoneChain> chains = new ArrayList<MonotoneChain>();
     for (SegmentString ss : segStrings) {
-    	itemCount += addToIndex(ss);
+    	chainId = addMonotoneChains(ss, chainId + 1, envelope, chains);
     }
-    return itemCount > 0;
+    return chains;
   }
 
-  private int addToIndex(SegmentString segStr)
+  private static int addMonotoneChains(SegmentString segStr, int chainId, Envelope envelope, List<MonotoneChain> chains)
   {
-  	int itemCount = 0;
     List<MonotoneChain> segChains = MonotoneChainBuilder.getChains(segStr.getCoordinates(), segStr);
     for (MonotoneChain mc : segChains ) {
       if (envelope == null || envelope.intersects(mc.getEnvelope())) {
-        mc.setId(idCounter ++);
-        index.insert(mc.getEnvelope(), mc);
-        monoChains.add(mc);
-        itemCount++;
+        mc.setId(chainId);
+        chains.add(mc);
+        chainId++;
       }
     }
-    return itemCount;
+    return chainId;
   }
   
-  public void process(EdgeSegmentIntersector intersector) {
-  	//-- linework from both inputs must be in tree to do processing
-  	if (! (hasAEdges && hasBEdges))
-  		return;
+	private List<MonotoneChain> extractChains(List<MonotoneChain> chains, Envelope envelope) {
+		List<MonotoneChain> chainsInEnv = new ArrayList<MonotoneChain>();
+	  for (MonotoneChain mc : chains) {
+	  	if (envelope.intersects(mc.getEnvelope())) {
+	  		chainsInEnv.add(mc);
+	  	}
+	  }
+	  return chainsInEnv;
+	}
+	
+	/**
+	 * Intersects all the segments in the primary geometry
+	 * and the segments in a secondary geometry.
+	 * Segments are evaluated for intersection even if they are in the same geometry,
+	 * in order to detect self-intersections.
+	 * 
+	 * @param edgesB the segment strings for the secondary geometry
+	 * @param constraintEnv the envelope of intersection between the two geometries, or null
+	 * @param intersector the segment intersector used to report intersections
+	 */
+  public void process(List<RelateSegmentString> edgesB, Envelope constraintEnv, EdgeSegmentIntersector intersector) {
+  	/**
+  	 * It can happen that no chains from a geometry intersect the constraint envelope. 
+  	 * If so there is no interaction between the geometry edges,
+  	 * and processing can be skipped.
+  	 */
+  	List<MonotoneChain> chainsAExtract = extractChains(monoChainsA, constraintEnv);
+    if (chainsAExtract.size() <= 0)
+    	return;
+    
+    /**
+     * Ensure B chain ids are unique by sequentially ordering them above all A chains.
+     */
+    int chainIdBase = monoChainsA.size() + 1;
+    List<MonotoneChain> chainsB = createMonotoneChains(edgesB, chainIdBase, constraintEnv);
+    if (chainsB.size() <= 0)
+    	return;
   	
-    MonotoneChainOverlapAction overlapAction = new EdgeSegmentOverlapAction(intersector);
+  	List<MonotoneChain> chainsBoth = new ArrayList<MonotoneChain>();
+  	chainsBoth.addAll(chainsAExtract);
+  	chainsBoth.addAll(chainsB);
+  	
+    process(chainsBoth, intersector);  
+  }
+
+	private void process(List<MonotoneChain> monoChains, EdgeSegmentIntersector intersector) {
+		HPRtree index = createIndex(monoChains);
+		
+		MonotoneChainOverlapAction overlapAction = new EdgeSegmentOverlapAction(intersector);
 
     for (MonotoneChain queryChain : monoChains) {
       List<MonotoneChain> overlapChains = index.query(queryChain.getEnvelope());
       for (MonotoneChain testChain : overlapChains) {
          /**
-         * following test makes sure we only compare each pair of chains once
-         * and that we don't compare a chain to itself
+         * Ensure each pair of chains is compared only once
+         * and that a chain is not compared to itself
          */
         if (testChain.getId() <= queryChain.getId())
           continue;
@@ -84,7 +131,16 @@ class EdgeSetIntersector {
         if (intersector.isDone()) 
           return;
       }
-    }  
-  }
+    }
+	}
+
+	private static HPRtree createIndex(List<MonotoneChain> monoChains) {
+		HPRtree index = new HPRtree();
+		for (MonotoneChain mc : monoChains) {
+			index.insert(mc.getEnvelope(), mc);
+		}
+		index.build();
+		return index;
+	}
 
 }
