@@ -1,0 +1,54 @@
+# Orientation reference vectors for JTS #1106 (orientation soundness).
+#
+# Consumed by RocqRefRunner.loadProofCases / RocqRefRunnerTest.
+#
+# Provenance (2026-08 refresh): integer-domain pins aligned with the
+# NetTopologySuite.Proofs orientation bank
+#   https://github.com/grootstebozewolf/NetTopologySuite.Proofs
+#   theories-flocq/Orient_b64_exact.v  (_sound_small_int, |c| <= 2^25)
+#   theories-flocq/Orient_b64_exact_full.v  (full-plane exact path; separate)
+#   docs/verified-claims.md  (orient rows)
+# Every exported sign is cross-checked against RocqRefRunner.refSign on load,
+# so a stale or inconsistent export fails the build rather than weakens the test.
+#
+# Scope of this file: integer domain only (|coordinate| <= 2^25 = 33554432).
+# Overflow/underflow double characterization lives in OrientationDDRobustnessTest
+# + DDCounterexampleHunter (not loadable here: loadProofCases is integer-only).
+# Filter-path differential (Ozaki vs Shewchuk Stage A) is tracked separately as
+# locationtech/jts#1093 and NetTopologySuite.Proofs docs/jts-1093-orient-lane-*.
+#
+# Format (whitespace-separated, '#' comments and blank lines ignored):
+#   p0x p0y  p1x p1y  qx qy  [expectedSign]
+# expectedSign in {-1, 0, 1}: -1 = clockwise, 0 = collinear, 1 = counter-clockwise.
+
+# --- basic turns (unit square / axis) ---
+0 0    1 0    0 1     1
+0 0    1 0    0 -1   -1
+0 0    0 1    1 0    -1
+0 0    0 1   -1 0     1
+
+# --- exact collinearity ---
+0 0    2 2    1 1     0
+0 0    4 2    2 1     0
+0 0    1 1    2 2     0
+-33554432 -33554432   33554432 33554432   0 0   0
+
+# --- antisymmetry / vertex degeneracies ---
+0 0    1 0    1 0     0
+0 0    0 0    1 1     0
+1 1    1 1    1 1     0
+
+# --- cyclic permutations of a CCW triangle (same sign) ---
+0 0    2 0    1 1     1
+2 0    1 1    0 0     1
+1 1    0 0    2 0     1
+
+# --- near-collinear (one unit off a long diagonal) ---
+0 0    1000000 1000000   1000001 1000000   -1
+0 0    1000000 1000000   1000000 1000001    1
+0 0    33554432 0         33554431 1        1
+
+# --- domain boundary (largest representable determinants, |c| = 2^25) ---
+33554432 33554432    -33554432 -33554432    33554432 -33554432    1
+-33554432 33554432    33554432 -33554432    33554431 -33554432   -1
+33554432 0            0 33554432            -33554432 0           1
