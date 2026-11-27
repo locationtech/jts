@@ -171,8 +171,6 @@ import org.locationtech.jts.util.AssertionFailedException;
  */
 public class WKTReader
 {
-  private static final int MAXIMUM_NESTING_DEPTH = 1000;
-
   private static final String COMMA = ",";
   private static final String L_PAREN = "(";
   private static final String R_PAREN = ")";
@@ -740,7 +738,12 @@ S  */
    *@throws  IOException     if an I/O error occurs
    * @param  tokenizer        tokenizer over a stream of text in Well-known Text
    */
-  private Geometry readGeometryTaggedText(StreamTokenizer tokenizer, int nestingDepth) throws IOException, ParseException {
+  private Geometry readGeometryTaggedText(StreamTokenizer tokenizer, int nestingDepth)
+      throws IOException, ParseException {
+    if (nestingDepth > WKBReader.MAX_DEPTH) {
+      throw parseErrorWithLine(tokenizer,
+          "Geometry nesting depth exceeds maximum of " + WKBReader.MAX_DEPTH);
+    }
     String type;
 
     EnumSet<Ordinate> ordinateFlags = EnumSet.of(Ordinate.X, Ordinate.Y);
@@ -1007,10 +1010,6 @@ S  */
    */
   private GeometryCollection readGeometryCollectionText(StreamTokenizer tokenizer, EnumSet<Ordinate> ordinateFlags,
       int nestingDepth) throws IOException, ParseException {
-    if (nestingDepth >= MAXIMUM_NESTING_DEPTH) {
-      throw new ParseException("GeometryCollection nesting depth exceeds maximum of "
-          + MAXIMUM_NESTING_DEPTH);
-    }
     String nextToken = getNextEmptyOrOpener(tokenizer);
     if (nextToken.equals(WKTConstants.EMPTY)) {
       return geometryFactory.createGeometryCollection();
@@ -1027,3 +1026,4 @@ S  */
   }
 
 }
+

@@ -78,7 +78,9 @@ import org.locationtech.jts.geom.PrecisionModel;
  */
 public class WKBReader
 {
-  private static final int MAXIMUM_NESTING_DEPTH = 1000;
+  public static final String MAX_DEPTH_PROPERTY_NAME = "jts.io.maxdepth";
+
+  static final int MAX_DEPTH = Integer.getInteger(MAX_DEPTH_PROPERTY_NAME, 1000);
 
   /**
    * Converts a hexadecimal string to a byte array.
@@ -206,6 +208,9 @@ public class WKBReader
   private Geometry readGeometry(int SRID, int nestingDepth)
   throws IOException, ParseException
   {
+    if (nestingDepth > MAX_DEPTH) {
+      throw new ParseException("Geometry nesting depth exceeds maximum of " + MAX_DEPTH);
+    }
 
       // determine byte order
       byte byteOrderWKB = dis.readByte();
@@ -351,7 +356,8 @@ public class WKBReader
     return factory.createPolygon(shell, holes);
   }
 
-  private MultiPoint readMultiPoint(int SRID, int nestingDepth) throws IOException, ParseException
+  private MultiPoint readMultiPoint(int SRID, int nestingDepth)
+      throws IOException, ParseException
   {
     int numGeom = readNumField(FIELD_NUMELEMS);
     Point[] geoms = new Point[numGeom];
@@ -364,7 +370,8 @@ public class WKBReader
     return factory.createMultiPoint(geoms);
   }
 
-  private MultiLineString readMultiLineString(int SRID, int nestingDepth) throws IOException, ParseException
+  private MultiLineString readMultiLineString(int SRID, int nestingDepth)
+      throws IOException, ParseException
   {
     int numGeom = readNumField(FIELD_NUMELEMS);
     LineString[] geoms = new LineString[numGeom];
@@ -377,7 +384,8 @@ public class WKBReader
     return factory.createMultiLineString(geoms);
   }
 
-  private MultiPolygon readMultiPolygon(int SRID, int nestingDepth) throws IOException, ParseException
+  private MultiPolygon readMultiPolygon(int SRID, int nestingDepth)
+      throws IOException, ParseException
   {
     int numGeom = readNumField(FIELD_NUMELEMS);
     Polygon[] geoms = new Polygon[numGeom];
@@ -394,10 +402,6 @@ public class WKBReader
   private GeometryCollection readGeometryCollection(int SRID, int nestingDepth)
       throws IOException, ParseException
   {
-    if (nestingDepth >= MAXIMUM_NESTING_DEPTH) {
-      throw new ParseException("GeometryCollection nesting depth exceeds maximum of "
-          + MAXIMUM_NESTING_DEPTH);
-    }
     int numGeom = readNumField(FIELD_NUMELEMS);
     Geometry[] geoms = new Geometry[numGeom];
     for (int i = 0; i < numGeom; i++) {
