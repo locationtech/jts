@@ -24,10 +24,12 @@ import org.locationtech.jts.triangulate.tri.TriangulationBuilder;
 
 /**
  * Computes the Constrained Delaunay Triangulation of polygons.
- * The Constrained Delaunay Triangulation of a polygon is a set of triangles
- * covering the polygon, with the maximum total interior angle over all 
- * possible triangulations.  It provides the "best quality" triangulation
- * of the polygon.
+ * A constrained Delaunay triangulation is a set of triangles
+ * covering the polygon, in which each interior edge satisfies
+ * the Delaunay condition: the vertex opposite the edge in either
+ * adjacent triangle does not lie inside the circumcircle of the
+ * other triangle.
+ * The boundary edges of the polygon are preserved as constraints.
  * <p>
  * Holes are supported.
  */
