@@ -14,6 +14,7 @@
 package org.locationtech.jtstest;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.util.Iterator;
 import java.util.StringTokenizer;
 
@@ -48,6 +49,24 @@ public class TestReaderTest extends TestCase {
   public void testDummy()
   {
     
+  }
+
+  public void testExternalGeometryNotIncluded() throws Exception {
+    File wkt = File.createTempFile("geometry", ".wkt");
+    File xml = File.createTempFile("testreader", ".xml");
+    try {
+      Files.write(wkt.toPath(), "POINT (10 20)".getBytes("UTF-8"));
+      String run = "<!DOCTYPE run [ <!ENTITY a SYSTEM \"" + wkt.toURI() + "\"> ]>"
+          + "<run><case><a>&a;</a><test><op name=\"isValid\" arg1=\"A\">true</op></test></case></run>";
+      Files.write(xml.toPath(), run.getBytes("UTF-8"));
+      TestReader testReader = new TestReader();
+      assertNull(testReader.createTestRun(xml, 0));
+      assertEquals(1, testReader.getParsingProblems().size());
+    }
+    finally {
+      wkt.delete();
+      xml.delete();
+    }
   }
   
   public void XtestWktFile() {
