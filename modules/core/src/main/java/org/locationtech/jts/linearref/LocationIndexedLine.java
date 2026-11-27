@@ -97,16 +97,13 @@ public class LocationIndexedLine
   }
 
   /**
-   * Computes the index for a given point on the line.
-   * <p>
-   * The supplied point does not <i>necessarily</i> have to lie precisely
-   * on the line, but if it is far from the line the accuracy and
-   * performance of this function is not guaranteed.
-   * Use {@link #project} to compute a guaranteed result for points
-   * which may be far from the line.
+   * Computes the index for the closest point on the line to the given point.
+   * If more than one point has the closest distance, the first one along the line
+   * is returned.
+   * This method is equivalent to {@link #project(Coordinate)}.
    *
-   * @param pt a point on the line
-   * @return the index of the point
+   * @param pt a point
+   * @return the index of the closest point on the line
    * @see #project(Coordinate)
    */
   public LinearLocation indexOf(Coordinate pt)
