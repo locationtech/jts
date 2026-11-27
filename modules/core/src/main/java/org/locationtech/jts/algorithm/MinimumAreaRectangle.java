@@ -52,6 +52,24 @@ public class MinimumAreaRectangle
   public static Geometry getMinimumRectangle(Geometry geom) {
     return (new MinimumAreaRectangle(geom)).getMinimumRectangle();
   }
+
+  /**
+   * Gets the minimum-area rectangular {@link Polygon} which encloses the input geometry,
+   * with a hint whether the geometry is already convex.
+   * If the geometry is known to be convex, setting {@code isConvex} to {@code true}
+   * avoids computing the convex hull.
+   * If the convex hull of the input is degenerate (a line or point)
+   * a {@link LineString} or a {@link Point} is returned.
+   *
+   * @param geom the geometry
+   * @param isConvex {@code true} if the input geometry is convex
+   * @return the minimum rectangle enclosing the geometry
+   *
+   * @see #MinimumAreaRectangle(Geometry, boolean)
+   */
+  public static Geometry getMinimumRectangle(Geometry geom, boolean isConvex) {
+    return (new MinimumAreaRectangle(geom, isConvex)).getMinimumRectangle();
+  }
   
   private final Geometry inputGeom;
   private final boolean isConvex;
@@ -81,7 +99,14 @@ public class MinimumAreaRectangle
     this.isConvex = isConvex;
   }
 
-  private Geometry getMinimumRectangle()
+  /**
+   * Gets the minimum-area rectangular {@link Polygon} which encloses the input geometry.
+   * If the convex hull of the input is degenerate (a line or point)
+   * a {@link LineString} or a {@link Point} is returned.
+   *
+   * @return the minimum rectangle enclosing the geometry
+   */
+  public Geometry getMinimumRectangle()
   {
     if (inputGeom.isEmpty()) {
       return inputGeom.getFactory().createPolygon();
