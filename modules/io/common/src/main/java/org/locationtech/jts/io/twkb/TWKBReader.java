@@ -41,13 +41,12 @@ import org.locationtech.jts.io.twkb.TWKBHeader.GeometryType;
  * Counts declared in the input must fit within the bytes available to encode them.
  * Byte arrays are limited by their length; streams are limited by the
  * <code>jts.twkb.maxbytes</code> system property (unlimited by default).
+ * Collection nesting is limited by the <code>jts.io.maxdepth</code> system property
+ * (1000 by default).
  */
 public class TWKBReader {
 
     public static final String MAX_BYTES_PROPERTY_NAME = "jts.twkb.maxbytes";
-
-    private static final int MAX_BYTES = parseMaxBytes(
-        System.getProperty(MAX_BYTES_PROPERTY_NAME));
 
     private static final GeometryFactory DEFAULT_FACTORY = new GeometryFactory(
         PackedCoordinateSequenceFactory.DOUBLE_FACTORY);
@@ -57,42 +56,6 @@ public class TWKBReader {
     private static final String FIELD_NMEMBERS = "nmembers";
 
     private GeometryFactory geometryFactory;
-
-    private static final class Budget {
-        private long remaining;
-
-        Budget(int maxBytes) {
-            this.remaining = maxBytes;
-        }
-
-        /**
-         * Each counted item is encoded in at least minBytes distinct bytes, so the total of
-         * all counts cannot exceed the input size.
-         */
-        int readCount(DataInput in, int minBytes, String fieldName)
-            throws IOException, ParseException {
-            final int count = Varint.readUnsignedVarInt(in);
-            remaining -= Integer.toUnsignedLong(count) * minBytes;
-            if (remaining < 0) {
-                throw new ParseException(fieldName + " value is too large");
-            }
-            return count;
-        }
-    }
-
-    static int parseMaxBytes(String value) {
-        if (value != null) {
-            try {
-                int maxBytes = Integer.parseInt(value.trim());
-                if (maxBytes > 0) {
-                    return maxBytes;
-                }
-            } catch (NumberFormatException ignore) {
-                // fall back to unlimited
-            }
-        }
-        return Integer.MAX_VALUE;
-    }
 
     public TWKBReader() {
         this(DEFAULT_FACTORY);
@@ -117,7 +80,7 @@ public class TWKBReader {
     }
 
     public Geometry read(DataInput in) throws ParseException {
-        return read(in, new Budget(MAX_BYTES));
+        return read(in, new Budget(Budget.MAX_BYTES));
     }
 
     private Geometry read(DataInput in, Budget budget) throws ParseException {
@@ -306,9 +269,11 @@ public class TWKBReader {
             skipIdList(nmembers, in);
         }
         Geometry[] geometries = new Geometry[nmembers];
+        budget.enterCollection();
         for (int geomN = 0; geomN < nmembers; geomN++) {
             geometries[geomN] = read(factory, in, budget);
         }
+        budget.exitCollection();
         return factory.createGeometryCollection(geometries);
     }
 

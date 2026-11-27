@@ -211,6 +211,38 @@ public class WKBReaderTest  extends TestCase
     assertEquals(2029, lastSubGeometry.getSRID());
   }
 
+  public void testNestedGeometryCollection() throws ParseException
+  {
+    String wkb = nest("010700000001000000", WKBReader.MAX_DEPTH);
+    assertEquals(1, new WKBReader().read(WKBReader.hexToBytes(wkb)).getNumPoints());
+    checkNestingDepthException(nest("010700000001000000", WKBReader.MAX_DEPTH + 1));
+  }
+
+  public void testNestedMultiPoint()
+  {
+    checkNestingDepthException(nest("010400000001000000", WKBReader.MAX_DEPTH + 1));
+  }
+
+  private static String nest(String prefix, int depth)
+  {
+    StringBuilder wkb = new StringBuilder();
+    for (int i = 0; i < depth; i++) {
+      wkb.append(prefix);
+    }
+    return wkb.append("01010000000000000000000000000000000000000000").toString();
+  }
+
+  private static void checkNestingDepthException(String wkbHex)
+  {
+    try {
+      new WKBReader().read(WKBReader.hexToBytes(wkbHex));
+      fail();
+    } catch (ParseException e) {
+      assertEquals("Geometry nesting depth exceeds maximum of " + WKBReader.MAX_DEPTH,
+          e.getMessage());
+    }
+  }
+
   /**
    * Tests WKB that requests a huge number of points.
    * Not yet implemented satisfactorily.

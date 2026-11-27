@@ -155,8 +155,33 @@ public class WKTReaderParseErrorTest
     readWithParseException("GEOMETRYCOLLECTION ()");
     readWithParseException("GEOMETRYCOLLECTION");  
   }
-  
-  public void testEmptyComponents() throws ParseException, IOException {
+
+  public void testNestedGeometryCollection() throws ParseException
+  {
+    assertEquals(1, rdr.read(nest(WKBReader.MAX_DEPTH)).getNumPoints());
+    try {
+      rdr.read(nest(WKBReader.MAX_DEPTH + 1));
+      fail();
+    } catch (ParseException e) {
+      assertTrue(e.getMessage().startsWith(
+          "Geometry nesting depth exceeds maximum of " + WKBReader.MAX_DEPTH));
+    }
+  }
+
+  private static String nest(int depth)
+  {
+    StringBuilder wkt = new StringBuilder();
+    for (int i = 0; i < depth; i++) {
+      wkt.append("GEOMETRYCOLLECTION (");
+    }
+    wkt.append("POINT (0 0)");
+    for (int i = 0; i < depth; i++) {
+      wkt.append(")");
+    }
+    return wkt.toString();
+  }
+
+    public void testEmptyComponents() throws ParseException, IOException {
     readWithInvalidException("POLYGON( EMPTY, (1 1,2 2,1 2,1 1))");
     
     //-- empty rings are valid

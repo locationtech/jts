@@ -147,11 +147,30 @@ public class TWKBReaderTest {
         }
     }
 
+    public @Test void testNestedGeometryCollection() throws ParseException {
+        assertEquals(1, reader.read(nest(Budget.MAX_DEPTH)).getNumPoints());
+        try {
+            reader.read(nest(Budget.MAX_DEPTH + 1));
+            fail("Expected ParseException");
+        } catch (ParseException e) {
+            assertEquals("Geometry nesting depth exceeds maximum of " + Budget.MAX_DEPTH,
+                e.getMessage());
+        }
+    }
+
+    private static byte[] nest(int depth) {
+        StringBuilder twkb = new StringBuilder();
+        for (int i = 0; i < depth; i++) {
+            twkb.append("070001");
+        }
+        return WKBReader.hexToBytes(twkb.append("01000000").toString());
+    }
+
     public @Test void testParseMaxBytes() {
-        assertEquals(Integer.MAX_VALUE, TWKBReader.parseMaxBytes(null));
-        assertEquals(Integer.MAX_VALUE, TWKBReader.parseMaxBytes("abc"));
-        assertEquals(Integer.MAX_VALUE, TWKBReader.parseMaxBytes("0"));
-        assertEquals(1048576, TWKBReader.parseMaxBytes(" 1048576 "));
+        assertEquals(Integer.MAX_VALUE, Budget.parseMaxBytes(null));
+        assertEquals(Integer.MAX_VALUE, Budget.parseMaxBytes("abc"));
+        assertEquals(Integer.MAX_VALUE, Budget.parseMaxBytes("0"));
+        assertEquals(1048576, Budget.parseMaxBytes(" 1048576 "));
     }
 
     private void checkParseException(String encodedHex) {
