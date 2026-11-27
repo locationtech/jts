@@ -174,7 +174,8 @@ public class RelateNG
   
   private BoundaryNodeRule boundaryNodeRule;
   private RelateGeometry geomA;
-  private MCIndexSegmentSetMutualIntersector edgeMutualInt;
+  private MCIndexSegmentSetMutualIntersector edgesMutualIntersector;
+	private EdgeSetIntersector edgesAllIntersector;
   
   private RelateNG(Geometry inputA, boolean isPrepared) {
     this(inputA, isPrepared, BoundaryNodeRule.OGC_SFS_BOUNDARY_RULE);
@@ -540,23 +541,35 @@ public class RelateNG
   }
   
   private void computeEdgesAll(List<RelateSegmentString> edgesB, Envelope envInt, EdgeSegmentIntersector intersector) {
-    //TODO: find a way to reuse prepared index?
-    List<RelateSegmentString> edgesA = geomA.extractSegmentStrings(GEOM_A, envInt);
+  	/**
+  	 * This handles both single-shot and prepared mode.
+  	 * In prepared mode the A monotone chains are extracted only once,
+  	 * and reused for each predicate evaluation.
+  	 */
+    if (edgesAllIntersector == null) {  
+    	// in prepared mode all A edges are extracted so they are available for different B geoms
+      Envelope envExtract = geomA.isPrepared() ? null : envInt;
+      List<RelateSegmentString> edgesA = geomA.extractSegmentStrings(GEOM_A, envExtract);
+      edgesAllIntersector = new EdgeSetIntersector(edgesA);
+    } 
     
-    EdgeSetIntersector edgeInt = new EdgeSetIntersector(edgesA, edgesB, envInt);
-    edgeInt.process(intersector);
+    edgesAllIntersector.process(edgesB, envInt, intersector);
   }
   
   private void computeEdgesMutual(List<RelateSegmentString> edgesB, Envelope envInt, EdgeSegmentIntersector intersector) {
-    //-- in prepared mode the A edge index is reused
-    if (edgeMutualInt == null) {  
-    	// in prepared mode all A edges are extracted so they are present in index
+  	/**
+  	 * This handles both single-shot and prepared mode.
+  	 * In prepared mode the A monotone chain index is created only once,
+  	 * and reused for each predicate evaluation.
+  	 */
+    if (edgesMutualIntersector == null) {  
+    	// in prepared mode all A edges are extracted so they are available for different B geoms
       Envelope envExtract = geomA.isPrepared() ? null : envInt;
       List<RelateSegmentString> edgesA = geomA.extractSegmentStrings(GEOM_A, envExtract);
-      edgeMutualInt = new MCIndexSegmentSetMutualIntersector(edgesA, envExtract);
+      edgesMutualIntersector = new MCIndexSegmentSetMutualIntersector(edgesA, envExtract);
     }
     
-    edgeMutualInt.process(edgesB, intersector);
+    edgesMutualIntersector.process(edgesB, intersector);
   }
 
 

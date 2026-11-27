@@ -16,6 +16,7 @@ import static org.junit.Assert.assertEquals;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.prep.PreparedGeometry;
 import org.locationtech.jts.geom.prep.PreparedGeometryFactory;
 import org.locationtech.jts.geom.util.SineStarFactory;
@@ -74,8 +75,11 @@ extends PerformanceTestCase
   public void startRun(int npts)
   {
     Geometry sineStar = SineStarFactory.create(new Coordinate(ORG_X, ORG_Y), SIZE, npts, N_ARMS, ARM_RATIO);
+    
     geomA = sineStar;
-
+    //-- adding a hole forces self-noding to take place
+    geomA = addCentreHole(geomA);
+    
     int nptsB = npts * B_SIZE_FACTOR / NUM_CASES;
     if (nptsB < 10 ) nptsB = 10;
     
@@ -96,7 +100,14 @@ extends PerformanceTestCase
 */
   }
   
-  public void runIntersectsOld()
+  private Geometry addCentreHole(Geometry geom) {
+  	double holeRadius = (SIZE * (1 - ARM_RATIO) * 0.5) / 100.0;
+  	Point centroid = geom.getCentroid();
+  	Geometry hole = centroid.buffer(holeRadius);
+  	return geom.difference(hole);
+	}
+
+	public void runIntersectsOld()
   {
     for (Geometry b : geomB) {
       geomA.intersects(b);
