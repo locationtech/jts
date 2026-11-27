@@ -113,6 +113,10 @@ public class LineString
     return 1;
   }
 
+  public int getCoordinateDimension() {
+    return points.getDimension();
+  }
+
   public int getBoundaryDimension() {
     if (isClosed()) {
       return Dimension.FALSE;

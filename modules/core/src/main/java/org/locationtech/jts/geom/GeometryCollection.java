@@ -113,6 +113,14 @@ public class GeometryCollection extends Geometry {
     //*/
   }
 
+  public int getCoordinateDimension() {
+    int dimension = 2;
+    for (int i = 0; i < geometries.length; i++) {
+      dimension = Math.max(dimension, geometries[i].getCoordinateDimension());
+    }
+    return dimension;
+  }
+
   public boolean hasDimension(int dim) {
     if (geomCollDim == null) {
       geomCollDim = new GeometryCollectionDimension(this);
