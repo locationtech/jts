@@ -11,7 +11,13 @@
  */
 package org.locationtech.jts.index.hprtree;
 
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.IntStream;
+
 import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.shape.fractal.HilbertCode;
 
 public class HilbertEncoder {
@@ -40,6 +46,75 @@ public class HilbertEncoder {
     int y = (int) ((midy - miny) / strideY);
       
     return HilbertCode.encode(level, x, y);
+  }
+
+  /**
+   * Sorts a list of {@link Geometry} objects in-place by their spatial order
+   * using Hilbert curve encoding of their envelopes.
+   *
+   * @param geoms the list of geometries to sort
+   */
+  public static void sort(List<Geometry> geoms) {
+	  sort(geoms, 12);
+  }
+  
+  /**
+   * Sorts a list of {@link Geometry} objects in-place by their spatial order
+   * using Hilbert curve encoding of their envelopes.
+   *
+   * @param geoms the list of geometries to sort
+   * @param level the resolution level for Hilbert curve encoding
+   */
+  public static void sort(List<Geometry> geoms, int level) {
+    int n = geoms.size();
+    if (n < 2)
+      return;
+
+    Envelope globalExtent = new Envelope();
+    for (Geometry g : geoms) {
+      globalExtent.expandToInclude(g.getEnvelopeInternal());
+    }
+
+    HilbertEncoder encoder = new HilbertEncoder(level, globalExtent);
+    int[] keys = new int[n];
+    for (int i = 0; i < n; i++) {
+      Envelope e = geoms.get(i).getEnvelopeInternal();
+      keys[i] = encoder.encode(e);
+    }
+    sortInPlaceByKeys(keys, geoms);
+  }
+
+  private static <T> void sortInPlaceByKeys(int[] keys, List<T> values) {
+    final int n = keys.length;
+
+    Integer[] idx = IntStream.range(0, n).boxed().toArray(Integer[]::new);
+    Arrays.sort(idx, Comparator.comparingInt(i -> keys[i]));
+
+    // rearrange keys and values in-place by following permutation cycles,
+    // so that both arrays are sorted according to hilbert order key.
+    boolean[] seen = new boolean[n];
+    for (int i = 0; i < n; i++) {
+      if (seen[i] || idx[i] == i)
+        continue;
+
+      int cycleStart = i;
+      int j = i;
+      int savedKey = keys[j];
+      T savedVal = values.get(j);
+
+      do {
+        seen[j] = true;
+        int next = idx[j];
+        keys[j] = keys[next];
+        values.set(j, values.get(next));
+
+        j = next;
+      } while (j != cycleStart);
+
+      keys[j] = savedKey;
+      values.set(j, savedVal);
+      seen[j] = true;
+    }
   }
 
 }
