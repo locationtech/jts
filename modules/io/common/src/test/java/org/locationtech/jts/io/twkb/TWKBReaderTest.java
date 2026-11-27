@@ -12,6 +12,7 @@
  */
 package org.locationtech.jts.io.twkb;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -134,6 +135,23 @@ public class TWKBReaderTest {
 
     public @Test void testVarintTooLong() {
         checkParseException("0200FFFFFFFFFFFF");
+    }
+
+    public @Test void testNestedCountsExceedInput() {
+        // each count fits the 13 byte input, but their total does not
+        try {
+            reader.read(WKBReader.hexToBytes("07000507000507000501000000"));
+            fail("Expected ParseException");
+        } catch (ParseException e) {
+            assertEquals("nmembers value is too large", e.getMessage());
+        }
+    }
+
+    public @Test void testParseMaxBytes() {
+        assertEquals(Integer.MAX_VALUE, TWKBReader.parseMaxBytes(null));
+        assertEquals(Integer.MAX_VALUE, TWKBReader.parseMaxBytes("abc"));
+        assertEquals(Integer.MAX_VALUE, TWKBReader.parseMaxBytes("0"));
+        assertEquals(1048576, TWKBReader.parseMaxBytes(" 1048576 "));
     }
 
     private void checkParseException(String encodedHex) {
